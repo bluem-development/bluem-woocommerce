@@ -36,7 +36,7 @@ require_once 'includes/lib/class-bluem-woocommerce-taxonomy.php';
  * @since  1.0.0
  * @return object bluem-woocommerce
  */
-function bluem-woocommerce() {
+function bluemwoocommerce() {
 	$instance = bluem-woocommerce::instance( __FILE__, '1.0.0' );
 
 	if ( is_null( $instance->settings ) ) {
@@ -46,4 +46,14 @@ function bluem-woocommerce() {
 	return $instance;
 }
 
-bluem-woocommerce();
+
+/**
+ * Check if WooCommerce is active
+ **/
+if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+    
+	bluem_woocommerce();
+} else {
+	throw new Exception("WooCommerce not activated", 1);
+	
+}
