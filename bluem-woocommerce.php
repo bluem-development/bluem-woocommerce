@@ -36,7 +36,7 @@ require_once 'includes/lib/class-bluem-woocommerce-taxonomy.php';
  * @since  1.0.0
  * @return object bluem-woocommerce
  */
-function bluemwoocommerce() {
+function bluem_woocommerce() {
 	$instance = bluem-woocommerce::instance( __FILE__, '1.0.0' );
 
 	if ( is_null( $instance->settings ) ) {

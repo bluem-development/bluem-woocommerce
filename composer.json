@@ -1,12 +1,12 @@
 {
-	"name": "hlashbrooke/wordpress-plugin-template",
+	"name": "daanrijpkema/bluem-woocommerce",
 	"license": "GPL-2.0-or-later",
 	"description": "A robust code template for creating a standards-compliant WordPress plugin.",
 	"keywords": [
 		"wordpress", "wp", "plugin template"
 	],
 	"support": {
-		"issues": "https://github.com/hlashbrooke/WordPress-Plugin-Template"
+		"issues": "https://github.com/daanrijpkema/bluem-woocommerce"
 	},
 	"require": {
 		"php": ">=5.4",

@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Settings class.
  */
-class bluem-woocommerce_Settings {
+class bluem_woocommerce_Settings {
 
 	/**
 	 * The single instance of bluem-woocommerce_Settings.

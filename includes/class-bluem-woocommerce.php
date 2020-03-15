@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Main plugin class.
  */
-class bluem-woocommerce {
+class bluem_woocommerce {
 
 	/**
 	 * The single instance of bluem-woocommerce.
