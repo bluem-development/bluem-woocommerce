@@ -29,38 +29,39 @@ class BlueMIntegration
 		$this->accessToken = "ef552fd4012f008a6fe3000000690107003559eed42f0000";
 
 		$this->environment = "test"; // test | prod | acc
+
+
+		$r = new EMandateTransactionRequest($this->senderID,$this->merchantID,$this->merchantSubID,$this->brandId,"success");
+		// $bluem->PrintRequest($r);
+		$this->CreatePaymentTransaction($r);		
 	}
 
-	// public function CreateRequest()
-	// {
-	// 	$r = new EMandateTransactionRequest();
-	// }
-
-	public function PrintRequest()
+	/**
+	 * Print a request in XML
+	 */
+	public function PrintRequest($r)
 	{
-		$r = new EMandateTransactionRequest($this->senderID,$this->merchantID,$this->merchantSubID,$this->brandId);
+		
 		header('Content-Type: text/xml');
 		print($r->Xml());
 	}
 
-	public function getBaseRequestUrl($call)
+	protected function getHttpRequestUrl($call)
 	{
-		//'https://test.viamijnbank.net/pr/createTransactionWithToken?token=ef552fd4012f008a6fe3000000690107003559eed42f0000');
-
 		switch ($this->environment) {
 			case 'test':
 			{
-				$request_url = "https://test.viamijnbank.net/pr/";
+				$request_url = "https://test.viamijnbank.net/mr/";
 				break;
 			}
 			case 'acc':
 			{
-				$request_url = "https://acc.viamijnbank.net/pr/";
+				$request_url = "https://acc.viamijnbank.net/mr/";
 				break;
 			}
 			case 'prod':
 			{
-				$request_url = "https://viamijnbank.net/pr/";
+				$request_url = "https://viamijnbank.net/mr/";
 				break;
 			}
 			default:
@@ -80,55 +81,74 @@ class BlueMIntegration
 		return $request_url;
 	}
 
-	public function post()
+	/**
+	 * Create a new payment transaction
+	 */
+	public function CreatePaymentTransaction(EMandateTransactionRequest $transaction_request)
 	{
-		$r = new EMandateTransactionRequest($this->senderID,$this->merchantID,$this->merchantSubID,$this->brandId);
-
-		$request_url = $this->getBaseRequestUrl("createTransaction"); // 
+		$request_url = $this->getHttpRequestUrl("createTransaction"); // 
 		
-
-		if(self::$verbose) {
+		if(static::$verbose) {
 			echo $request_url."<br>";
 		}
-		$transaction_type = "TRX"; // or PTX, ITX, INX, SRX, PSX, ISX)
+		
+		$transaction_type = "TRX";
+		// Opties:
+		// EMandate createTransaction (TRX) 
+		// EMandate requestStatus (SRX) 
+		// IDentity createTransaction (ITX) 
+		// IDentity requestStatus (ISX) 
+		// IBANCheck createTransaction (INX)
 		
 		$now = Carbon::now();
+		$now->tz = new DateTimeZone('Europe/London');
 		
 		$xttrs_filename = "{$transaction_type}-{$this->senderID}-BSP1-".$now->format('YmdHis')."000.xml";
-	
-	
+		
+		$xttrs_date = $now->format("D, d M Y H:i:s")." GMT"; 	// conform Rfc1123 standaard in GMT tijd
 
-		$request = new HTTP_Request2();
-		$request->setUrl($request_url);
+		$req = new HTTP_Request2();
+		$req->setUrl($request_url);
 
-		$request->setMethod(HTTP_Request2::METHOD_POST);
-		$request->setConfig(array(
-		  'follow_redirects' => TRUE
-		));
-		$request->setHeader(array(
-		  'Content-Type' => 'application/xml',
-		  'type' => $transaction_type,
-		  'charset' => 'utf8',
-		  'x-ttrs-date' => $now->toRfc7231String(),
-		  'x-ttrs-files-count' => '1',
-		  'x-ttrs-filename' => $xttrs_filename
-		));
+		$req->setMethod(HTTP_Request2::METHOD_POST);
+		// $req->setConfig(array(
+		//   'follow_redirects' => TRUE
+		// ));
 
-		$request->setBody($r->xml());
+     	$req->setHeader("Content-Type", "application/xml");
+     	$req->setHeader("Charset", "UTF-8");
+
+		$req->setHeader('x-ttrs-date', $xttrs_date);
+		$req->setHeader('x-ttrs-files-count', '1');
+		$req->setHeader('x-ttrs-filename', $xttrs_filename);
+		$req->setHeader('type',$transaction_type);
+
+// var_dump($req->getHeaders());
+// die();
+		// $req->setHeader(array(
+		//   'Content-Type' => 'text/xml; charset=utf-8',
+		//   // 'charset' => 'utf-8',
+		  
+		// ));
+
+		$req->setBody($transaction_request->xml());
 		
 		try {
-		  $response = $request->send();
+		  $response = $req->send();
 		  if ($response->getStatus() == 200) {
-		  			if(self::$verbose) {
-
-		    echo $response->getBody();
-
-		}
+	  		
+	  			if(self::$verbose) { 
+	  				echo htmlentities($response->getBody());
+				}
 		  }
 		  else {
 		    echo 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .
 		    $response->getReasonPhrase();
-		    echo "<hr>".($response->getBody());
+			echo "<hr>";
+			echo htmlentities($response->getBody());
+			echo "<hr>Original request body: <br><pre>".htmlentities($transaction_request->xml());
+			echo "</pre><HR>";
+
 		  }
 		}
 		catch(HTTP_Request2_Exception $e) {
@@ -178,18 +198,67 @@ class EMandateTransactionRequest extends TransactionRequest
 	private $purchaseID;
 	private $sendOption;
 	
-	function __construct($senderID, $merchantID, $merchantSubID, $brandId)
+	function __construct($senderID, $merchantID, $merchantSubID, $brandId, String $expected_return="none")
 	{
 		parent::__construct($senderID, $merchantID, $merchantSubID, $brandId);
 
 
-		$this->entranceCode = "1811D20171102111707"; // uniek in de tijd voor emandate; string; niet zichtbaar voor klant; uniek kenmerk van incassant voor deze transactie
+
+		// for testing:
+		switch ($expected_return) {
+			case 'none':
+			{
+				$prefix="";
+				break;
+			}
+			case 'success':
+			{
+				$prefix = "HIO100OIH";
+				break;
+			}
+			case 'cancelled':
+			{
+				$prefix = "HIO200OIH";
+				break;
+			}
+			case 'expired':
+			{
+				$prefix = "HIO300OIH";
+				break;
+			}
+			case 'failure':
+			{
+				$prefix = "HIO500OIH";
+				break;
+			}
+			case 'open':
+			{
+				$prefix = "HIO400OIH";
+				break;
+			}
+			case 'pending':
+			{
+				$prefix = "HIO600OIH";
+				break;
+			}
+			default: {
+				throw new Exception("Invalid expected return value given", 1);		
+				break;
+			}
+		}
+		
+		$now = Carbon::now();
+		
+
+
+
+
 
 		// TODO implementeer test entranceCode substrings voor bepaalde types return responses
 
 		$this->localInstrumentCode = "CORE"; // CORE | B2B
 
-		$this->createDateTime = Carbon::now()->toISOString();//"2017-11-02T11:17:09.000Z"; 
+		$this->createDateTime = $now->toDateTimeLocalString().".000Z";
 
 		$this->mandateID = "308201711021106036540002"; // 35 max, no space!
 		$this->merchantReturnURL = "https://daanrijpkema.com/bluem/?xxxxx"; // https uniek returnurl voor klant
@@ -198,40 +267,43 @@ class EMandateTransactionRequest extends TransactionRequest
 		$this->debtorReference = "2525"; // Klantreferentie bijv naam of nummer
 		$this->purchaseID = "Contract {$this->debtorReference}"; // inkoop/contract/order/klantnummer
 
+
+		// uniek in de tijd voor emandate; string; niet zichtbaar voor klant; uniek kenmerk van incassant voor deze transactie
+		$this->entranceCode = $prefix.$this->debtorReference.$now->format('YmdHis');//"1811D20171102111707"; 
+
+
 		$this->sendOption = "none"; // als sendoption ='email' dan ook minimaal emailadres meegeven
+
 	
 	}
 	public function Xml()
 	{
-		return "<?xml version='1.0'?>
-			<EMandateInterface xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
-			type='TransactionRequest' 
-			mode='direct' 
-			senderID='{$this->senderID}' 
-			version='1.0' 
-			createDateTime='{$this->createDateTime}' 
-			messageCount='1'>
-			  <EMandateTransactionRequest entranceCode='{$this->entranceCode}' 
-			  requestType='Issuing' 
-			  localInstrumentCode='{$this->localInstrumentCode}' 
-			  merchantID='{$this->merchantID}' 
-			  merchantSubID='{$this->merchantSubID}' 
-			  language='nl' 
-			  sendOption='none'>
-			    <MandateID>{$this->mandateID}</MandateID>
-			    <MerchantReturnURL automaticRedirect='1'>{$this->merchantReturnURL}</MerchantReturnURL>
-			    <SequenceType>{$this->sequenceType}</SequenceType>
-			    <EMandateReason>{$this->eMandateReason}</EMandateReason>
-			    <DebtorReference>{$this->debtorReference}</DebtorReference>
-			    <PurchaseID>{$this->purchaseID}</PurchaseID>
-			  </EMandateTransactionRequest>
-			</EMandateInterface>";
+		return '<?xml version="1.0"?>
+<EMandateInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+type="TransactionRequest" 
+mode="direct" 
+senderID="'.$this->senderID.'" 
+version="1.0" 
+createDateTime="'.$this->createDateTime.'" 
+messageCount="1">
+<EMandateTransactionRequest entranceCode="'.$this->entranceCode.'" 
+requestType="Issuing" 
+localInstrumentCode="'.$this->localInstrumentCode.'" 
+merchantID="'.$this->merchantID.'" 
+merchantSubID="'.$this->merchantSubID.'" 
+language="nl" 
+sendOption="'.$this->sendOption.'">
+<MandateID>'.$this->mandateID.'</MandateID>
+<MerchantReturnURL automaticRedirect="1">'.$this->merchantReturnURL.'</MerchantReturnURL>
+<SequenceType>'.$this->sequenceType.'</SequenceType>
+<EMandateReason>'.$this->eMandateReason.'</EMandateReason>
+<DebtorReference>'.$this->debtorReference.'</DebtorReference>
+<PurchaseID>'.$this->purchaseID.'</PurchaseID>
+</EMandateTransactionRequest>
+</EMandateInterface>';
 	}
 }
 
-$bluem = new BlueMIntegration();
 
-// $bluem->PrintRequest();
-
-$bluem->post();
+$run = new BlueMIntegration();
 ?>
