@@ -10,7 +10,9 @@
 	},
 	"require": {
 		"php": ">=5.4",
-		"squizlabs/php_codesniffer": "^3.3.1"
+		"squizlabs/php_codesniffer": "^3.3.1",
+		"nesbot/carbon": "^2.31",
+		"pear/http_request2": "^2.3"
     },
 	"require-dev": {
         "wp-coding-standards/wpcs": "2.1.*"

@@ -1,11 +1,13 @@
 <?php
+// TODO: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
+
 /**
  * Plugin Name: bluem-woocommerce
  * Version: 1.0.0
- * Plugin URI: http://www.hughlashbrooke.com/
- * Description: This is your starter template for your next WordPress plugin.
- * Author: Hugh Lashbrooke
- * Author URI: http://www.hughlashbrooke.com/
+ * Plugin URI: https://github.com/DaanRijpkema/bluem-woocommerce
+ * Description: BlueM WooCommerce plugin
+ * Author: Daan Rijpkema
+ * Author URI: https://github.com/DaanRijpkema/
  * Requires at least: 4.0
  * Tested up to: 4.0
  *
