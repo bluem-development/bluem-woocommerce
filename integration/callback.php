@@ -2,19 +2,17 @@
 require 'BlueMIntegration.php';
 
 $bluem = new BlueMIntegration();
-
+$callback = new BlueMIntegrationCallback();
 
 // 
 // callback.php
 // 
-var_dump($_GET);
-var_dump($_POST);
 
-
-
+// TODO: 
 // wait for the response and check it.
 // webhook should update the status soon.
 // or provide a button to refresh this page
 
 
+$callback->renderCallbackPage();
 
