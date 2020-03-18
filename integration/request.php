@@ -115,13 +115,13 @@ class BlueMIntegration
 		//   'follow_redirects' => TRUE
 		// ));
 
-     	$req->setHeader("Content-Type", "application/xml");
-     	$req->setHeader("Charset", "UTF-8");
-
+     	$req->setHeader("Content-Type", "application/csv; type=TRX; charset=UTF-8");
+     	// $req->setHeader("Charset", "UTF-8");
+// [{"key":"Content-Type","name":"Content-Type","value":"application/csv; type=TRX; charset=UTF-8","description":"","type":"text"}]
 		$req->setHeader('x-ttrs-date', $xttrs_date);
 		$req->setHeader('x-ttrs-files-count', '1');
 		$req->setHeader('x-ttrs-filename', $xttrs_filename);
-		$req->setHeader('type',$transaction_type);
+		// $req->setHeader('type',$transaction_type);
 
 // var_dump($req->getHeaders());
 // die();
@@ -138,8 +138,18 @@ class BlueMIntegration
 		  if ($response->getStatus() == 200) {
 	  		
 	  			if(self::$verbose) { 
+	  				echo "RESPONSE";
 	  				echo htmlentities($response->getBody());
 				}
+
+			$xml_response = new SimpleXMLElement($response->getBody());
+			$xml_response = $xml_response->EMandateTransactionResponse;
+
+			// $response_object = json_decode();
+
+			var_dump($xml_response);
+			echo "<hr><h1>Succes</h1>
+			<p> Ga naar BlueM: <a href='{$xml_response->TransactionURL}' target='_blank'>{$xml_response->TransactionURL}</a></p>";
 		  }
 		  else {
 		    echo 'Unexpected HTTP status: ' . $response->getStatus() . ' ' .
@@ -256,12 +266,12 @@ class EMandateTransactionRequest extends TransactionRequest
 
 		// TODO implementeer test entranceCode substrings voor bepaalde types return responses
 
-		$this->localInstrumentCode = "CORE"; // CORE | B2B
+		$this->localInstrumentCode = "B2B"; // CORE | B2B
 
 		$this->createDateTime = $now->toDateTimeLocalString().".000Z";
 
 		$this->mandateID = "308201711021106036540002"; // 35 max, no space!
-		$this->merchantReturnURL = "https://daanrijpkema.com/bluem/?xxxxx"; // https uniek returnurl voor klant
+		$this->merchantReturnURL = "https://daanrijpkema.com/bluem/callback.php?mandateID={$this->mandateID}"; // https uniek returnurl voor klant
 		$this->sequenceType = "RCUR";
 		$this->eMandateReason = "Incasso abonnement"; // reden van de machtiging; configurabel per partij
 		$this->debtorReference = "2525"; // Klantreferentie bijv naam of nummer
