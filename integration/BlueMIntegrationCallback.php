@@ -1,6 +1,6 @@
 <?php 
 
-require 'BlueMIntegration.php';
+require_once 'BlueMIntegration.php';
 
 libxml_use_internal_errors(true);
 
@@ -11,6 +11,7 @@ class BlueMIntegrationCallback extends BlueMIntegration
 	 */
 	function __construct()
 	{
+
 		parent::__construct();
 	}
 
@@ -26,12 +27,19 @@ class BlueMIntegrationCallback extends BlueMIntegration
 
 		$mandate_id = $_GET['mandateID'];
 
+		$this->renderPageHeader();
 		?>
+		<div class="card">
+		  <div class="card-body">
+		    
 <h2>
 Thanks for your request # <?php echo $mandate_id; ?>
 </h2>	
 
 <p>Status of your request: pending..</p>
+		  </div>
+		</div>
 		<?php
+		$this->renderPageFooter();
 	}
 }

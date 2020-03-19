@@ -1,13 +1,13 @@
 <?php 
-require 'BlueMIntegration.php';
+require_once 'BlueMIntegrationCallback.php';
 
-$bluem = new BlueMIntegration();
+// $bluem = new BlueMIntegration();
 $callback = new BlueMIntegrationCallback();
+// echo "waiting..";
 
 // 
 // callback.php
 // 
-
 // TODO: 
 // wait for the response and check it.
 // webhook should update the status soon.

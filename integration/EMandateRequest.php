@@ -83,17 +83,17 @@ class EMandateRequest
 	{
 		// var_dump($this);
 		switch ($this->environment) {
-			case 'test':
+			case BLUEM_ENVIRONMENT_TESTING:
 			{
 				$request_url = "https://test.viamijnbank.net/mr/";
 				break;
 			}
-			case 'acc':
+			case BLUEM_ENVIRONMENT_ACCEPTANCE:
 			{
 				$request_url = "https://acc.viamijnbank.net/mr/";
 				break;
 			}
-			case 'prod':
+			case BLUEM_ENVIRONMENT_PRODUCTION:
 			{
 				$request_url = "https://viamijnbank.net/mr/";
 				break;
@@ -156,37 +156,42 @@ class EMandateRequest
 	// test entranceCode substrings voor bepaalde types return responses
 	private function entranceCode($expected_return)
 	{
-		switch ($expected_return) {
-			case 'none':
-			{
-				$entranceCode = "";
-			}
-			case 'success':
-			{
-				$entranceCode = "HIO100OIH";
-			}
-			case 'cancelled':
-			{
-				$entranceCode = "HIO200OIH";
-			}
-			case 'expired':
-			{
-				$entranceCode = "HIO300OIH";
-			}
-			case 'failure':
-			{
-				$entranceCode = "HIO500OIH";
-			}
-			case 'open':
-			{
-				$entranceCode = "HIO400OIH";
-			}
-			case 'pending':
-			{
-				$entranceCode = "HIO600OIH";
-			}
-			default: {
-				$entranceCode = "";
+		$entranceCode = "";
+		// only allow this in testing mode
+		if($this->environment === BLUEM_ENVIRONMENT_TESTING) {
+
+			switch ($expected_return) {
+				case 'none':
+				{
+					$entranceCode = "";
+				}
+				case 'success':
+				{
+					$entranceCode = "HIO100OIH";
+				}
+				case 'cancelled':
+				{
+					$entranceCode = "HIO200OIH";
+				}
+				case 'expired':
+				{
+					$entranceCode = "HIO300OIH";
+				}
+				case 'failure':
+				{
+					$entranceCode = "HIO500OIH";
+				}
+				case 'open':
+				{
+					$entranceCode = "HIO400OIH";
+				}
+				case 'pending':
+				{
+					$entranceCode = "HIO600OIH";
+				}
+				default: {
+					$entranceCode = "";
+				}
 			}
 		}
 		$entranceCode .= Carbon::now()->format('YmdHisu');
@@ -241,6 +246,7 @@ class EMandateTransactionRequest extends EMandateRequest
 	
 	function __construct($config, Int $customer_id, String $order_id, String $expected_return="none")
 	{
+		
 		parent::__construct($config,$expected_return);
 		
 		$this->type_identifier = "createTransaction";
