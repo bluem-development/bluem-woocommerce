@@ -13,7 +13,7 @@ if(!isset($_GET['action'])) {
 			
 				<div class="card-header">
 					
-				Kies een actie:
+				Choose an option:
 				</div>
 					
 			<ul class="list-group list-group-flush">
@@ -51,6 +51,10 @@ if(!isset($_GET['action'])) {
 					</form>
 				</li>
 			</ul>
+		<div class="card-footer small text-right">
+			&copy; Daan Rijpkema, 2020 &middot; 
+			<a href="https://github.com/DaanRijpkema/bluem-woocommerce">github.com/DaanRijpkema/bluem-woocommerce</a>
+		</div>
 		</div>
 
 		<?php $bluem->renderPageFooter(); ?>
