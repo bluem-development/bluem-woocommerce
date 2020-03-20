@@ -126,10 +126,9 @@ class BlueMIntegration
 				$this->configuration->expected_return : ""
 			)
 		);
-		// var_dump($r);
+
 		$response = $this->PerformRequest($r);	
-// var_dump($response);
-// 		die();
+
 		header("Location: {$response->EMandateTransactionResponse->TransactionURL}");	
 	}
 
@@ -185,7 +184,7 @@ class BlueMIntegration
 		    $response->getReasonPhrase();
 		    if($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING)
 		    {
-		    	
+
 			echo "<HR>";
 			var_dump($response);
 		    }
