@@ -1,17 +1,18 @@
 <?php //BlueMIntegration.php
+if(!defined("BLUEM_ENVIRONMENT_PRODUCTION")) define("BLUEM_ENVIRONMENT_PRODUCTION","prod");
+if(!defined("BLUEM_ENVIRONMENT_TESTING")) define("BLUEM_ENVIRONMENT_TESTING","test");
+if(!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) define("BLUEM_ENVIRONMENT_ACCEPTANCE","acc");
 
-require '../vendor/autoload.php';
 
-require_once './EMandateRequest.php';
-require_once './EMandateResponse.php';
+require 'vendor/autoload.php';
+
+require_once 'EMandateRequest.php';
+require_once 'EMandateResponse.php';
 
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 
 // TODO: define environment as constants
-define("BLUEM_ENVIRONMENT_PRODUCTION","prod");
-define("BLUEM_ENVIRONMENT_TESTING","test");
-define("BLUEM_ENVIRONMENT_ACCEPTANCE","acc");
 // Report all PHP errors, for now
 error_reporting(-1);
 
@@ -33,7 +34,7 @@ class BlueMIntegration
 
 		$this->configuration = new Stdclass();
 
-		$this->configuration->accessToken = "ef552fd4012f008a6fe3000000690107003559eed42f0000";
+		
 
 		$this->configuration->senderID = "S1212";			// bluem uitgifte
 		$this->configuration->merchantID = "0020009469";  	// bank uitgifte, BlueM MerchantID 0020000387
@@ -47,6 +48,15 @@ class BlueMIntegration
 		// test | prod | acc, gebruikt voor welke calls er worden gemaakt.
 		$this->configuration->environment = BLUEM_ENVIRONMENT_PRODUCTION; 
 		$this->environment = $this->configuration->environment;
+
+		if($this->environment === BLUEM_ENVIRONMENT_PRODUCTION)
+		{
+			$this->configuration->accessToken = "170033937f3000f170df000000000107f1b150019333d317";
+		} elseif($this->environment === BLUEM_ENVIRONMENT_TESTING) {
+			$this->configuration->accessToken = "ef552fd4012f008a6fe3000000690107003559eed42f0000";
+		} else {
+			throw new Exception("Environment access Token not set yet",1);
+		}
 	}
 
 
@@ -56,10 +66,8 @@ class BlueMIntegration
 		
 		$response = $this->PerformRequest($r);
 		
-		
-			var_dump($response);
-
-			// TODO: continue handling when a proper transaction status has been requested
+		var_dump($response);
+		// TODO: continue handling when a proper transaction status has been requested
 		
 	}
 
@@ -85,8 +93,8 @@ class BlueMIntegration
 		// die();
 		// die();
 		$response = $this->PerformRequest($r);	
-var_dump($response);
-die();
+// var_dump($response);
+// die();
 		header("Location: {$response->EMandateTransactionResponse->TransactionURL}");	
 	}
 
