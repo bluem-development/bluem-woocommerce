@@ -3,7 +3,6 @@ if(!defined("BLUEM_ENVIRONMENT_PRODUCTION")) define("BLUEM_ENVIRONMENT_PRODUCTIO
 if(!defined("BLUEM_ENVIRONMENT_TESTING")) define("BLUEM_ENVIRONMENT_TESTING","test");
 if(!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) define("BLUEM_ENVIRONMENT_ACCEPTANCE","acc");
 
-
 require 'vendor/autoload.php';
 
 require_once 'EMandateRequest.php';
@@ -12,9 +11,6 @@ require_once 'EMandateResponse.php';
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 
-// TODO: define environment as constants
-// Report all PHP errors, for now
-error_reporting(-1);
 
 class BlueMIntegration 
 {
@@ -26,43 +22,77 @@ class BlueMIntegration
 
 	public $environment;
 	
+
 	/**
 	 * Constructs a new instance.
 	 */
-	function __construct()
+	function __construct($configuration=null)
 	{
+		if(is_null($configuration))
+		{
 
-		$this->configuration = new Stdclass();
+			$this->configuration = $this->_getDefaultConfiguration();
+		} else {
 
-		
+			$this->configuration = $configuration;
 
-		$this->configuration->senderID = "S1212";			// bluem uitgifte
-		$this->configuration->merchantID = "0020009469";  	// bank uitgifte, BlueM MerchantID 0020000387
+			if($this->configuration->environment === BLUEM_ENVIRONMENT_PRODUCTION)
+			{
+				$this->configuration->accessToken = $configuration->production_accessToken;
+			} elseif($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING) {
+				$this->configuration->accessToken = $configuration->test_accessToken;
+			} 
+			// var_dump($this->configuration->accessToken);
+			// die();
+
+		}	
+		$this->environment = $this->configuration->environment;
+
 		$this->configuration->merchantSubID = "0";			// bank uitgifte (default 0)
-		$this->configuration->brandId = ""; 				// bluem uitgifte
+	}
+	
+	/** 
+	 * if no configuration is given, use default configuration for now
+	 * @return [type] [description]
+	 */
+	private function _getDefaultConfiguration()
+	{
+		$configuration = new Stdclass();
+		$configuration->senderID = "S1212";			// bluem uitgifte
+		$configuration->merchantID = "0020009469";  	// bank uitgifte, BlueM MerchantID 0020000387
+		
+		$configuration->brandID = "NextDeliMandate"; 				// bluem uitgifte
 		
 		// parameters worden later toegevoegd achteraan deze URL
-		$this->configuration->merchantReturnURLBase = "http://daanrijpkema.com/bluem/integration/callback.php"; 
+		$configuration->merchantReturnURLBase = "http://daanrijpkema.com/bluem/integration/callback.php"; 
 		// TODO: update naar URL in nextdeli omgeving
 		
 		// test | prod | acc, gebruikt voor welke calls er worden gemaakt.
-		$this->configuration->environment = BLUEM_ENVIRONMENT_PRODUCTION; 
-		$this->environment = $this->configuration->environment;
-
+		$configuration->environment = BLUEM_ENVIRONMENT_PRODUCTION; 
+		
 		if($this->environment === BLUEM_ENVIRONMENT_PRODUCTION)
 		{
-			$this->configuration->accessToken = "170033937f3000f170df000000000107f1b150019333d317";
-		} elseif($this->environment === BLUEM_ENVIRONMENT_TESTING) {
-			$this->configuration->accessToken = "ef552fd4012f008a6fe3000000690107003559eed42f0000";
+			$configuration->accessToken = "170033937f3000f170df000000000107f1b150019333d317";
 		} else {
-			throw new Exception("Environment access Token not set yet",1);
+			$configuration->accessToken = "ef552fd4012f008a6fe3000000690107003559eed42f0000";
 		}
+		return $configuration;
 	}
 
-
+	/**
+	 * Request transaction status
+	 * 
+	 * @param [type] $mandateID [description]
+	 */
 	public function RequestTransactionStatus($mandateID)
 	{
-		$r = new EMandateStatusRequest($this->configuration,$mandateID);
+		$r = new EMandateStatusRequest($this->configuration,$mandateID,
+			(
+				$this->configuration->environment==BLUEM_ENVIRONMENT_TESTING && 
+				isset($this->configuration->expected_return)?
+				$this->configuration->expected_return : ""
+			)
+		);
 		
 		$response = $this->PerformRequest($r);
 		
@@ -86,15 +116,20 @@ class BlueMIntegration
 			throw new Exception("Order ID Not set", 1);
 		}
 
-		$r = new EMandateTransactionRequest($this->configuration,$customer_id,$order_id,"success");
-		// echo "kaas";
+		$r = new EMandateTransactionRequest(
+			$this->configuration,
+			$customer_id,
+			$order_id,
+			(
+				$this->configuration->environment==BLUEM_ENVIRONMENT_TESTING && 
+				isset($this->configuration->expected_return)?
+				$this->configuration->expected_return : ""
+			)
+		);
 		// var_dump($r);
-		// echo $r->HttpRequestUrl();
-		// die();
-		// die();
 		$response = $this->PerformRequest($r);	
 // var_dump($response);
-// die();
+// 		die();
 		header("Location: {$response->EMandateTransactionResponse->TransactionURL}");	
 	}
 
@@ -119,50 +154,47 @@ class BlueMIntegration
 		$req->setHeader('x-ttrs-filename', $xttrs_filename);
 
 		$req->setBody($transaction_request->XmlString());
-// var_dump($req);
-// die();
+
 		try {
 		  $response = $req->send();
 		  if ($response->getStatus() == 200) {
 	  		
 			$response = new EMandateResponse($response->getBody());
 			if(!$response->Status()) {
-				$this->renderPageHeader();
-				?>
-					<div class="card">
-					  <div class="card-body">
-								<?php
-								echo "Error: ".($response->Error()->ErrorMessage);?>
-					    
-					  </div>
-					</div>
 
+				?>
+				<div>
+				
+												<?php
+												echo "Error: ".($response->Error()->ErrorMessage);?>
+									    </div>
 				<?php
-				$this->renderPageFooter();
 				exit;
 			} else {
 				return $response;
 			}
 		  }
 		  else {
-		  	$this->renderPageHeader();
-				?>
-					<div class="card">
-					  <div class="card-body">
+		  	?>
+					<div>
+						
+					
 					  	<?php
 		    echo 'Unexpected HTTP status: ' . 
 		    $response->getStatus() . ' ' .
 		    $response->getReasonPhrase();
-			// echo "<hr>";
-			// echo htmlentities($response->getBody());
-			// echo "<hr>Original request body: <br><pre>".htmlentities($transaction_request->xml());
-			// echo "</pre>";?>
+		    if($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING)
+		    {
+		    	
+			echo "<HR>";
+			var_dump($response);
+		    }
+			?>
 
-					  </div>
-					</div>
-
+				</div>
 				<?php
-				$this->renderPageFooter();
+				exit;
+				
 			return null;
 		  }
 		}
@@ -226,8 +258,5 @@ class BlueMIntegration
 </html>
 	<?php
 } 
-
-
-
 	
 }

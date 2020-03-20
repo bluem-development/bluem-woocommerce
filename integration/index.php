@@ -1,5 +1,14 @@
 <?php 
-require 'BlueMIntegration.php';
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
+require '../BlueMIntegration.php';
+
+
+
 
 $bluem = new BlueMIntegration();
 
@@ -67,13 +76,13 @@ exit;
 		
 switch ($_GET['action']) {
 	case 'request':
-		if($_POST['CustomerID']) {
+		if(isset($_POST['CustomerID'])) {
 
 		$CustomerID = $_POST['CustomerID'];
 		} else {
 			$CustomerID = 1234;
 		}
-		if($_POST['OrderID']) {
+		if(isset($_POST['OrderID'])) {
 
 		$OrderID = $_POST['OrderID'];
 		} else {
