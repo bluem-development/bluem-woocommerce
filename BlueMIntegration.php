@@ -15,13 +15,10 @@ use Carbon\CarbonInterval;
 class BlueMIntegration 
 {
 	private static $verbose = true;
-
 	private $accessToken;
-	
 	private $configuration;
-
-	public $environment;
 	
+	public $environment;
 
 	/**
 	 * Constructs a new instance.
@@ -84,27 +81,27 @@ class BlueMIntegration
 	 * 
 	 * @param [type] $mandateID [description]
 	 */
-	public function RequestTransactionStatus($mandateID)
+	public function RequestTransactionStatus($mandateID,$entranceCode)
 	{
-		$r = new EMandateStatusRequest($this->configuration,$mandateID,
+		$r = new EMandateStatusRequest($this->configuration,
+			$mandateID,
+			$entranceCode,
 			(
 				$this->configuration->environment==BLUEM_ENVIRONMENT_TESTING && 
 				isset($this->configuration->expected_return)?
 				$this->configuration->expected_return : ""
+
 			)
 		);
 		
 		$response = $this->PerformRequest($r);
-		
-		var_dump($response);
-		// TODO: continue handling when a proper transaction status has been requested
-		
+		return $response;	
 	}
 
 	/**
 	 * Creates a new test transaction and in case of success, redirect to the BlueM eMandate environment
 	 */
-	public function CreateNewTransaction($customer_id,$order_id) : void
+	public function CreateNewTransaction($customer_id,$order_id) : EMandateResponse
 	{
 
 		if(is_null($customer_id)) {
@@ -120,6 +117,7 @@ class BlueMIntegration
 			$this->configuration,
 			$customer_id,
 			$order_id,
+			$this->CreateMandateID($order_id,$customer_id),
 			(
 				$this->configuration->environment==BLUEM_ENVIRONMENT_TESTING && 
 				isset($this->configuration->expected_return)?
@@ -127,9 +125,21 @@ class BlueMIntegration
 			)
 		);
 
-		$response = $this->PerformRequest($r);	
+		return $this->PerformRequest($r);	
+		// header("Location: {$response->EMandateTransactionResponse->TransactionURL}");	
+	}
 
-		header("Location: {$response->EMandateTransactionResponse->TransactionURL}");	
+
+	public function CreateEntranceCode($order)
+	{
+		$now = Carbon::now();
+		$now->tz = new DateTimeZone('Europe/London');
+		return $now->format("Ymdhis")."000";
+	}
+	public function CreateMandateID($order_id,$customer_id)
+	{
+		$now = Carbon::now();
+		return substr($customer_id.$now->format('Ymd').$order_id, 0,35);
 	}
 
 	public function PerformRequest(EMandateRequest $transaction_request) : ?EMandateResponse
@@ -163,10 +173,9 @@ class BlueMIntegration
 
 				?>
 				<div>
-				
-												<?php
-												echo "Error: ".($response->Error()->ErrorMessage);?>
-									    </div>
+					<?php
+					echo "Error: ".($response->Error()->ErrorMessage);?>
+		    	</div>
 				<?php
 				exit;
 			} else {
