@@ -42,6 +42,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 }
 
 
+
+
+
+
 /*
  * This action hook registers our PHP class as a WooCommerce payment gateway
  */
@@ -107,7 +111,8 @@ function bluem_init_gateway_class() {
 				'title'=>'bluem_merchantReturnURLBase',
 				'name'=>'merchantReturnURLBase',
 				'description'=>'Link naar de pagina waar mensen naar worden teruggestuurd nadat de machtiging is afgegeven.',
-				'default'=>'http://192.168.64.2/wp/index.php/sample-page/'
+				'default'=>home_url('wc-api/bluem_callback')
+				//'http://192.168.64.2/wp/index.php/sample-page/'
 			],
 			'expectedReturnStatus'=>[
 				'title'=>'bluem_expectedReturnStatus',
@@ -167,6 +172,8 @@ function bluem_init_gateway_class() {
 			
 			$this->bluem_config->$key = $this->get_option($option_key);
 		}
+
+		$this->bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_callback');
 		// var_dump($this->bluem_config);
 		// die();
 
@@ -186,9 +193,36 @@ function bluem_init_gateway_class() {
  
 			// You can also register a webhook here
 			// not needed yet
-			add_action( 'woocommerce_api_{webhook name}', array( $this, 'webhook' ) );
+			add_action( 'woocommerce_api_bluem_webhook', array( $this, 'webhook' ) );
+			add_action( 'woocommerce_api_bluem_callback', array( $this, 'callback' ) );
+
+			// add callback just before creating order, to add more metadata to order
+			// add_action('woocommerce_checkout_create_order', 'add_mandate_metadata', 20, 2);
+// 
+
+			// allow filtering on metadata
+			// 
+			// add_filter( 'woocommerce_get_wp_query_args', function( $wp_query_args, $query_vars ){
+		 //    if ( isset( $query_vars['meta_query'] ) ) {
+			//         $meta_query = isset( $wp_query_args['meta_query'] ) ? $wp_query_args['meta_query'] : [];
+			//         $wp_query_args['meta_query'] = array_merge( $meta_query, $query_vars['meta_query'] );
+			//     }
+			//     return $wp_query_args;
+			// }, 10, 2 );
+			
+add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', function ( $query, $query_vars ) {
+	if ( ! empty( $query_vars['bluem_mandateid'] ) ) {
+		$query['meta_query'][] = array(
+			'key' => 'bluem_mandateid',
+			'value' => esc_attr( $query_vars['bluem_mandateid'] ),
+		);
+	}
+
+	return $query;
+}, 10, 2 );
  		}
  
+
 		/**
  		 * Plugin options, we deal with it in Step 3 too
  		 */
@@ -233,43 +267,63 @@ function bluem_init_gateway_class() {
 				// die();
 		 	}
  
-
- 
-		/*
- 		 * Fields validation, more in Step 5
-		 */
-		public function validate_fields() {
- 
-		// ...
- 
-		}
- 
 		/*
 		 * We're processing the payments here, everything about it is in Step 5
 		 */
-		public function process_payment( $order_id ) {
- 
-    // echo "processing payment";
-    // die();
-    $order = wc_get_order( $order_id );
+		public function process_payment( $order_id )
+		{
+	
+	$order = wc_get_order( $order_id );
 
 
- $order_id = $order->get_order_number();
-$customer_id = get_post_meta($order_id, '_customer_user', true);
+ 	$order_id = $order->get_order_number();
+	$customer_id = get_post_meta($order_id, '_customer_user', true);
 
-    	var_dump($this->bluem_config);
- 			$bluemobj = new BlueMIntegration($this->bluem_config);
-// var_dump($bluemobj);
+	// var_dump($this->bluem_config);
+	$bluemobj = new BlueMIntegration($this->bluem_config);
+	// var_dump($bluemobj);
 
-$bluemobj->CreateNewTransaction($customer_id,$order_id);
-    die();
- 			// die();
+
+	update_post_meta( $order_id, 'bluem_entrancecode', $bluemobj->CreateEntranceCode($order) );
+    update_post_meta( $order_id, 'bluem_mandateid', $bluemobj->CreateMandateId($order_id,$customer_id) );
+
+
+	$response = $bluemobj->CreateNewTransaction($customer_id,$order_id);
+	// if($response->Status())
+	// {
+	    // Mark as on-hold (we're awaiting the cheque)
+	    // $order->update_status('signing_mandate', __( 'Awaiting BlueM eMandate confirmation', 'woocommerce' ));
+	    // // 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled', 
+
+	    // Remove cart
+
+	    // $woocommerce->cart->empty_cart();
+// var_dump($response->EMandateTransactionResponse);
 // die();
-         echo "ORDER ID: ".$order_id;
-         echo "\n<BR>CUSTOMER ID: ".$customer_id;
-echo "<hr>";
-         var_dump($order);   
-die();
+    	//  redirect
+	    return array(
+	        'result' => 'success',
+	        'redirect' => $response->EMandateTransactionResponse->TransactionURL
+	        //$this->get_return_url( $order )
+	    );
+	// } else {
+
+	// 	echo "ERROR";
+	// 	var_dump($response);
+	// 	die();
+	// 	wc_add_notice( __('Payment error:', 'woothemes') . $response->EMandateTransactionResponse->Error(), 'error' );
+	// 	return;
+	// }
+
+
+//     die();
+//  			// die();
+// // die();
+//          echo "ORDER ID: ".$order_id;
+//          echo "\n<BR>CUSTOMER ID: ".$customer_id;
+// echo "<hr>";
+//          var_dump($order);   
+// die();
 
 //https://docs.woocommerce.com/wc-apidocs/class-WC_Order.html
 
@@ -293,13 +347,29 @@ die();
 
 	 	}
  
+
+//  function add_mandate_metadata( $order, $data ) {
+// 	var_dump($order);
+// 	die();
+// 	$order_id = $order->get_order_number();
+// 	$customer_id = get_post_meta($order_id, '_customer_user', true);
+
+// 	$bluemobj = new BlueMIntegration($this->bluem_config);
+//     $order->update_meta_data( '_bluem_entrancecode', $bluemobj->getEntranceCode($order) );
+//     $order->update_meta_data( '_bluem_mandateid', $bluemobj->createMandateId($order_id,$customer_id) );
+// }
+
+
  /**
  * Output for the order received page.
  */
 public function thankyou_page() {
-    // if ( $this->instructions ) {
-    //     echo wpautop( wptexturize( $this->instructions ) );
-    // }
+echo "Thanks";
+// $order->payment_complete();
+    if ( $this->instructions ) {
+        echo wpautop( wptexturize( $this->instructions ) );
+    }
+    die();
 }
     
 /**
@@ -320,10 +390,147 @@ public function email_instructions( $order, $sent_to_admin, $plain_text = false 
 		 * In case you need a webhook, like PayPal IPN etc
 		 */
 		public function webhook() {
- 
-		// ...
+			echo "YO";
+ // str_replace( 'https:', 'http:', add_query_arg( 'wc-api', 'BlueM_Gateway', home_url( '/bluem-callback' ) ) );
+
+ // add_action( 'woocommerce_api_wc_gateway_paypal', array( $this, 'check_ipn_response' ) );
+	// 	// ...
  echo "WEBHOOK CALLED";
  exit;
+	 	}
+
+
+	 	public function callback() {
+	 		
+	 		$bluemobj = new BlueMIntegration($this->bluem_config);
+// echo home_url('wc-api/bluem_callback');
+
+ // str_replace( 'https:', 'http:', add_query_arg( 'wc-api', 'BlueM_Gateway', home_url( '/bluem-callback' ) ) );
+
+ // add_action( 'woocommerce_api_wc_gateway_paypal', array( $this, 'check_ipn_response' ) );
+	// 	// ...
+ 
+
+$mandateID = $_GET['mandateID'];
+if(!isset($_GET['mandateID']))
+{
+	echo "geen juist mandaat id teruggekregen bij callback";
+	exit;
+}
+// var_dump(expression)
+// woocommerce_get_wp_query_args()
+// var_dump($mandateID);
+$orders = wc_get_orders( array(
+    'orderby'   => 'date',
+    'order'     => 'DESC',
+    'bluem_mandateid'=>$mandateID
+    // 'meta_query' => array(
+        // array(
+            // 'key' => 'bluem_mandateid',
+            // 'compare' => 'EXISTS'
+            // 'value'=> $mandateID
+    //     )
+    // )
+));
+
+if(count($orders)==0) {
+	echo "mandaat niet gevonden in webshop";
+	die();
+}
+
+$order = $orders[0];
+// var_dump($order);
+
+$order_meta = $order->get_meta_data();
+// var_dump($order_meta);
+// die();
+	// $_mandateid = $order->get_meta('bluem_mandateid');
+	var_dump("mandateid: ".$mandateID);
+	$entranceCode = $order->get_meta('bluem_entrancecode');
+	var_dump("entrancecode: ".$entranceCode);
+
+
+
+// foreach ($order_meta as $metadata) {
+	// var_dump($metadata);
+	// if($metadata->current_data->key)
+	// {
+
+	// }
+// }
+
+// $entranceID = $order->
+
+// die();
+// $order = "";
+$response = $bluemobj->RequestTransactionStatus($mandateID,$entranceCode);
+if(!$response->Status()) {
+	echo "Fout: ".$response->Error();
+	exit;
+}
+// var_dump($response);
+$statusUpdateObject = $response->EMandateStatusUpdate;
+
+$statusCode = $statusUpdateObject->EMandateStatus->Status;
+switch ($statusCode) {
+	case 'Success':
+	{
+
+		echo "De machtiging is gelukt";
+		$order->update_status('paid', __( 'Machtiging is gelukt', 'woocommerce' ));
+		break;
+	}
+		case 'cancelled': 
+		{
+			$order->update_status('cancelled', __( 'Machtiging is geannuleerd', 'woocommerce' ));
+
+			break;
+		}
+		case 'expired': 
+		{
+			$order->update_status('failed', __( 'Machtiging is verlopen', 'woocommerce' ));
+
+			break;
+		}
+		case 'failure': 
+		{
+			$order->update_status('failed', __( 'Machtiging is gefaald', 'woocommerce' ));
+
+			break;
+		}
+		case 'open': 
+		{
+
+			break;
+		}
+		case 'pending': 
+		{
+
+			break;
+		}
+	default:
+		# code...
+		break;
+}
+
+echo "<hr>";
+echo "Status: ".$statusCode;
+echo "<hr>";
+echo "xml data";
+var_dump($statusUpdateObject->EMandateStatus->OriginalReport);
+// $xml_raw_report = "<".$statusUpdateObject->EMandateStatus->OriginalReport;
+// $xml_raw_report = str_replace(['![CDATA[',']]'], '', $xml_raw_report);
+// var_dump($xml_raw_report);
+// $xmlReport = new SimpleXMLElement($xml_raw_report,LIBXML_NOCDATA);
+// var_dump($xmlReport);
+die();
+
+
+
+// var_dump();
+// var_dump($statusUpdateObject);
+// die();
+ // exit;
 	 	}
  	}
 }

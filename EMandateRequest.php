@@ -9,16 +9,18 @@ use Carbon\CarbonInterval;
 class EMandateRequest
 {
 	public $type_identifier;
+	
+
+	public $entranceCode;
 
 	protected $senderID;
-	protected $entranceCode;
 	protected $merchantID;
 	protected $merchantSubID;
 	protected $createDateTime;
 
 	protected $mandateID;
 
-	function __construct($config,$expected_return="")
+	function __construct($config,$entranceCode="",$expected_return="")
 	{
 		$this->environment = $config->environment;
 		
@@ -26,8 +28,8 @@ class EMandateRequest
 		
 		$this->merchantID = $config->merchantID;
 
-		// override when using test env, according to documentation
-		if($this->environment=="test") {
+		// override with hardcoded merchantID when in test environment, according to documentation
+		if($this->environment === BLUEM_ENVIRONMENT_TESTING) {
 			$this->merchantID = "0020000387"; 
 		}
 
@@ -40,8 +42,12 @@ class EMandateRequest
 		// uniek in de tijd voor emandate; string; niet zichtbaar voor klant; 
 		// uniek kenmerk van incassant voor deze transactie
 		// structuur: prefix voor testing + klantnummer + huidige timestamp tot op de seconde
-		$this->entranceCode = $this->entranceCode($expected_return);
+		if($entranceCode==="") {
 
+			$this->entranceCode = $this->entranceCode($expected_return);
+		} else {
+			$this->entranceCode = $entranceCode;
+		}
 	}
 	
 	public function XmlString()
@@ -80,7 +86,6 @@ class EMandateRequest
 	 */
 	public function HttpRequestURL() : String
 	{
-		// var_dump($this);
 		switch ($this->environment) {
 			case BLUEM_ENVIRONMENT_TESTING:
 			{
@@ -153,8 +158,11 @@ class EMandateRequest
 		}
 	}
 	// test entranceCode substrings voor bepaalde types return responses
-	private function entranceCode($expected_return)
+	private function entranceCode($expected_return,$override="")
 	{
+		// if($override!=="") {
+		// 	return $override;
+		// }
 		$entranceCode = "";
 		// only allow this in testing mode
 		if($this->environment === BLUEM_ENVIRONMENT_TESTING) {
@@ -193,7 +201,7 @@ class EMandateRequest
 				}
 			}
 		}
-		$entranceCode .= Carbon::now()->format('YmdHisu');
+		$entranceCode .= Carbon::now()->format('YmdHis').'000';
 		return $entranceCode;
 	}
 }
@@ -205,9 +213,9 @@ class EMandateRequest
 class EMandateStatusRequest extends EMandateRequest
 {
 	
-	function __construct($config,$mandateID,$expected_return="")
+	function __construct($config,$mandateID,$expected_return="",$entranceCode="")
 	{
-		parent::__construct($config,$expected_return);
+		parent::__construct($config,$expected_return,$entranceCode);
 		$this->type_identifier = "requestStatus";
 		
 		$this->mandateID = $mandateID;
@@ -243,10 +251,10 @@ class EMandateTransactionRequest extends EMandateRequest
 	private $purchaseID;
 	private $sendOption;
 	
-	function __construct($config, Int $customer_id, String $order_id, String $expected_return="none")
+	function __construct($config, $customer_id, $order_id, $mandateID, String $expected_return="none")
 	{
 		
-		parent::__construct($config,$expected_return);
+		parent::__construct($config,"",$expected_return);
 		
 		$this->type_identifier = "createTransaction";
 		
@@ -258,7 +266,8 @@ class EMandateTransactionRequest extends EMandateRequest
 		$this->localInstrumentCode = "B2B"; // CORE | B2B ,  conform gegeven standaard
 
 		
-		$this->mandateID = substr($customer_id.$now->format('Ymd').$order_id, 0,35);
+		$this->mandateID = $mandateID;
+		//substr($customer_id.$now->format('Ymd').$order_id, 0,35);
 		// BlueM MandateID example "308201711021106036540002";  // 35 max, no space! 
 
 		// https uniek returnurl voor klant
