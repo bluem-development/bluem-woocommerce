@@ -293,11 +293,20 @@ add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', function ( $que
 // var_dump($response);
 // var_dump($response->EMandateTransactionResponse->TransactionURL."");
 // die();
+	if(isset($response->EMandateTransactionResponse->TransactionURL)) {
+
 	return array(
 	        'result' => 'success',
 	        'redirect' => ($response->EMandateTransactionResponse->TransactionURL."")
 	        //$response->EMandateTransactionResponse->TransactionURL
 	    );
+	} else {
+		return array(
+	        'result' => 'failure'
+	        // 'redirect' => ($response->EMandateTransactionResponse->TransactionURL."")
+	        //$response->EMandateTransactionResponse->TransactionURL
+	    );
+	}
 
 
 	// if($response->Status())
