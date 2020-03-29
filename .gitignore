@@ -1,0 +1,8 @@
+node*
+vendor*
+.gitignore
+.vscode
+.DS_Store
+vendor/*
+composer.lock
+
