@@ -124,6 +124,7 @@ class BlueMIntegration
 				$this->configuration->expected_return : ""
 			)
 		);
+		// var_dump($r);
 
 		return $this->PerformRequest($r);	
 		// header("Location: {$response->EMandateTransactionResponse->TransactionURL}");	
@@ -133,8 +134,8 @@ class BlueMIntegration
 	public function CreateEntranceCode($order)
 	{
 		$now = Carbon::now();
-		$now->tz = new DateTimeZone('Europe/London');
-		return $now->format("Ymdhis")."000";
+		// $now->tz = new DateTimeZone('Europe/Amsterdam');
+		return $now->format("YmdHis")."000";
 	}
 	public function CreateMandateID($order_id,$customer_id)
 	{
@@ -146,7 +147,7 @@ class BlueMIntegration
 	{
 
 		$now = Carbon::now();
-		$now->tz = new DateTimeZone('Europe/London');
+		// $now->tz = new DateTimeZone('Europe/London');
 		
 		$xttrs_filename = $transaction_request->TransactionType()."-{$this->configuration->senderID}-BSP1-".$now->format('YmdHis')."000.xml";
 		

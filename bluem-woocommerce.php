@@ -272,7 +272,8 @@ add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', function ( $que
 		 */
 		public function process_payment( $order_id )
 		{
-	
+	// echo urldecode("https%3A%2F%2Ftest.viamijnbank.net%2Fm%2F003f0a000171855e07018f000b90dd07008571f0006c0000");
+	// die();
 	$order = wc_get_order( $order_id );
 
 
@@ -283,12 +284,22 @@ add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', function ( $que
 	$bluemobj = new BlueMIntegration($this->bluem_config);
 	// var_dump($bluemobj);
 
-
+// echo $bluemobj->CreateEntranceCode($order);
 	update_post_meta( $order_id, 'bluem_entrancecode', $bluemobj->CreateEntranceCode($order) );
     update_post_meta( $order_id, 'bluem_mandateid', $bluemobj->CreateMandateId($order_id,$customer_id) );
 
 
 	$response = $bluemobj->CreateNewTransaction($customer_id,$order_id);
+// var_dump($response);
+// var_dump($response->EMandateTransactionResponse->TransactionURL."");
+// die();
+	return array(
+	        'result' => 'success',
+	        'redirect' => ($response->EMandateTransactionResponse->TransactionURL."")
+	        //$response->EMandateTransactionResponse->TransactionURL
+	    );
+
+
 	// if($response->Status())
 	// {
 	    // Mark as on-hold (we're awaiting the cheque)
@@ -301,11 +312,15 @@ add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', function ( $que
 // var_dump($response->EMandateTransactionResponse);
 // die();
     	//  redirect
-	    return array(
-	        'result' => 'success',
-	        'redirect' => $response->EMandateTransactionResponse->TransactionURL
-	        //$this->get_return_url( $order )
-	    );
+	    // return array(
+	    //     'result' => 'failure',
+	    //     'message' => 'testje'
+	    //     // 'redirect' => $response->EMandateTransactionResponse->TransactionURL
+	    // );
+	    // return array(
+	    //     'result' => 'success',
+	    //     'redirect' => $response->EMandateTransactionResponse->TransactionURL
+	    // );
 	// } else {
 
 	// 	echo "ERROR";
