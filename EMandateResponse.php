@@ -5,7 +5,9 @@
  */
 class EMandateResponse extends SimpleXMLElement
 {
-
+	/**
+	 * Return if the response is a successfull one, in boolean
+	 */
 	public function Status() : Bool
 	{
 		if(isset($this->EMandateErrorResponse)) 
@@ -15,6 +17,9 @@ class EMandateResponse extends SimpleXMLElement
 		return true;
 	}
 	
+	/**
+	 * Return the error message, if there is one. Else return null
+	 */
 	public function Error()
 	{
 		if(isset($this->EMandateErrorResponse))
