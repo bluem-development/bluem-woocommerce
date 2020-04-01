@@ -238,7 +238,11 @@ class BlueMIntegration
 	// var_dump($xml_string);
 	// echo "<hr>";
 		$xml_array = new SimpleXMLElement($xml_string);
-	// var_dump($xml_array);
+	
+// echo "<hr>";
+// 	var_dump($xml_array->asXML);
+// 	echo "<hr>";
+	// die();
 	// echo $xml_array->asXML();
 		if(isset($xml_array->MndtAccptncRpt->UndrlygAccptncDtls->OrgnlMndt->OrgnlMndt->MaxAmt)) {
 			$maxAmountObj = $xml_array->MndtAccptncRpt->UndrlygAccptncDtls->OrgnlMndt->OrgnlMndt->MaxAmt;

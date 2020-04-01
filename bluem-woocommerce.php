@@ -27,7 +27,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // our own integration code
 // require_once 'BlueMIntegration.php';
-// require_once 'BlueMIntegrationCallback.php';
 // require_once 'BlueMIntegrationWebhook.php';
 require 'BlueMIntegration.php';
 
@@ -556,12 +555,29 @@ $order_total_plus = (float)$order->get_total()*1.1;
 echo " | totaalbedrag +10 procent: ";
 var_dump($order_total_plus);
 echo "<hr>";
+
+$successfull_mandate = false;
+
 if($maxAmountResponse !== 0.0)
 {
 	echo "binnen machtiging marge?";
-
-	var_dump($order_total_plus<=$maxAmountResponse->amount);
+	$allowed_margin = $order_total_plus<=$maxAmountResponse->amount;
+	var_dump($allowed_margin);
+	if($allowed_margin)
+	{
+		$successfull_mandate = true;
+	} else {
+		echo "Bedrag is hoger dan afgegeven marge, pagina weergeven met knop om nieuwe machtiging aan te vragen. Bestelling terug naar eerste status";
+	}
+	// var_dump($order_total_plus<=$maxAmountResponse->amount);
+} else {
+	$successfull_mandate = true;
 }
+
+if($successfull_mandate) {
+	echo "mandaat is succesvol, order kan worden aangepast naar machtiging_goedgekeurd";
+}
+
 // var_dump($order);// 
 // var_dump($xml_array->MndtAccptncRpt->UndrlygAccptncDtls->OrgnlMndt->OrgnlMndt->MaxAmt."");
 // echo $xml_array->
