@@ -107,13 +107,13 @@ function bluem_init_gateway_class() {
 				'description'=>'het merchantID, te vinden op het contract dat je hebt met de bank voor ontvangen van incasso machtigingen',
 				'default'=>'0020009469'
 			],
-			'merchantReturnURLBase'=>[
-				'title'=>'bluem_merchantReturnURLBase',
-				'name'=>'merchantReturnURLBase',
-				'description'=>'Link naar de pagina waar mensen naar worden teruggestuurd nadat de machtiging is afgegeven.',
-				'default'=>home_url('wc-api/bluem_callback')
-				//'http://192.168.64.2/wp/index.php/sample-page/'
-			],
+			// 'merchantReturnURLBase'=>[
+			// 	'title'=>'bluem_merchantReturnURLBase',
+			// 	'name'=>'merchantReturnURLBase',
+			// 	'description'=>'Link naar de pagina waar mensen naar worden teruggestuurd nadat de machtiging is afgegeven.',
+			// 	'default'=>home_url('wc-api/bluem_callback')
+			// 	//'http://192.168.64.2/wp/index.php/sample-page/'
+			// ],
 			'expectedReturnStatus'=>[
 				'title'=>'bluem_expectedReturnStatus',
 				'name'=>'expectedReturnStatus',
@@ -284,8 +284,7 @@ add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', function ( $que
 	$bluemobj = new BlueMIntegration($this->bluem_config);
 	// var_dump($bluemobj);
 
-// echo $bluemobj->CreateEntranceCode($order);
-	update_post_meta( $order_id, 'bluem_entrancecode', $bluemobj->CreateEntranceCode($order) );
+	update_post_meta( $order_id, 'bluem_entrancecode', $bluemobj->CreateEntranceCode() );
     update_post_meta( $order_id, 'bluem_mandateid', $bluemobj->CreateMandateId($order_id,$customer_id) );
 
 
@@ -297,8 +296,8 @@ add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', function ( $que
 
 	return array(
 	        'result' => 'success',
-	        'redirect' => ($response->EMandateTransactionResponse->TransactionURL."")
-	        //$response->EMandateTransactionResponse->TransactionURL
+	        // cast to string, for AJAX response handling
+	        'redirect' => ($response->EMandateTransactionResponse->TransactionURL."") 
 	    );
 	} else {
 		return array(
@@ -387,14 +386,14 @@ add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', function ( $que
  /**
  * Output for the order received page.
  */
-public function thankyou_page() {
-echo "Thanks";
-// $order->payment_complete();
-    if ( $this->instructions ) {
-        echo wpautop( wptexturize( $this->instructions ) );
-    }
-    die();
-}
+// public function thankyou_page() {
+// echo "Thanks";
+// // $order->payment_complete();
+//     if ( $this->instructions ) {
+//         echo wpautop( wptexturize( $this->instructions ) );
+//     }
+//     die();
+// }
     
 /**
  * Add content to the WC emails.
@@ -404,12 +403,12 @@ echo "Thanks";
  * @param bool $sent_to_admin
  * @param bool $plain_text
  */
-public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
+// public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
         
     // if ( $this->instructions && ! $sent_to_admin && 'offline' === $order->payment_method && $order->has_status( 'on-hold' ) ) {
     //     echo wpautop( wptexturize( $this->instructions ) ) . PHP_EOL;
     // }
-}
+// }
 		/*
 		 * In case you need a webhook, like PayPal IPN etc
 		 */
@@ -420,6 +419,10 @@ public function email_instructions( $order, $sent_to_admin, $plain_text = false 
  // add_action( 'woocommerce_api_wc_gateway_paypal', array( $this, 'check_ipn_response' ) );
 	// 	// ...
  echo "WEBHOOK CALLED";
+
+// initiate webhook object
+// receive webhook and return result
+
  exit;
 	 	}
 
@@ -487,12 +490,14 @@ $order_meta = $order->get_meta_data();
 
 // die();
 // $order = "";
+echo "<hr>";
 $response = $bluemobj->RequestTransactionStatus($mandateID,$entranceCode);
 if(!$response->Status()) {
 	echo "Fout: ".$response->Error();
 	exit;
 }
 // var_dump($response);
+// die();
 $statusUpdateObject = $response->EMandateStatusUpdate;
 
 $statusCode = $statusUpdateObject->EMandateStatus->Status;
@@ -536,16 +541,36 @@ switch ($statusCode) {
 		# code...
 		break;
 }
+echo "<hr>";
+$maxAmountResponse = $bluemobj->GetMaximumAmountFromTransactionResponse($response);
+if($maxAmountResponse===0.0)
+{
+	echo "No max amount set";
+} else {
+	echo "MAX AMOUNT SET AT {$maxAmountResponse->amount} {$maxAmountResponse->currency}";	
+}
+echo "<hr>";
+echo "Totaalbedrag: ";
+var_dump((float)$order->get_total());
+$order_total_plus = (float)$order->get_total()*1.1;
+echo " | totaalbedrag +10 procent: ";
+var_dump($order_total_plus);
+echo "<hr>";
+if($maxAmountResponse !== 0.0)
+{
+	echo "binnen machtiging marge?";
 
-echo "<hr>";
-echo "Status: ".$statusCode;
-echo "<hr>";
-echo "xml data";
-var_dump($statusUpdateObject->EMandateStatus->OriginalReport);
+	var_dump($order_total_plus<=$maxAmountResponse->amount);
+}
+// var_dump($order);// 
+// var_dump($xml_array->MndtAccptncRpt->UndrlygAccptncDtls->OrgnlMndt->OrgnlMndt->MaxAmt."");
+// echo $xml_array->
+
 // $xml_raw_report = "<".$statusUpdateObject->EMandateStatus->OriginalReport;
 // $xml_raw_report = str_replace(['![CDATA[',']]'], '', $xml_raw_report);
 // var_dump($xml_raw_report);
-// $xmlReport = new SimpleXMLElement($xml_raw_report,LIBXML_NOCDATA);
+
+// $xmlReport = new SimpleXMLElement($xml_data ); //LIBXML_NOCDATA
 // var_dump($xmlReport);
 die();
 

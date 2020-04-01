@@ -9,10 +9,10 @@ class BlueMIntegrationWebhook extends BlueMIntegration
 	/**
 	 * Constructs a new instance.
 	 */
-	function __construct()
-	{
-		parent::__construct();
-	}
+	// function __construct($configuraiton)
+	// {
+	// 	parent::__construct();
+	// }
 
 
 	public function receive()

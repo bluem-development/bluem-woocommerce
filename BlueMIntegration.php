@@ -11,7 +11,9 @@ require_once 'EMandateResponse.php';
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 
-
+/**
+ * BlueM Integration main class
+ */
 class BlueMIntegration 
 {
 	private static $verbose = true;
@@ -99,7 +101,9 @@ class BlueMIntegration
 	}
 
 	/**
-	 * Creates a new test transaction and in case of success, redirect to the BlueM eMandate environment
+	 * Creates a new test transaction and in case of success, return the link to redirect to to get to the BlueM eMandate environment.
+	 * @param int $customer_id The Customer ID
+	 * @param int $order_id    The Order ID
 	 */
 	public function CreateNewTransaction($customer_id,$order_id) : EMandateResponse
 	{
@@ -131,18 +135,28 @@ class BlueMIntegration
 	}
 
 
-	public function CreateEntranceCode($order)
+	/**
+	 * Generate an entrance code based on the current date and time.
+	 */
+	public function CreateEntranceCode() : String
 	{
-		$now = Carbon::now();
-		// $now->tz = new DateTimeZone('Europe/Amsterdam');
-		return $now->format("YmdHis")."000";
-	}
-	public function CreateMandateID($order_id,$customer_id)
-	{
-		$now = Carbon::now();
-		return substr($customer_id.$now->format('Ymd').$order_id, 0,35);
+		return Carbon::now()->format("YmdHis")."000";
 	}
 
+	/**
+	 * Create a mandate ID in the required structure, based on the order ID, customer ID and the current timestamp.
+	 * @param [type] $order_id    [description]
+	 * @param [type] $customer_id [description]
+	 */
+	public function CreateMandateID($order_id,$customer_id) : String
+	{
+		return substr($customer_id.Carbon::now()->format('Ymd').$order_id, 0,35);
+	}
+
+	/**
+	 * Perform a request to the BlueM API given a request object and return its response
+	 * @param EMandateRequest $transaction_request The Request Object
+	 */
 	public function PerformRequest(EMandateRequest $transaction_request) : ?EMandateResponse
 	{
 
@@ -214,58 +228,31 @@ class BlueMIntegration
 	}
 
 
-
-
-	/** page rendering */
-
-	public function renderPageHeader()
-{
-	?>
-
-		<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-	<link rel="stylesheet" href="css/bootstrap.min.css">
-</head>
-<body style="background: url(img/bg.jpg) repeat top center; background-size:  contain;">
-		<nav class="navbar navbar-expand-lg navbar-dark text-light bg-dark">
-		  <a class="navbar-brand" href="index.php" target="_self">BlueM Integration</a>
-		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-		    <span class="navbar-toggler-icon"></span>
-		  </button>
+	public function GetMaximumAmountFromTransactionResponse($response)
+	{
 		
-		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-		    <ul class="navbar-nav ml-auto">
-		      <li class="nav-item">
-		      	<span class="nav-text">
-		      		Environment: 
-<span class="badge badge-info badge-pill">	
-<?php echo $this->environment ?>
-</span>
-		      	</span>
-		      </li>
-		    </ul>
-		  </div>
-		</nav>
-	<div class="container p-5">
-	
-	<div class="row">
-	<div class="col-12">
-	<?php
-} 
+		$xml_string= $response->EMandateStatusUpdate->EMandateStatus->OriginalReport;
+		$xml_string = "<?xml version=\"1.0\"?>".str_replace('awvsp12:','',substr($xml_string,8,strlen($xml_string)-10)); 
 
- public function renderPageFooter()
-{
-	?>
+	// $xml_string = substr($xml_string,-2); 
+	// var_dump($xml_string);
+	// echo "<hr>";
+		$xml_array = new SimpleXMLElement($xml_string);
+	// var_dump($xml_array);
+	// echo $xml_array->asXML();
+		if(isset($xml_array->MndtAccptncRpt->UndrlygAccptncDtls->OrgnlMndt->OrgnlMndt->MaxAmt)) {
+			$maxAmountObj = $xml_array->MndtAccptncRpt->UndrlygAccptncDtls->OrgnlMndt->OrgnlMndt->MaxAmt;
 
+			
+			$maxAmount = new Stdclass;
+			$maxAmount->amount = (float)($maxAmountObj."");
+			$maxAmount->currency = $maxAmountObj->attributes()['Ccy']."";
+			return $maxAmount;
 
-</div>
-	</div>
-	</div>
-</body>
-</html>
-	<?php
-} 
+		} else {
+			return (object)['amount'=>(float)0.0,'currency'=>'EUR'];
+		}
+
+	}
 	
 }
