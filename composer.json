@@ -14,7 +14,8 @@
 		"nesbot/carbon": "^2.31",
 		"pear/http_request2": "^2.3"
     },
-	"require-dev": {
+    "require-dev": {
+        "phpdocumentor/phpdocumentor": "2.*",
         "wp-coding-standards/wpcs": "2.1.*"
     }
 }

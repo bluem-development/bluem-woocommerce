@@ -107,13 +107,13 @@ function bluem_init_gateway_class() {
 				'description'=>'het merchantID, te vinden op het contract dat je hebt met de bank voor ontvangen van incasso machtigingen',
 				'default'=>'0020009469'
 			],
-			'merchantReturnURLBase'=>[
-				'title'=>'bluem_merchantReturnURLBase',
-				'name'=>'merchantReturnURLBase',
-				'description'=>'Link naar de pagina waar mensen naar worden teruggestuurd nadat de machtiging is afgegeven.',
-				'default'=>home_url('wc-api/bluem_callback')
-				//'http://192.168.64.2/wp/index.php/sample-page/'
-			],
+			// 'merchantReturnURLBase'=>[
+			// 	'title'=>'bluem_merchantReturnURLBase',
+			// 	'name'=>'merchantReturnURLBase',
+			// 	'description'=>'Link naar de pagina waar mensen naar worden teruggestuurd nadat de machtiging is afgegeven.',
+			// 	'default'=>home_url('wc-api/bluem_callback')
+			// 	//'http://192.168.64.2/wp/index.php/sample-page/'
+			// ],
 			'expectedReturnStatus'=>[
 				'title'=>'bluem_expectedReturnStatus',
 				'name'=>'expectedReturnStatus',
@@ -297,8 +297,8 @@ add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', function ( $que
 
 	return array(
 	        'result' => 'success',
-	        'redirect' => ($response->EMandateTransactionResponse->TransactionURL."")
-	        //$response->EMandateTransactionResponse->TransactionURL
+	        // cast to string, for AJAX response handling
+	        'redirect' => ($response->EMandateTransactionResponse->TransactionURL."") 
 	    );
 	} else {
 		return array(
@@ -492,7 +492,8 @@ if(!$response->Status()) {
 	echo "Fout: ".$response->Error();
 	exit;
 }
-// var_dump($response);
+var_dump($response);
+// die();
 $statusUpdateObject = $response->EMandateStatusUpdate;
 
 $statusCode = $statusUpdateObject->EMandateStatus->Status;
@@ -541,11 +542,36 @@ echo "<hr>";
 echo "Status: ".$statusCode;
 echo "<hr>";
 echo "xml data";
-var_dump($statusUpdateObject->EMandateStatus->OriginalReport);
+$xml_string= "<".$statusUpdateObject->EMandateStatus->OriginalReport.">";
+var_dump($xml_string);
+
+// courtsey of documentation: https://www.php.net/manual/en/xmlreader.isvalid.php
+$xml = new XMLReader();
+if (!$xml->xml($xml_string, NULL, LIBXML_DTDVALID)) {
+  echo "XML not valid: load error";
+  exit();
+}
+
+libxml_use_internal_errors(TRUE);
+
+$xml_array = xml2assoc($xml);
+
+$arErrors = libxml_get_errors();
+$xml_errors = "";
+foreach ($arErrors AS $xmlError) $xml_errors .= $xmlError->message;
+if ($xml_errors != "") {
+  echo "XML not valid: ".$xml_errors;
+  exit();
+}
+
+
+
+
 // $xml_raw_report = "<".$statusUpdateObject->EMandateStatus->OriginalReport;
 // $xml_raw_report = str_replace(['![CDATA[',']]'], '', $xml_raw_report);
 // var_dump($xml_raw_report);
-// $xmlReport = new SimpleXMLElement($xml_raw_report,LIBXML_NOCDATA);
+echo "<hr>";
+// $xmlReport = new SimpleXMLElement($xml_data ); //LIBXML_NOCDATA
 // var_dump($xmlReport);
 die();
 
