@@ -3,7 +3,7 @@
 // TODO: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
 
 /**
- * Plugin Name: WooCommerce BlueM eMandate Integration
+ * Plugin Name: BlueM eMandate integratie voor WooCommerce
  * Version: 1.0.0
  * Plugin URI: https://github.com/DaanRijpkema/bluem-woocommerce
  * Description: BlueM WooCommerce eMandate gateway integration
