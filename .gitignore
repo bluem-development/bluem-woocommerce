@@ -6,3 +6,4 @@ vendor*
 vendor/*
 composer.lock
 
+composer.lock
