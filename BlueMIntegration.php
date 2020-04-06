@@ -97,6 +97,7 @@ class BlueMIntegration
 		);
 		
 		$response = $this->PerformRequest($r);
+		
 		return $response;	
 	}
 
