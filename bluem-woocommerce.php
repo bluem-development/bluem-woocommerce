@@ -202,30 +202,30 @@ function bluem_init_gateway_class()
 			}, 10, 2);
 
 			//add columns to User panel list page
-			add_filter('manage_users_columns', 'add_bluem_columns', 15, 1);
-			add_filter('manage_users_custom_column', 'add_bluem_column_data', 15, 3);
-			add_action('pre_user_query', 'my_user_query');
+			// add_filter('manage_users_columns', 'add_bluem_columns', 15, 1);
+			// add_filter('manage_users_custom_column', 'add_bluem_column_data', 15, 3);
+			// add_action('pre_user_query', 'my_user_query');
 		}
-		function my_user_query($userquery)
-		{
-			print_r($userquery);
-			die();
-		}
+		// function my_user_query($userquery)
+		// {
+		// 	print_r($userquery);
+		// 	die();
+		// }
 
 		// add_action('manage_users_custom_column', 'add_custom_user_columns', 15, 3);
 		// add_filter('manage_users_columns', 'add_bluem_columns', 15, 1);
 
 
-		function add_bluem_columns($column)
-		{
-			var_dump($columns);
-			die();
+		// function add_bluem_columns($column)
+		// {
+		// 	var_dump($columns);
+		// 	die();
 
-			$column['bluem_latest_mandate_id'] = __('Meest recente mandate id', 'user-column');
-			$column['bluem_latest_entrance_code'] = __('Meest recente Entrance code', 'user-column');
-			$column['bluem_latest_mandate_amount'] = __('Meest recente opgegeven mandaat-bedrag (niet leidend)', 'user-column');
-			return $column;
-		}
+		// 	$column['bluem_latest_mandate_id'] = __('Meest recente mandate id', 'user-column');
+		// 	$column['bluem_latest_entrance_code'] = __('Meest recente Entrance code', 'user-column');
+		// 	$column['bluem_latest_mandate_amount'] = __('Meest recente opgegeven mandaat-bedrag (niet leidend)', 'user-column');
+		// 	return $column;
+		// }
 		//add the data
 		function add_bluem_column_data($val, $column_name, $user_id)
 		{
