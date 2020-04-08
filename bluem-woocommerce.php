@@ -1,9 +1,9 @@
 <?php
-
-// TODO: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
-
-/**
- * Plugin Name: BlueM eMandate integratie voor WooCommerce
+// @todo: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
+// @todo: Localize all error messages to english primarily
+// @todo: finish docblocking
+	/**
+ * Plugin Name: BlueM eMandate integratie for WooCommerce
  * Version: 1.0.0
  * Plugin URI: https://github.com/DaanRijpkema/bluem-woocommerce
  * Description: BlueM WooCommerce eMandate gateway integration
@@ -24,12 +24,8 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-
 // our own integration code
-// require_once 'BlueMIntegration.php';
-// require_once 'BlueMIntegrationWebhook.php';
 require 'BlueMIntegration.php';
-
 
 /**
  * Check if WooCommerce is active
@@ -39,11 +35,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 } else {
 	throw new Exception("WooCommerce not activated, add this pluginf irst", 1);
 }
-
-
-
-
-
 
 /*
  * This action hook registers our PHP class as a WooCommerce payment gateway
@@ -55,19 +46,23 @@ function bluem_add_gateway_class($gateways)
 	return $gateways;
 }
 
-
 /*
- * The class itself, please note that it is inside plugins_loaded action hook
+ * The gateway class itself, please note that it is inside plugins_loaded action hook
  */
 add_action('plugins_loaded', 'bluem_init_gateway_class');
 function bluem_init_gateway_class()
 {
 
+
 	class BlueM_Gateway extends WC_Payment_Gateway
 	{
+		/**
+		 * This boolean will cause more output to be generated for testing purposes. Keep it at false for the production environment or final testing
+		 */
+		private const VERBOSE = true; 
 
 		/**
-		 * Class constructor, more about it in Step 3
+		 * Class constructor
 		 */
 		public function __construct()
 		{
@@ -185,7 +180,7 @@ function bluem_init_gateway_class()
 			add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
 			// ********** CREATING plugin URLs for specific functions **********
-			add_action('woocommerce_api_bluem_webhook', array($this, 'webhook'));
+			add_action('woocommerce_api_bluem_webhook', array($this, 'webhook'),5);
 			add_action('woocommerce_api_bluem_callback', array($this, 'callback'));
 
 
@@ -201,58 +196,8 @@ function bluem_init_gateway_class()
 				return $query;
 			}, 10, 2);
 
-			//add columns to User panel list page
-			// add_filter('manage_users_columns', 'add_bluem_columns', 15, 1);
-			// add_filter('manage_users_custom_column', 'add_bluem_column_data', 15, 3);
-			// add_action('pre_user_query', 'my_user_query');
 		}
-		// function my_user_query($userquery)
-		// {
-		// 	print_r($userquery);
-		// 	die();
-		// }
-
-		// add_action('manage_users_custom_column', 'add_custom_user_columns', 15, 3);
-		// add_filter('manage_users_columns', 'add_bluem_columns', 15, 1);
-
-
-		// function add_bluem_columns($column)
-		// {
-		// 	var_dump($columns);
-		// 	die();
-
-		// 	$column['bluem_latest_mandate_id'] = __('Meest recente mandate id', 'user-column');
-		// 	$column['bluem_latest_entrance_code'] = __('Meest recente Entrance code', 'user-column');
-		// 	$column['bluem_latest_mandate_amount'] = __('Meest recente opgegeven mandaat-bedrag (niet leidend)', 'user-column');
-		// 	return $column;
-		// }
-		//add the data
-		function add_bluem_column_data($val, $column_name, $user_id)
-		{
-			echo "checking" . $column_name;
-			// $user = get_userdata($user_id);
-			$user_meta = get_user_meta($user_id);
-			// var_dump($user);
-			// die()
-			if (isset($user_meta[$column_name])) {
-
-				return $user_meta[$column_name];
-			}
-			return false;
-
-			// switch ($column_name) {
-			// 	case 'bluem_latest_mandate_id' :
-			// 		return $user_meta[->bluem_last;
-			// 		break;
-			// 		case 'bluem_latest_mandate_id' :
-			// 		break;
-			// 			case 'bluem_latest_mandate_id' :
-			// 			break;
-			// 	default:
-			// }
-			// return;
-		}
-
+		
 		function bluem_thankyou($order_id)
 		{
 			$order = wc_get_order($order_id);
@@ -268,8 +213,6 @@ function bluem_init_gateway_class()
 		 */
 		public function init_form_fields()
 		{
-
-
 			$this->form_fields = apply_filters('wc_offline_form_fields', [
 				'enabled' => [
 					'title'       => 'Enable/Disable',
@@ -304,9 +247,11 @@ function bluem_init_gateway_class()
 				);
 			}
 		}
-
-		/*
+		/**
 		 * Process payment through BlueM portal
+		 *
+		 * @param String $order_id
+		 * @return void
 		 */
 		public function process_payment($order_id)
 		{
@@ -317,42 +262,36 @@ function bluem_init_gateway_class()
 
 			if (isset($user_meta['bluem_latest_mandate_id']) && isset($user_meta['bluem_latest_mandate_amount'])) {
 				if (
-					count($user_meta['bluem_latest_mandate_id']) > 0 && is_string($user_meta['bluem_latest_mandate_id'][0]) &&
-					count($user_meta['bluem_latest_mandate_amount']) > 0 && is_string($user_meta['bluem_latest_mandate_amount'][0])
+					count($user_meta['bluem_latest_mandate_id']) > 0 && 
+					is_string($user_meta['bluem_latest_mandate_id'][0]) &&
+					count($user_meta['bluem_latest_mandate_amount']) > 0 && 
+					is_string($user_meta['bluem_latest_mandate_amount'][0])
 				) {
 					$existing_mandate_id = $user_meta['bluem_latest_mandate_id'][0];
-					$existing_mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
+					// $existing_mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
 					$existing_entrance_code = $user_meta['bluem_latest_entrance_code'][0];
 
-					// echo "<br>existing_mandate_id: ";
-					// var_dump($existing_mandate_id);
-					// echo "<br>existing_mandate_amount: ";
-					// var_dump($existing_mandate_amount);
-					// echo "<br>existing_entrance_code: ";
-					// var_dump($existing_entrance_code);
-
-					$existing_mandate_response = $this->bluem->RequestTransactionStatus($existing_mandate_id, $existing_entrance_code);
+					$existing_mandate_response = $this->bluem->RequestTransactionStatus(
+						$existing_mandate_id, 
+						$existing_entrance_code
+					);
 					if (!$existing_mandate_response->Status()) {
-						echo "Fout: geen valide bestaand mandaat gevonden";
+						$this->renderPrompt("Fout: geen valide bestaand mandaat gevonden");
 						exit;
 					}
 
 					if ($existing_mandate_response->EMandateStatusUpdate->EMandateStatus->Status . "" === "Success") {
 						// echo "Je hebt een bestaand en geldig afgegeven.";
-						$this->validateMandate($existing_mandate_response, $order, false, false, false);
+						$this->validateMandate($existing_mandate_response, $order, false, false);
 					};
 				}
 			}
 
-			// var_dump(get_user_meta( $user_id));
-
 			$order_id = $order->get_order_number();
 			$customer_id = get_post_meta($order_id, '_customer_user', true);
 
-
 			update_post_meta($order_id, 'bluem_entrancecode', $this->bluem->CreateEntranceCode());
 			update_post_meta($order_id, 'bluem_mandateid', $this->bluem->CreateMandateId($order_id, $customer_id));
-
 
 			$response = $this->bluem->CreateNewTransaction($customer_id, $order_id);
 
@@ -365,13 +304,15 @@ function bluem_init_gateway_class()
 			// Remove cart
 			global $woocommerce;
 			$woocommerce->cart->empty_cart();
-			// wc_empty_cart();
 
 			if (isset($response->EMandateTransactionResponse->TransactionURL)) {
+				
 				// redirect cast to string, for AJAX response handling
+				$transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
+				
 				return array(
 					'result' => 'success',
-					'redirect' => ($response->EMandateTransactionResponse->TransactionURL . "")
+					'redirect' => $transactionURL
 				);
 			} else {
 				return array(
@@ -381,18 +322,100 @@ function bluem_init_gateway_class()
 		}
 
 		/**
-		 * Webhook for BlueM Mandate signature verification procedure
-		 * @return [type] [description]
+		 * Webhook action
+		 *
+		 * @return void
 		 */
 		public function webhook()
 		{
+			$statusUpdateObject = $this->bluem->Webhook();
 
-			// $this->bluem = new BlueMIntegration($this->bluem_config);
+			$entranceCode = $statusUpdateObject->entranceCode . "";
+			$mandateID = $statusUpdateObject->EMandateStatus->MandateID . "";
 
-			// initiate webhook object
-			// receive webhook and return result
+			$webhook_status = $statusUpdateObject->EMandateStatus->Status . "";
 
+			$order = $this->getOrder($mandateID);
+			if (is_null($order)) {
+				echo "Error: No order found";
+				exit;
+			}
+			$order_status = $order->get_status();
+
+			if(self::VERBOSE) {
+
+				echo "order_status: {$order_status}" . PHP_EOL;
+				echo "webhook_status: {$webhook_status}" . PHP_EOL;
+			}
+
+			$user_id = $user_id = $order->get_user_id();
+			$user_meta = get_user_meta($user_id);
+			if (isset($user_meta['bluem_latest_mandate_amount'][0])) {
+				$mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
+			} else {
+				$mandate_amount = 0.0;	// mandate amount is not set, so it is unlimited
+			}
+			if(self::VERBOSE) echo "mandate_amount: {$mandate_amount}" . PHP_EOL;
+
+			$mandate_successful = false;
+
+			if($mandate_amount!==0.0) {
+
+				$order_price = $order->get_total();
+				$max_order_amount = (float) ($order_price * 1.1);  
+				if(self::VERBOSE) "max_order_amount: {$max_order_amount}" . PHP_EOL;
+
+				if($mandate_amount>=$max_order_amount) 
+				{
+					$mandate_successful = true;
+					if(self::VERBOSE) "mandate is enough".PHP_EOL;
+				} else {
+					if(self::VERBOSE) "mandate is too small".PHP_EOL;
+				}
+			}
+			if ($webhook_status === "Success") {
+
+				if ($order_status === "processing") {
+					// order is already marked as processing, nothing more is necessary
+				} elseif ($order_status === "pending") {
+					// check if maximum of order does not exceed mandate size based on user metadata
+if($mandate_successful) {
+
+	$order->update_status('processing', __('Machtiging is gelukt en goedgekeurd; via webhook', 'wc-gateway-bluem'));
+}
+					// iff order is within size, update to processing
+				}
+			} elseif ($webhook_status === "Cancelled") {
+				$order->update_status('cancelled', __('Machtiging is geannuleerd; via webhook', 'wc-gateway-bluem'));
+			} elseif ($webhook_status === "Open" || $webhook_status == "Pending") {
+				// if the webhook is still open or pending, nothing has to be done as of yet
+			} elseif ($webhook_status === "Expired") {
+				$order->update_status('failed', __('Machtiging is verlopen; via webhook', 'wc-gateway-bluem'));
+			} else {
+				$order->update_status('failed', __('Machtiging is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem'));
+			}
 			exit;
+		}
+
+
+
+		/**
+		 * Retrieve an order based on its mandate_id in metadata from the WooCommerce store
+		 *
+		 * @param String $mandateID
+		 * @return void
+		 */
+		private function getOrder(String $mandateID)
+		{
+			$orders = wc_get_orders(array(
+				'orderby'   => 'date',
+				'order'     => 'DESC',
+				'bluem_mandateid' => $mandateID
+			));
+			if (count($orders) == 0) {
+				return null;
+			}
+			return $orders[0];
 		}
 
 
@@ -402,29 +425,21 @@ function bluem_init_gateway_class()
 		 */
 		public function callback()
 		{
-			$verbose = false;
 
 			// $this->bluem = new BlueMIntegration($this->bluem_config);
 
 
 			$mandateID = $_GET['mandateID'];
 			if (!isset($_GET['mandateID'])) {
-				echo "Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.";
+				$this->renderPrompt("Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.");
 				exit;
 			}
 
-			$orders = wc_get_orders(array(
-				'orderby'   => 'date',
-				'order'     => 'DESC',
-				'bluem_mandateid' => $mandateID
-			));
-			if (count($orders) == 0) {
-				echo "Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code {$mandateID} bij je gegevens.";
+			$order = $this->getOrder($mandateID);
+			if (is_null($order)) {
+				$this->renderPrompt("Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code {$mandateID} bij je gegevens.");
 				exit;
 			}
-
-			$order = $orders[0];
-
 			$user_id = $order->get_user_id();
 
 			// $order_meta = $order->get_meta_data();
@@ -432,11 +447,11 @@ function bluem_init_gateway_class()
 
 			$response = $this->bluem->RequestTransactionStatus($mandateID, $entranceCode);
 			if (!$response->Status()) {
-				echo "Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status";
+				$this->renderPrompt("Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status");
 				exit;
 			}
 
-			if ($verbose) {
+			if (self::VERBOSE) {
 				var_dump("mandateid: " . $mandateID);
 				var_dump("entrancecode: " . $entranceCode);
 				echo "<hr>";
@@ -449,42 +464,52 @@ function bluem_init_gateway_class()
 			// var_dump($statusCode);
 			if ($statusCode === "Success") {
 
-				$this->validateMandate($response, $order, true, true, $verbose, $mandateID, $entranceCode);
+				$this->validateMandate($response, $order, true, true, $mandateID, $entranceCode);
 			} elseif ($statusCode === "Cancelled") {
-				$order->update_status('cancelled', __('Machtiging is geannuleerd', 'woocommerce'));
+				$order->update_status('cancelled', __('Machtiging is geannuleerd', 'wc-gateway-bluem'));
 
-				echo "Je hebt de mandaat ondertekening geannuleerd";
+				$this->renderPrompt("Je hebt de mandaat ondertekening geannuleerd");
 				// terug naar order pagina om het opnieuw te proberen?
 				exit;
 			} elseif ($statusCode === "Open" || $statusCode == "Pending") {
 
-				echo "De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.";
+				$this->renderPrompt("De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
 				// callback pagina beschikbaar houden om het opnieuw te proberen?
 				// is simpelweg SITE/wc-api/bluem_callback?mandateID=$mandateID
 				exit;
 			} elseif ($statusCode === "Expired") {
-				$order->update_status('failed', __('Machtiging is verlopen', 'woocommerce'));
+				$order->update_status('failed', __('Machtiging is verlopen', 'wc-gateway-bluem'));
 
-				echo "Fout: De mandaat of het verzoek daartoe is verlopen";
+				$this->renderPrompt("Fout: De mandaat of het verzoek daartoe is verlopen");
 				exit;
 			} else {
-				$order->update_status('failed', __('Machtiging is gefaald: fout of onbekende status', 'woocommerce'));
+				$order->update_status('failed', __('Machtiging is gefaald: fout of onbekende status', 'wc-gateway-bluem'));
 				//$statusCode == "Failure"
-				echo "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status";
+				$this->renderPrompt("Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status");
 				exit;
 			}
 		}
 
-		private function validateMandate($response, $order, $block = false, $update_metadata = true, $verbose = false, $mandate_id = null, $entrance_code = null)
+		/**
+		 * Validating a given mandate based on MaxAmount given in $response, compared to $order total pricing and some additional parameters
+		 *
+		 * @param [type] $response
+		 * @param [type] $order
+		 * @param boolean $block_processing
+		 * @param boolean $update_metadata
+		 * @param [type] $mandate_id
+		 * @param [type] $entrance_code
+		 * @return void
+		 */
+		private function validateMandate($response, $order, $block_processing = false, $update_metadata = true, $mandate_id = null, $entrance_code = null)
 		{
-
 			$maxAmountResponse = $this->bluem->GetMaximumAmountFromTransactionResponse($response);
 			$user_id = $order->get_user_id();
 
 			// NextDeli specific: estimate 10% markup on order total:
 			$order_total_plus = (float) $order->get_total() * 1.1;
 
-			if ($verbose) {
+			if (self::VERBOSE) {
 
 				if ($maxAmountResponse === 0.0) {
 					echo "No max amount set";
@@ -502,7 +527,7 @@ function bluem_init_gateway_class()
 			$successful_mandate = false;
 
 			if ($update_metadata) {
-				if ($verbose) {
+				if (self::VERBOSE) {
 					echo "<br>updating user meta: bluem_latest_mandate_id and entranceCode to value {$mandate_id} and {$entrance_code} - result: ";
 				}
 				update_user_meta($user_id, 'bluem_latest_mandate_id', $mandate_id);
@@ -513,13 +538,13 @@ function bluem_init_gateway_class()
 
 			if (isset($maxAmountResponse->amount) && $maxAmountResponse->amount !== 0.0) {
 				if ($update_metadata) {
-					if ($verbose) {
+					if (self::VERBOSE) {
 						echo "<br>updating user meta: bluem_latest_mandate_amount to value {$maxAmountResponse->amount} - result: ";
 					}
 					update_user_meta($user_id, 'bluem_latest_mandate_amount', $maxAmountResponse->amount);
 				}
 				$allowed_margin = $order_total_plus <= $maxAmountResponse->amount;
-				if ($verbose) {
+				if (self::VERBOSE) {
 
 					echo "binnen machtiging marge?";
 					var_dump($allowed_margin);
@@ -529,24 +554,26 @@ function bluem_init_gateway_class()
 					$successful_mandate = true;
 				} else {
 
-					if ($block) {
+					if ($block_processing) {
 
 						$order->update_status('pending', __('Machtiging moet opnieuw ondertekend worden, want mandaat bedrag is te laag', 'wc-gateway-bluem'));
 
 						$url = $order->get_checkout_payment_url();
-
-						echo "<div style='font-family:Arial,sans-serif;display:block; margin:40pt auto; padding:10pt 20pt; border:1px solid #eee; background:#fff; max-width:500px;'>";
-						echo "<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
-						<p>De geschatte factuurwaarde van jouw bestelling is EUR {$order_total_plus}. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor 'onbeperkt' te kiezen.</p>";
-						echo "<p><a href='{$url}' target='_self'>Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>";
-						echo "</div>";
+						$this->renderPrompt(
+							"<div style='font-family:Arial,sans-serif;display:block; margin:40pt auto; padding:10pt 20pt; border:1px solid #eee; background:#fff; max-width:500px;'>" .
+								"<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
+							<p>De geschatte factuurwaarde van jouw bestelling is EUR {$order_total_plus}. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor 'onbeperkt' te kiezen.</p>" .
+								"<p><a href='{$url}' target='_self'>Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>" .
+								"</div>",
+							false
+						);
 
 						exit;
 					}
 				}
 			} else {
 				if ($update_metadata) {
-					if ($verbose) {
+					if (self::VERBOSE) {
 						echo "<br>updating user meta: bluem_latest_mandate_amount to value 0 - result: ";
 					}
 					update_user_meta($user_id, 'bluem_latest_mandate_amount', 0);
@@ -555,7 +582,7 @@ function bluem_init_gateway_class()
 			}
 
 			if ($update_metadata) {
-				if ($verbose) {
+				if (self::VERBOSE) {
 					echo "<br>updating user meta: bluem_latest_mandate_validated to value {$successful_mandate} - result: ";
 				}
 				update_user_meta($user_id, 'bluem_latest_mandate_validated', $successful_mandate);
@@ -566,6 +593,44 @@ function bluem_init_gateway_class()
 				$order->update_status('processing', __('Machtiging is gelukt en goedgekeurd', 'wc-gateway-bluem'));
 				$this->bluem_thankyou($order->get_id());
 			}
+		}
+
+		/**
+		 * Retrieve header HTML for error/message prompts
+		 *
+		 * @return String
+		 */
+		private function getSimpleHeader() : String
+		{
+			return "<div 
+			style='font-family:Arial,sans-serif;display:block; 
+			margin:40pt auto; padding:10pt 20pt; border:1px solid #eee; 
+			background:#fff; max-width:500px;'>";
+		}
+		/**
+		 * Retrieve footer HTML for error/message prompt. Can include a simple link back to the webshop home URL.
+		 *
+		 * @param Bool $include_link
+		 * @return String
+		 */
+		private function getSimpleFooter(Bool $include_link = true) : String
+		{
+			return ($include_link ? "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug naar de webshop</a></p>" : "") .
+				"</div>";
+		}
+
+		/**
+		 * Render a piece of HTML sandwiched beteween a simple header and footer, with an optionally included link back home
+		 *
+		 * @param String $html
+		 * @param boolean $include_link
+		 * @return void
+		 */
+		private function renderPrompt(String $html, $include_link = true)
+		{
+			echo $this->getSimpleHeader();
+			echo $html;
+			echo $this->getSimpleFooter($include_link);
 		}
 	}
 }
