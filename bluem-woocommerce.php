@@ -59,7 +59,7 @@ function bluem_init_gateway_class()
 		/**
 		 * This boolean will cause more output to be generated for testing purposes. Keep it at false for the production environment or final testing
 		 */
-		private const VERBOSE = true; 
+		private const VERBOSE = false; 
 
 		/**
 		 * Class constructor
@@ -142,6 +142,11 @@ function bluem_init_gateway_class()
 					'description' => 'Kies type incasso: CORE of B2B',
 					'default' => 'B2B'
 				]
+
+				//Bij B2B krijgen wij terug of de gebruiker een maximaal mandaatbedrag heeft afgegeven. 
+				// Dit mandaat bedrag wordt vergeleken met de orderwaarde. De orderwaarde plus 
+				// onderstaand percentage moet lager zijn dan het maximale mandaatbedrag. 
+				// Geef hier het percentage aan.
 			];
 
 
