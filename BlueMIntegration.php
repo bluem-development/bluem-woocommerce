@@ -149,7 +149,7 @@ class BlueMIntegration
 	 * Perform a request to the BlueM API given a request object and return its response
 	 * @param EMandateRequest $transaction_request The Request Object
 	 */
-	public function PerformRequest(EMandateRequest $transaction_request): ?EMandateResponse
+	public function PerformRequest(EMandateRequest $transaction_request)
 	{
 
 		$now = Carbon::now();
@@ -172,51 +172,57 @@ class BlueMIntegration
 		$req->setBody($transaction_request->XmlString());
 
 		try {
-			$response = $req->send();
-			if ($response->getStatus() == 200) {
-
-				$response = new EMandateResponse($response->getBody());
+			$http_response = $req->send();
+			if ($http_response->getStatus() == 200) {
+				// echo $http_response->getBody();
+				$response = new EMandateResponse($http_response->getBody());
 				if (!$response->Status()) {
 
-					echo "Error: " . ($response->Error()->ErrorMessage);
-					return null;
+					return new EMandateErrorResponse("Error: " . ($response->Error()->ErrorMessage));
+					
 				}
 				return $response;
 			} else {
-				echo 'Unexpected HTTP status: ' .
+				// if ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING) {	
+				// 	var_dump($response);
+				// }
+				$error = new EMandateErrorResponse(
+					'Unexpected HTTP status: ' .
 					$response->getStatus() . ' ' .
-					$response->getReasonPhrase();
-				if ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING) {
-
-					var_dump($response);
-				}
-				return null;
+					$response->getReasonPhrase()
+				);
+				return $error;
 			}
 		} catch (HTTP_Request2_Exception $e) {
-			echo 'Error: ' . $e->getMessage();
-			return null;
+			$error = new EMandateErrorResponse('Error: ' . $e->getMessage());
+			return $error;
 		}
 	}
 
-
-	public function GetMaximumAmountFromTransactionResponse($response)
-	{
-		$xml_string = $response->EMandateStatusUpdate->EMandateStatus->OriginalReport;
-		$xml_string = "<?xml version=\"1.0\"?>" . str_replace('awvsp12:', '', substr($xml_string, 8, strlen($xml_string) - 10));
+	/** Old version: get it from XML data */
+	/*
+	$xml_string = $response->EMandateStatusUpdate->EMandateStatus->OriginalReport;
+		$xml_string = "<?xml version=\"1.0\"?>" . str_replace(['awvsp12:','doc:'], ['',''], substr($xml_string, 8, strlen($xml_string) - 10));
 
 		// $xml_string = substr($xml_string,-2); 
-		// var_dump($xml_string);
-		// echo "<hr>";
-		$xml_array = new SimpleXMLElement($xml_string);
+		var_dump($xml_string);
+		echo "<hr>";
+		try {
+			
+			$xml_array = new SimpleXMLElement($xml_string);
+		} catch (\Throwable $th) {
+			var_dump($th);
+			//throw $th;
+		}
 
-		// echo "<hr>";
-		// 	var_dump($xml_array->asXML);
-		// 	echo "<hr>";
-		// die();
+		echo "<hr>";
+			var_dump($xml_array->asXML);
+			echo "<hr>";
+		die();
 		// echo $xml_array->asXML();
 		if (isset($xml_array->MndtAccptncRpt->UndrlygAccptncDtls->OrgnlMndt->OrgnlMndt->MaxAmt)) {
 			$maxAmountObj = $xml_array->MndtAccptncRpt->UndrlygAccptncDtls->OrgnlMndt->OrgnlMndt->MaxAmt;
-
+var_dump($maxAmountObj);
 
 			$maxAmount = new Stdclass;
 			$maxAmount->amount = (float) ($maxAmountObj . "");
@@ -225,6 +231,26 @@ class BlueMIntegration
 		} else {
 			return (object) ['amount' => (float) 0.0, 'currency' => 'EUR'];
 		}
+	 */
+	public function GetMaximumAmountFromTransactionResponse($response)
+	{
+		if (isset($response->EMandateStatusUpdate->AcceptanceReport->MaxAmount)) {
+			
+			return (object) [
+				'amount' => (float) ($response->EMandateStatusUpdate->AcceptanceReport->MaxAmount.""), 
+				'currency' => 'EUR'
+			];
+
+			// $maxAmount = new Stdclass;
+			// $maxAmount->amount = (float) ($response->EMandateStatusUpdate->AcceptanceReport->MaxAmount."");
+			// $maxAmount->currency = "EUR"; 
+			// return $maxAmount;
+			// var_dump($maxAmountObj);
+			// $maxAmount->amount = (float) ($maxAmountObj . "");
+		} 
+		
+		return (object) ['amount' => (float) 0.0, 'currency' => 'EUR'];
+		
 	}
 
 

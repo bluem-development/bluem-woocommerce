@@ -1,10 +1,13 @@
 <?php 
 
+
+
 /**
  * 	EMandateResponse
  */
 class EMandateResponse extends SimpleXMLElement
 {
+
 	/**
 	 * Return if the response is a successfull one, in boolean
 	 */
@@ -30,4 +33,28 @@ class EMandateResponse extends SimpleXMLElement
 		return null;
 	}
 
+}
+
+/**
+ * EMandateErrorResponse
+ */
+class EMandateErrorResponse
+{
+	private $error;
+
+	public function __construct(String $error) {
+		$this->error = $error;	
+	}
+
+	public function SetErrorMessage(String $error)
+	{
+	}
+	public function Status() : Bool
+	{
+		return false;
+	}
+	public function Error()
+	{
+		return $this->error;
+	}
 }

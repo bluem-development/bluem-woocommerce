@@ -33,7 +33,7 @@ require 'BlueMIntegration.php';
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
 	// bluem_woocommerce();
 } else {
-	throw new Exception("WooCommerce not activated, add this pluginf irst", 1);
+	throw new Exception("WooCommerce not activated, add this plugin first", 1);
 }
 
 /*
@@ -58,7 +58,7 @@ function bluem_init_gateway_class()
 		/**
 		 * This boolean will cause more output to be generated for testing purposes. Keep it at false for the production environment or final testing
 		 */
-		private const VERBOSE = false;
+		private const VERBOSE = true;
 
 		/**
 		 * Class constructor
@@ -70,8 +70,8 @@ function bluem_init_gateway_class()
 			$this->id = 'bluem'; // payment gateway plugin ID
 			$this->icon = ''; // URL of the icon that will be displayed on checkout page near your gateway name
 			$this->has_fields = true; // in case you need a custom credit card form
-			$this->method_title = 'BlueM Gateway';
-			$this->method_description = 'BlueM eMandate gateway<br>Test de integratie ook met <a href="' . get_site_url() . '/wp-content/plugins/bluem-woocommerce/integration/index.php">de toolset op deze pagina</a>'; // will be displayed on the options page
+			$this->method_title = 'BlueM Integratie';
+			$this->method_description = 'BlueM eMandate Payment Gateway voor WordPress - WooCommerce projecten, ontwikkeld door Daan Rijpkema voor NextDeli BV'; // will be displayed on the options page
 
 			$this->bluem_options = [
 				'environment' => [
@@ -281,15 +281,24 @@ function bluem_init_gateway_class()
 					if (!$existing_mandate_response->Status()) {
 						// $this->renderPrompt("Fout: geen valide bestaand mandaat gevonden");
 						// exit;
-					}
-
-					if ($existing_mandate_response->EMandateStatusUpdate->EMandateStatus->Status . "" === "Success") {
-						// echo "Je hebt een bestaand en geldig afgegeven.";
-						$result = $this->validateMandate($existing_mandate_response, $order, false, false, false);
-						if ($result) {
-							return array('result' => 'success', 'redirect' => $order->get_view_order_url());
+					} else {
+						
+						if ($existing_mandate_response->EMandateStatusUpdate->EMandateStatus->Status . "" === "Success") {
+						
+							if ($this->validateMandate(
+								$existing_mandate_response,
+								$order,
+								false,
+								false,
+								false
+							)) {
+								return array(
+									'result' => 'success', 
+									'redirect' => $order->get_view_order_url()
+								);
+							}
 						}
-					};
+					}
 				}
 			}
 
@@ -356,11 +365,24 @@ function bluem_init_gateway_class()
 
 			$user_id = $user_id = $order->get_user_id();
 			$user_meta = get_user_meta($user_id);
-			if (isset($user_meta['bluem_latest_mandate_amount'][0])) {
-				$mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
+			
+			// Todo: if maxamount comes back from webhook (it should) then it can be accessed here
+			// if (isset($user_meta['bluem_latest_mandate_amount'][0])) {
+			// 	$mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
+			// } else {
+				
+			// }
+			if(isset($statusUpdateObject->EMandateStatus->AcceptanceReport->MaxAmount)) {
+
+				$mandate_amount = (float) . ($statusUpdateObject->EMandateStatus->AcceptanceReport->MaxAmount . "");
 			} else {
-				$mandate_amount = 0.0;	// mandate amount is not set, so it is unlimited
+				$mandate_amount = (float) 0.0;	// mandate amount is not set, so it is unlimited
 			}
+            if (self::VERBOSE) {
+                var_dump($mandate_amount);
+                echo PHP_EOL;
+            }
+
 			if (self::VERBOSE) echo "mandate_amount: {$mandate_amount}" . PHP_EOL;
 
 			$mandate_successful = false;
@@ -451,6 +473,13 @@ function bluem_init_gateway_class()
 			$entranceCode = $order->get_meta('bluem_entrancecode');
 
 			$response = $this->bluem->RequestTransactionStatus($mandateID, $entranceCode);
+			// var_dump($response);
+			// die();
+			// if(is_null($response) || is_string($response)) {
+			// 	$this->renderPrompt("Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status");
+			// 	exit;
+			// }
+
 			if (!$response->Status()) {
 				$this->renderPrompt("Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status");
 				exit;
@@ -567,7 +596,7 @@ function bluem_init_gateway_class()
 						$this->renderPrompt(
 							"<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
 							<p>De geschatte factuurwaarde van jouw bestelling is EUR {$order_total_plus}. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor 'onbeperkt' te kiezen.</p>" .
-								"<p><a href='{$url}' target='_self'>Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>" ,
+								"<p><a href='{$url}' target='_self'>Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>",
 							false
 						);
 
@@ -592,9 +621,15 @@ function bluem_init_gateway_class()
 			}
 
 			if ($successful_mandate) {
-				// echo "mandaat is succesvol, order kan worden aangepast naar machtiging_goedgekeurd";
+				if(self::VERBOSE)
+				{
+					echo "mandaat is succesvol, order kan worden aangepast naar machtiging_goedgekeurd";
+				}
 				$order->update_status('processing', __('Machtiging is gelukt en goedgekeurd', 'wc-gateway-bluem'));
 				if ($redirect) {
+                    if (self::VERBOSE) {
+                        die();
+                    }
 					$this->bluem_thankyou($order->get_id());
 				} else {
 					return true;
@@ -609,7 +644,7 @@ function bluem_init_gateway_class()
 		 */
 		private function getSimpleHeader(): String
 		{
-			return "<div 
+			return "<!DOCTYPE html><html><body><div 
 			style='font-family:Arial,sans-serif;display:block; 
 			margin:40pt auto; padding:10pt 20pt; border:1px solid #eee; 
 			background:#fff; max-width:500px;'>";
@@ -623,7 +658,7 @@ function bluem_init_gateway_class()
 		private function getSimpleFooter(Bool $include_link = true): String
 		{
 			return ($include_link ? "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug naar de webshop</a></p>" : "") .
-				"</div>";
+				"</div></body></html>";
 		}
 
 		/**
