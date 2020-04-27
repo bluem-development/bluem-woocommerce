@@ -373,8 +373,7 @@ function bluem_init_gateway_class()
 				
 			// }
 			if(isset($statusUpdateObject->EMandateStatus->AcceptanceReport->MaxAmount)) {
-
-				$mandate_amount = (float) . ($statusUpdateObject->EMandateStatus->AcceptanceReport->MaxAmount . "");
+				$mandate_amount = (float) ($statusUpdateObject->EMandateStatus->AcceptanceReport->MaxAmount . "");
 			} else {
 				$mandate_amount = (float) 0.0;	// mandate amount is not set, so it is unlimited
 			}
