@@ -20,7 +20,7 @@ use Carbon\Carbon;
  */
 class BlueMIntegration
 {
-	private static $verbose = false;
+	
 	// private $accessToken;
 	private $configuration;
 
@@ -234,10 +234,12 @@ var_dump($maxAmountObj);
 	 */
 	public function GetMaximumAmountFromTransactionResponse($response)
 	{
-		if (isset($response->EMandateStatusUpdate->AcceptanceReport->MaxAmount)) {
+		// echo "GETTING MAXAMT";
+		
+		if (isset($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount)) {
 			
 			return (object) [
-				'amount' => (float) ($response->EMandateStatusUpdate->AcceptanceReport->MaxAmount.""), 
+				'amount' => (float) ($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount.""), 
 				'currency' => 'EUR'
 			];
 
@@ -264,9 +266,12 @@ var_dump($maxAmountObj);
 	{
 
 		/* Senders provide Bluem with a webhook URL. The URL will be checked for consistency and validity and will not be stored if any of the checks fails. The following checks will be performed:
-		▪	URL must start with https://
-		*/
-
+	
+			*/
+			
+		// todo: URL must start with https://
+		
+		
 		// ONLY Accept post requests
 		if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 			http_response_code(400);
@@ -275,7 +280,9 @@ var_dump($maxAmountObj);
 
 		// An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK
 		$postData = file_get_contents('php://input');
+		// var_dump($postData);
 		if ($postData === "") {
+			// echo "NO POST";
 			http_response_code(200);
 			exit();
 		}

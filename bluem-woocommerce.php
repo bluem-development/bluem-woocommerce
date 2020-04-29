@@ -58,7 +58,7 @@ function bluem_init_gateway_class()
 		/**
 		 * This boolean will cause more output to be generated for testing purposes. Keep it at false for the production environment or final testing
 		 */
-		private const VERBOSE = true;
+		private const VERBOSE = false;
 
 		/**
 		 * Class constructor
@@ -344,7 +344,7 @@ function bluem_init_gateway_class()
 		public function webhook()
 		{
 			$statusUpdateObject = $this->bluem->Webhook();
-
+			
 			$entranceCode = $statusUpdateObject->entranceCode . "";
 			$mandateID = $statusUpdateObject->EMandateStatus->MandateID . "";
 
@@ -380,7 +380,8 @@ function bluem_init_gateway_class()
             if (self::VERBOSE) {
                 var_dump($mandate_amount);
                 echo PHP_EOL;
-            }
+			}
+			die();
 
 			if (self::VERBOSE) echo "mandate_amount: {$mandate_amount}" . PHP_EOL;
 
