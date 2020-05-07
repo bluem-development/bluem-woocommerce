@@ -72,9 +72,6 @@ class EMandateRequest
 		print($this->XmlString());
 	}
 
-
-
-
 	/**
 	 * Gets the http request url.
 	 *

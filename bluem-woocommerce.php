@@ -577,7 +577,7 @@ function bluem_init_gateway_class()
 					}
 					update_user_meta($user_id, 'bluem_latest_mandate_amount', $maxAmountResponse->amount);
 				}
-				$allowed_margin = $order_total_plus <= $maxAmountResponse->amount;
+				$allowed_margin = ($order_total_plus <= $maxAmountResponse->amount);
 				if (self::VERBOSE) {
 
 					echo "binnen machtiging marge?";
@@ -593,9 +593,10 @@ function bluem_init_gateway_class()
 						$order->update_status('pending', __('Machtiging moet opnieuw ondertekend worden, want mandaat bedrag is te laag', 'wc-gateway-bluem'));
 
 						$url = $order->get_checkout_payment_url();
+						$order_total_plus_string = str_replace(".",",",round($order_total_plus,2));
 						$this->renderPrompt(
 							"<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
-							<p>De geschatte factuurwaarde van jouw bestelling is EUR {$order_total_plus}. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor 'onbeperkt' te kiezen.</p>" .
+							<p>De geschatte factuurwaarde van jouw bestelling is EUR {$order_total_plus_string}. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor 'onbeperkt' te kiezen.</p>" .
 								"<p><a href='{$url}' target='_self'>Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>",
 							false
 						);
