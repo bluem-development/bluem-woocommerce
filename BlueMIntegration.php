@@ -188,8 +188,8 @@ class BlueMIntegration
 				// }
 				$error = new EMandateErrorResponse(
 					'Unexpected HTTP status: ' .
-					$response->getStatus() . ' ' .
-					$response->getReasonPhrase()
+					(!is_null($response->getStatus()) && isset($response->getStatus()) ? $response->getStatus() . ' ' : '').
+					(!is_null($response->getReasonPhrase()) && isset($response->getReasonPhrase()) ? $response->getReasonPhrase() : '')
 				);
 				return $error;
 			}
