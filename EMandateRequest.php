@@ -247,8 +247,13 @@ class EMandateTransactionRequest extends EMandateRequest
 	private $debtorReference;
 	private $purchaseID;
 	private $sendOption;
-	
-	function __construct($config, $customer_id, $order_id, $mandateID, String $expected_return="none")
+	private $transaction_type; 
+
+	function __construct(
+		$config, $customer_id, $order_id, 
+		$mandateID, String $expected_return="none",
+		$transaction_type = "default"
+	)
 	{
 		
 		parent::__construct($config,"",$expected_return);
@@ -256,7 +261,7 @@ class EMandateTransactionRequest extends EMandateRequest
 		$this->type_identifier = "createTransaction";
 		
 		$this->merchantReturnURLBase = $config->merchantReturnURLBase;
-		
+		$this->transaction_type = $transaction_type;	
 
 		$now = Carbon::now();
 		
@@ -268,7 +273,7 @@ class EMandateTransactionRequest extends EMandateRequest
 		// BlueM MandateID example "308201711021106036540002";  // 35 max, no space! 
 
 		// https uniek returnurl voor klant
-		$this->merchantReturnURL = $this->merchantReturnURLBase."?mandateID={$this->mandateID}"; 
+		$this->merchantReturnURL = $this->merchantReturnURLBase."?mandateID={$this->mandateID}&type={$this->transaction_type}"; 
 		$this->sequenceType = "RCUR";
 		
 		// reden van de machtiging; configurabel per partij

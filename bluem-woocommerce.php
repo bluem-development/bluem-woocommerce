@@ -141,7 +141,6 @@ function bluem_init_gateway_class()
 					'description' => 'Kies type incasso: CORE of B2B',
 					'default' => 'B2B'
 				]
-
 				//Bij B2B krijgen wij terug of de gebruiker een maximaal mandaatbedrag heeft afgegeven. 
 				// Dit mandaat bedrag wordt vergeleken met de orderwaarde. De orderwaarde plus 
 				// onderstaand percentage moet lager zijn dan het maximale mandaatbedrag. 
@@ -174,7 +173,6 @@ function bluem_init_gateway_class()
 				$this->bluem_config->$key = $this->get_option($option_key);
 			}
 			$this->bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_callback');
-
 
 			$this->bluem = new BlueMIntegration($this->bluem_config);
 
@@ -308,7 +306,8 @@ function bluem_init_gateway_class()
 			update_post_meta($order_id, 'bluem_entrancecode', $this->bluem->CreateEntranceCode());
 			update_post_meta($order_id, 'bluem_mandateid', $this->bluem->CreateMandateId($order_id, $customer_id));
 
-			$response = $this->bluem->CreateNewTransaction($customer_id, $order_id);
+			$simple_redirect_url = home_url('/your-custom-url');
+			$response = $this->bluem->CreateNewTransaction($customer_id, $order_id, "simple",$simple_redirect_url);
 
 			// Mark as on-hold (we're awaiting the payment)
 			// https://docs.woocommerce.com/document/managing-orders/
@@ -455,11 +454,25 @@ function bluem_init_gateway_class()
 
 			// $this->bluem = new BlueMIntegration($this->bluem_config);
 
-
-			$mandateID = $_GET['mandateID'];
 			if (!isset($_GET['mandateID'])) {
 				$this->renderPrompt("Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.");
 				exit;
+			}
+			$mandateID = $_GET['mandateID'];
+
+			if(!isset($_GET['type']) || !in_array("".$_GET['type'],['default','simple']))
+			{
+				$type = "default";
+			} else {
+				$type = $_GET['type'];
+			}
+
+			if($type =="simple") {
+
+
+				 
+			} else { 
+
 			}
 
 			$order = $this->getOrder($mandateID);
@@ -675,6 +688,47 @@ function bluem_init_gateway_class()
 			echo $html;
 			echo $this->getSimpleFooter($include_link);
 		}
+	}
+
+	add_action( 'show_user_profile', 'bluem_woocommerce_show_extra_profile_fields' );
+	add_action( 'edit_user_profile', 'bluem_woocommerce_show_extra_profile_fields' );
+	
+	function bluem_woocommerce_show_extra_profile_fields( $user ) {
+	
+	?>
+	
+		<table class="form-table">
+			<tr>
+				<th><label for="bluem_latest_mandate_id">Meest recente MandateID</label></th>
+				<td>
+					<input type="text" name="bluem_latest_mandate_id" id="bluem_latest_mandate_id" value="<?php echo esc_attr( get_user_meta( $user->ID, 'bluem_latest_mandate_id',true ) ); ?>" class="regular-text" /><br />
+					<span class="description">Hier wordt het meest recente mandate ID geplaatst; en gebruikt bij het doen van een volgende checkout.</span>
+				</td>
+			</tr>
+			<tr>
+				<th><label for="bluem_latest_mandate_amount">Omvang laatste machtiging</label></th>
+				<td>
+					<input type="text" name="bluem_latest_mandate_amount" id="bluem_latest_mandate_amount" value="<?php echo esc_attr( get_user_meta( $user->ID, 'bluem_latest_mandate_amount',true ) ); ?>" class="regular-text" /><br />
+					<span class="description">Dit is de omvang van de laatste machtiging</span>
+				</td>
+			</tr>
+			
+			
+		</table>
+	<?php
+	} 
+	add_action( 'personal_options_update', 'bluem_woocommerce_save_extra_profile_fields' );
+	add_action( 'edit_user_profile_update', 'bluem_woocommerce_save_extra_profile_fields' );
+	
+	function bluem_woocommerce_save_extra_profile_fields( $user_id ) {
+	
+		if ( ! current_user_can( 'edit_user', $user_id ) ) {
+			return false;
+		}
+	
+		update_usermeta( $user_id, 'bluem_latest_mandate_id', esc_attr( $_POST['bluem_latest_mandate_id'] ) );
+		update_usermeta( $user_id, 'bluem_latest_mandate_amount', esc_attr( $_POST['bluem_latest_mandate_amount'] ) );
+		
 	}
 }
 

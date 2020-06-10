@@ -103,7 +103,7 @@ class BlueMIntegration
 	 * @param int $customer_id The Customer ID
 	 * @param int $order_id    The Order ID
 	 */
-	public function CreateNewTransaction($customer_id, $order_id): EMandateResponse
+	public function CreateNewTransaction($customer_id, $order_id, $transaction_type = "default"): EMandateResponse
 	{
 
 		if (is_null($customer_id)) {
@@ -120,7 +120,8 @@ class BlueMIntegration
 			$this->CreateMandateID($order_id, $customer_id),
 			($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
 				isset($this->configuration->expected_return) ?
-				$this->configuration->expected_return : "")
+				$this->configuration->expected_return : ""),
+			$transaction_type
 		);
 
 		return $this->PerformRequest($r);
