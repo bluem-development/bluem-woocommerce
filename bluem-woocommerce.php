@@ -266,7 +266,8 @@ function bluem_init_gateway_class()
 					count($user_meta['bluem_latest_mandate_id']) > 0 &&
 					is_string($user_meta['bluem_latest_mandate_id'][0]) &&
 					count($user_meta['bluem_latest_mandate_amount']) > 0 &&
-					is_string($user_meta['bluem_latest_mandate_amount'][0])
+					is_string($user_meta['bluem_latest_mandate_amount'][0] &&
+					((float)$user_meta['bluem_latest_mandate_amount'] ) >= ((float)$order->get_total()*1.1))
 				) {
 					$existing_mandate_id = $user_meta['bluem_latest_mandate_id'][0];
 					// $existing_mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
@@ -290,10 +291,14 @@ function bluem_init_gateway_class()
 								false,
 								false
 							)) {
+								
 								return array(
 									'result' => 'success', 
 									'redirect' => $order->get_view_order_url()
 								);
+							}
+							else {
+								// echo "mandaat gevonden maar niet valide";
 							}
 						}
 					}
@@ -303,27 +308,36 @@ function bluem_init_gateway_class()
 			$order_id = $order->get_order_number();
 			$customer_id = get_post_meta($order_id, '_customer_user', true);
 
-			update_post_meta($order_id, 'bluem_entrancecode', $this->bluem->CreateEntranceCode());
-			update_post_meta($order_id, 'bluem_mandateid', $this->bluem->CreateMandateId($order_id, $customer_id));
+			$entranceCode = $this->bluem->CreateEntranceCode();
+			$mandateId = $this->bluem->CreateMandateId($order_id, $customer_id);
 
-			$simple_redirect_url = home_url('/your-custom-url');
-			$response = $this->bluem->CreateNewTransaction($customer_id, $order_id, "simple",$simple_redirect_url);
+			update_post_meta($order_id, 'bluem_entrancecode', $entranceCode);
+			update_post_meta($order_id, 'bluem_mandateid', $mandateId);
 
+
+// 			var_dump($entranceCode);
+// 			var_dump($mandateId);
+// var_dump($order_id);
+// var_dump($customer_id);
+// $simple_redirect_url = home_url('/your-custom-url');
+$response = $this->bluem->CreateNewTransaction($customer_id, $order_id,"simple","https://google.com");
+// "simple",$simple_redirect_url);
+// var_dump($response);
+// die();
 			// Mark as on-hold (we're awaiting the payment)
 			// https://docs.woocommerce.com/document/managing-orders/
 			// Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled', 
-			$order->update_status('pending', __('Awaiting BlueM Mandate Signature', 'wc-gateway-bluem'));
-
-
+			
+			
 			// Remove cart
 			global $woocommerce;
 			$woocommerce->cart->empty_cart();
+			$order->update_status('pending', __('Awaiting BlueM Mandate Signature', 'wc-gateway-bluem'));
 
 			if (isset($response->EMandateTransactionResponse->TransactionURL)) {
 
 				// redirect cast to string, for AJAX response handling
 				$transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
-
 				return array(
 					'result' => 'success',
 					'redirect' => $transactionURL
@@ -468,9 +482,7 @@ function bluem_init_gateway_class()
 			}
 
 			if($type =="simple") {
-
-
-				 
+				
 			} else { 
 
 			}

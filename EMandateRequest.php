@@ -248,11 +248,14 @@ class EMandateTransactionRequest extends EMandateRequest
 	private $purchaseID;
 	private $sendOption;
 	private $transaction_type; 
+	private $simple_redirect_url; 
 
 	function __construct(
 		$config, $customer_id, $order_id, 
-		$mandateID, String $expected_return="none",
-		$transaction_type = "default"
+		$mandateID, 
+		String $expected_return="none",
+		$transaction_type = "default",
+		$simple_redirect_url=""
 	)
 	{
 		
@@ -269,11 +272,20 @@ class EMandateTransactionRequest extends EMandateRequest
 
 		
 		$this->mandateID = $mandateID;
-		//substr($customer_id.$now->format('Ymd').$order_id, 0,35);
+		// substr($customer_id.$now->format('Ymd').$order_id, 0,35);
 		// BlueM MandateID example "308201711021106036540002";  // 35 max, no space! 
 
 		// https uniek returnurl voor klant
-		$this->merchantReturnURL = $this->merchantReturnURLBase."?mandateID={$this->mandateID}&type={$this->transaction_type}"; 
+		$this->merchantReturnURL = $this->merchantReturnURLBase."?mandateID={$this->mandateID}"; 
+		
+		$this->transaction_type = $transaction_type;
+		if($this->transaction_type==="simple" && $simple_redirect_url!=="") {
+			$this->merchantReturnURL = $simple_redirect_url."?mandateID={$this->mandateID}"; 
+		}
+		// echo $this->transaction_type;
+		// echo $this->merchantReturnURL;
+		// die();
+
 		$this->sequenceType = "RCUR";
 		
 		// reden van de machtiging; configurabel per partij
@@ -287,7 +299,8 @@ class EMandateTransactionRequest extends EMandateRequest
 		$this->purchaseID = "NextDeli-{$this->debtorReference}-{$order_id}";  // INKOOPNUMMER
 		/* PurchaseID is verplichtveld van de banken. Dit vertalen het naar de klant als ‘inkoopnummer’ of ‘ordernummer’ (afh. Bank). Wij presenteren het niet op de checkout, omdat wij zien dat veel partijen echt niet weten wat ze er in moeten zetten. Wij adviseren dan altijd klantnummer. En dat doet dan ook veel partijen */
 
-	
+
+		$this->automatically_redirect = "1";
 	}
 	public function XmlString()
 	{
@@ -307,7 +320,7 @@ merchantSubID="'.$this->merchantSubID.'"
 language="nl" 
 sendOption="none">
 <MandateID>'.$this->mandateID.'</MandateID>
-<MerchantReturnURL automaticRedirect="1">'.$this->merchantReturnURL.'</MerchantReturnURL>
+<MerchantReturnURL automaticRedirect="'.$this->automatically_redirect.'">'.$this->merchantReturnURL.'</MerchantReturnURL>
 <SequenceType>'.$this->sequenceType.'</SequenceType>
 <EMandateReason>'.$this->eMandateReason.'</EMandateReason>
 <DebtorReference>'.$this->debtorReference.'</DebtorReference>

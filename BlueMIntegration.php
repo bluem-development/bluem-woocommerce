@@ -20,7 +20,7 @@ use Carbon\Carbon;
  */
 class BlueMIntegration
 {
-	
+
 	// private $accessToken;
 	private $configuration;
 
@@ -103,7 +103,11 @@ class BlueMIntegration
 	 * @param int $customer_id The Customer ID
 	 * @param int $order_id    The Order ID
 	 */
-	public function CreateNewTransaction($customer_id, $order_id, $transaction_type = "default"): EMandateResponse
+	public function CreateNewTransaction(
+		$customer_id, $order_id, 
+		$transaction_type = "default", 
+		$simple_redirect_url = ""
+		)
 	{
 
 		if (is_null($customer_id)) {
@@ -118,10 +122,11 @@ class BlueMIntegration
 			$customer_id,
 			$order_id,
 			$this->CreateMandateID($order_id, $customer_id),
-			($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
-				isset($this->configuration->expected_return) ?
-				$this->configuration->expected_return : ""),
-			$transaction_type
+			(($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+				isset($this->configuration->expected_return) ) ?
+				$this->configuration->expected_return : "none"),
+			$transaction_type,
+			$simple_redirect_url
 		);
 
 		return $this->PerformRequest($r);
@@ -152,7 +157,6 @@ class BlueMIntegration
 	 */
 	public function PerformRequest(EMandateRequest $transaction_request)
 	{
-
 		$now = Carbon::now();
 
 		$xttrs_filename = $transaction_request->TransactionType() . "-{$this->configuration->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
@@ -171,26 +175,25 @@ class BlueMIntegration
 		$req->setHeader('x-ttrs-filename', $xttrs_filename);
 
 		$req->setBody($transaction_request->XmlString());
-
+// var_dump($transaction_request->XmlString());
+// die();
 		try {
 			$http_response = $req->send();
+
+			// var_dump(new EMandateResponse($http_response->getBody()));
+			// die();
 			if ($http_response->getStatus() == 200) {
-				// echo $http_response->getBody();
 				$response = new EMandateResponse($http_response->getBody());
 				if (!$response->Status()) {
 
 					return new EMandateErrorResponse("Error: " . ($response->Error()->ErrorMessage));
-					
 				}
 				return $response;
 			} else {
-				// if ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING) {	
-				// 	var_dump($response);
-				// }
 				$error = new EMandateErrorResponse(
 					'Unexpected HTTP status: ' .
-					(!is_null($http_response->getStatus()) ? $http_response->getStatus() . ' ' : '').
-					(!is_null($http_response->getReasonPhrase()) ? $http_response->getReasonPhrase() : '')
+						(!is_null($http_response->getStatus()) ? $http_response->getStatus() . ' ' : '') .
+						(!is_null($http_response->getReasonPhrase()) ? $http_response->getReasonPhrase() : '')
 				);
 				return $error;
 			}
@@ -200,64 +203,21 @@ class BlueMIntegration
 		}
 	}
 
-	/** Old version: get it from XML data */
-	/*
-	$xml_string = $response->EMandateStatusUpdate->EMandateStatus->OriginalReport;
-		$xml_string = "<?xml version=\"1.0\"?>" . str_replace(['awvsp12:','doc:'], ['',''], substr($xml_string, 8, strlen($xml_string) - 10));
-
-		// $xml_string = substr($xml_string,-2); 
-		var_dump($xml_string);
-		echo "<hr>";
-		try {
-			
-			$xml_array = new SimpleXMLElement($xml_string);
-		} catch (\Throwable $th) {
-			var_dump($th);
-			//throw $th;
-		}
-
-		echo "<hr>";
-			var_dump($xml_array->asXML);
-			echo "<hr>";
-		die();
-		// echo $xml_array->asXML();
-		if (isset($xml_array->MndtAccptncRpt->UndrlygAccptncDtls->OrgnlMndt->OrgnlMndt->MaxAmt)) {
-			$maxAmountObj = $xml_array->MndtAccptncRpt->UndrlygAccptncDtls->OrgnlMndt->OrgnlMndt->MaxAmt;
-var_dump($maxAmountObj);
-
-			$maxAmount = new Stdclass;
-			$maxAmount->amount = (float) ($maxAmountObj . "");
-			$maxAmount->currency = $maxAmountObj->attributes()['Ccy'] . "";
-			return $maxAmount;
-		} else {
-			return (object) ['amount' => (float) 0.0, 'currency' => 'EUR'];
-		}
-	 */
 	public function GetMaximumAmountFromTransactionResponse($response)
 	{
-		// echo "GETTING MAXAMT";
-		
 		if (isset($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount)) {
-			
+
 			return (object) [
-				'amount' => (float) ($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount.""), 
+				'amount' => (float) ($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount . ""),
 				'currency' => 'EUR'
 			];
+		}
 
-			// $maxAmount = new Stdclass;
-			// $maxAmount->amount = (float) ($response->EMandateStatusUpdate->AcceptanceReport->MaxAmount."");
-			// $maxAmount->currency = "EUR"; 
-			// return $maxAmount;
-			// var_dump($maxAmountObj);
-			// $maxAmount->amount = (float) ($maxAmountObj . "");
-		} 
-		
-		return (object) ['amount' => (float) 0.0, 'currency' => 'EUR'];
-		
+		return (object) [
+			'amount' => (float) 0.0,
+			'currency' => 'EUR'
+		];
 	}
-
-
-
 
 	/**
 	 * Webhook for BlueM Mandate signature verification procedure
@@ -267,12 +227,9 @@ var_dump($maxAmountObj);
 	{
 
 		/* Senders provide Bluem with a webhook URL. The URL will be checked for consistency and validity and will not be stored if any of the checks fails. The following checks will be performed:
-	
 			*/
-			
+
 		// todo: URL must start with https://
-		
-		
 		// ONLY Accept post requests
 		if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 			http_response_code(400);
