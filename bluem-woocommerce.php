@@ -696,7 +696,7 @@ function bluem_init_gateway_class()
 	function bluem_woocommerce_show_extra_profile_fields( $user ) {
 	
 	?>
-	
+	<h2>Bluem eMandate Metadata</h2>
 		<table class="form-table">
 			<tr>
 				<th><label for="bluem_latest_mandate_id">Meest recente MandateID</label></th>
