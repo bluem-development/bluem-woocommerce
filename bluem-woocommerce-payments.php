@@ -140,7 +140,19 @@ function bluem_init_payment_gateway_class()
                     );
                 }
                 return $query;
-            }, 10, 2);
+			}, 10, 2);
+			
+			
+            // ********** Allow filtering Orders based on EntranceCode **********
+            add_filter('woocommerce_order_data_store_cpt_get_orders_query', function ($query, $query_vars) {
+                if (!empty($query_vars['bluem_entrancecode'])) {
+                    $query['meta_query'][] = array(
+                        'key' => 'bluem_entrancecode',
+                        'value' => esc_attr($query_vars['bluem_entrancecode']),
+                    );
+                }
+                return $query;
+            }, 9, 2);
         }
 
         public function bluem_thankyou($order_id)
@@ -251,16 +263,15 @@ function bluem_init_payment_gateway_class()
 			$customer_id = get_post_meta($order_id, '_customer_user', true);
 
 			$entranceCode = $this->bluem->CreateEntranceCode();
-			$transactionID = $this->bluem->CreatePaymentTransactionID($order_id.$customer_id);
+			// $transactionID = $this->bluem->CreatePaymentTransactionID($order_id.$customer_id);
 
 			update_post_meta($order_id, 'bluem_entrancecode', $entranceCode);
-			update_post_meta($order_id, 'bluem_transactionid', $transactionID);
 
 			$description = "Klant {$customer_id} Bestelling {$order_id}";
 			$debtorReference = "{$order_id}";
 			$amount = $order->get_total();
 			$currency = "EUR";
-			$dueDateTime = Carbon::now()->addDay()->toDateString();
+			$dueDateTime = Carbon::now()->addDay();
 
 			$request = $this->bluem->CreatePaymentRequest(
 				$description,
@@ -269,9 +280,23 @@ function bluem_init_payment_gateway_class()
 				$dueDateTime,
 				$currency
 			);
-$response = $this->bluem->PerformRequest($request);
-var_dump($response);
-die();
+			
+			// temp overrides
+			$request->paymentReference = str_replace('-','',$request->paymentReference);
+			$request->type_identifier = "createTransaction";
+			$request->dueDateTime = $dueDateTime->toDateTimeLocalString() . ".000Z";
+			$request->debtorReturnURL = home_url("wc-api/bluem_payments_callback?entranceCode={$entranceCode}");
+			// "https://localhost?entranceCode=".$entranceCode.'&amp;transactionID='.$transactionID;
+			
+			// $request->paymentReference = str_replace('-','',$request->paymentReference);
+
+			// echo "<pre> ". htmlspecialchars($request->XmlString()). "</pre> ";
+			// die();
+			$response = $this->bluem->PerformRequest($request);
+// 			var_dump($request);
+// 			var_dump($request->XmlString());
+// var_dump($response);
+// die();
 
 
 			// $response = $this->bluem->CreateNewTransaction($customer_id, $order_id);
@@ -290,6 +315,19 @@ die();
 
 			if (isset($response->PaymentTransactionResponse->TransactionURL)) {
 
+				$order->add_order_note( __("Betalingsproces geinitieerd") );
+
+				$transactionID = "". $response->PaymentTransactionResponse->TransactionID;
+				update_post_meta($order_id, 'bluem_transactionid', $transactionID);
+				$paymentReference = "". $response->PaymentTransactionResponse->paymentReference;
+				update_post_meta($order_id, 'bluem_payment_reference', $paymentReference);
+				$debtorReference = "". $response->PaymentTransactionResponse->debtorReference;
+				update_post_meta($order_id, 'bluem_debtor_Reference', $debtorReference);
+				
+				// var_dump($response);
+				// die();
+
+				// die();
 				// redirect cast to string, for AJAX response handling
 				$transactionURL = ($response->PaymentTransactionResponse->TransactionURL . "");
 				return array(
@@ -375,24 +413,35 @@ die();
 					// check if maximum of order does not exceed mandate size based on user metadata
 					if ($mandate_successful) {
 
-						$order->update_status('processing', __('Machtiging is gelukt en goedgekeurd; via webhook', 'wc-gateway-bluem'));
+						$order->update_status('processing', __('Betaling is gelukt en goedgekeurd; via webhook', 'wc-gateway-bluem'));
 					}
 					// iff order is within size, update to processing
 				}
 			} elseif ($webhook_status === "Cancelled") {
-				$order->update_status('cancelled', __('Machtiging is geannuleerd; via webhook', 'wc-gateway-bluem'));
+				$order->update_status('cancelled', __('Betaling is geannuleerd; via webhook', 'wc-gateway-bluem'));
 			} elseif ($webhook_status === "Open" || $webhook_status == "Pending") {
 				// if the webhook is still open or pending, nothing has to be done as of yet
 			} elseif ($webhook_status === "Expired") {
-				$order->update_status('failed', __('Machtiging is verlopen; via webhook', 'wc-gateway-bluem'));
+				$order->update_status('failed', __('Betaling is verlopen; via webhook', 'wc-gateway-bluem'));
 			} else {
-				$order->update_status('failed', __('Machtiging is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem'));
+				$order->update_status('failed', __('Betaling is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem'));
 			}
 			exit;
 		}
 
 
-
+		public function getOrderByEntranceCode($entranceCode)
+		{
+			$orders = wc_get_orders(array(
+				'orderby'   => 'date',
+				'order'     => 'DESC',
+				'bluem_entrancecode' => $entranceCode
+			));
+			if (count($orders) == 0) {
+				return null;
+			}
+			return $orders[0];
+		}
 		/**
 		 * Retrieve an order based on its mandate_id in metadata from the WooCommerce store
 		 *
@@ -414,7 +463,7 @@ die();
 
 
 		/**
-		 * payment_Callback function after Mandate process has been completed by the user
+		 * payment_Callback function after payment process has been completed by the user
 		 * @return function [description]
 		 */
 		public function payment_callback()
@@ -422,36 +471,32 @@ die();
 
 			// $this->bluem = new Integration($this->bluem_config);
 
-			if (!isset($_GET['mandateID'])) {
-				$this->renderPrompt("Fout: geen juist mandaat id teruggekregen bij payment_callback. Neem contact op met de webshop en vermeld je contactgegevens.");
+			if (!isset($_GET['entranceCode'])) {
+				$this->renderPrompt("Fout: geen juiste entranceCode teruggekregen bij payment_callback. Neem contact op met de webshop en vermeld je contactgegevens.");
 				exit;
 			}
-			$transactionID = $_GET['mandateID'];
+			$entranceCode = $_GET['entranceCode'];
 
-			if(!isset($_GET['type']) || !in_array("".$_GET['type'],['default','simple']))
-			{
-				$type = "default";
-			} else {
-				$type = $_GET['type'];
-			}
-
-			if($type =="simple") {
-				
-			} else { 
-
-			}
-
-			$order = $this->getOrder($transactionID);
+			$order = $this->getOrderByEntranceCode($entranceCode);
+			// var_dump($entranceCode);
+			// var_dump($order);
 			if (is_null($order)) {
-				$this->renderPrompt("Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code {$transactionID} bij je gegevens.");
+				$this->renderPrompt("Fout: order niet gevonden in webshop. Neem contact op met de webshop en vermeld de code {$entranceCode} bij je gegevens.");
 				exit;
 			}
 			$user_id = $order->get_user_id();
 
 			// $order_meta = $order->get_meta_data();
-			$entranceCode = $order->get_meta('bluem_entrancecode');
-
-			$response = $this->bluem->RequestTransactionStatus($transactionID, $entranceCode);
+			$transactionID = $order->get_meta('bluem_transactionid');
+			if($transactionID=="") 
+			{
+				$this->renderPrompt("No transaction ID found. Neem contact op met de webshop en vermeld de code {$entranceCode} bij je gegevens.");
+				die();
+			}
+// var_dump($transactionID);
+// die();
+// var_dump($order);
+			$response = $this->bluem->PaymentStatus($transactionID, $entranceCode);
 			// var_dump($response);
 			// die();
 			// if(is_null($response) || is_string($response)) {
@@ -473,31 +518,36 @@ die();
 			}
 
 			$statusUpdateObject = $response->PaymentStatusUpdate;
-			$statusCode = $statusUpdateObject->PaymentStatus->Status . "";
-			// var_dump($statusCode);
+			$statusCode = $statusUpdateObject->Status . "";
+			// var_dump($statusUpdateObject);
 			if ($statusCode === "Success") {
+
+				$order->update_status('processing', __('Betaling is binnengekomen', 'wc-gateway-bluem'));
+
+
+				$order->add_order_note( __("Betalingsproces voltooid") );
 
 				$this->bluem_thankyou($order->ID);
 
 			} elseif ($statusCode === "Cancelled") {
-				$order->update_status('cancelled', __('Machtiging is geannuleerd', 'wc-gateway-bluem'));
+				$order->update_status('cancelled', __('Betaling is geannuleerd', 'wc-gateway-bluem'));
 
-				$this->renderPrompt("Je hebt de mandaat ondertekening geannuleerd");
+				$this->renderPrompt("Je hebt de betaling geannuleerd");
 				// terug naar order pagina om het opnieuw te proberen?
 				exit;
 			} elseif ($statusCode === "Open" || $statusCode == "Pending") {
 
-				$this->renderPrompt("De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
+				$this->renderPrompt("De betaling is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
 				// callback pagina beschikbaar houden om het opnieuw te proberen?
-				// is simpelweg SITE/wc-api/bluem_callback?mandateID=$transactionID
+				// is simpelweg SITE/wc-api/bluem_callback?transactionID=$transactionID
 				exit;
 			} elseif ($statusCode === "Expired") {
-				$order->update_status('failed', __('Machtiging is verlopen', 'wc-gateway-bluem'));
+				$order->update_status('failed', __('Betaling is verlopen', 'wc-gateway-bluem'));
 
-				$this->renderPrompt("Fout: De mandaat of het verzoek daartoe is verlopen");
+				$this->renderPrompt("Fout: De betaling of het verzoek daartoe is verlopen");
 				exit;
 			} else {
-				$order->update_status('failed', __('Machtiging is gefaald: fout of onbekende status', 'wc-gateway-bluem'));
+				$order->update_status('failed', __('Betaling is gefaald: fout of onbekende status', 'wc-gateway-bluem'));
 				//$statusCode == "Failure"
 				$this->renderPrompt("Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status");
 				exit;
@@ -512,10 +562,10 @@ die();
 		 * @param boolean $block_processing
 		 * @param boolean $update_metadata
 		 * @param [type] $mandate_id
-		 * @param [type] $entrance_code
+		 * @param [type] $entrancecode
 		 * @return void
 		 */
-		private function validatePayment($response, $order, $block_processing = false, $update_metadata = true, $redirect = true, $mandate_id = null, $entrance_code = null)
+		private function validatePayment($response, $order, $block_processing = false, $update_metadata = true, $redirect = true, $mandate_id = null, $entrancecode = null)
 		{
             return true;
             // not implemented for payments as any successful payment is sufficient.

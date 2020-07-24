@@ -8,11 +8,6 @@ if (!defined('ABSPATH')) {
 
 class Bluem_Helper  
 {
-	public function help()
-	{
-		return "HALPT";
-	}
-
 	public function GetBluemCoreOptions()
 	{
 		return [
