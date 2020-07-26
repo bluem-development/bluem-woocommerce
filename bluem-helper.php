@@ -21,19 +21,19 @@ class Bluem_Helper
 				'title' => 'bluem_senderID',
 				'name' => 'senderID',
 				'description' => 'Het sender ID, uitgegeven door BlueM. Begint met een S, gevolgd door een getal.',
-				'default' => "S1212"
+				'default' => "S...."
 			],
 			'test_accessToken' => [
 				'title' => 'bluem_test_accessToken',
 				'name' => 'test_accessToken',
 				'description' => 'Het access token om met BlueM te kunnen communiceren, voor de test omgeving',
-				'default' => 'ef552fd4012f008a6fe3000000690107003559eed42f0000'
+				'default' => ''
 			],
 			'production_accessToken' => [
 				'title' => 'bluem_production_accessToken',
 				'name' => 'production_accessToken',
 				'description' => 'Het access token om met BlueM te kunnen communiceren, voor de productie omgeving',
-				'default' => '170033937f3000f170df000000000107f1b150019333d317'
+				'default' => ''
             ],
             'expectedReturnStatus' => [
                 'title' => 'bluem_expectedReturnStatus',
@@ -45,7 +45,7 @@ class Bluem_Helper
                 'title' => 'bluem_brandID',
                 'name' => 'brandID',
                 'description' => 'Wat is je BrandID? Ingesteld bij BlueM',
-                'default' => 'NextDeliMandate'
+                'default' => ''
             ]
 		];
 	}

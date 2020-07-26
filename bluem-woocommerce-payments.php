@@ -2,37 +2,19 @@
 // @todo: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
 // @todo: Localize all error messages to english primarily
 // @todo: finish docblocking
-/**
- * Plugin Name: BlueM integration for WooCommerce
- * Version: 1.0.0
- * Plugin URI: https://github.com/DaanRijpkema/bluem-woocommerce
- * Description: BlueM WooCommerce integration for many functions: Payments and eMandates payment gateway and iDIN identity verification
- * Author: Daan Rijpkema
- * Author URI: https://github.com/DaanRijpkema/
- * Requires at least: 4.0
- * Tested up to: 4.0
- *
- * Text Domain: bluem-woocommerce
- * Domain Path: /lang/
- *
- * @package WordPress
- * @author Hugh Lashbrooke
- * @since 1.0.0
- */
 
 if (!defined('ABSPATH')) {
 	exit;
 }
 
-// our own integration code
-// require 'BlueMIntegration.php';
-
 // get composer dependencies
-require __DIR__.'/vendor/autoload.php';
+// require __DIR__.'/vendor/autoload.php';
 
-// use Bluem\BluemIntegration;
+// get specific gateways and helpers
+require_once __DIR__. '/bluem-helper.php';
 
-use Bluem\BluemPHP\IdentityBluemRequest;
+
+
 use Bluem\BluemPHP\Integration;
 use Carbon\Carbon;
 
@@ -87,8 +69,8 @@ function bluem_init_payment_gateway_class()
             $this->id = 'bluem_payments'; // payment gateway plugin ID
             $this->icon = ''; // URL of the icon that will be displayed on checkout page near your gateway name
             $this->has_fields = true; // in case you need a custom credit card form
-            $this->method_title = 'BlueM betaling via iDeal';
-            $this->method_description = 'BlueM iDeal Payment Gateway voor WordPress - WooCommerce '; // will be displayed on the options page
+            $this->method_title = 'Bluem betaling via iDeal';
+            $this->method_description = 'Bluem iDeal Payment Gateway voor WordPress - WooCommerce '; // will be displayed on the options page
 
 			$this->bluem_options = array_merge($this->core->GetBluemCoreOptions(),[
                
@@ -127,7 +109,9 @@ function bluem_init_payment_gateway_class()
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
             // ********** CREATING plugin URLs for specific functions **********
-            add_action('woocommerce_api_bluem_payments_webhook', array($this, 'payments_webhook'), 5);
+			add_action('woocommerce_api_bluem_payments_webhook', array($this, 'payments_webhook'), 5);
+			// add_action('woocommerce_api_bluem_payments_webhook', array($this, 'payments_webhook_prod'), 5);
+
             add_action('woocommerce_api_bluem_payments_callback', array($this, 'payment_callback'));
 
 
@@ -173,7 +157,7 @@ function bluem_init_payment_gateway_class()
             $this->form_fields = apply_filters('wc_offline_form_fields', [
                 'enabled' => [
                     'title'       => 'Enable/Disable',
-                    'label'       => 'Enable BlueM Payment Gateway',
+                    'label'       => 'Enable Bluem Payment Gateway',
                     'type'        => 'checkbox',
                     'description' => '',
                     'default'     => 'no'
@@ -182,13 +166,13 @@ function bluem_init_payment_gateway_class()
                     'title'       => 'Title',
                     'type'        => 'text',
                     'description' => 'This controls the title which the user sees during checkout.',
-                    'default'     => 'Betaal gemakkelijk, snel en veilig via iDeal',
+                    'default'     => 'iDeal',
                 ],
                 'description' => [
                     'title'       => 'Description',
                     'type'        => 'textarea',
                     'description' => 'This controls the description which the user sees during checkout.',
-                    'default'     => 'iDeal betaling voor je bestelling',
+                    'default'     => 'Betaal gemakkelijk, snel en veilig via iDeal',
                 ]
             ]);
 
@@ -247,7 +231,7 @@ function bluem_init_payment_gateway_class()
 		// MANDATE SPECIFICS: 
 
 		/**
-		 * Process payment through BlueM portal
+		 * Process payment through Bluem portal
 		 *
 		 * @param String $order_id
 		 * @return void
@@ -311,7 +295,7 @@ function bluem_init_payment_gateway_class()
 			// Remove cart
 			global $woocommerce;
 			$woocommerce->cart->empty_cart();
-			$order->update_status('pending', __('Awaiting BlueM Payment Signature', 'wc-gateway-bluem'));
+			$order->update_status('pending', __('Awaiting Bluem Payment Signature', 'wc-gateway-bluem'));
 
 			if (isset($response->PaymentTransactionResponse->TransactionURL)) {
 
@@ -341,6 +325,15 @@ function bluem_init_payment_gateway_class()
 			}
 		}
 
+		// public function payments_webhook_test()
+		// {
+		// 	$this->payments_webhook("test");
+		// }
+
+		// public function payments_webhook_prod()
+		// {
+		// 	$this->payments_webhook("prod");
+		// }
 		/**
 		 * payments_Webhook action
 		 *
@@ -348,6 +341,13 @@ function bluem_init_payment_gateway_class()
 		 */
 		public function payments_webhook()
 		{
+			if($_GET['env'])
+			{
+				$env = $_GET['env'];
+			} else {
+				$env = "test";
+			}
+
 			$statusUpdateObject = $this->bluem->Webhook();
 			
 			$entranceCode = $statusUpdateObject->entranceCode . "";

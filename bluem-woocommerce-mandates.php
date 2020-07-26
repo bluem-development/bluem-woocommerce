@@ -1,34 +1,23 @@
 <?php
-// @todo: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
+
+
+ // @todo: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
 // @todo: Localize all error messages to english primarily
 // @todo: finish docblocking
-/**
- * Plugin Name: BlueM integration for WooCommerce
- * Version: 1.0.0
- * Plugin URI: https://github.com/DaanRijpkema/bluem-woocommerce
- * Description: BlueM WooCommerce integration for many functions: Payments and eMandates payment gateway and iDIN identity verification
- * Author: Daan Rijpkema
- * Author URI: https://github.com/DaanRijpkema/
- * Requires at least: 4.0
- * Tested up to: 4.0
- *
- * Text Domain: bluem-woocommerce
- * Domain Path: /lang/
- *
- * @package WordPress
- * @author Hugh Lashbrooke
- * @since 1.0.0
- */
 
 if (!defined('ABSPATH')) {
 	exit;
 }
 
-// our own integration code
-// require 'BlueMIntegration.php';
 
 // get composer dependencies
 require __DIR__.'/vendor/autoload.php';
+
+
+// get specific gateways and helpers
+require_once __DIR__. '/bluem-helper.php';
+
+
 
 // use Bluem\BluemIntegration;
 
@@ -100,25 +89,25 @@ function bluem_init_mandate_gateway_class()
                     'title' => 'bluem_senderID',
                     'name' => 'senderID',
                     'description' => 'Het sender ID, uitgegeven door BlueM. Begint met een S, gevolgd door een getal.',
-                    'default' => "S1212"
+                    'default' => ""
                 ],
                 'test_accessToken' => [
                     'title' => 'bluem_test_accessToken',
                     'name' => 'test_accessToken',
                     'description' => 'Het access token om met BlueM te kunnen communiceren, voor de test omgeving',
-                    'default' => 'ef552fd4012f008a6fe3000000690107003559eed42f0000'
+                    'default' => ''
                 ],
                 'production_accessToken' => [
                     'title' => 'bluem_production_accessToken',
                     'name' => 'production_accessToken',
                     'description' => 'Het access token om met BlueM te kunnen communiceren, voor de productie omgeving',
-                    'default' => '170033937f3000f170df000000000107f1b150019333d317'
+                    'default' => ''
                 ],
                 'merchantID' => [
                     'title' => 'bluem_merchantID',
                     'name' => 'merchantID',
                     'description' => 'het merchantID, te vinden op het contract dat je hebt met de bank voor ontvangen van incasso machtigingen',
-                    'default' => '0020009469'
+                    'default' => ''
                 ],
                 'thanksPage' => [
                     'title' => 'bluem_thanksPage',
