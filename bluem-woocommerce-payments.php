@@ -108,12 +108,13 @@ function bluem_init_payment_gateway_class()
             // This action hook saves the settings
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
-            // ********** CREATING plugin URLs for specific functions **********
+			// ********** CREATING plugin URLs for specific functions **********
+			// using Woo's builtin webhook possibilities. This action creates an accessible URL wc-api/bluem_payments_webhook and one for the callback as well
+			// reference: https://rudrastyh.com/woocommerce/payment-gateway-plugin.html#gateway_class
 			add_action('woocommerce_api_bluem_payments_webhook', array($this, 'payments_webhook'), 5);
-			// add_action('woocommerce_api_bluem_payments_webhook', array($this, 'payments_webhook_prod'), 5);
+
 
             add_action('woocommerce_api_bluem_payments_callback', array($this, 'payment_callback'));
-
 
             // ********** Allow filtering Orders based on TransactionID **********
             add_filter('woocommerce_order_data_store_cpt_get_orders_query', function ($query, $query_vars) {
@@ -262,7 +263,8 @@ function bluem_init_payment_gateway_class()
 				$debtorReference,
 				$amount,
 				$dueDateTime,
-				$currency
+				$currency,
+				$entranceCode
 			);
 			
 			// temp overrides
@@ -341,15 +343,21 @@ function bluem_init_payment_gateway_class()
 		 */
 		public function payments_webhook()
 		{
-			if($_GET['env'])
+			if($_GET['env'] && is_string($_GET['env']) && in_array($_GET['env'],['test','prod']))
 			{
 				$env = $_GET['env'];
 			} else {
 				$env = "test";
 			}
 
+			// echo "$env";
+// var_dump($this->bluem);
+			// echo "IN WEBHOOK FUNC";
+			// die();
 			$statusUpdateObject = $this->bluem->Webhook();
-			
+			echo "Completed webhook";
+			var_dump($statusUpdateObject);
+			die();
 			$entranceCode = $statusUpdateObject->entranceCode . "";
 			$transactionID = $statusUpdateObject->PaymentStatus->MandateID . "";
 

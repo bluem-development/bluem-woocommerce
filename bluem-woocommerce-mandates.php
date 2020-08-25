@@ -343,6 +343,8 @@ function bluem_init_mandate_gateway_class()
 			$order_id = $order->get_order_number();
 			$customer_id = get_post_meta($order_id, '_customer_user', true);
 
+
+			// $this->bluem->config->merchantReturnURLBase = "https://google.com";
 			$entranceCode = $this->bluem->CreateEntranceCode();
 			$mandateId = $this->bluem->CreateMandateId($order_id, $customer_id);
 
@@ -355,9 +357,14 @@ function bluem_init_mandate_gateway_class()
 			// var_dump($order_id);
 			// var_dump($customer_id);
 			// $simple_redirect_url = home_url('/your-custom-url');
-			$response = $this->bluem->CreateNewTransaction($customer_id, $order_id,"simple","https://google.com");
+			$response = $this->bluem->Mandate($customer_id,
+				$order_id);
+				//$customer_id, $order_id,"simple","https://google.com");
 			// "simple",$simple_redirect_url);
 			// var_dump($response);
+			if(is_a($response,"Bluem\BluemPHP\ErrorBluemResponse",false)) {
+				throw new Exception("An error occured in the payment method. Please contact the webshop owner with this message:  ".$response->error());
+			}
 			// die();
 			// Mark as on-hold (we're awaiting the payment)
 			// https://docs.woocommerce.com/document/managing-orders/
