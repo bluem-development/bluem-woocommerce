@@ -316,6 +316,12 @@ function bluem_woocommerce_settings_render_input($field)
 	}
 	$values = get_option('bluem_woocommerce_options');
 	$key = $field['key'];
+
+	// fallback
+if(!isset($field['type'])) {
+	$field['type'] = "text";
+}
+
 	if ($field['type'] == "select") {
 	?>
 
@@ -359,7 +365,13 @@ echo "selected='selected'";
 	<?php
 	}
 	?>
+
+	<?php if(isset($field['description']) && $field['description']!=="" ) {
+		?>
+
 	<br><label style='color:ddd;' for='bluem_woocommerce_settings_<?php echo $key; ?>'><?php echo $field['description']; ?></label>
+		<?php 
+	} ?>
 
 
 <?php

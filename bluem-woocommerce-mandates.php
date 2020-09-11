@@ -885,7 +885,7 @@ function bluem_init_mandate_gateway_class()
 		$values = get_option('bluem_woocommerce_options');
 		foreach ($bluem_options as $key => $option) {
 			
-			$config->$key = isset($values[$key])?$values[$key]:$option['default'];
+			$config->$key = isset($values[$key])?$values[$key]:(isset($option['default'])?$option['default']:"");
 		}
 		$config->merchantReturnURLBase = home_url('wc-api/bluem_mandates_callback');
 		return $config;
