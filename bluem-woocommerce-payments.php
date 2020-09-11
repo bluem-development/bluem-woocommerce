@@ -72,10 +72,6 @@ function bluem_init_payment_gateway_class()
             $this->method_title = 'Bluem betaling via iDeal';
             $this->method_description = 'Bluem iDeal Payment Gateway voor WordPress - WooCommerce '; // will be displayed on the options page
 
-			$this->bluem_options = array_merge($this->core->GetBluemCoreOptions(),[
-               
-            ]);
-
 
             // gateways can support subscriptions, refunds, saved payment methods,
             // but in this version we begin with simple payments
@@ -91,15 +87,29 @@ function bluem_init_payment_gateway_class()
             $this->title = $this->get_option('title');
             $this->description = $this->get_option('description');
 
+
+
+		
+			$this->bluem_options = array_merge($this->core->GetBluemCoreOptions(),_bluem_get_payments_options());
+
+			$option_values = get_option('bluem_woocommerce_options');
             // ********** CREATING BlueM Configuration **********
             $this->bluem_config = new Stdclass();
             foreach ($this->bluem_options as $key => $option) {
-                $option_key = "bluem_{$key}";
-                $this->$option_key = $this->get_option($option_key);
+                $bluem_key = "bluem_{$key}";
+                $this->$bluem_key = $option_values[$key];
 
-                $this->bluem_config->$key = $this->get_option($option_key);
+                $this->bluem_config->$key = $option_values[$key];
             }
-            $this->bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_payments_callback');
+			$this->bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_payments_callback');
+			
+			// specifiek brandID voor payments instellen
+			$this->bluem_config->brandId = $this->bluem_config->paymentBrandId;
+			//home_url('wc-api/bluem_payments_callback');
+
+// var_dump($this->bluem_config);
+// die();
+
 
             $this->bluem = new Integration($this->bluem_config);
 
@@ -177,17 +187,17 @@ function bluem_init_payment_gateway_class()
                 ]
             ]);
 
-            foreach ($this->bluem_options as $key => $option) {
-                $option_key = "bluem_{$key}";
-                $this->form_fields[$option_key] = array(
-                    'title'       => $option['name'],
-                    'label'       => $option['name'],
-                    'type'        => (isset($option['type']) ? $option['type'] : "text"),
-                    'description' => $option['description'],
-                    'default'     => (isset($option['default']) ? $option['default'] : ""),
-                    'desc_tip'    => true,
-                );
-            }
+            // foreach ($this->bluem_options as $key => $option) {
+            //     $option_key = "bluem_{$key}";
+            //     $this->form_fields[$option_key] = array(
+            //         'title'       => $option['name'],
+            //         'label'       => $option['name'],
+            //         'type'        => (isset($option['type']) ? $option['type'] : "text"),
+            //         'description' => $option['description'],
+            //         'default'     => (isset($option['default']) ? $option['default'] : ""),
+            //         'desc_tip'    => true,
+            //     );
+            // }
         }
 
         
@@ -251,8 +261,13 @@ function bluem_init_payment_gateway_class()
 			// $transactionID = $this->bluem->CreatePaymentTransactionID($order_id.$customer_id);
 
 			update_post_meta($order_id, 'bluem_entrancecode', $entranceCode);
+if(!is_null($customer_id) &&  $customer_id!="" && $customer_id!="0")
+{
+	$description = "Klant {$customer_id} Bestelling {$order_id}";
+} else {
+	$description = "Bestelling {$order_id}";
+}
 
-			$description = "Klant {$customer_id} Bestelling {$order_id}";
 			$debtorReference = "{$order_id}";
 			$amount = $order->get_total();
 			$currency = "EUR";
@@ -616,10 +631,75 @@ function bluem_init_payment_gateway_class()
 			return false;
 		}
 	
-		update_usermeta( $user_id, 'bluem_latest_mandate_id', esc_attr( $_POST['bluem_latest_mandate_id'] ) );
-		update_usermeta( $user_id, 'bluem_latest_mandate_amount', esc_attr( $_POST['bluem_latest_mandate_amount'] ) );
+		update_user_meta( $user_id, 'bluem_latest_mandate_id', esc_attr( $_POST['bluem_latest_mandate_id'] ) );
+		update_user_meta( $user_id, 'bluem_latest_mandate_amount', esc_attr( $_POST['bluem_latest_mandate_amount'] ) );
 		
 	}
 }
 
+
+
+function bluem_woocommerce_payments_settings_section()
+{
+
+// 	$core = new Bluem_Helper();
+// 	$all_bluem_options = array_merge($core->GetBluemCoreOptions(),_bluem_get_payments_options());
+
+// $option_values = get_option('bluem_woocommerce_options');
+
+// 	$bluem_config = new Stdclass();
+// 	foreach ($all_bluem_options as $key => $option) {
+// 		// $option_key = "bluem_woocommerce_options[{$key}]";
+// 		$option_key = $option_values[$key];
+
+// 		$bluem_config->$key = $option_values[$key];
+// 	}
+// 	$bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_payments_callback');
+	
+// 	// specifiek brandID voor payments instellen
+// 	$bluem_config->brandId = $bluem_config->paymentBrandId;
+// 	//home_url('wc-api/bluem_payments_callback');
+
+// var_dump($bluem_config);
+// die();
+
+
+
+// foreach($all_bluem_options as $key => $bo) {
+// 	var_dump($bo);
+// 	$option_key = "bluem_{$key}";
+//               var_dump(get_option($option_key));
+
+// echo "<HR>";
+// 			}
+
+	// var_dump($all_bluem_options);
+	echo '<p>Hier kan je alle belangrijke gegevens instellen rondom iDeal transacties. Lees de readme bij de plug-in voor meer informatie.</p>';
+}
+
+
+function _bluem_get_payments_option($key) {
+	$options = _bluem_get_payments_options();
+	if(array_key_exists($key,$options))
+	{
+		return $options[$key];
+	}
+	return false;
+}
+function _bluem_get_payments_options()
+{
+	return [
+
+		
+		             
+	'paymentBrandId' => [
+		'key'=>'paymentBrandId',
+		'title' => 'bluem_paymentBrandId',
+		'name' => 'Bluem Brand ID voor Payments',
+		'description' => 'het paymentBrandId, ontvangen van Bluem specifiek voor betalingen',
+		'default' => ''
+	]
+	
+	];
+}
 // https://www.skyverge.com/blog/how-to-create-a-simple-woocommerce-payment-gateway/
