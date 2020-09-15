@@ -427,7 +427,7 @@ function bluem_init_mandate_gateway_class()
 						($bluem_latest_mandate_amount > 0 && $bluem_latest_mandate_amount  >= (float)$order->get_total() * $maxAmountFactor))))
 			) {
 
-				echo "Existing mandate given!";
+				// echo "Existing mandate given!";
 
 				// $existing_mandate_id = $bluem_latest_mandate_id[0];
 				// // $existing_mandate_amount = $bluem_latest_mandate_amount[0];
@@ -440,8 +440,8 @@ function bluem_init_mandate_gateway_class()
 					$bluem_latest_mandate_id,
 					$bluem_latest_mandate_entrance_code
 				);
-				var_dump($existing_mandate_response);
-				die();
+				// var_dump($existing_mandate_response);
+				// die();
 				if (!$existing_mandate_response->Status()) {
 					// $this->renderPrompt("Fout: geen valide bestaand mandaat gevonden");
 					// exit;
@@ -467,10 +467,10 @@ function bluem_init_mandate_gateway_class()
 					}
 				}
 			}
-			die();
+			// die();
 
-			echo "No existing mandate...";
-			die();
+			// echo "No existing mandate...";
+			// die();
 
 			$order_id = $order->get_order_number();
 			$customer_id = get_post_meta($order_id, '_customer_user', true);
