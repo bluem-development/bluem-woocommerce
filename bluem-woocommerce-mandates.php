@@ -393,11 +393,6 @@ function bluem_init_mandate_gateway_class()
 			} else {
 				$maxAmountFactor = 1.0;
 			}
-			// var_dump($maxAmountEnabled);
-			// var_dump($maxAmountFactor);
-
-			// $max_factor = 1.1;
-
 
 			$bluem_latest_mandate_id = null;
 			if (isset($user_meta['bluem_latest_mandate_id'])) {
@@ -411,15 +406,7 @@ function bluem_init_mandate_gateway_class()
 			if (isset($user_meta['bluem_latest_mandate_entrance_code'])) {
 				$bluem_latest_mandate_entrance_code = $user_meta['bluem_latest_mandate_entrance_code'][0];
 			}
-			// var_dump($bluem_latest_mandate_id);
-			// var_dump($bluem_latest_mandate_amount);
-			// var_dump($bluem_latest_mandate_entrance_code);
-			// // var_dump($bluem_latest_mandate_id);
-			// echo "<HR>";
-			// var_dump((float)$bluem_latest_mandate_amount);
-			// // die();
-			// var_dump((float)$order->get_total());
-			// // die();
+			
 			if (
 				!is_null($bluem_latest_mandate_id) && !is_null($bluem_latest_mandate_amount) &&
 				($maxAmountEnabled == false || ($maxAmountEnabled &&
@@ -427,21 +414,12 @@ function bluem_init_mandate_gateway_class()
 						($bluem_latest_mandate_amount > 0 && $bluem_latest_mandate_amount  >= (float)$order->get_total() * $maxAmountFactor))))
 			) {
 
-				// echo "Existing mandate given!";
-
-				// $existing_mandate_id = $bluem_latest_mandate_id[0];
-				// // $existing_mandate_amount = $bluem_latest_mandate_amount[0];
-				// $existing_entrance_code = $bluem_latest_mandate_entrance_code[0];
-				// var_dump($bluem_latest_mandate_id);
-				// var_dump($bluem_latest_mandate_entrance_code);
 				
-				// die();
 				$existing_mandate_response = $this->bluem->MandateStatus(
 					$bluem_latest_mandate_id,
 					$bluem_latest_mandate_entrance_code
 				);
-				// var_dump($existing_mandate_response);
-				// die();
+			
 				if (!$existing_mandate_response->Status()) {
 					// $this->renderPrompt("Fout: geen valide bestaand mandaat gevonden");
 					// exit;
@@ -467,57 +445,38 @@ function bluem_init_mandate_gateway_class()
 					}
 				}
 			}
-			// die();
-
-			// echo "No existing mandate...";
-			// die();
+			
 
 			$order_id = $order->get_order_number();
 			$customer_id = get_post_meta($order_id, '_customer_user', true);
 
-
-			// $this->bluem->config->merchantReturnURLBase = "https://google.com";
-			// $entranceCode = $this->bluem->CreateEntranceCode();
 			$mandate_id = $this->bluem->CreateMandateId($order_id, $customer_id);
 
-
-			// 			var_dump($entranceCode);
-			// 			var_dump($mandate_id);
-			// var_dump($order_id);
-			// var_dump($customer_id);
-			// $simple_redirect_url = home_url('/your-custom-url');
 			$response = $this->bluem->Mandate(
 				$customer_id,
 				$order_id,
 				$mandate_id
 			);
-			//$customer_id, $order_id,"simple","https://google.com");
-			// "simple",$simple_redirect_url);
-
+			
 
 			if (is_a($response, "Bluem\BluemPHP\ErrorBluemResponse", false)) {
 				throw new Exception("An error occured in the payment method. Please contact the webshop owner with this message:  " . $response->error());
 			}
 
 			$attrs = $response->EMandateTransactionResponse->attributes();
-			// var_dump($response->EMandateTransactionResponse->attributes()['entranceCode']);
-			var_dump($attrs['entranceCode'] . "");
+			
+			// var_dump($attrs['entranceCode'] . "");
 			if (!isset($attrs['entranceCode'])) {
 				throw new Exception("An error occured in reading the transaction response. Please contact the webshop owner");
 			}
 			$entranceCode = $attrs['entranceCode'] . "";
-			// var_dump($entranceCode);
-			// die();
 
 
 			update_post_meta($order_id, 'bluem_entrancecode', $entranceCode);
 			update_post_meta($order_id, 'bluem_mandateid', $mandate_id);
 
-			// die();
-			// Mark as on-hold (we're awaiting the payment)
 			// https://docs.woocommerce.com/document/managing-orders/
 			// Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled', 
-
 
 			// Remove cart
 			global $woocommerce;
@@ -532,11 +491,12 @@ function bluem_init_mandate_gateway_class()
 					'result' => 'success',
 					'redirect' => $transactionURL
 				);
-			} else {
-				return array(
-					'result' => 'failure'
-				);
-			}
+			} 
+			
+			return array(
+				'result' => 'failure'
+			);
+		
 		}
 
 		/**
@@ -546,6 +506,9 @@ function bluem_init_mandate_gateway_class()
 		 */
 		public function mandates_webhook()
 		{
+
+			// todo: update this
+
 			$statusUpdateObject = $this->bluem->Webhook();
 
 			$entranceCode = $statusUpdateObject->entranceCode . "";
@@ -649,8 +612,6 @@ function bluem_init_mandate_gateway_class()
 			}
 			exit;
 		}
-
-
 
 		/**
 		 * Retrieve an order based on its mandate_id in metadata from the WooCommerce store
