@@ -550,7 +550,7 @@ if(!is_null($customer_id) &&  $customer_id!="" && $customer_id!="0")
 
 				$order->add_order_note( __("Betalingsproces voltooid") );
 
-				$this->bluem_thankyou($order->ID);
+				$this->bluem_thankyou($order->get_id());
 
 			} elseif ($statusCode === "Cancelled") {
 				$order->update_status('cancelled', __('Betaling is geannuleerd', 'wc-gateway-bluem'));
@@ -576,65 +576,9 @@ if(!is_null($customer_id) &&  $customer_id!="" && $customer_id!="0")
 				exit;
 			}
 		}
-
-		/**
-		 * Validating a given mandate based on MaxAmount given in $response, compared to $order total pricing and some additional parameters
-		 *
-		 * @param [type] $response
-		 * @param [type] $order
-		 * @param boolean $block_processing
-		 * @param boolean $update_metadata
-		 * @param [type] $mandate_id
-		 * @param [type] $entrancecode
-		 * @return void
-		 */
-		private function validatePayment($response, $order, $block_processing = false, $update_metadata = true, $redirect = true, $mandate_id = null, $entrancecode = null)
-		{
-            return true;
-            // not implemented for payments as any successful payment is sufficient.
-        }
 	}
 
-	add_action( 'show_user_profile', 'bluem_woocommerce_payments_show_extra_profile_fields' );
-	add_action( 'edit_user_profile', 'bluem_woocommerce_payments_show_extra_profile_fields' );
-	
-	function bluem_woocommerce_payments_show_extra_profile_fields( $user ) {
-	
-	?>
-	<h2>Bluem Payment Metadata</h2>
-		<table class="form-table">
-			<tr>
-				<th><label for="bluem_latest_mandate_id">Meest recente MandateID</label></th>
-				<td>
-					<input type="text" name="bluem_latest_mandate_id" id="bluem_latest_mandate_id" value="<?php echo esc_attr( get_user_meta( $user->ID, 'bluem_latest_mandate_id',true ) ); ?>" class="regular-text" /><br />
-					<span class="description">Hier wordt het meest recente mandate ID geplaatst; en gebruikt bij het doen van een volgende checkout.</span>
-				</td>
-			</tr>
-			<tr>
-				<th><label for="bluem_latest_mandate_amount">Omvang laatste machtiging</label></th>
-				<td>
-					<input type="text" name="bluem_latest_mandate_amount" id="bluem_latest_mandate_amount" value="<?php echo esc_attr( get_user_meta( $user->ID, 'bluem_latest_mandate_amount',true ) ); ?>" class="regular-text" /><br />
-					<span class="description">Dit is de omvang van de laatste machtiging</span>
-				</td>
-			</tr>
-			
-			
-		</table>
-	<?php
-	} 
-	add_action( 'personal_options_update', 'bluem_woocommerce_payments_save_extra_profile_fields' );
-	add_action( 'edit_user_profile_update', 'bluem_woocommerce_payments_save_extra_profile_fields' );
-	
-	function bluem_woocommerce_payments_save_extra_profile_fields( $user_id ) {
-	
-		if ( ! current_user_can( 'edit_user', $user_id ) ) {
-			return false;
-		}
-	
-		update_user_meta( $user_id, 'bluem_latest_mandate_id', esc_attr( $_POST['bluem_latest_mandate_id'] ) );
-		update_user_meta( $user_id, 'bluem_latest_mandate_amount', esc_attr( $_POST['bluem_latest_mandate_amount'] ) );
-		
-	}
+
 }
 
 
