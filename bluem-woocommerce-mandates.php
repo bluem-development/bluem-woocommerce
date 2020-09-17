@@ -21,8 +21,8 @@ require_once __DIR__ . '/bluem-helper.php';
 
 // use Bluem\BluemIntegration;
 
-use Bluem\BluemPHP\IdentityBluemRequest;
-use Bluem\BluemPHP\Integration;
+// use Bluem\BluemPHP\IdentityBluemRequest;
+use Bluem\BluemPHP\Integration as BluemCoreIntegration;
 use Carbon\Carbon;
 
 /**
@@ -191,6 +191,10 @@ function _bluem_get_mandates_options()
 			'options' => ['0' => 'Niet checken op MaxAmount', '1' => 'Wel checken op MaxAmount'],
 		],
 
+		//Bij B2B krijgen wij terug of de gebruiker een maximaal mandaatbedrag heeft afgegeven.
+		// Dit mandaat bedrag wordt vergeleken met de orderwaarde. De orderwaarde plus
+		// onderstaand percentage moet lager zijn dan het maximale mandaatbedrag.
+		// Geef hier het percentage aan.
 		'maxAmountFactor' => [
 			'key' => 'maxAmountFactor',
 			'title' => 'bluem_maxAmountFactor',
@@ -200,14 +204,6 @@ function _bluem_get_mandates_options()
 			'attrs' => ['step' => '0.01', 'min' => '0.00', 'max' => '999.00', 'placeholder' => '1.00'],
 			'default' => '1.00'
 		]
-
-
-
-
-		//Bij B2B krijgen wij terug of de gebruiker een maximaal mandaatbedrag heeft afgegeven.
-		// Dit mandaat bedrag wordt vergeleken met de orderwaarde. De orderwaarde plus
-		// onderstaand percentage moet lager zijn dan het maximale mandaatbedrag.
-		// Geef hier het percentage aan.
 	];
 }
 
@@ -261,7 +257,7 @@ function bluem_init_mandate_gateway_class()
 
 			// ********** CREATING Bluem Configuration **********
 			$this->bluem_config = _get_bluem_config();
-			$this->bluem = new Integration($this->bluem_config);
+			$this->bluem = new BluemCoreIntegration($this->bluem_config);
 
 			$this->enabled = $this->get_option('enabled');
 
