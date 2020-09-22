@@ -4,70 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a15c90cec9676e8a7f16fda14be61fc8",
+    "content-hash": "79dbd103f3e801b857e51d0a0d63ad26",
     "packages": [
         {
-            "name": "daanrijpkema/bluem-php",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DaanRijpkema/bluem-php.git",
-                "reference": "58aa5440abc9df3cf1d54d064680e297b76efee4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/58aa5440abc9df3cf1d54d064680e297b76efee4",
-                "reference": "58aa5440abc9df3cf1d54d064680e297b76efee4",
-                "shasum": ""
-            },
-            "require": {
-                "nesbot/carbon": "^2.31",
-                "pear/http_request2": "^2.3",
-                "php": ">=5.4",
-                "selective/xmldsig": "^1.0"
-            },
-            "type": "package",
-            "autoload": {
-                "psr-4": {
-                    "Bluem\\BluemPHP\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Daan Rijpkema",
-                    "email": "info@daanrijpkema.com",
-                    "homepage": "https://daanrijpkema.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Bluem PHP interface",
-            "homepage": "https://daanrijpkema.com",
-            "keywords": [
-                "bluem",
-                "emandate",
-                "epayment",
-                "interface",
-                "php",
-                "wrapper"
-            ],
-            "time": "2020-09-11T12:14:59+00:00"
-        },
-        {
             "name": "nesbot/carbon",
-            "version": "2.39.2",
+            "version": "2.40.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "326efde1bc09077a26cb77f6e2e32e13f06c27f2"
+                "reference": "6c7646154181013ecd55e80c201b9fd873c6ee5d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/326efde1bc09077a26cb77f6e2e32e13f06c27f2",
-                "reference": "326efde1bc09077a26cb77f6e2e32e13f06c27f2",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/6c7646154181013ecd55e80c201b9fd873c6ee5d",
+                "reference": "6c7646154181013ecd55e80c201b9fd873c6ee5d",
                 "shasum": ""
             },
             "require": {
@@ -143,7 +93,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-09-10T12:16:42+00:00"
+            "time": "2020-09-11T19:00:58+00:00"
         },
         {
             "name": "pear/http_request2",
@@ -317,101 +267,6 @@
                 "exception"
             ],
             "time": "2019-12-10T10:24:42+00:00"
-        },
-        {
-            "name": "selective/xmldsig",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/selective-php/xmldsig.git",
-                "reference": "225e94f34f221a9bc1e6a41dc7b3c0d66b5bd763"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/selective-php/xmldsig/zipball/225e94f34f221a9bc1e6a41dc7b3c0d66b5bd763",
-                "reference": "225e94f34f221a9bc1e6a41dc7b3c0d66b5bd763",
-                "shasum": ""
-            },
-            "require": {
-                "ext-openssl": "*",
-                "php": "^7.1.3"
-            },
-            "require-dev": {
-                "overtrue/phplint": "^1.1",
-                "phpstan/phpstan": "^0.12",
-                "phpunit/phpunit": "^7",
-                "squizlabs/php_codesniffer": "^3.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Selective\\XmlDSig\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Sign XML Documents with Digital Signatures",
-            "homepage": "https://github.com/selective-php/xmldsig",
-            "keywords": [
-                "signatures",
-                "verify",
-                "xml",
-                "xmldsig"
-            ],
-            "time": "2020-02-25T11:38:45+00:00"
-        },
-        {
-            "name": "squizlabs/php_codesniffer",
-            "version": "3.5.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "e97627871a7eab2f70e59166072a6b767d5834e0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/e97627871a7eab2f70e59166072a6b767d5834e0",
-                "reference": "e97627871a7eab2f70e59166072a6b767d5834e0",
-                "shasum": ""
-            },
-            "require": {
-                "ext-simplexml": "*",
-                "ext-tokenizer": "*",
-                "ext-xmlwriter": "*",
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0"
-            },
-            "bin": [
-                "bin/phpcs",
-                "bin/phpcbf"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.x-dev"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Greg Sherwood",
-                    "role": "lead"
-                }
-            ],
-            "description": "PHP_CodeSniffer tokenizes PHP, JavaScript and CSS files and detects violations of a defined set of coding standards.",
-            "homepage": "https://github.com/squizlabs/PHP_CodeSniffer",
-            "keywords": [
-                "phpcs",
-                "standards"
-            ],
-            "time": "2020-08-10T04:50:15+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -738,58 +593,10 @@
             "time": "2020-09-07T11:33:47+00:00"
         }
     ],
-    "packages-dev": [
-        {
-            "name": "wp-coding-standards/wpcs",
-            "version": "2.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/WordPress/WordPress-Coding-Standards.git",
-                "reference": "bd9c33152115e6741e3510ff7189605b35167908"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/WordPress/WordPress-Coding-Standards/zipball/bd9c33152115e6741e3510ff7189605b35167908",
-                "reference": "bd9c33152115e6741e3510ff7189605b35167908",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4",
-                "squizlabs/php_codesniffer": "^3.3.1"
-            },
-            "require-dev": {
-                "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
-                "phpcompatibility/php-compatibility": "^9.0",
-                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0"
-            },
-            "suggest": {
-                "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0 || This Composer plugin will sort out the PHPCS 'installed_paths' automatically."
-            },
-            "type": "phpcodesniffer-standard",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Contributors",
-                    "homepage": "https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/graphs/contributors"
-                }
-            ],
-            "description": "PHP_CodeSniffer rules (sniffs) to enforce WordPress coding conventions",
-            "keywords": [
-                "phpcs",
-                "standards",
-                "wordpress"
-            ],
-            "time": "2019-05-21T02:50:00+00:00"
-        }
-    ],
+    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "daanrijpkema/bluem-php": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

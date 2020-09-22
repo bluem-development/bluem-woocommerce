@@ -11,11 +11,11 @@ if (!defined('ABSPATH')) {
 // require __DIR__.'/vendor/autoload.php';
 
 // get specific gateways and helpers
-require_once __DIR__. '/bluem-helper.php';
+// require_once __DIR__. '/bluem-helper.php';
 
 
 
-use Bluem\BluemPHP\Integration;
+use Bluem\BluemPHP\Integration as BluemCoreIntegration;
 use Carbon\Carbon;
 
 /**
@@ -54,9 +54,6 @@ function bluem_init_payment_gateway_class()
          */
         private const VERBOSE = false;
 
-		private $core;
-
-
 
         /**
          * Class constructor
@@ -64,7 +61,7 @@ function bluem_init_payment_gateway_class()
         public function __construct()
         {
 			// instantiate the helper class that contains many helpful things.
-			$this->core = new Bluem_Helper();
+			// $this->core = new Bluem_Helper();
 
             $this->id = 'bluem_payments'; // payment gateway plugin ID
             $this->icon = ''; // URL of the icon that will be displayed on checkout page near your gateway name
@@ -90,7 +87,7 @@ function bluem_init_payment_gateway_class()
 
 
 		
-			$this->bluem_options = array_merge($this->core->GetBluemCoreOptions(),_bluem_get_payments_options());
+			$this->bluem_options = array_merge(bluem_woocommerce_get_core_options(),_bluem_get_payments_options());
 
 			$option_values = get_option('bluem_woocommerce_options');
             // ********** CREATING BlueM Configuration **********
@@ -107,11 +104,7 @@ function bluem_init_payment_gateway_class()
 			$this->bluem_config->brandId = $this->bluem_config->paymentBrandId;
 			//home_url('wc-api/bluem_payments_callback');
 
-// var_dump($this->bluem_config);
-// die();
-
-
-            $this->bluem = new Integration($this->bluem_config);
+            $this->bluem = new BluemCoreIntegration($this->bluem_config);
 
             $this->enabled = $this->get_option('enabled');
 
@@ -492,7 +485,7 @@ if(!is_null($customer_id) &&  $customer_id!="" && $customer_id!="0")
 		public function payment_callback()
 		{
 
-			// $this->bluem = new Integration($this->bluem_config);
+			// $this->bluem = new BluemCoreIntegration($this->bluem_config);
 
 			if (!isset($_GET['entranceCode'])) {
 				$this->renderPrompt("Fout: geen juiste entranceCode teruggekregen bij payment_callback. Neem contact op met de webshop en vermeld je contactgegevens.");

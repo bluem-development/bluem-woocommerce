@@ -28,18 +28,17 @@ if (!defined('ABSPATH')) {
 // our own integration code
 
 // get composer dependencies
-require __DIR__ . '/vendor/autoload.php';
+// require __DIR__ . '/vendor/autoload.php';
 
 // get specific gateways and helpers
 require_once __DIR__ . '/bluem-woocommerce-mandates.php';
 require_once __DIR__ . '/bluem-woocommerce-payments.php';
-require_once __DIR__ . '/bluem-helper.php';
 
 
 // use Bluem\BluemPHP\IdentityBluemRequest;
-use Bluem\BluemPHP\Integration;
+// use Bluem\BluemPHP\Integration as BluemCoreIntegration;
 
-use Carbon\Carbon;
+// use Carbon\Carbon;
 
 /**
  * Check if WooCommerce is active
@@ -164,8 +163,7 @@ function bluem_woocommerce_register_settings()
 	add_settings_section('bluem_woocommerce_mandates_section', 'Machtiging instellingen', 'bluem_woocommerce_mandates_settings_section', 'bluem_woocommerce');
 	add_settings_section('bluem_woocommerce_payments_section', 'iDeal payments instellingen', 'bluem_woocommerce_payments_settings_section', 'bluem_woocommerce');
 
-	$core = new Bluem_Helper();
-	$general_settings = $core->GetBluemCoreOptions();
+	$general_settings = bluem_woocommerce_get_core_options();
 	foreach ($general_settings as $key => $ms) {
 		add_settings_field(
 			$key,
@@ -209,9 +207,8 @@ add_action('admin_init', 'bluem_woocommerce_register_settings');
 
 function _bluem_get_option($key) {
 	
-	$core = new Bluem_Helper();
-	$options= $core->GetBluemCoreOptions();
-	// $options = _bluem_get_options();
+	$options= bluem_woocommerce_get_core_options();
+	
 	if(array_key_exists($key,$options))
 	{
 		return $options[$key];
@@ -378,3 +375,66 @@ echo "selected='selected'";
 }
 
 
+function bluem_woocommerce_get_core_options()
+	{
+		return [
+			'environment' => [
+				'key'=> 'environment',
+				'title' => 'bluem_environment',
+				'name' => 'Kies de actieve modus',
+				'description' => 'Vul hier welke modus je wilt gebruiken: prod, test of acc in voor productie (live), test of acceptance omgeving.',
+				'type'=>'select',
+				'default' => 'test',
+				'options'=>
+					['prod'=>"Productie (live)",'test'=>'Test']
+					// acceptance eventueel later toevoegen
+			],
+			'senderID' => [
+				'key'=> 'senderID',
+				'title' => 'bluem_senderID',
+				'name' => 'Bluem Sender ID',
+				'description' => 'Het sender ID, uitgegeven door Bluem. Begint met een S, gevolgd door een getal.',
+				'default' => ""
+			],
+			'brandID' => [
+				'key'=> 'brandID',
+				'title' => 'bluem_brandID',
+				'name' => 'Bluem Brand ID',
+				'description' => 'Wat is je BrandID? Gegeven door Bluem',
+				'default' => ''
+			],
+			'test_accessToken' => [
+				'key'=> 'test_accessToken',
+				'title' => 'bluem_test_accessToken',
+				'type'=>'password',
+				'name' => 'Access Token voor Testen',
+				'description' => 'Het access token om met Bluem te kunnen communiceren, voor de test omgeving',
+				'default' => ''
+			],
+			'production_accessToken' => [
+				'key'=> 'production_accessToken',
+				'title' => 'bluem_production_accessToken',
+				'type'=>'password',
+				'name' => 'Access Token voor Productie',
+				'description' => 'Het access token om met Bluem te kunnen communiceren, voor de productie omgeving',
+				'default' => ''
+			],
+            'expectedReturnStatus' => [
+				'key'=> 'expectedReturnStatus',
+                'title' => 'bluem_expectedReturnStatus',
+                'name' => 'Test modus verwachte return status',
+                'description' => 'Welke status wil je terug krijgen voor een TEST transaction of status request? Mogelijke waarden: none, success, cancelled, expired, failure, open, pending',
+				'default' => 'success',
+				'type'=>'select',
+				'options'=>[
+					'success'=>'success', 
+					'cancelled'=>'cancelled', 
+					'expired'=>'expired', 
+					'failure'=>'failure', 
+					'open'=>'open', 
+					'pending'=>'pending',
+					'none'=>'none'
+				]
+            ]
+		];
+	}

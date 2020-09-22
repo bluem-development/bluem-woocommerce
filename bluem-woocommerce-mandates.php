@@ -11,19 +11,82 @@ if (!defined('ABSPATH')) {
 
 
 // get composer dependencies
-require __DIR__ . '/vendor/autoload.php';
-
+// require __DIR__ . '/vendor/autoload.php';
+// 
 
 // get specific gateways and helpers
-require_once __DIR__ . '/bluem-helper.php';
 
-
-
+// require_once __DIR__ . '/vendor/daanrijpkema/bluem-php/src/Integration.php';
+require_once __DIR__.'/bluem-php/src/Integration.php';
+// require_once __DIR__ . '/bluem-helper.php';
 // use Bluem\BluemIntegration;
 
 // use Bluem\BluemPHP\IdentityBluemRequest;
-use Bluem\BluemPHP\Integration as BluemCoreIntegration;
+use Bluem\BluemPHP\Integration;
 use Carbon\Carbon;
+
+// FORCED 
+		
+$bluem_config = new Stdclass();
+
+// Fill in prod, test or acc for production, test or acceptance environment.
+$bluem_config->environment = "test" ;
+
+// The sender ID, issued by BlueM. Starts with an S, followed by a number.
+$bluem_config->senderID = "S1212";// S1329" ;
+
+// The access token to communicate with BlueM, for the test environment.
+$bluem_config->test_accessToken = "ef552fd4012f008a6fe3000000690107003559eed42f0000";//"86d90a62b42f2f000701a30000000173002f2f01000ad986" ;
+
+// The access token to communicate with BlueM, for the production environment.
+$bluem_config->production_accessToken = "86d90a62b42f2f000701a30000000173002f2f01000ad986" ;
+
+// the merchant ID, to be found on the contract you have with the bank for receiving direct debit mandates.
+$bluem_config->merchantID = "0020009469" ;
+
+// The slug of the thank you page to which should be referred after completing process. If your ORDERID is processed in the URL it will be filled in for you
+$bluem_config->thanksPage = "thanksPage" ;
+
+// What status would you like to get back for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending
+$bluem_config->expectedReturnStatus = "success" ;
+
+// What's your BrandID? Set at BlueM
+// $bluem_config->brandID = "DRIdentity" ;
+$bluem_config->brandID = "NextDeliMandate";//DRMandate";
+// $bluem_config->brandID = "DRPayment";
+
+// Brief description of the debt collection at the time of issue
+$bluem_config->eMandateReason = "eMandateReason" ;
+
+// Choose type of collection: CORE or B2B
+$bluem_config->localInstrumentCode = "B2B" ;
+
+// URL to return to after finishing the process
+$bluem_config->merchantReturnURLBase = "https://google.com";;
+// $bluem_object = new Integration($bluem_config);
+
+
+// 			// $this->bluem_config->merchantReturnURLBase = "https://www.google.com"; 
+			$bluem = new Integration($bluem_config);
+// var_dump($bluem_config);
+// // echo ();
+// echo ("Testing mandates");
+// $mandateID = "12020092197";
+// $entranceCode = "20200921162354249";
+// $result = $bluem->MandateStatus($mandateID, $entranceCode);
+// var_dump($result);
+
+// $mandateID = "12020092197";
+// $entranceCode = "20200921162354249";
+
+// $existing_mandate_response = $bluem->MandateStatus(
+// 	$mandateID,
+// 	$entranceCode
+// );
+// var_dump(($existing_mandate_response));
+// die();
+// // die();
+
 
 /**
  * Check if WooCommerce is active
@@ -33,9 +96,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 } else {
 	throw new Exception("WooCommerce not activated, add this plugin first", 1);
 }
-
-
-
 
 /*
  * This action hook registers our PHP class as a WooCommerce payment gateway
@@ -221,17 +281,11 @@ function bluem_init_mandate_gateway_class()
 		 */
 		private const VERBOSE = false;
 
-
-
-
 		/**
 		 * Class constructor
 		 */
 		public function __construct()
 		{
-			$this->core = new Bluem_Helper();
-
-
 			$this->id = 'bluem_mandates'; // payment gateway plugin ID
 			$this->icon = ''; // URL of the icon that will be displayed on checkout page near your gateway name
 			$this->has_fields = true; // in case you need a custom credit card form
@@ -257,7 +311,7 @@ function bluem_init_mandate_gateway_class()
 
 			// ********** CREATING Bluem Configuration **********
 			$this->bluem_config = _get_bluem_config();
-			$this->bluem = new BluemCoreIntegration($this->bluem_config);
+			
 
 			$this->enabled = $this->get_option('enabled');
 
@@ -376,6 +430,8 @@ function bluem_init_mandate_gateway_class()
 		 */
 		public function process_payment($order_id)
 		{
+
+			$this->bluem = new Integration($this->bluem_config);
 			$order = wc_get_order($order_id);
 
 			$user_id = $order->get_user_id();
@@ -390,20 +446,28 @@ function bluem_init_mandate_gateway_class()
 				$maxAmountFactor = 1.0;
 			}
 
+			$ready = true;
 			$bluem_latest_mandate_id = null;
-			if (isset($user_meta['bluem_latest_mandate_id'])) {
+			if (isset($user_meta['bluem_latest_mandate_id']) && $user_meta['bluem_latest_mandate_id']!=="") {
 				$bluem_latest_mandate_id = $user_meta['bluem_latest_mandate_id'][0];
+			} else {
+				$ready = false;
 			}
 			$bluem_latest_mandate_amount = null;
-			if (isset($user_meta['bluem_latest_mandate_amount'])) {
+			if (isset($user_meta['bluem_latest_mandate_amount']) && $user_meta['bluem_latest_mandate_amount']!=="") {
 				$bluem_latest_mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
+			} else {
+				$ready = false;
 			}
 			$bluem_latest_mandate_entrance_code = null;
-			if (isset($user_meta['bluem_latest_mandate_entrance_code'])) {
+			if (isset($user_meta['bluem_latest_mandate_entrance_code']) && $user_meta['bluem_latest_mandate_entrance_code']!=="") {
 				$bluem_latest_mandate_entrance_code = $user_meta['bluem_latest_mandate_entrance_code'][0];
+			} else {
+				$ready = false;
 			}
 			
 			if (
+				$ready &&
 				!is_null($bluem_latest_mandate_id) && !is_null($bluem_latest_mandate_amount) &&
 				($maxAmountEnabled == false || ($maxAmountEnabled &&
 					($bluem_latest_mandate_amount == 0 ||
@@ -415,8 +479,8 @@ function bluem_init_mandate_gateway_class()
 					$bluem_latest_mandate_id,
 					$bluem_latest_mandate_entrance_code
 				);
-			
-				if (!$existing_mandate_response->Status()) {
+
+				if ($existing_mandate_response->Status() == false) {
 					// $this->renderPrompt("Fout: geen valide bestaand mandaat gevonden");
 					// exit;
 				} else {
@@ -441,7 +505,7 @@ function bluem_init_mandate_gateway_class()
 					}
 				}
 			}
-			
+			// echo "Trying to create our own ordah mandate";
 
 			$order_id = $order->get_order_number();
 			$customer_id = get_post_meta($order_id, '_customer_user', true);
@@ -453,9 +517,9 @@ function bluem_init_mandate_gateway_class()
 				$order_id,
 				$mandate_id
 			);
-			
 
 			if (is_a($response, "Bluem\BluemPHP\ErrorBluemResponse", false)) {
+				// var_dump($mandate_id);
 				throw new Exception("An error occured in the payment method. Please contact the webshop owner with this message:  " . $response->error());
 			}
 
@@ -502,7 +566,7 @@ function bluem_init_mandate_gateway_class()
 		 */
 		public function mandates_webhook()
 		{
-
+exit;
 			// todo: update this
 
 			$statusUpdateObject = $this->bluem->Webhook();
@@ -637,7 +701,7 @@ function bluem_init_mandate_gateway_class()
 		{
 			// echo "In mandate callback";
 
-			// $this->bluem = new Integration($this->bluem_config);
+			$this->bluem = new Integration($this->bluem_config);
 
 			if (!isset($_GET['mandateID'])) {
 
@@ -670,7 +734,8 @@ function bluem_init_mandate_gateway_class()
 			// var_dump($entranceCode);
 			// die();
 			// $mandateID = "415195c2dfc02ffa";
-			$response = $this->bluem->MandateStatus($mandateID, $entranceCode);
+		
+$response = $this->bluem->MandateStatus($mandateID, $entranceCode);
 			// var_dump($mandateID);
 			// var_dump($response);
 			// die();
@@ -854,9 +919,7 @@ function bluem_init_mandate_gateway_class()
 	function _get_bluem_config()
 	{
 
-		$core = new Bluem_Helper();
-
-		$bluem_options = array_merge($core->GetBluemCoreOptions(), _bluem_get_mandates_options());
+		$bluem_options = array_merge(bluem_woocommerce_get_core_options(), _bluem_get_mandates_options());
 		$config = new Stdclass();
 
 		$values = get_option('bluem_woocommerce_options');
