@@ -18,14 +18,6 @@ if (!defined('ABSPATH')) {
 use Bluem\BluemPHP\Integration as BluemCoreIntegration;
 use Carbon\Carbon;
 
-/**
- * Check if WooCommerce is active
- **/
-if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-	// bluem_woocommerce();
-} else {
-	throw new Exception("WooCommerce not activated, add this plugin first", 1);
-}
 
 
 /*
@@ -43,7 +35,10 @@ function bluem_add_gateway_class_payments($gateways)
 /*
  * The gateway class itself, please note that it is inside plugins_loaded action hook
  */
+
+if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
 add_action('plugins_loaded', 'bluem_init_payment_gateway_class');
+}
 function bluem_init_payment_gateway_class()
 {
 // GENERIC STUFFS
@@ -639,4 +634,15 @@ function _bluem_get_payments_options()
 	
 	];
 }
+
+
+// payments specific
+function bluem_woocommerce_settings_render_paymentBrandId()
+{
+	bluem_woocommerce_settings_render_input(_bluem_get_payments_option('paymentBrandId'));
+}
+
+
+
+
 // https://www.skyverge.com/blog/how-to-create-a-simple-woocommerce-payment-gateway/

@@ -11,6 +11,8 @@
 	"require": {
 		"php": ">=5.4",
 		"nesbot/carbon": "^2.31",
-		"pear/http_request2": "^2.3"
-	}
+		"daanrijpkema/bluem-php":"dev-master"
+	},
+	"minimum-stability": "dev",
+    "prefer-stable": true
 }
