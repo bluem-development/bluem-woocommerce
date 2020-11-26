@@ -32,6 +32,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 // get specific gateways and helpers
 require_once __DIR__ . '/bluem-woocommerce-mandates.php';
+require_once __DIR__ . '/bluem-woocommerce-mandates-shortcode.php';
 
 require_once __DIR__ . '/bluem-woocommerce-payments.php';
 
@@ -181,7 +182,7 @@ function bluem_woocommerce_register_settings()
 	add_settings_section('bluem_woocommerce_payments_section', 'iDeal payments instellingen', 'bluem_woocommerce_payments_settings_section', 'bluem_woocommerce');
 	add_settings_section('bluem_woocommerce_idin_section', 'iDIN payments instellingen', 'bluem_woocommerce_idin_settings_section', 'bluem_woocommerce');
 
-	$general_settings = bluem_woocommerce_get_core_options();
+	$general_settings = _bluem_woocommerce_get_core_options();
 	foreach ($general_settings as $key => $ms) {
 		add_settings_field(
 			$key,
@@ -240,7 +241,7 @@ add_action('admin_init', 'bluem_woocommerce_register_settings');
 function _bluem_get_option($key)
 {
 
-	$options = bluem_woocommerce_get_core_options();
+	$options = _bluem_woocommerce_get_core_options();
 
 	if (array_key_exists($key, $options)) {
 		return $options[$key];
@@ -338,7 +339,7 @@ function bluem_woocommerce_settings_render_input($field)
 }
 
 
-function bluem_woocommerce_get_core_options()
+function _bluem_woocommerce_get_core_options()
 {
 	return [
 		'environment' => [
@@ -400,4 +401,25 @@ function bluem_woocommerce_get_core_options()
 			]
 		]
 	];
+}
+
+
+
+function _get_bluem_config()
+{
+
+    $bluem_options = array_merge(
+        _bluem_woocommerce_get_core_options(),
+        _bluem_get_mandates_options(),
+        _bluem_get_idin_options(),
+        _bluem_get_payments_options()
+    );
+    $config = new Stdclass();
+
+    $values = get_option('bluem_woocommerce_options');
+    foreach ($bluem_options as $key => $option) {
+
+        $config->$key = isset($values[$key]) ? $values[$key] : (isset($option['default']) ? $option['default'] : "");
+    }
+    return $config;
 }
