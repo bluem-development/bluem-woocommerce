@@ -54,9 +54,9 @@ function _bluem_get_idin_options()
         'description' => 'Opties: CustomerIDRequest, NameRequest, AddressRequest, BirthDateRequest, AgeCheckRequest, GenderRequest, TelephoneRequest, EmailRequest',
         'default' => 'AddressRequest,BirthDateRequest'
     ],
-    'IDINBrandId' => [
-        'key' => 'IDINBrandId',
-        'title' => 'bluem_IDINBrandId',
+    'IDINBrandID' => [
+        'key' => 'IDINBrandID',
+        'title' => 'bluem_IDINBrandID',
         'name' => 'IDIN BrandId',
         'description' => '',
         'default' => ''
@@ -89,9 +89,9 @@ function bluem_woocommerce_settings_render_IDINCategories()
     bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINCategories'));
 }
 
-function bluem_woocommerce_settings_render_IDINBrandId()
+function bluem_woocommerce_settings_render_IDINBrandID()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINBrandId'));
+    bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINBrandID'));
 }
 	
 	

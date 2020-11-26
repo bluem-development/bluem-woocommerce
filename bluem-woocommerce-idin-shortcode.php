@@ -99,9 +99,9 @@ function bluem_idin_shortcode_idin_execute()
     }
 
     // if the submit button is clicked, send the email
-    if (isset($_POST['bluem_idin_submitted'])) {
+    // if (isset($_POST['bluem_idin_submitted'])) {
         bluem_idin_execute();
-    }
+    // }
 }
 /* ******** CALLBACK ****** */
 add_action('parse_request', 'bluem_idin_shortcode_callback');
@@ -117,9 +117,9 @@ function bluem_idin_shortcode_callback()
     if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback") === false) {
         // return;
     } else {
-        echo "YOO";
         $bluem_config = _get_bluem_config();
-        echo home_url($bluem_config->IDINPageURL);
+        // echo "YOO";
+        // echo home_url($bluem_config->IDINPageURL);
         $bluem = new Integration($bluem_config);
 
 
@@ -360,7 +360,7 @@ function bluem_idin_execute($callback=null, $redirect=true)
     global $current_user;
     $bluem_config = _get_bluem_config();
 
-    $description =  $current_user->display_name ; //"Test identity";
+    $description =  "Identificatie" . $current_user->display_name ;
     $debtorReference = $current_user->ID;
 
     $bluem = new Integration($bluem_config);
@@ -382,13 +382,7 @@ function bluem_idin_execute($callback=null, $redirect=true)
         $debtorReference,
         $callback
     );
-    // var_dump($request);
-    // echo $request->X
-    // echo $request->xmlString();
     $response = $bluem->PerformRequest($request);
-    // var_dump($response);
-    // die();
-
 
     session_start();
 
