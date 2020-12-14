@@ -429,12 +429,25 @@ function _bluem_woocommerce_get_core_options()
 function _get_bluem_config()
 {
 
-    $bluem_options = array_merge(
-        _bluem_woocommerce_get_core_options(),
-        _bluem_get_mandates_options(),
-        _bluem_get_idin_options(),
-        _bluem_get_payments_options()
-    );
+    $bluem_options = _bluem_woocommerce_get_core_options();
+
+
+    if (function_exists('_bluem_get_mandates_options')) {
+        $bluem_options = array_merge(
+            $bluem_options, _bluem_get_mandates_options()
+        );
+    }
+    if (function_exists('_bluem_get_idin_options')) {
+        $bluem_options = array_merge(
+            $bluem_options, _bluem_get_idin_options()
+        );
+    }
+    if (function_exists('_bluem_get_payments_options')) {
+        $bluem_options = array_merge(
+            $bluem_options, _bluem_get_payments_options()
+        );
+    }
+
     $config = new Stdclass();
 
     $values = get_option('bluem_woocommerce_options');
