@@ -60,7 +60,16 @@ function _bluem_get_idin_options()
         'name' => 'IDIN BrandId',
         'description' => '',
         'default' => ''
-        ]
+    ],
+    'IDINShortcodeOnlyAfterLogin' => [
+        'key' => 'IDINShortcodeOnlyAfterLogin',
+        'title' => 'bluem_IDINShortcodeOnlyAfterLogin',
+        'name' => 'IDINShortcodeOnlyAfterLogin',
+        'description' => "Moet het iDIN formulier via shortcode zichtbaar zijn voor iedereen of alleen ingelogde bezoekers?",
+        'type' => 'select',
+        'default' => '0',
+        'options' => ['0' => 'Voor iedereen', '1' => 'Alleen voor ingelogde bezoekers'],
+    ]
     ];
 }
 
@@ -93,5 +102,13 @@ function bluem_woocommerce_settings_render_IDINBrandID()
 {
     bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINBrandID'));
 }
+
+
+function bluem_woocommerce_settings_render_IDINShortcodeOnlyAfterLogin()
+{
+    bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINShortcodeOnlyAfterLogin'));
+}
+
+
 	
 	

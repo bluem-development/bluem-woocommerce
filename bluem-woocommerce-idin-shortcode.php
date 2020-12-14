@@ -15,11 +15,20 @@ add_shortcode('bluem_identificatieformulier', 'bluem_idin_form');
 */
 function bluem_idin_form()
 {
-    // ob_start();
 
     $bluem_config = _get_bluem_config();
+
+    if (isset($bluem_config->IDINShortcodeOnlyAfterLogin) 
+        && $bluem_config->IDINShortcodeOnlyAfterLogin=="1" 
+        && !is_user_logged_in()
+    ) {
+        return "";
+    }
+
+    // ob_start();
+
     $r ='';
-    $validated = esc_attr(get_user_meta(get_current_user_id(), "bluem_idin_validated", true)) =="1";
+    $validated = esc_attr(get_user_meta(get_current_user_id(), "bluem_idin_validated", true)) == "1";
     // var_dump($validated);
     if ($validated) {
         if (isset($bluem_config->IDINSuccessMessage)) {
@@ -29,23 +38,23 @@ function bluem_idin_form()
         }
 
         $r.= "Je hebt de identificatieprocedure eerder voltooid. Bedankt<br>";
-        $results = bluem_idin_retrieve_results();
+        // $results = bluem_idin_retrieve_results();
 
-        $r.= "<pre>";
+        // $r.= "<pre>";
 
-        foreach ($results as $k => $v) {
-            if (!is_object($v)) {
-                $r.= "$k: $v";
-            } else {
-                foreach ($v as $vk => $vv) {
-                    $r.= "\t$vk: $vv";
-                    $r.="<BR>";
-                }
-            }
-            $r.="<BR>";
-        }
-        // var_dump($results);
-        $r.= "</pre>";
+        // foreach ($results as $k => $v) {
+        //     if (!is_object($v)) {
+        //         $r.= "$k: $v";
+        //     } else {
+        //         foreach ($v as $vk => $vv) {
+        //             $r.= "\t$vk: $vv";
+        //             $r.="<BR>";
+        //         }
+        //     }
+        //     $r.="<BR>";
+        // }
+        // // var_dump($results);
+        // $r.= "</pre>";
         return $r;
     // return;
     } else {
