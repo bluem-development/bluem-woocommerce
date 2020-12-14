@@ -152,13 +152,7 @@ function bluem_mandate_mandate_shortcode_callback()
         die();
     }
 
-    // Mandate SUD
-    // var_dump($mandateID);
-
-    // var_dump($entranceCode);
     $response = $bluem->MandateStatus($mandateID, $entranceCode);
-
-
 
     if (!$response->Status()) {
         echo "Fout bij opvragen status: " . $response->Error() . "
@@ -170,8 +164,6 @@ function bluem_mandate_mandate_shortcode_callback()
 
     // Handling the response.
     if ($statusCode === "Success") {
-
-
         update_user_meta($current_user->ID, "bluem_mandates_validated", true);
         wp_redirect(home_url($bluem_config->thanksPageURL) . "?result=true");
         exit;

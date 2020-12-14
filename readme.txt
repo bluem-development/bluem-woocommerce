@@ -22,14 +22,26 @@ Installing "bluem-woocommerce" can be done by using the following steps:
 1. Upload the ZIP file through the 'Plugins > Add New > Upload' screen in your WordPress dashboard
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
-== Screenshots ==
 
-Coming later 
 
-== Frequently Asked Questions ==
 
-== Changelog ==
+== Usage ==
+Be sure to enable the desired modules from the Settings > Bluem page.
 
-= 0.1 =
-* 2020-03-15
-* start of development
+
+=== Mandates ===
+Connected to woocommerce as a payment gateway. Enable it as a module in Settings > bluem and as the gateway in WooCommerce > Settings > Payments
+
+==== Mandates shortcode ====
+Activated if Mandates is activated as a module from the Settings > Bluem page.
+Shortcode: `[bluem_machtigingsformulier]`
+
+=== Payments ===
+Connected to woocommerce as a payment gateway. Enable it as a module in Settings > bluem and as the gateway in WooCommerce > Settings > Payments
+
+=== Identity ===
+
+==== Identity Shortcode ====
+Activated if iDIN  is activated as a module from the Settings > Bluem page.
+Shortcode: `[bluem_identificatieformulier]`
+
