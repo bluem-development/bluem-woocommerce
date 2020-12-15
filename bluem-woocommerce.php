@@ -64,9 +64,13 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 function bluem_woocommerce_no_woocommerce_notice()
 {
     if (is_admin()) {
-        echo '<div class="notice notice-error is-dismissible">
-            <p>Bluem WooCommerce is afhankelijk van WooCommerce - activeer deze plug-in ook!.</p>
+
+        $bluem_options = get_option('bluem_woocommerce_options');
+        if (!isset($bluem_options['suppress_woo']) || $bluem_options['suppress_woo']=="0") {
+            echo '<div class="notice notice-error is-dismissible">
+            <p>Bluem WooCommerce is afhankelijk van WooCommerce - activeer deze plug-in ook. Je kan deze melding en WooCommerce gerelateerde functionaliteiten ook uitzetten bij de <a href="'.admin_url('options-general.php?page=bluem-woocommerce').'">Instellingen</a>.</p>
             </div>';
+        }
     }
 }
 
@@ -182,7 +186,6 @@ function bluem_woocommerce_register_settings()
         "bluem_woocommerce",
         "bluem_woocommerce_modules_section"
     );
-    
     register_setting('bluem_woocommerce_options', 'bluem_woocommerce_options', 'bluem_woocommerce_options_validate');
 
     add_settings_section('bluem_woocommerce_general_section', 'Algemene instellingen', 'bluem_woocommerce_general_settings_section', 'bluem_woocommerce');
@@ -420,6 +423,16 @@ function _bluem_woocommerce_get_core_options()
                 'pending' => 'pending',
                 'none' => 'none'
             ]
+        ],
+        'suppress_woo' => [
+            'key' => 'suppress_woo',
+            'title' => 'bluem_suppress_woo',
+            'name' => 'WooCommerce negeren?',
+            'description' => 'Zet dit op "WooCommerce niet gebruiken" als je deze plug-in wilt gebruiken op deze site zonder WooCommerce functionaliteiten.',
+            'type' => 'select',
+            'default' => '0',
+            'options' =>
+            ['0' => "WooCommerce wel gebruiken", '1' => 'WooCommerce NIET gebruiken']
         ]
     ];
 }
@@ -478,6 +491,11 @@ function bluem_woocommerce_modules_render_payments_activation() {
 
 function bluem_woocommerce_modules_render_idin_activation() {
     bluem_woocommerce_modules_render_generic_activation("idin");
+}
+
+
+function bluem_woocommerce_settings_render_suppress_woo() {
+    bluem_woocommerce_settings_render_input(_bluem_get_option('suppress_woo'));
 }
 
 function bluem_woocommerce_modules_render_generic_activation($module) {

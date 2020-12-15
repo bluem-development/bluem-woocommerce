@@ -177,7 +177,16 @@ function _bluem_get_mandates_options()
             'type' => 'number',
             'attrs' => ['step' => '0.01', 'min' => '0.00', 'max' => '999.00', 'placeholder' => '1.00'],
             'default' => '1.00'
-        ]
+        ],
+        'useMandatesDebtorWallet' => [
+            'key' => 'useMandatesDebtorWallet',
+            'title' => 'bluem_useMandatesDebtorWallet',
+            'name' => 'useMandatesDebtorWallet',
+            'description' => "Wil je dat er in deze website al een bank moet worden geselecteerd bij de Checkout procedure, in plaats van in de Bluem Portal? Indien je 'Gebruik eigen checkout' selecteert, wordt er een veld toegevoegd aan de WooCommerce checkout pagina waar je een van de beschikbare banken kan selecteren.",
+            'type' => 'select',
+            'default' => '0',
+            'options' => ['0' => 'Gebruik Bluem Portal (standaard)', '1' => 'Gebruik eigen checkout'],
+        ],
     ];
 }
 
@@ -227,6 +236,7 @@ function bluem_init_mandate_gateway_class()
 
             // ********** CREATING Bluem Configuration **********
             $this->bluem_config = _get_bluem_config();
+            
             $this->bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_mandates_callback');
 
 
@@ -1004,3 +1014,167 @@ function bluem_woocommerce_settings_render_maxAmountFactor()
 {
     bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('maxAmountFactor'));
 }
+
+function bluem_woocommerce_settings_render_useMandatesDebtorWallet()
+{
+    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('useMandatesDebtorWallet'));
+}
+
+
+$bluem_options = get_option('bluem_woocommerce_options');
+    
+if(isset($bluem_options['useMandatesDebtorWallet']) && $bluem_options['useMandatesDebtorWallet']=="1") {
+    
+
+
+
+/**
+ * Add add a notice before the payment form - let's use an eror notice. Could also use content, etc.
+ *
+ * Reference: https://github.com/woothemes/woocommerce/blob/master/templates/checkout/review-order.php
+ */
+
+add_action('woocommerce_review_order_before_payment', 'bluem_woocommerce_show_checkout_bic_selection');
+function bluem_woocommerce_show_checkout_bic_selection()
+{
+
+ //  echo "KAAS";
+
+    // ref: https://stackoverflow.com/questions/40480587/woocommerce-checkout-custom-select-field/40480684
+    $nonce = wp_create_nonce("bluem_ajax_nonce");
+    echo "<input type='hidden' id='bluem_ajax_nonce' value='{$nonce}'/>";
+// echo "HIER KOMT DE BANKKEUZE";
+
+?>
+
+<div id="BICselector">
+<label for="bluem_BICInput" style="display: block;">
+Selecteer uw bank: 
+<abbr class="required" title="required">*</abbr>
+</label>
+<select name="bluem_BICInput" id="BICInput" style="display: block; padding:3pt; width:100%;" required></select>
+
+</div>
+<?php 
+
+// $fields = [];
+//     $fields['order']['bluem_bic'] = array(
+//         'type' => 'select',
+//         'class' => array('form-row-wide'),
+//         'label' => __('Selecteer uw bank'),
+//         'required'=>true,
+//         'options'=>$opts,
+//     );
+    // 'placeholder' => _x('FILL IN BICCIE.', 'placeholder', 'woocommerce')
+    // return $fields;
+}
+
+
+
+
+
+add_action( 'woocommerce_after_checkout_validation', 'bluem_woocommerce_validate_checkout_bic_choice', 10, 2);
+ 
+function bluem_woocommerce_validate_checkout_bic_choice( $fields, $errors ) {
+ 
+    // if ( preg_match( '/\\d/', $fields[ 'billing_first_name' ] ) || preg_match( '/\\d/', $fields[ 'billing_last_name' ] )  ){
+    //     $errors->add( 'validation', 'Your first or last name contains a number. Really?' );
+    // }
+}
+
+
+    // show new checkout field
+    // Hook in
+    // add_filter( 'woocommerce_checkout_fields' , 'bluem_woocommerce_show_checkout_bic_selection' );
+    // Our hooked in function - $fields is passed via the filter!
+    // function bluem_woocommerce_show_checkout_bic_selection( $fields ) {
+
+
+   // Fires after WordPress has finished loading, but before any headers are sent.
+add_action( 'init', 'script_enqueuer' );
+
+function script_enqueuer() {
+   
+   // Register the JS file with a unique handle, file location, and an array of dependencies
+   wp_register_script( "bluem_woocommerce_bic_retriever", plugin_dir_url(__FILE__).'js/bluem_woocommerce_bic_retriever.js', array('jquery') );
+   
+   // localize the script to your domain name, so that you can reference the url to admin-ajax.php file easily
+   wp_localize_script( 'bluem_woocommerce_bic_retriever', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));        
+   
+   // enqueue jQuery library and the script you registered above
+   wp_enqueue_script( 'jquery' );
+   wp_enqueue_script( 'bluem_woocommerce_bic_retriever' );
+}
+
+
+    /**
+     * @snippet       Display script @ Checkout - WooCommerce
+     * @how-to        Get CustomizeWoo.com FREE
+     * @sourcecode    https://businessbloomer.com/?p=532
+    */
+    // add_action( 'woocommerce_after_checkout_form', 'bluem_woocommerce_payment_changer_event_handler');
+    
+    // function bluem_woocommerce_payment_changer_event_handler() {
+
+
+
+    // }
+
+
+
+
+
+    // https://premium.wpmudev.org/blog/using-ajax-with-wordpress/
+
+// define the actions for the two hooks created, first for logged in users and the next for logged out users
+add_action("wp_ajax_bluem_retrieve_bics_ajax", "bluem_retrieve_bics_ajax");
+// add_action("wp_ajax_nopriv_bluem_retrieve_bics_ajax", "please_login");
+
+// define the function to be fired for logged in users
+function bluem_retrieve_bics_ajax() {
+   
+   // nonce check for an extra layer of security, the function will exit if it fails
+//    if ( !wp_verify_nonce( $_REQUEST['nonce'], "bluem_retrieve_bics_ajax_nonce")) {
+//       exit("Woof Woof Woof");
+//    }   
+   
+
+// switch()
+
+   $bluem_config = _get_bluem_config();
+   $bluem = new Integration($bluem_config);
+   $BICs = $bluem->retrieveBICsForContext("Mandates");
+
+
+   if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        echo json_encode($BICs); 
+    }
+    else {
+        header("Location: ".$_SERVER["HTTP_REFERER"]);
+    }
+    die();
+}
+
+// define the function to be fired for logged out users
+function please_login() {
+   echo "You must log in to like";
+   die();
+}
+}
+
+
+// $key = $field['key'];
+
+
+
+
+/*  To be added to PROCESS PAYMENT:
+
+// $bluem_options = get_option('bluem_woocommerce_options');
+// if(isset($bluem_options['useMandatesDebtorWallet']) && $bluem_options['useMandatesDebtorWallet']=="1") {
+// $selected_bic = $checkout->get_value( 'bluem_bic' ));
+// // validate bic
+// // add to response
+
+
+ */
