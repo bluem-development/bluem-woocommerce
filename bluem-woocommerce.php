@@ -505,7 +505,7 @@ function bluem_woocommerce_modules_render_generic_activation($module) {
         'default'=> "",
         'description'=> "",
         'options'=> [
-            ''=>'Nog niet geactiveerd',
+            ''=>'(Maak een selectie)',
             '1'=>'Actief',
             '0'=>'Gedeactiveerd'
         ],

@@ -9,9 +9,7 @@ use Carbon\Carbon;
 
 
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-	
-	// WooCommerce specific code incoming here
-	
+    // WooCommerce specific code incoming here
 }
 
 function _bluem_get_idin_option($key) {

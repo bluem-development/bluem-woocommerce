@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/DaanRijpkema/bluem-php.git",
-                "reference": "f27cbaa5f5af925d452ea1bf53886b583d072069"
+                "reference": "64f6125846d257f6acd60c62364d14ecbeca3a2d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/f27cbaa5f5af925d452ea1bf53886b583d072069",
-                "reference": "f27cbaa5f5af925d452ea1bf53886b583d072069",
+                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/64f6125846d257f6acd60c62364d14ecbeca3a2d",
+                "reference": "64f6125846d257f6acd60c62364d14ecbeca3a2d",
                 "shasum": ""
             },
             "require": {
@@ -41,12 +41,12 @@
                 {
                     "name": "Daan Rijpkema",
                     "email": "info@daanrijpkema.com",
-                    "homepage": "https://daanrijpkema.com",
+                    "homepage": "https://daanrijpkema.com/",
                     "role": "Developer"
                 }
             ],
             "description": "Bluem PHP interface",
-            "homepage": "https://daanrijpkema.com",
+            "homepage": "https://daanrijpkema.github.io/bluem-php/",
             "keywords": [
                 "IDIN",
                 "bluem",
@@ -60,7 +60,7 @@
                 "issues": "https://github.com/daanrijpkema/bluem-php",
                 "source": "https://github.com/DaanRijpkema/bluem-php/tree/master"
             },
-            "time": "2020-12-10T15:49:53+00:00"
+            "time": "2020-12-15T14:53:43+00:00"
         },
         {
             "name": "nesbot/carbon",

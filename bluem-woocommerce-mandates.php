@@ -190,6 +190,7 @@ function _bluem_get_mandates_options()
     ];
 }
 
+
 /*
  * The gateway class itself, please note that it is inside plugins_loaded action hook
  */
@@ -446,11 +447,18 @@ function bluem_init_mandate_gateway_class()
 
             $mandate_id = $this->bluem->CreateMandateId($order_id, $customer_id);
 
-            $response = $this->bluem->Mandate(
+            $request = $this->bluem->CreateMandateRequest(
                 $customer_id,
                 $order_id,
                 $mandate_id
             );
+
+            // allow third parties to add additional data to the request object through this additional action
+            $request = apply_filters(
+                'bluem_woocommerce_enhance_mandate_request', $request
+            );
+
+            $response = $this->bluem->PerformRequest($request);
 
             if ($verbose) {
                 var_dump($order_id);
@@ -1178,3 +1186,21 @@ function please_login() {
 
 
  */
+
+
+
+
+add_filter('bluem_woocommerce_enhance_mandate_request', 'bluem_woocommerce_enhance_mandate_request_function', 10, 1);
+
+/**
+ * allow third parties to add additional data to the request object through this additional action
+ *
+ * @param [type] $request
+ * @return void
+ */
+function bluem_woocommerce_enhance_mandate_request_function($request)
+{
+    // do something with the Bluem Mandate request, use this in third-party extensions of this system
+    return $request;
+}
+
