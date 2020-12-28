@@ -39,8 +39,8 @@ function _bluem_get_mandates_options()
         'merchantID' => [
             'key' => 'merchantID',
             'title' => 'bluem_merchantID',
-            'name' => 'Bluem Merchant ID',
-            'description' => 'het merchantID, te vinden op het contract dat je hebt met de bank voor ontvangen van incasso machtigingen',
+            'name' => 'Incassant merchantID (benodigd voor machtigingen op Productie)',
+            'description' => 'Het merchantID, te vinden op het contract dat je hebt met de bank voor ontvangen van incasso machtigingen. <strong>Dit is essentieel: zonder dit gegeven zal een klant geen machtiging kunnen afsluiten op productie</strong>',
             'default' => ''
         ],
         'merchantSubId' => [
