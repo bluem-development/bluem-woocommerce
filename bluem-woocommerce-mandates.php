@@ -606,7 +606,13 @@ function bluem_init_mandate_gateway_class()
                 } elseif ($order_status === "pending") {
                     // check if maximum of order does not exceed mandate size based on user metadata
                     if ($mandate_successful) {
-                        $order->update_status('processing', __('Machtiging is gelukt en goedgekeurd; via webhook', 'wc-gateway-bluem'));
+                        $order->update_status(
+                            'processing', 
+                            __(
+                                "Machtiging (Mandaat ID $mandateID) is gelukt
+                                 en goedgekeurd; via webhook",
+                                'wc-gateway-bluem')
+                        );
                     }
                     // iff order is within size, update to processing
                 }
@@ -762,11 +768,26 @@ function bluem_init_mandate_gateway_class()
             $successful_mandate = false;
 
             if ($update_metadata) {
-                if (self::VERBOSE) {
-                    echo "<br>updating user meta: bluem_latest_mandate_id and entranceCode to value {$mandate_id} and {$entrance_code} - result: ";
+                if ($mandate_id !=="") {
+                    if (self::VERBOSE) {
+                        echo "<br>updating user meta: bluem_latest_mandate_id to value {$mandate_id} - result: ";
+                    }
+                    update_user_meta(
+                        $user_id, 
+                        'bluem_latest_mandate_id', 
+                        $mandate_id
+                    );
                 }
-                update_user_meta($user_id, 'bluem_latest_mandate_id', $mandate_id);
-                update_user_meta($user_id, 'bluem_latest_mandate_entrance_code', $entrance_code);
+                if ($entrance_code !=="") {
+                    if (self::VERBOSE) {
+                        echo "<br>updating user meta: entranceCode to value {$entrance_code} - result: ";
+                    }
+                    update_user_meta(
+                        $user_id, 
+                        'bluem_latest_mandate_entrance_code', 
+                        $entrance_code
+                    );
+                }
             }
 
 
@@ -794,7 +815,11 @@ function bluem_init_mandate_gateway_class()
                         if (self::VERBOSE) {
                             echo "<br>updating user meta: bluem_latest_mandate_amount to value {$maxAmountResponse->amount} - result: ";
                         }
-                        update_user_meta($user_id, 'bluem_latest_mandate_amount', $maxAmountResponse->amount);
+                        update_user_meta(
+                            $user_id,
+                            'bluem_latest_mandate_amount',
+                            $maxAmountResponse->amount
+                        );
                     }
                     $allowed_margin = ($order_total_plus <= $maxAmountResponse->amount);
                     if (self::VERBOSE) {
@@ -838,14 +863,25 @@ function bluem_init_mandate_gateway_class()
                 if (self::VERBOSE) {
                     echo "<br>updating user meta: bluem_latest_mandate_validated to value {$successful_mandate} - result: ";
                 }
-                update_user_meta($user_id, 'bluem_latest_mandate_validated', $successful_mandate);
+                update_user_meta(
+                    $user_id, 
+                    'bluem_latest_mandate_validated', 
+                    $successful_mandate
+                );
             }
 
             if ($successful_mandate) {
                 if (self::VERBOSE) {
                     echo "mandaat is succesvol, order kan worden aangepast naar machtiging_goedgekeurd";
                 }
-                $order->update_status('processing', __('Machtiging is gelukt en goedgekeurd', 'wc-gateway-bluem'));
+                $order->update_status(
+                    'processing', 
+                    __(
+                        "Machtiging (mandaat ID $mandateID)
+                        is gelukt en goedgekeurd",
+                        'wc-gateway-bluem'
+                    )
+                );
 
 
                 do_action('bluem_woocommerce_valid_mandate_callback', $user_id, $response);
