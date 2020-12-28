@@ -99,7 +99,10 @@ function bluem_mandate_shortcode_execute()
         $transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
 
         $_SESSION['bluem_recentTransactionURL'] = $transactionURL;
-        ob_clean();
+     
+        if (ob_get_length()!==false && ob_get_length()>0) {
+            ob_clean();
+        }
         ob_start();
         wp_redirect($transactionURL);
         exit;
