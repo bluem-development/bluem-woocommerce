@@ -12,17 +12,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/DaanRijpkema/bluem-php.git",
-                "reference": "ec6d43175255366b2cda1ffe41346ac848b7a690"
+                "reference": "17f81600f7901e28ee38d31428125096dd5c8fd4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/ec6d43175255366b2cda1ffe41346ac848b7a690",
-                "reference": "ec6d43175255366b2cda1ffe41346ac848b7a690",
+                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/17f81600f7901e28ee38d31428125096dd5c8fd4",
+                "reference": "17f81600f7901e28ee38d31428125096dd5c8fd4",
                 "shasum": ""
             },
             "require": {
                 "nesbot/carbon": "^2.31",
-                "pear/http_request2": "2.3.0",
+                "pear/http_request2": "v2.4.2",
                 "php": ">=5.4",
                 "selective/xmldsig": "^1.0"
             },
@@ -60,7 +60,7 @@
                 "issues": "https://github.com/daanrijpkema/bluem-php",
                 "source": "https://github.com/DaanRijpkema/bluem-php/tree/master"
             },
-            "time": "2020-12-24T13:52:56+00:00"
+            "time": "2020-12-28T15:19:38+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -157,44 +157,39 @@
         },
         {
             "name": "pear/http_request2",
-            "version": "v2.3.0",
+            "version": "v2.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/HTTP_Request2.git",
-                "reference": "3599cf0fe455a4e281da464f6510bfc5c2ce54c4"
+                "reference": "84da432fbbf615593bd8aa25408aca3478b77502"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/HTTP_Request2/zipball/3599cf0fe455a4e281da464f6510bfc5c2ce54c4",
-                "reference": "3599cf0fe455a4e281da464f6510bfc5c2ce54c4",
+                "url": "https://api.github.com/repos/pear/HTTP_Request2/zipball/84da432fbbf615593bd8aa25408aca3478b77502",
+                "reference": "84da432fbbf615593bd8aa25408aca3478b77502",
                 "shasum": ""
             },
             "require": {
                 "pear/net_url2": "^2.2.0",
                 "pear/pear_exception": "^1.0.0",
-                "php": ">=5.2.0"
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^3.7|^4.8|^5.7"
             },
             "suggest": {
+                "ext-curl": "Allows using cURL as a request backend.",
                 "ext-fileinfo": "Adds support for looking up mime-types using finfo.",
-                "ext-zlib": "Allows handling gzip compressed responses.",
-                "lib-curl": "Allows using cURL as a request backend.",
-                "lib-openssl": "Allows handling SSL requests when not using cURL."
+                "ext-openssl": "Allows handling SSL requests when not using cURL.",
+                "ext-zlib": "Allows handling gzip compressed responses."
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-trunk": "2.2-dev"
-                }
-            },
             "autoload": {
                 "psr-0": {
                     "HTTP_Request2": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                "./"
-            ],
             "license": [
                 "BSD-3-Clause"
             ],
@@ -205,7 +200,7 @@
                 }
             ],
             "description": "Provides an easy way to perform HTTP requests.",
-            "homepage": "http://pear.php.net/package/HTTP_Request2",
+            "homepage": "https://pear.php.net/package/HTTP_Request2",
             "keywords": [
                 "PEAR",
                 "curl",
@@ -213,10 +208,11 @@
                 "request"
             ],
             "support": {
-                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=HTTP_Request2",
+                "docs": "https://pear.php.net/manual/en/package.http.http-request2.php",
+                "issues": "https://pear.php.net/bugs/search.php?cmd=display&package_name[]=HTTP_Request2",
                 "source": "https://github.com/pear/HTTP_Request2"
             },
-            "time": "2016-02-13T20:20:39+00:00"
+            "time": "2020-09-24T22:07:33+00:00"
         },
         {
             "name": "pear/net_url2",

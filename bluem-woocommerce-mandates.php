@@ -237,7 +237,7 @@ function bluem_init_mandate_gateway_class()
 
             // ********** CREATING Bluem Configuration **********
             $this->bluem_config = _get_bluem_config();
-            
+
             $this->bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_mandates_callback');
 
 
@@ -607,7 +607,7 @@ function bluem_init_mandate_gateway_class()
                     // check if maximum of order does not exceed mandate size based on user metadata
                     if ($mandate_successful) {
                         $order->update_status(
-                            'processing', 
+                            'processing',
                             __(
                                 "Machtiging (Mandaat ID $mandateID) is gelukt
                                  en goedgekeurd; via webhook",
@@ -714,10 +714,28 @@ function bluem_init_mandate_gateway_class()
             $statusUpdateObject = $response->EMandateStatusUpdate;
             $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
             // var_dump($statusCode);
+
+            $statusCode ="Pending";
+
             if ($statusCode === "Success") {
                 $this->validateMandate($response, $order, true, true, true, $mandateID, $entranceCode);
+            } elseif ($statusCode ==="Pending") {
+
+                $this->renderPrompt(
+                    "<p>Uw machtiging wacht op goedkeuring van
+                    een andere ondertekenaar namens uw organisatie.<br>
+                    Deze persoon dient in te loggen op internet bankieren
+                    en deze machtiging mede goed te keuren.
+                    Hierna is de machtiging goedgekeurd en zal dit automatisch
+                    reflecteren op deze site.</p>"
+                );
+                exit;
+
             } elseif ($statusCode === "Cancelled") {
-                $order->update_status('cancelled', __('Machtiging is geannuleerd', 'wc-gateway-bluem'));
+                $order->update_status(
+                    'cancelled', 
+                    __('Machtiging is geannuleerd', 'wc-gateway-bluem')
+                );
 
                 $this->renderPrompt("Je hebt de mandaat ondertekening geannuleerd");
                 // terug naar order pagina om het opnieuw te proberen?
@@ -728,14 +746,31 @@ function bluem_init_mandate_gateway_class()
                 // is simpelweg SITE/wc-api/bluem_callback?mandateID=$mandateID
                 exit;
             } elseif ($statusCode === "Expired") {
-                $order->update_status('failed', __('Machtiging is verlopen', 'wc-gateway-bluem'));
+                $order->update_status(
+                    'failed', 
+                    __(
+                        'Machtiging is verlopen', 
+                        'wc-gateway-bluem'
+                    )
+                );
 
-                $this->renderPrompt("Fout: De mandaat of het verzoek daartoe is verlopen");
+                $this->renderPrompt(
+                    "Fout: De mandaat of het verzoek daartoe is verlopen"
+                );
                 exit;
             } else {
-                $order->update_status('failed', __('Machtiging is gefaald: fout of onbekende status', 'wc-gateway-bluem'));
+                $order->update_status(
+                    'failed', 
+                    __(
+                        'Machtiging is gefaald: fout of onbekende status', 
+                        'wc-gateway-bluem'
+                    )
+                );
                 //$statusCode == "Failure"
-                $this->renderPrompt("Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status");
+                $this->renderPrompt(
+                    "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}
+                    <br>Neem contact op met de webshop en vermeld deze status"
+                );
                 exit;
             }
         }
@@ -773,8 +808,8 @@ function bluem_init_mandate_gateway_class()
                         echo "<br>updating user meta: bluem_latest_mandate_id to value {$mandate_id} - result: ";
                     }
                     update_user_meta(
-                        $user_id, 
-                        'bluem_latest_mandate_id', 
+                        $user_id,
+                        'bluem_latest_mandate_id',
                         $mandate_id
                     );
                 }
@@ -783,8 +818,8 @@ function bluem_init_mandate_gateway_class()
                         echo "<br>updating user meta: entranceCode to value {$entrance_code} - result: ";
                     }
                     update_user_meta(
-                        $user_id, 
-                        'bluem_latest_mandate_entrance_code', 
+                        $user_id,
+                        'bluem_latest_mandate_entrance_code',
                         $entrance_code
                     );
                 }
@@ -864,8 +899,8 @@ function bluem_init_mandate_gateway_class()
                     echo "<br>updating user meta: bluem_latest_mandate_validated to value {$successful_mandate} - result: ";
                 }
                 update_user_meta(
-                    $user_id, 
-                    'bluem_latest_mandate_validated', 
+                    $user_id,
+                    'bluem_latest_mandate_validated',
                     $successful_mandate
                 );
             }
@@ -875,7 +910,7 @@ function bluem_init_mandate_gateway_class()
                     echo "mandaat is succesvol, order kan worden aangepast naar machtiging_goedgekeurd";
                 }
                 $order->update_status(
-                    'processing', 
+                    'processing',
                     __(
                         "Machtiging (mandaat ID $mandateID)
                         is gelukt en goedgekeurd",
@@ -884,7 +919,11 @@ function bluem_init_mandate_gateway_class()
                 );
 
 
-                do_action('bluem_woocommerce_valid_mandate_callback', $user_id, $response);
+                do_action(
+                    'bluem_woocommerce_valid_mandate_callback',
+                    $user_id,
+                    $response
+                );
 
                 if ($redirect) {
                     if (self::VERBOSE) {
@@ -921,8 +960,8 @@ function bluem_init_mandate_gateway_class()
             <tr>
                 <th><label for="bluem_latest_mandate_id">Meest recente MandateID</label></th>
                 <td>
-                    <input type="text" name="bluem_latest_mandate_id" id="bluem_latest_mandate_id" 
-                        value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_latest_mandate_id', true)); ?>" 
+                    <input type="text" name="bluem_latest_mandate_id" id="bluem_latest_mandate_id"
+                        value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_latest_mandate_id', true)); ?>"
                         class="regular-text" /><br />
                     <span class="description">Hier wordt het meest recente mandate ID geplaatst; en gebruikt bij het doen van een volgende checkout.</span>
                 </td>
@@ -931,8 +970,8 @@ function bluem_init_mandate_gateway_class()
                 <th><label for="bluem_latest_mandate_entrance_code">Meest recente EntranceCode</label></th>
 
                 <td>
-                    <input type="text" name="bluem_latest_mandate_entrance_code" id="bluem_latest_mandate_entrance_code" 
-                        value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_latest_mandate_entrance_code', true)); ?>" 
+                    <input type="text" name="bluem_latest_mandate_entrance_code" id="bluem_latest_mandate_entrance_code"
+                        value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_latest_mandate_entrance_code', true)); ?>"
                         class="regular-text" /><br />
                     <span class="description">Hier wordt het meest recente entrance_code geplaatst; en gebruikt bij het doen van een volgende checkout.</span>
                 </td>
@@ -940,8 +979,8 @@ function bluem_init_mandate_gateway_class()
             <tr>
                 <th><label for="bluem_latest_mandate_amount">Omvang laatste machtiging</label></th>
                 <td>
-                    <input type="text" name="bluem_latest_mandate_amount" id="bluem_latest_mandate_amount" 
-                        value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_latest_mandate_amount', true)); ?>" 
+                    <input type="text" name="bluem_latest_mandate_amount" id="bluem_latest_mandate_amount"
+                        value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_latest_mandate_amount', true)); ?>"
                         class="regular-text" /><br />
                     <span class="description">Dit is de omvang van de laatste machtiging</span>
                 </td>
@@ -951,8 +990,14 @@ function bluem_init_mandate_gateway_class()
         </table>
 <?php
     }
-    add_action('personal_options_update', 'bluem_woocommerce_mandates_save_extra_profile_fields');
-    add_action('edit_user_profile_update', 'bluem_woocommerce_mandates_save_extra_profile_fields');
+    add_action(
+        'personal_options_update',
+        'bluem_woocommerce_mandates_save_extra_profile_fields'
+    );
+    add_action(
+        'edit_user_profile_update',
+        'bluem_woocommerce_mandates_save_extra_profile_fields'
+    );
 
     function bluem_woocommerce_mandates_save_extra_profile_fields($user_id)
     {
@@ -960,23 +1005,32 @@ function bluem_init_mandate_gateway_class()
             return false;
         }
 
-        update_user_meta($user_id, 'bluem_latest_mandate_id', esc_attr($_POST['bluem_latest_mandate_id']));
-        update_user_meta($user_id, 'bluem_latest_mandate_entrance_code', esc_attr($_POST['bluem_latest_mandate_entrance_code']));
-        update_user_meta($user_id, 'bluem_latest_mandate_amount', esc_attr($_POST['bluem_latest_mandate_amount']));
-
-        // var_dump($_POST['bluem_latest_mandate_id']);
-        // var_dump($_POST['bluem_latest_mandate_entrance_code']);
-
-        // var_dump($_POST['bluem_latest_mandate_amount']);
-        // die();
+        update_user_meta(
+            $user_id,
+            'bluem_latest_mandate_id',
+            esc_attr($_POST['bluem_latest_mandate_id'])
+        );
+        update_user_meta(
+            $user_id,
+            'bluem_latest_mandate_entrance_code',
+            esc_attr($_POST['bluem_latest_mandate_entrance_code'])
+        );
+        update_user_meta(
+            $user_id,
+            'bluem_latest_mandate_amount',
+            esc_attr($_POST['bluem_latest_mandate_amount'])
+        );
     }
 }
-
 
 function bluem_woocommerce_mandates_settings_section()
 {
     $mandate_id_counter = get_option('bluem_woocommerce_mandate_id_counter');
-    // var_dump(home_url());
+
+
+    // The below code is useful when you want the mandate_id to start counting at a fixed minimum.
+    // This is what had to be implemented for H2OPro; one of the first clients.
+    // @todo: convert to action so it can be overriden by third-party developers such as H2OPro.
     if (home_url() == "https://www.h2opro.nl" && (int) ($mandate_id_counter . "") < 111100) {
         $mandate_id_counter += 111000;
         update_option('bluem_woocommerce_mandate_id_counter', $mandate_id_counter);
@@ -1066,65 +1120,64 @@ function bluem_woocommerce_settings_render_useMandatesDebtorWallet()
 
 
 $bluem_options = get_option('bluem_woocommerce_options');
-    
-if(isset($bluem_options['useMandatesDebtorWallet']) && $bluem_options['useMandatesDebtorWallet']=="1") {
-    
 
+if (isset($bluem_options['useMandatesDebtorWallet']) && $bluem_options['useMandatesDebtorWallet']=="1") {
 
-
-/**
- * Add add a notice before the payment form - let's use an eror notice. Could also use content, etc.
- *
- * Reference: https://github.com/woothemes/woocommerce/blob/master/templates/checkout/review-order.php
- */
-
-add_action('woocommerce_review_order_before_payment', 'bluem_woocommerce_show_checkout_bic_selection');
-function bluem_woocommerce_show_checkout_bic_selection()
-{
-
- //  echo "KAAS";
-
-    // ref: https://stackoverflow.com/questions/40480587/woocommerce-checkout-custom-select-field/40480684
-    $nonce = wp_create_nonce("bluem_ajax_nonce");
-    echo "<input type='hidden' id='bluem_ajax_nonce' value='{$nonce}'/>";
-// echo "HIER KOMT DE BANKKEUZE";
-
-?>
-
-<div id="BICselector">
-<label for="bluem_BICInput" style="display: block;">
-Selecteer uw bank: 
-<abbr class="required" title="required">*</abbr>
-</label>
-<select name="bluem_BICInput" id="BICInput" style="display: block; padding:3pt; width:100%;" required></select>
-
-</div>
-<?php 
-
-// $fields = [];
-//     $fields['order']['bluem_bic'] = array(
-//         'type' => 'select',
-//         'class' => array('form-row-wide'),
-//         'label' => __('Selecteer uw bank'),
-//         'required'=>true,
-//         'options'=>$opts,
-//     );
-    // 'placeholder' => _x('FILL IN BICCIE.', 'placeholder', 'woocommerce')
-    // return $fields;
-}
+    /**
+     * Add add a notice before the payment form - let's use an eror notice. Could also use content, etc.
+     *
+     * Reference: https://github.com/woothemes/woocommerce/blob/master/templates/checkout/review-order.php
+     */
+    add_action(
+        'woocommerce_review_order_before_payment',
+        'bluem_woocommerce_show_checkout_bic_selection'
+    );
+    function bluem_woocommerce_show_checkout_bic_selection()
+    {
+        // ref: https://stackoverflow.com/questions/40480587/woocommerce-checkout-custom-select-field/40480684
+        $nonce = wp_create_nonce("bluem_ajax_nonce");
+        echo "<input type='hidden' id='bluem_ajax_nonce' value='{$nonce}'/>";
+        // echo "HIER KOMT DE BANKKEUZE";
+        ?>
+        <div id="BICselector">
+            <label for="bluem_BICInput" style="display: block;">
+                Selecteer uw bank:
+            <abbr class="required" title="required">*</abbr>
+            </label>
+            <select name="bluem_BICInput"
+            id="BICInput"
+            style="display: block; padding:3pt; width:100%;" required>
+            </select>
+        </div><?php
+        // $fields = [];
+        //     $fields['order']['bluem_bic'] = array(
+        //         'type' => 'select',
+        //         'class' => array('form-row-wide'),
+        //         'label' => __('Selecteer uw bank'),
+        //         'required'=>true,
+        //         'options'=>$opts,
+        //     );
+        // 'placeholder' => _x('FILL IN BICCIE.', 'placeholder', 'woocommerce')
+        // return $fields;
+    }
 
 
 
 
 
-add_action( 'woocommerce_after_checkout_validation', 'bluem_woocommerce_validate_checkout_bic_choice', 10, 2);
- 
-function bluem_woocommerce_validate_checkout_bic_choice( $fields, $errors ) {
- 
-    // if ( preg_match( '/\\d/', $fields[ 'billing_first_name' ] ) || preg_match( '/\\d/', $fields[ 'billing_last_name' ] )  ){
-    //     $errors->add( 'validation', 'Your first or last name contains a number. Really?' );
-    // }
-}
+    add_action(
+        'woocommerce_after_checkout_validation',
+        'bluem_woocommerce_validate_checkout_bic_choice',
+        10, 2
+    );
+
+    function bluem_woocommerce_validate_checkout_bic_choice( $fields, $errors )
+    {
+
+        // if ( preg_match( '/\\d/', $fields[ 'billing_first_name' ] ) || preg_match( '/\\d/', $fields[ 'billing_last_name' ] )  ){
+        //     $errors->add( 'validation', 'Your first or last name contains a number. Really?' );
+        // }
+    }
 
 
     // show new checkout field
@@ -1134,21 +1187,21 @@ function bluem_woocommerce_validate_checkout_bic_choice( $fields, $errors ) {
     // function bluem_woocommerce_show_checkout_bic_selection( $fields ) {
 
 
-   // Fires after WordPress has finished loading, but before any headers are sent.
-add_action( 'init', 'script_enqueuer' );
+    // Fires after WordPress has finished loading, but before any headers are sent.
+    add_action( 'init', 'script_enqueuer' );
 
-function script_enqueuer() {
-   
-   // Register the JS file with a unique handle, file location, and an array of dependencies
-   wp_register_script( "bluem_woocommerce_bic_retriever", plugin_dir_url(__FILE__).'js/bluem_woocommerce_bic_retriever.js', array('jquery') );
-   
-   // localize the script to your domain name, so that you can reference the url to admin-ajax.php file easily
-   wp_localize_script( 'bluem_woocommerce_bic_retriever', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));        
-   
-   // enqueue jQuery library and the script you registered above
-   wp_enqueue_script( 'jquery' );
-   wp_enqueue_script( 'bluem_woocommerce_bic_retriever' );
-}
+    function script_enqueuer() {
+
+        // Register the JS file with a unique handle, file location, and an array of dependencies
+        wp_register_script( "bluem_woocommerce_bic_retriever", plugin_dir_url(__FILE__).'js/bluem_woocommerce_bic_retriever.js', array('jquery') );
+
+        // localize the script to your domain name, so that you can reference the url to admin-ajax.php file easily
+        wp_localize_script( 'bluem_woocommerce_bic_retriever', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));
+
+        // enqueue jQuery library and the script you registered above
+        wp_enqueue_script( 'jquery' );
+        wp_enqueue_script( 'bluem_woocommerce_bic_retriever' );
+    }
 
 
     /**
@@ -1157,53 +1210,45 @@ function script_enqueuer() {
      * @sourcecode    https://businessbloomer.com/?p=532
     */
     // add_action( 'woocommerce_after_checkout_form', 'bluem_woocommerce_payment_changer_event_handler');
-    
+
     // function bluem_woocommerce_payment_changer_event_handler() {
-
-
-
     // }
-
-
-
-
 
     // https://premium.wpmudev.org/blog/using-ajax-with-wordpress/
 
-// define the actions for the two hooks created, first for logged in users and the next for logged out users
-add_action("wp_ajax_bluem_retrieve_bics_ajax", "bluem_retrieve_bics_ajax");
-// add_action("wp_ajax_nopriv_bluem_retrieve_bics_ajax", "please_login");
+    // define the actions for the two hooks created, first for logged in users and the next for logged out users
+    add_action("wp_ajax_bluem_retrieve_bics_ajax", "bluem_retrieve_bics_ajax");
+    // add_action("wp_ajax_nopriv_bluem_retrieve_bics_ajax", "please_login");
 
-// define the function to be fired for logged in users
-function bluem_retrieve_bics_ajax() {
-   
-   // nonce check for an extra layer of security, the function will exit if it fails
-//    if ( !wp_verify_nonce( $_REQUEST['nonce'], "bluem_retrieve_bics_ajax_nonce")) {
-//       exit("Woof Woof Woof");
-//    }   
-   
+    // define the function to be fired for logged in users
+    function bluem_retrieve_bics_ajax() {
 
-// switch()
+        // nonce check for an extra layer of security, the function will exit if it fails
+        //    if ( !wp_verify_nonce( $_REQUEST['nonce'], "bluem_retrieve_bics_ajax_nonce")) {
+        //       exit("Woof Woof Woof");
+        //    }
 
-   $bluem_config = _get_bluem_config();
-   $bluem = new Integration($bluem_config);
-   $BICs = $bluem->retrieveBICsForContext("Mandates");
+        // switch()
+
+        $bluem_config = _get_bluem_config();
+        $bluem = new Integration($bluem_config);
+        $BICs = $bluem->retrieveBICsForContext("Mandates");
 
 
-   if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-        echo json_encode($BICs); 
+        if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            echo json_encode($BICs);
+        }
+        else {
+            header("Location: ".$_SERVER["HTTP_REFERER"]);
+        }
+        die();
     }
-    else {
-        header("Location: ".$_SERVER["HTTP_REFERER"]);
-    }
-    die();
-}
 
-// define the function to be fired for logged out users
-function please_login() {
-   echo "You must log in to like";
-   die();
-}
+    // define the function to be fired for logged out users
+    function please_login() {
+        echo "You must log in to like";
+        die();
+    }
 }
 
 
