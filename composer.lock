@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/DaanRijpkema/bluem-php.git",
-                "reference": "17f81600f7901e28ee38d31428125096dd5c8fd4"
+                "reference": "f9b9274fa399de6932672e0b342c9f0e5a85af00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/17f81600f7901e28ee38d31428125096dd5c8fd4",
-                "reference": "17f81600f7901e28ee38d31428125096dd5c8fd4",
+                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/f9b9274fa399de6932672e0b342c9f0e5a85af00",
+                "reference": "f9b9274fa399de6932672e0b342c9f0e5a85af00",
                 "shasum": ""
             },
             "require": {
@@ -60,7 +60,7 @@
                 "issues": "https://github.com/daanrijpkema/bluem-php",
                 "source": "https://github.com/DaanRijpkema/bluem-php/tree/master"
             },
-            "time": "2020-12-28T15:19:38+00:00"
+            "time": "2020-12-30T12:33:15+00:00"
         },
         {
             "name": "nesbot/carbon",
