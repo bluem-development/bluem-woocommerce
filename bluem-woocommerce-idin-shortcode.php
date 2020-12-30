@@ -412,7 +412,9 @@ function bluem_idin_execute($callback=null, $redirect=true)
         update_user_meta(get_current_user_id(), "bluem_idin_transaction_url", $transactionURL);
 
         if ($redirect) {
-            ob_clean();
+            if (ob_get_length()!==false && ob_get_length()>0) {
+                ob_clean();
+            }
             ob_start();
             wp_redirect($transactionURL);
             exit;
