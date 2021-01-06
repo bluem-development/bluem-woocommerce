@@ -23,6 +23,27 @@ function _bluem_get_idin_option($key) {
 
 function _bluem_get_idin_options()
 {
+    
+    $idinDescriptionTags = (
+        function_exists('bluem_get_IDINDescription_tags')?
+        bluem_get_IDINDescription_tags() : []
+    );
+    $idinDescriptionReplaces = (
+        function_exists('bluem_get_IDINDescription_replaces')?
+        bluem_get_IDINDescription_replaces() : []
+    );
+    $idinDescriptionTable = "<table><thead><tr><th>Invulveld</th><th>Voorbeeld invulling</th></tr></thead><tbody>";
+    foreach ($idinDescriptionTags as $ti => $tag) {
+        if (!isset($idinDescriptionReplaces[$ti])) {
+            continue;
+        }
+        $idinDescriptionTable.= "<tr><td><code>$tag</code></td><td>".$idinDescriptionReplaces[$ti]."</td></tr>";
+    }
+
+    $idinDescriptionTable.="</tbody></table>";
+    $options = get_option('bluem_woocommerce_options');
+    $idinDescriptionCurrentValue = bluem_parse_IDINDescription($options['IDINDescription']);
+
     return [
     'IDINSuccessMessage' => [
         'key' => 'IDINSuccessMessage',
@@ -67,6 +88,17 @@ function _bluem_get_idin_options()
         'type' => 'select',
         'default' => '0',
         'options' => ['0' => 'Voor iedereen', '1' => 'Alleen voor ingelogde bezoekers'],
+    ],
+    'IDINDescription' => [
+        'key' => 'IDINDescription',
+        'title' => 'bluem_IDINDescription',
+        'name' => 'Formaat beschrijving request',
+        'description' => 'Geef het format waaraan de beschrijving van 
+            een identificatie request moet voldoen, met automatisch ingevulde velden.<br>Dit gegeven wordt ook weergegeven in de Bluem portal als de \'Inzake\' tekst.   
+            <br>Voorbeeld Huidige waarde: <code style=\'display:block;\'>'.
+            $idinDescriptionCurrentValue.'</code><br>Mogelijke invulvelden '. $idinDescriptionTable.
+            "<br>Let op: max 128 tekens. Toegestane karakters: <code>-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$</code>",
+        'default' => 'Identificatie {gebruikersnaam}'
     ]
     ];
 }
@@ -107,6 +139,9 @@ function bluem_woocommerce_settings_render_IDINShortcodeOnlyAfterLogin()
     bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINShortcodeOnlyAfterLogin'));
 }
 
+function bluem_woocommerce_settings_render_IDINDescription()
+{
+    bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINDescription'));
+}
 
-	
-	
+

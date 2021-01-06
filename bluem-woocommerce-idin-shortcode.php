@@ -362,14 +362,51 @@ function bluem_idin_user_validated()
     return get_user_meta(get_current_user_id(), "bluem_idin_validated", true) == "1";
 }
 
+function bluem_get_IDINDescription_tags() {
+    return [
+        '{gebruikersnaam}',
+        '{email}',
+        '{klantnummer}',
+        '{datum}',
+        '{datumtijd}'
+    ];
+}
 
+function bluem_get_IDINDescription_replaces() {
+    global $current_user;
+    return [
+        $current_user->display_name,//'{gebruikersnaam}',
+        $current_user->user_email,//'{email}',
+        $current_user->ID, // {klantnummer}
+        date("d-m-Y"),//'{datum}',
+        date("d-m-Y H:i")//'{datumtijd}',
+    ];
+}
+function bluem_parse_IDINDescription($input) {
+    $tags = bluem_get_IDINDescription_tags();
+    $replaces = bluem_get_IDINDescription_replaces();
+
+
+    $result = str_replace($tags, $replaces, $input);
+    $invalid_chars = ['[',']','{','}','!','#']; 
+    // @todo Add full list of invalid chars for description based on XSD
+    $result = str_replace($invalid_chars,'',$result);
+    
+    $result = substr($result,0,128); 
+    return $result;
+}
 
 function bluem_idin_execute($callback=null, $redirect=true)
 {
     global $current_user;
     $bluem_config = _get_bluem_config();
 
-    $description =  "Identificatie" . $current_user->display_name ;
+    if (isset($bluem_config->IDINDescription)){
+        $description = bluem_parse_IDINDescription($bluem_config->IDINDescription);
+    } else {
+        $description =  "Identificatie " . $current_user->display_name ;
+    }
+
     $debtorReference = $current_user->ID;
 
     $bluem = new Integration($bluem_config);
@@ -400,13 +437,8 @@ function bluem_idin_execute($callback=null, $redirect=true)
         $entranceCode = $response->GetEntranceCode();
         $transactionID = $response->GetTransactionID();
         $transactionURL = $response->GetTransactionURL();
-        // save this somewhere in your data store
 
-        // $_SESSION['BluemIDINEntranceCode'] = $entranceCode;
-        // $_SESSION['BluemIDINTransactionID'] = $transactionID;
-        // $_SESSION['BluemIDINTransactionURL'] = $transactionURL;
-
-
+        // save this in our user meta data store
         update_user_meta(get_current_user_id(), "bluem_idin_entrance_code", $entranceCode);
         update_user_meta(get_current_user_id(), "bluem_idin_transaction_id", $transactionID);
         update_user_meta(get_current_user_id(), "bluem_idin_transaction_url", $transactionURL);
@@ -422,15 +454,9 @@ function bluem_idin_execute($callback=null, $redirect=true)
             return ['result'=>true,'url'=>$transactionURL];
         }
     } else {
-        // if (!isset($response->EMandateTransactionResponse->TransactionURL)) {
         echo "Er ging iets mis bij het aanmaken van de transactie.<br>Vermeld onderstaande informatie aan het websitebeheer:<br><pre>";
         var_dump($response);
         echo "</pre>";
-        // if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
-                        //     echo "<br>Response: " . $response->EMandateTransactionResponse->Error->ErrorMessage;
-                        //     // var_dump($response);
-                        // }
-                        // exit;
     }
     exit;
 }
