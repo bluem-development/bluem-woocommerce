@@ -374,6 +374,9 @@ function bluem_get_IDINDescription_tags() {
 
 function bluem_get_IDINDescription_replaces() {
     global $current_user;
+
+    // @todo: add fallbacks if user is not logged in
+
     return [
         $current_user->display_name,//'{gebruikersnaam}',
         $current_user->user_email,//'{email}',
