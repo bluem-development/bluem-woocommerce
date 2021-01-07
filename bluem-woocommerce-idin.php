@@ -42,7 +42,18 @@ function _bluem_get_idin_options()
 
     $idinDescriptionTable.="</tbody></table>";
     $options = get_option('bluem_woocommerce_options');
-    $idinDescriptionCurrentValue = bluem_parse_IDINDescription($options['IDINDescription']);
+
+    if ($options !==false
+        && isset($options['IDINDescription'])
+    ) {
+        $idinDescriptionCurrentValue = bluem_parse_IDINDescription(
+            $options['IDINDescription']
+        );
+    } else {
+        $idinDescriptionCurrentValue = bluem_parse_IDINDescription(
+            "Identificatie {gebruikersnaam}"
+        );
+    }
 
     return [
     'IDINSuccessMessage' => [
