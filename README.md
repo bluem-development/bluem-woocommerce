@@ -1,6 +1,6 @@
-This is the developer repository for the bluem-woocommerce WordPress and WooCommerce plug-in.
+*This is the developer repository for the bluem-woocommerce WordPress and WooCommerce plug-in. The stable, production-ready version of the plug-in will be available from the WordPress plug-in directory soon.*
 
-Use this to get insight and possibly contribute to the development of this plug-in.
+Use this repository to get insight and possibly contribute to the development of this plug-in.
 
 # Installation
 <!-- If you want to install this plug-in, the easiest way is to use the WordPress plug-in directly from the WordPress plug-in directory here: -->
@@ -21,6 +21,7 @@ If you are having trouble running the above commands, please contact us. We are 
 # Configuration
 
 Use the **Settings** -> **Bluem** page to configure the plug-in completely.
+
 Please note the following:
 
 - You have to activate the specific parts of the plug-in that you want to use. All separate services are indvidiually activatable. By default, they are not activated.
