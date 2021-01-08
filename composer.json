@@ -1,0 +1,18 @@
+{
+	"name": "daanrijpkema/bluem-woocommerce",
+	"license": "GPL-2.0-or-later",
+	"description": "A robust code template for creating a standards-compliant WordPress plugin.",
+	"keywords": [
+		"wordpress", "wp", "plugin template"
+	],
+	"support": {
+		"issues": "https://github.com/daanrijpkema/bluem-woocommerce"
+	},
+	"require": {
+		"php": ">=5.4",
+		"nesbot/carbon": "^2.31",
+		"daanrijpkema/bluem-php":"dev-master"
+	},
+	"minimum-stability": "dev",
+    "prefer-stable": true
+}

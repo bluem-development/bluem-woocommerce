@@ -1,0 +1,10 @@
+node*
+vendor*
+.gitignore
+.vscode
+.DS_Store
+vendor/*
+composer.lock
+bluem-php
+bluem-php/*
+composer.lock
