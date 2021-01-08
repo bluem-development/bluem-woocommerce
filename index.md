@@ -1,37 +1,33 @@
-## Welcome to GitHub Pages
+*This is the developer repository for the bluem-woocommerce WordPress and WooCommerce plug-in. The stable, production-ready version of the plug-in will be available from the WordPress plug-in directory soon.*
 
-You can use the [editor on GitHub](https://github.com/DaanRijpkema/bluem-woocommerce/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+Use this repository to get insight and possibly contribute to the development of this plug-in.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+# Installation
+<!-- If you want to install this plug-in, the easiest way is to use the WordPress plug-in directly from the WordPress plug-in directory here: -->
 
-### Markdown
+## Deploy from this source code repository
+If you want to use this repository, follow the following steps to compile 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+[DOWNLOAD LINK](bluem-woocommerce.zip)
 
-```markdown
-Syntax highlighted code block
+1. Download the contents of this repository as a ZIP file, or clone it to your computer
+2. Install [Composer](https://getcomposer.org) on your local machine
+3. Run the `composer update` command in the downloaded folder. This will generate a `vendor` folder and install all required dependencies and libraries.
+4. Ensure the folder and its contents are located at the `./wp-content/plugins/bluem-woocommerce` path. (You could also compress the contents of this folder into a ZIP file and upload this into your site).
+5. Your plug-in should now be visible within your WordPress plugin list. Activate the plug-in from this page
 
-# Header 1
-## Header 2
-### Header 3
+If possible, please run the installation procedure on a testing environment first, before installing the plug-in in a development environment.
 
-- Bulleted
-- List
+If you are having trouble running the above commands, please contact us. We are glad to help or to provide a compiled version of the above See the Support section for instructions on how to do this.
 
-1. Numbered
-2. List
+# Configuration
 
-**Bold** and _Italic_ and `Code` text
+Use the **Settings** -> **Bluem** page to configure the plug-in completely.
 
-[Link](url) and ![Image](src)
-```
+Please note the following:
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+- You have to activate the specific parts of the plug-in that you want to use. All separate services are indvidiually activatable. By default, they are not activated.
 
-### Jekyll Themes
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/DaanRijpkema/bluem-woocommerce/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+# Support
+If you have any questions, please send an email to [info@daanrijpkema.com](mailto:info@daanrijpkema.com).
