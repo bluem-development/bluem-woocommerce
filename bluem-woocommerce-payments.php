@@ -220,8 +220,6 @@ function bluem_init_payment_gateway_class()
             echo $this->getSimpleFooter($include_link);
         }
 
-        // MANDATE SPECIFICS:
-
         /**
          * Process payment through Bluem portal
          *
@@ -268,6 +266,12 @@ function bluem_init_payment_gateway_class()
             $request->type_identifier = "createTransaction";
             $request->dueDateTime = $dueDateTime->toDateTimeLocalString() . ".000Z";
             $request->debtorReturnURL = home_url("wc-api/bluem_payments_callback?entranceCode={$entranceCode}");
+
+
+            // allow third parties to add additional data to the request object through this additional action
+            $request = apply_filters(
+                'bluem_woocommerce_enhance_payment_request', $request
+            );
             // "https://localhost?entranceCode=".$entranceCode.'&amp;transactionID='.$transactionID;
 
             // $request->paymentReference = str_replace('-','',$request->paymentReference);
@@ -620,3 +624,24 @@ function bluem_woocommerce_settings_render_paymentBrandID()
 }
 
 // https://www.skyverge.com/blog/how-to-create-a-simple-woocommerce-payment-gateway/
+
+
+
+
+
+
+
+add_filter('bluem_woocommerce_enhance_payment_request', 'bluem_woocommerce_enhance_payment_request_function', 10, 1);
+
+/**
+ * allow third parties to add additional data to the request object through this additional action
+ *
+ * @param [type] $request
+ * @return void
+ */
+function bluem_woocommerce_enhance_payment_request_function($request)
+{
+    // do something with the Bluem payment request, use this in third-party extensions of this system
+    return $request;
+}
+
