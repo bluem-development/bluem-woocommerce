@@ -4,13 +4,16 @@ Use this repository to get insight and possibly contribute to the development of
 
 # Installation
 <!-- If you want to install this plug-in, the easiest way is to use the WordPress plug-in directly from the WordPress plug-in directory here: -->
+[DOWNLOAD LINK](bluem-woocommerce.zip)
+Download the above file to your computer, and upload it in the plugin section of your WordPress back-end. Don't forget to activate it afterwards.
 
 ## Deploy from this source code repository
-If you want to use this repository, follow the following steps to compile 
 
-[DOWNLOAD LINK](bluem-woocommerce.zip)
+Repository URL: https://github.com/DaanRijpkema/bluem-woocommerce
 
-1. Download the contents of this repository as a ZIP file, or clone it to your computer
+If you want to use this repository, follow the following steps to compile from the source repository.
+
+1. Download the contents of this repository as a ZIP file, or clone it to your computer using HTTPS/SSH.
 2. Install [Composer](https://getcomposer.org) on your local machine
 3. Run the `composer update` command in the downloaded folder. This will generate a `vendor` folder and install all required dependencies and libraries.
 4. Ensure the folder and its contents are located at the `./wp-content/plugins/bluem-woocommerce` path. (You could also compress the contents of this folder into a ZIP file and upload this into your site).
