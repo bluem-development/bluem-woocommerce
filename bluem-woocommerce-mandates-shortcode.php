@@ -78,14 +78,22 @@ function bluem_mandate_shortcode_execute()
             
 
         if (!isset($response->EMandateTransactionResponse->TransactionURL)) {
-            echo "Er ging iets mis bij het aanmaken van de transactie.<br>Vermeld onderstaande informatie aan het websitebeheer:<br><pre>";
-            var_dump($response);
-            echo "</pre>";
+
+            $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
+            Vermeld onderstaande informatie aan het websitebeheer:";
+            //     <br><pre>";
+            // bluem_generic_tabler($response);
+            // echo "</pre>";
             if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
-                echo "<br>Response: " . 
+                $msg.= "<br>Response: " . 
                 $response->EMandateTransactionResponse->Error->ErrorMessage;
                 // var_dump($response);
+            } else {
+                $msg .= "<br>Algemene fout";
             }
+
+
+            bluem_woocommerce_prompt($msg);
             exit;
         }
         
