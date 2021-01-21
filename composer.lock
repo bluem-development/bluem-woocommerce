@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b656177cbb7edaf7852e264ba70f7626",
+    "content-hash": "3c1c7349036e9878146e5cc0af0af867",
     "packages": [
         {
             "name": "daanrijpkema/bluem-php",
-            "version": "dev-master",
+            "version": "0.9.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DaanRijpkema/bluem-php.git",
-                "reference": "f9b9274fa399de6932672e0b342c9f0e5a85af00"
+                "reference": "8140b08e3cd207e65ad214c7b4d6cae4614da016"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/f9b9274fa399de6932672e0b342c9f0e5a85af00",
-                "reference": "f9b9274fa399de6932672e0b342c9f0e5a85af00",
+                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/8140b08e3cd207e65ad214c7b4d6cae4614da016",
+                "reference": "8140b08e3cd207e65ad214c7b4d6cae4614da016",
                 "shasum": ""
             },
             "require": {
@@ -26,7 +26,6 @@
                 "php": ">=5.4",
                 "selective/xmldsig": "^1.0"
             },
-            "default-branch": true,
             "type": "package",
             "autoload": {
                 "psr-4": {
@@ -58,9 +57,9 @@
             ],
             "support": {
                 "issues": "https://github.com/daanrijpkema/bluem-php",
-                "source": "https://github.com/DaanRijpkema/bluem-php/tree/master"
+                "source": "https://github.com/DaanRijpkema/bluem-php/tree/0.9.8.2"
             },
-            "time": "2020-12-30T12:33:15+00:00"
+            "time": "2021-01-19T09:03:42+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -391,16 +390,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.20.0",
+            "version": "v1.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "39d483bdf39be819deabf04ec872eb0b2410b531"
+                "reference": "f377a3dd1fde44d37b9831d68dc8dea3ffd28e13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/39d483bdf39be819deabf04ec872eb0b2410b531",
-                "reference": "39d483bdf39be819deabf04ec872eb0b2410b531",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/f377a3dd1fde44d37b9831d68dc8dea3ffd28e13",
+                "reference": "f377a3dd1fde44d37b9831d68dc8dea3ffd28e13",
                 "shasum": ""
             },
             "require": {
@@ -412,7 +411,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.20-dev"
+                    "dev-main": "1.22-dev"
                 },
                 "thanks": {
                     "name": "symfony/polyfill",
@@ -451,7 +450,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.20.0"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.22.0"
             },
             "funding": [
                 {
@@ -467,20 +466,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-23T14:02:19+00:00"
+            "time": "2021-01-07T16:49:33+00:00"
         },
         {
             "name": "symfony/polyfill-php80",
-            "version": "v1.20.0",
+            "version": "v1.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "e70aa8b064c5b72d3df2abd5ab1e90464ad009de"
+                "reference": "dc3063ba22c2a1fd2f45ed856374d79114998f91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/e70aa8b064c5b72d3df2abd5ab1e90464ad009de",
-                "reference": "e70aa8b064c5b72d3df2abd5ab1e90464ad009de",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/dc3063ba22c2a1fd2f45ed856374d79114998f91",
+                "reference": "dc3063ba22c2a1fd2f45ed856374d79114998f91",
                 "shasum": ""
             },
             "require": {
@@ -489,7 +488,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.20-dev"
+                    "dev-main": "1.22-dev"
                 },
                 "thanks": {
                     "name": "symfony/polyfill",
@@ -534,7 +533,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.20.0"
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.22.0"
             },
             "funding": [
                 {
@@ -550,7 +549,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-23T14:02:19+00:00"
+            "time": "2021-01-07T16:49:33+00:00"
         },
         {
             "name": "symfony/translation",
@@ -727,9 +726,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "daanrijpkema/bluem-php": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
