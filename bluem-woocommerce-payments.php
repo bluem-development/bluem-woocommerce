@@ -383,8 +383,8 @@ function bluem_init_payment_gateway_class()
             if (self::VERBOSE) {
                 var_dump($mandate_amount);
                 echo PHP_EOL;
+                die();
             }
-            die();
 
             if (self::VERBOSE) echo "mandate_amount: {$mandate_amount}" . PHP_EOL;
 

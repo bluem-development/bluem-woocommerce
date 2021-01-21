@@ -94,6 +94,13 @@ function bluem_woocommerce_settings_handler()
 }
 add_action('admin_menu', 'bluem_woocommerce_settings_handler');
 
+
+
+function bluem_woocommerce_tab() {
+    $default_tab = null;
+  return isset($_GET['tab']) ? $_GET['tab'] : $default_tab;
+
+}
 /**
  * Settings page display
  *
@@ -103,8 +110,7 @@ function bluem_woocommerce_settings_page()
 {
 
     //Get the active tab from the $_GET param
-//   $default_tab = null;
-//   $tab = isset($_GET['tab']) ? $_GET['tab'] : $default_tab;
+    $tab = bluem_woocommerce_tab();
 
 ?>
     <style>
@@ -113,40 +119,74 @@ function bluem_woocommerce_settings_page()
         }
 
         .bluem-settings {
-            column-count: 2;
-            column-gap: 40px;
-
+            /* column-count: 2;
+            column-gap: 40px; */
+            padding:20px;
         }
     </style>
 
 
-    <div class="bluem-settings">
-
-            <?php
-        settings_fields('bluem_woocommerce_modules_options');
-            do_settings_sections('bluem_woocommerce_modules');
-?>
-
-            <!-- <li>
-    <strong>
-    Interface voor iDIN (identificatie) transacties 
-        </strong>
-    <br>
+<div class="wrap">
+    <!-- Print the page title -->
+    <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+    <!-- Here are our tabs -->
+    <nav class="nav-tab-wrapper">
+      <a href="<?php echo admin_url('options-general.php?page=bluem-woocommerce');?>" 
+      class="nav-tab 
+        <?php if($tab===null) { echo "nav-tab-active"; } ?>
+      ">
+        Algemene instellingen
+      </a>
+      
+      <?php if(bluem_module_enabled('mandates')) { ?>
     
-    </li>		 -->
+        <a href="<?php echo admin_url('options-general.php?page=bluem-woocommerce&tab=mandates');?>" 
+            class="nav-tab 
+            <?php if($tab==='mandates') { echo "nav-tab-active"; } ?>
+            ">
+            Digitaal Incassomachtigen (eMandates)
+        </a>
+        <?php } ?>
+    
+    <?php if(bluem_module_enabled('payments')) { ?>
+    
+        <a href="<?php echo admin_url('options-general.php?page=bluem-woocommerce&tab=payments');?>" 
+            class="nav-tab 
+            <?php if($tab==='payments') { echo "nav-tab-active"; } ?>
+            ">
+            iDEAL (ePayments)
+        </a>
+        <?php } ?>
+    
+    <?php if(bluem_module_enabled('idin')) { ?>
+    
+        <a href="<?php echo admin_url('options-general.php?page=bluem-woocommerce&tab=idin');?>" 
+            class="nav-tab 
+            <?php if($tab==='idin') { echo "nav-tab-active"; } ?>
+            ">
+            iDIN (Identity)
+        </a>
+        <?php } ?>
+    </nav>
 
-        </ul>
 
+    
+    <div class="bluem-settings">
+        
 
-        <h2>Bluem instellingen</h2>
+        <!-- <h2>Bluem instellingen</h2> -->
 
         <form action="options.php" method="post">
+
+        <?php if(is_null($tab)) {
+            ?>
             <?php
-
-            // register_setting( 'myoption-group', 'new_option_name' );
-            // 	$this->form_fields[$option_key] = $ff;
-            // }
-
+        settings_fields('bluem_woocommerce_modules_options');
+        do_settings_sections('bluem_woocommerce_modules');
+        ?>
+        <?php
+        } ?>
+            <?php
 
             settings_fields('bluem_woocommerce_options');
             do_settings_sections('bluem_woocommerce');
@@ -156,6 +196,7 @@ function bluem_woocommerce_settings_page()
 
 
     </div>
+</div>
     <?php
 }
 
@@ -168,48 +209,56 @@ function bluem_woocommerce_general_settings_section()
 
 function bluem_woocommerce_register_settings()
 {
-    register_setting('bluem_woocommerce_options', 'bluem_woocommerce_modules_options', 'bluem_woocommerce_modules_options_validate');
-    add_settings_section('bluem_woocommerce_modules_section', _('Beheer onderdelen van deze plug-in'), 'bluem_woocommerce_modules_settings_section', 'bluem_woocommerce');
-    add_settings_field(
-        "mandates_enabled",
-        _("Mandates actief"),
-        "bluem_woocommerce_modules_render_mandates_activation",
-        "bluem_woocommerce",
-        "bluem_woocommerce_modules_section"
-    );
-    add_settings_field(
-        "payments_enabled",
-        _("ePayments actief"),
-        "bluem_woocommerce_modules_render_payments_activation",
-        "bluem_woocommerce",
-        "bluem_woocommerce_modules_section"
-    );
-    add_settings_field(
-        "idin_enabled",
-        _("iDIN actief"),
-        "bluem_woocommerce_modules_render_idin_activation",
-        "bluem_woocommerce",
-        "bluem_woocommerce_modules_section"
-    );
+    $tab = bluem_woocommerce_tab();
+    
     register_setting('bluem_woocommerce_options', 'bluem_woocommerce_options', 'bluem_woocommerce_options_validate');
-
-    add_settings_section('bluem_woocommerce_general_section', 'Algemene instellingen', 'bluem_woocommerce_general_settings_section', 'bluem_woocommerce');
-    $general_settings = _bluem_woocommerce_get_core_options();
-    foreach ($general_settings as $key => $ms) {
+    
+    
+    if (is_null($tab)) {
+        register_setting('bluem_woocommerce_options', 'bluem_woocommerce_modules_options', 'bluem_woocommerce_modules_options_validate');
+        add_settings_section('bluem_woocommerce_modules_section', _('Beheer onderdelen van deze plug-in'), 'bluem_woocommerce_modules_settings_section', 'bluem_woocommerce');
         add_settings_field(
-            $key,
-            $ms['name'],
-            "bluem_woocommerce_settings_render_" . $key,
+            "mandates_enabled",
+            _("Mandates actief"),
+            "bluem_woocommerce_modules_render_mandates_activation",
             "bluem_woocommerce",
-            "bluem_woocommerce_general_section"
+            "bluem_woocommerce_modules_section"
         );
+        add_settings_field(
+            "payments_enabled",
+            _("ePayments actief"),
+            "bluem_woocommerce_modules_render_payments_activation",
+            "bluem_woocommerce",
+            "bluem_woocommerce_modules_section"
+        );
+        add_settings_field(
+            "idin_enabled",
+            _("iDIN actief"),
+            "bluem_woocommerce_modules_render_idin_activation",
+            "bluem_woocommerce",
+            "bluem_woocommerce_modules_section"
+        );
+
+        add_settings_section('bluem_woocommerce_general_section', 'Algemene instellingen', 'bluem_woocommerce_general_settings_section', 'bluem_woocommerce');
+        $general_settings = _bluem_woocommerce_get_core_options();
+        foreach ($general_settings as $key => $ms) {
+            add_settings_field(
+                $key,
+                $ms['name'],
+                "bluem_woocommerce_settings_render_" . $key,
+                "bluem_woocommerce",
+                "bluem_woocommerce_general_section"
+            );
+        }
     }
 
-
-    if (bluem_module_enabled('mandates')) {
+// }    var_dump($tab);
+// var_dump(bluem_module_enabled("mandates"));
+    
+    if ($tab == "mandates" && bluem_module_enabled('mandates')) {
         add_settings_section('bluem_woocommerce_mandates_section', 'Machtiging instellingen', 'bluem_woocommerce_mandates_settings_section', 'bluem_woocommerce');
         
-
+// echo "adding mandate settings";die();
         $mandates_settings = _bluem_get_mandates_options();
         if (is_array($mandates_settings) && count($mandates_settings) > 0) {
 
@@ -224,7 +273,7 @@ function bluem_woocommerce_register_settings()
             }
         }
     }
-    if (bluem_module_enabled('payments')) {
+    if ($tab == "payments" && bluem_module_enabled('payments')) {
         add_settings_section('bluem_woocommerce_payments_section', 'iDeal payments instellingen', 'bluem_woocommerce_payments_settings_section', 'bluem_woocommerce');
         
 
@@ -242,7 +291,7 @@ function bluem_woocommerce_register_settings()
             }
         }
     }
-    if (bluem_module_enabled('idin')) {
+    if ($tab == "idin" && bluem_module_enabled('idin')) {
         add_settings_section('bluem_woocommerce_idin_section', 'iDIN instellingen', 'bluem_woocommerce_idin_settings_section', 'bluem_woocommerce');
 
         
@@ -526,7 +575,7 @@ function bluem_module_enabled($module)
 {
     $bluem_options = get_option('bluem_woocommerce_options');
     if (!isset($bluem_options["{$module}_enabled"])
-    || $bluem_options["{$module}_enabled"]=="1"
+        || $bluem_options["{$module}_enabled"]=="1"
     ) {
         return true;
     }
