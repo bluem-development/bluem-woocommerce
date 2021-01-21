@@ -159,13 +159,13 @@ function bluem_idin_shortcode_callback()
             switch ($statusCode) {
                 case 'Success':
                     // case 'New':
-                        // do what you need to do in case of success!
+                    // do what you need to do in case of success!
 
-                        // retrieve a report that contains the information based on the request type:
-                            $identityReport = $statusResponse->GetIdentityReport();
-                            update_user_meta(get_current_user_id(), "bluem_idin_results", json_encode($identityReport));
+                    // retrieve a report that contains the information based on the request type:
+                    $identityReport = $statusResponse->GetIdentityReport();
+                    update_user_meta(get_current_user_id(), "bluem_idin_results", json_encode($identityReport));
 
-                            update_user_meta(get_current_user_id(), "bluem_idin_validated", true);
+                    update_user_meta(get_current_user_id(), "bluem_idin_validated", true);
                             // var_dump($updresult);
                             // die();
 
@@ -404,7 +404,7 @@ function bluem_idin_execute($callback=null, $redirect=true)
     global $current_user;
     $bluem_config = _get_bluem_config();
 
-    if (isset($bluem_config->IDINDescription)){
+    if (isset($bluem_config->IDINDescription)) {
         $description = bluem_parse_IDINDescription($bluem_config->IDINDescription);
     } else {
         $description =  "Identificatie " . $current_user->display_name ;
@@ -442,9 +442,15 @@ function bluem_idin_execute($callback=null, $redirect=true)
         $transactionURL = $response->GetTransactionURL();
 
         // save this in our user meta data store
-        update_user_meta(get_current_user_id(), "bluem_idin_entrance_code", $entranceCode);
-        update_user_meta(get_current_user_id(), "bluem_idin_transaction_id", $transactionID);
-        update_user_meta(get_current_user_id(), "bluem_idin_transaction_url", $transactionURL);
+        update_user_meta(
+            get_current_user_id(), "bluem_idin_entrance_code", $entranceCode
+        );
+        update_user_meta(
+            get_current_user_id(), "bluem_idin_transaction_id", $transactionID
+        );
+        update_user_meta(
+            get_current_user_id(), "bluem_idin_transaction_url", $transactionURL
+        );
 
         if ($redirect) {
             if (ob_get_length()!==false && ob_get_length()>0) {
@@ -457,9 +463,22 @@ function bluem_idin_execute($callback=null, $redirect=true)
             return ['result'=>true,'url'=>$transactionURL];
         }
     } else {
-        echo "Er ging iets mis bij het aanmaken van de transactie.<br>Vermeld onderstaande informatie aan het websitebeheer:<br><pre>";
-        var_dump($response);
-        echo "</pre>";
+        
+        $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
+        Vermeld onderstaande informatie aan het websitebeheer:";
+        //     <br><pre>";
+        // bluem_generic_tabler($response);
+        // echo "</pre>";
+        if ($response->Error() !=="") {
+            $msg.= "<br>Response: " . 
+            $response->Error();
+        } else {
+            $msg .= "algemene fout";
+        }
+
+
+        bluem_woocommerce_prompt($msg);
+        exit;
     }
     exit;
 }
