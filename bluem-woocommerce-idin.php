@@ -116,7 +116,31 @@ function _bluem_get_idin_options()
 
 function bluem_woocommerce_idin_settings_section()
 {
-    echo '<p>Hier kan je alle belangrijke gegevens instellen rondom iDIN (Identificatie). Lees de readme bij de plug-in voor meer informatie.</p>';
+    ?>
+    <p>Hier kan je alle belangrijke gegevens instellen rondom iDIN (Identificatie). Lees de readme bij de plug-in voor meer informatie.</p>
+    <h4>
+        Hoe het werkt
+    </h4>
+    <p>Het IDIN formulier werkt via een shortcode, welke je kan plaatsen op een pagina, post of in een template. De shortcode is als volgt: 
+    <code>[bluem_identificatieformulier]</code>. 
+    </p>
+    <p>
+        Zodra je deze hebt geplaatst, is op deze pagina een blok zichtbaar waarin de status van de identificatieprocedure staat. Indien geen identificatie is uitgevoerd, zal er een knop verschijnen om deze te starten.
+    </p>
+    <p>
+    Bij succesvol uitvoeren van de identificatie via Bluem, komt men terug op de pagina die hieronder wordt aangemerkt als IDINPageURL (huidige waarde: 
+    <?php
+
+$options = get_option('bluem_woocommerce_options');
+if (isset($options['IDINPageURL'])) {
+    echo($options['IDINPageURL']);
+}
+    ?>).
+    </p><p>
+    Gegevens worden vervolgens opgeslagen bij het user profile.
+    </p>
+
+    <?php
 }
 
 function bluem_woocommerce_settings_render_IDINSuccessMessage()
