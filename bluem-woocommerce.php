@@ -101,6 +101,11 @@ add_action('admin_menu', 'bluem_woocommerce_settings_handler');
  */
 function bluem_woocommerce_settings_page()
 {
+
+    //Get the active tab from the $_GET param
+//   $default_tab = null;
+//   $tab = isset($_GET['tab']) ? $_GET['tab'] : $default_tab;
+
 ?>
     <style>
         .bluem-form-control {
@@ -526,4 +531,88 @@ function bluem_module_enabled($module)
         return true;
     }
     return false;
+}
+
+
+
+
+  /**
+         * Retrieve header HTML for error/message prompts
+         *
+         * @return String
+         */
+        function bluem_woocommerce_simpleheader(): String
+        {
+            return "<!DOCTYPE html><html><body><div
+            style='font-family:Arial,sans-serif;display:block;
+            margin:40pt auto; padding:10pt 20pt; border:1px solid #eee;
+            background:#fff; max-width:500px;'>";
+        }
+        /**
+         * Retrieve footer HTML for error/message prompt. Can include a simple link back to the webshop home URL.
+         *
+         * @param Bool $include_link
+         * @return String
+         */
+        function bluem_woocommerce_simplefooter(Bool $include_link = true): String
+        {
+            return ($include_link ? "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug</a></p>" : "") .
+                "</div></body></html>";
+        }
+
+        /**
+         * Render a piece of HTML sandwiched beteween a simple header and footer, with an optionally included link back home
+         *
+         * @param String $html
+         * @param boolean $include_link
+         * @return void
+         */
+        function bluem_woocommerce_prompt(String $html, $include_link = true)
+        {
+            echo bluem_woocommerce_simpleheader();
+            echo $html;
+            echo bluem_woocommerce_simplefooter($include_link);
+        }
+
+
+        
+/**
+ * bluem_generic_tabler
+ *
+ * @return void
+ */
+function bluem_generic_tabler($data)
+{
+    ?>
+    <table class="table widefat">
+    <?php
+    $i = 0;
+    foreach ($data as $key => $value) {
+        if ($i == 0) {
+            ?>
+                <tr>
+                    <?php
+                    foreach ($value as $kkey => $vvalue) {
+                        ?>
+                        <th>
+                            <?php echo $kkey; ?>
+                        </th><?php
+                    } ?>
+                </tr>
+
+            <?php
+        } ?>
+        <tr>
+            <?php
+            foreach ($value as $kkey => $vvalue) {
+                ?>
+                <td>
+                    <?php echo $vvalue; ?>
+                </td><?php
+            } ?>
+
+        </tr><?php
+        $i++;
+    } ?>
+    </table><?php
 }
