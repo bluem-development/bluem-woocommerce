@@ -249,13 +249,9 @@ function bluem_woocommerce_register_settings()
         }
     }
 
-// }    var_dump($tab);
-// var_dump(bluem_module_enabled("mandates"));
-    
     if ($tab == "mandates" && bluem_module_enabled('mandates')) {
         add_settings_section('bluem_woocommerce_mandates_section', 'Machtiging instellingen', 'bluem_woocommerce_mandates_settings_section', 'bluem_woocommerce');
-        
-// echo "adding mandate settings";die();
+
         $mandates_settings = _bluem_get_mandates_options();
         if (is_array($mandates_settings) && count($mandates_settings) > 0) {
 
@@ -292,19 +288,19 @@ function bluem_woocommerce_register_settings()
         add_settings_section('bluem_woocommerce_idin_section', 'iDIN instellingen', 'bluem_woocommerce_idin_settings_section', 'bluem_woocommerce');
 
         
-    $idin_settings = _bluem_get_idin_options();
-    if (is_array($idin_settings) && count($idin_settings) > 0) {
-        foreach ($idin_settings as $key => $ms) {
-            $fname = "bluem_woocommerce_settings_render_" . $key;
-            add_settings_field(
-                $key,
-                $ms['name'],
-                "bluem_woocommerce_settings_render_" . $key,
-                "bluem_woocommerce",
-                "bluem_woocommerce_idin_section"
-            );
+        $idin_settings = _bluem_get_idin_options();
+        if (is_array($idin_settings) && count($idin_settings) > 0) {
+            foreach ($idin_settings as $key => $ms) {
+                $fname = "bluem_woocommerce_settings_render_" . $key;
+                add_settings_field(
+                    $key,
+                    $ms['name'],
+                    "bluem_woocommerce_settings_render_" . $key,
+                    "bluem_woocommerce",
+                    "bluem_woocommerce_idin_section"
+                );
+            }
         }
-    }
     }
 
 
