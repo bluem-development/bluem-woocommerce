@@ -82,7 +82,7 @@ function bluem_idin_form()
             // $r.= '<input type="text" name="bluem_debtorReference" pattern="[a-zA-Z0-9 ]+" value="' . (isset($_POST["bluem_debtorReference"]) ? esc_attr($_POST["bluem_debtorReference"]) : '') . '" size="40" />';
             $r.= '</p>';
             $r.= '<p>';
-            $r.= '<p><input type="submit" name="bluem_idin_submitted" value="Identificeren.."></p>';
+            $r.= '<p><input type="submit" name="bluem_idin_submitted" class="bluem-woocommerce-button bluem-woocommerce-button-idin" value="Identificeren.."></p>';
             $r.= '</form>';
         }
     }
@@ -305,7 +305,8 @@ Status en Resultaten van IDIN requests
 
 Of de validatie is gelukt, kan je  verkrijgen door in een plug-in of template de volgende PHP code te gebruiken:
 
-<blockquote style="border: 1px solid #aaa; border-radius:5px; margin:10pt 0 0 0; padding:5pt 15pt;"><pre>if(function_exists('bluem_idin_user_validated')) {
+<blockquote style="border: 1px solid #aaa; 
+border-radius:5px; margin:10pt 0 0 0; padding:5pt 15pt;"><pre>if(function_exists('bluem_idin_user_validated')) {
     $validated = bluem_idin_user_validated();
 
     if($validated) {
@@ -316,14 +317,14 @@ Of de validatie is gelukt, kan je  verkrijgen door in een plug-in of template de
 }</pre></blockquote>
 </p>
 <p>
-
 Deze resultaten zijn als object te verkrijgen door in een plug-in of template de volgende PHP code te gebruiken:
-
-<blockquote style="border: 1px solid #aaa; border-radius:5px; margin:10pt 0 0 0; padding:5pt 15pt;">
+</p>
+<p>
+<blockquote style="border: 1px solid #aaa; border-radius:5px; 
+margin:10pt 0 0 0; padding:5pt 15pt;">
 <pre>if(function_exists('bluem_idin_retrieve_results')) {
-    $results = bluem_idin_retrieve_results();
-    // print, show or save the results
-    // for example:
+        $results = bluem_idin_retrieve_results();
+        // print, show or save the results:
         echo $results->BirthDateResponse; // prints 1975-07-25
         echo $results->NameResponse->LegalLastName; // prints Vries
     }</pre>
@@ -343,11 +344,27 @@ function bluem_woocommerce_idin_save_extra_profile_fields($user_id)
         return false;
     }
 
-    update_user_meta($user_id, 'bluem_idin_entrance_code', esc_attr($_POST['bluem_idin_entrance_code']));
-    update_user_meta($user_id, 'bluem_idin_transaction_id', esc_attr($_POST['bluem_idin_transaction_id']));
-    update_user_meta($user_id, 'bluem_idin_transaction_url', esc_attr($_POST['bluem_idin_transaction_url']));
+    update_user_meta(
+        $user_id,
+        'bluem_idin_entrance_code',
+        esc_attr($_POST['bluem_idin_entrance_code'])
+    );
+    update_user_meta(
+        $user_id,
+        'bluem_idin_transaction_id',
+        esc_attr($_POST['bluem_idin_transaction_id'])
+    );
+    update_user_meta(
+        $user_id,
+        'bluem_idin_transaction_url',
+        esc_attr($_POST['bluem_idin_transaction_url'])
+    );
 
-    update_user_meta($user_id, 'bluem_idin_validated', esc_attr($_POST['bluem_idin_validated']));
+    update_user_meta(
+        $user_id,
+        'bluem_idin_validated',
+        esc_attr($_POST['bluem_idin_validated'])
+    );
 }
 
 function bluem_idin_retrieve_results()
@@ -362,7 +379,8 @@ function bluem_idin_user_validated()
     return get_user_meta(get_current_user_id(), "bluem_idin_validated", true) == "1";
 }
 
-function bluem_get_IDINDescription_tags() {
+function bluem_get_IDINDescription_tags()
+{
     return [
         '{gebruikersnaam}',
         '{email}',
@@ -372,17 +390,18 @@ function bluem_get_IDINDescription_tags() {
     ];
 }
 
-function bluem_get_IDINDescription_replaces() {
+function bluem_get_IDINDescription_replaces()
+{
     global $current_user;
 
     // @todo: add fallbacks if user is not logged in
 
     return [
-        $current_user->display_name,//'{gebruikersnaam}',
-        $current_user->user_email,//'{email}',
-        $current_user->ID, // {klantnummer}
-        date("d-m-Y"),//'{datum}',
-        date("d-m-Y H:i")//'{datumtijd}',
+        $current_user->display_name,    //'{gebruikersnaam}',
+        $current_user->user_email,      //'{email}',
+        $current_user->ID,              // {klantnummer}
+        date("d-m-Y"),                  //'{datum}',
+        date("d-m-Y H:i")               //'{datumtijd}',
     ];
 }
 function bluem_parse_IDINDescription($input) {

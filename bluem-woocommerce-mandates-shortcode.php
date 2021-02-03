@@ -236,7 +236,7 @@ function bluem_mandateform()
             echo '<input type="hidden" name="bluem_debtorReference" value="' .$current_user->ID. '"  />';
             echo '</p>';
             echo '<p>';
-            echo '<p><input type="submit" name="bluem-submitted" value="Machtiging proces starten.."></p>';
+            echo '<p><input type="submit" name="bluem-submitted"  class="bluem-woocommerce-button bluem-woocommerce-button-mandates" value="Machtiging proces starten.."></p>';
             echo '</form>';
         } else {
             echo "Bedankt voor je machtiging met machtiging ID: {$mandateID}";
