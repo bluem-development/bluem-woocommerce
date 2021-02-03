@@ -172,9 +172,6 @@ function bluem_woocommerce_settings_page()
 
     
     <div class="bluem-settings">
-        
-
-        <!-- <h2>Bluem instellingen</h2> -->
 
         <form action="options.php" method="post">
 
