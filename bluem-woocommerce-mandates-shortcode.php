@@ -29,27 +29,22 @@ function bluem_mandate_shortcode_execute()
         // any other request
         return;
 
-    } 
-    
+    }
+
     global $current_user;
     // if the submit button is clicked, send the email
     if (isset($_POST['bluem-submitted'])) {
         $debtorReference = sanitize_text_field($_POST["bluem_debtorReference"]);
-        $bluem_config = _get_bluem_config();
+        $bluem_config = bluem_woocommerce_get_config();
         $bluem_config->merchantReturnURLBase = home_url(
             "bluem-woocommerce/mandate_shortcode_callback"
         );
-        // var_dump($bluem_config);
 
         $preferences = get_option('bluem_woocommerce_options');
         $bluem = new Integration($bluem_config);
-        // update_option('bluem_woocommerce_mandate_id_counter', 1114);
-        // update_option('bluem_woocommerce_mandate_id_counter', 111112);
 
         $mandate_id_counter = get_option('bluem_woocommerce_mandate_id_counter');
 
-
-        // var_dump($preferences);
         if (!isset($mandate_id_counter)) {
             $mandate_id_counter = $preferences['mandate_id_counter'];
         }
@@ -61,12 +56,11 @@ function bluem_mandate_shortcode_execute()
             $current_user->ID,
             $mandate_id
         );
-        // var_dump($request);
 
         // Save the necessary data to later request more information and refer to this transaction
         $_SESSION['bluem_mandateId'] = $request->mandateID;
         $_SESSION['bluem_entranceCode'] = $request->entranceCode;
-        
+
         update_user_meta(
             $current_user->ID,
             "bluem_latest_mandate_entrance_code",
@@ -75,19 +69,15 @@ function bluem_mandate_shortcode_execute()
 
         // Actually perform the request.
         $response = $bluem->PerformRequest($request);
-            
 
         if (!isset($response->EMandateTransactionResponse->TransactionURL)) {
 
             $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
             Vermeld onderstaande informatie aan het websitebeheer:";
-            //     <br><pre>";
-            // bluem_generic_tabler($response);
-            // echo "</pre>";
+
             if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
-                $msg.= "<br>Response: " . 
+                $msg.= "<br>Response: " .
                 $response->EMandateTransactionResponse->Error->ErrorMessage;
-                // var_dump($response);
             } else {
                 $msg .= "<br>Algemene fout";
             }
@@ -96,18 +86,18 @@ function bluem_mandate_shortcode_execute()
             bluem_woocommerce_prompt($msg);
             exit;
         }
-        
+
         $_SESSION['bluem_mandateId'] =$mandate_id;
         $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
         update_user_meta(
             $current_user->ID, "bluem_latest_mandate_id", $mandate_id
         );
-    
+
         // redirect cast to string, necessary for AJAX response handling
         $transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
 
         $_SESSION['bluem_recentTransactionURL'] = $transactionURL;
-     
+
         if (ob_get_length()!==false && ob_get_length()>0) {
             ob_clean();
         }
@@ -116,7 +106,7 @@ function bluem_mandate_shortcode_execute()
         exit;
     }
     exit;
-    
+
 }
 
 /* ******** CALLBACK ****** */
@@ -135,7 +125,7 @@ function bluem_mandate_mandate_shortcode_callback()
         return;
     }
 
-    $bluem_config = _get_bluem_config();
+    $bluem_config = bluem_woocommerce_get_config();
     $bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_mandates_callback');
 
     $bluem = new Integration($bluem_config);
@@ -210,17 +200,14 @@ function bluem_mandateform()
 {
     global $current_user;
 
-
-    $bluem_config = _get_bluem_config();
+    $bluem_config = bluem_woocommerce_get_config();
     $bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_mandates_callback');
     $bluem = new Integration($bluem_config);
-
-
 
     $user_allowed = apply_filters(
         'bluem_woocommerce_mandate_shortcode_allow_user',true
     );
-    
+
     if (!$user_allowed) {
         return '';
     }

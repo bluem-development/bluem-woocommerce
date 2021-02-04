@@ -24,16 +24,16 @@ function bluem_add_gateway_class_mandates($gateways)
     return $gateways;
 }
 
-function _bluem_get_mandates_option($key)
+function bluem_woocommerce_get_mandates_option($key)
 {
-    $options = _bluem_get_mandates_options();
+    $options = bluem_woocommerce_get_mandates_options();
     if (array_key_exists($key, $options)) {
         return $options[$key];
     }
     return false;
 }
 
-function _bluem_get_mandates_options()
+function bluem_woocommerce_get_mandates_options()
 {
     return [
         'merchantID' => [
@@ -58,17 +58,10 @@ function _bluem_get_mandates_options()
             'title' => 'bluem_thanksPage',
             'name' => 'Waar wordt de gebruiker uiteindelijk naar verwezen?',
             'type' => 'select',
-            'options' => ['order_page' => "Detailpagina van de zojuist geplaatste bestelling (standaard)"],
-            // 'description' => 'De slug van de bedankt pagina waarnaar moet worden verwezen na voltooien proces. Als je ORDERID in de URL verwerkt wordt deze voor je ingevuld',
-            // 'default' => ('my-account/orders/')
+            'options' => [
+                'order_page' => "Detailpagina van de zojuist geplaatste bestelling (standaard)"
+            ],
         ],
-        // 'merchantReturnURLBase'=>[
-        // 	'title'=>'bluem_merchantReturnURLBase',
-        // 	'name'=>'merchantReturnURLBase',
-        // 	'description'=>'Link naar de pagina waar mensen naar worden teruggestuurd nadat de machtiging is afgegeven.',
-        // 	'default'=>home_url('wc-api/bluem_callback')
-        // 	//'http://192.168.64.2/wp/index.php/sample-page/'
-        // ],
         'eMandateReason' => [
             'key' => 'eMandateReason',
             'title' => 'bluem_eMandateReason',
@@ -230,13 +223,11 @@ function bluem_init_mandate_gateway_class()
             // Method with all the options fields
             $this->init_form_fields();
 
-
-
             $this->title = $this->get_option('title');
             $this->description = $this->get_option('description');
 
             // ********** CREATING Bluem Configuration **********
-            $this->bluem_config = _get_bluem_config();
+            $this->bluem_config = bluem_woocommerce_get_config();
 
             $this->bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_mandates_callback');
 
@@ -285,7 +276,7 @@ function bluem_init_mandate_gateway_class()
                 exit;
             }
 
-            // todo: add alternative route?
+            // @todo: add alternative route?
         }
 
         /**
@@ -354,8 +345,6 @@ function bluem_init_mandate_gateway_class()
             echo $html;
             echo $this->getSimpleFooter($include_link);
         }
-
-        // MANDATE SPECIFICS:
 
         /**
          * Process payment through Bluem portal
@@ -439,9 +428,7 @@ function bluem_init_mandate_gateway_class()
                     }
                 }
             }
-            // echo "Trying to create our own ordah mandate";
-            // echo "Done trying preprocessed mandate";
-            // 			die();
+
             $order_id = $order->get_order_number();
             $customer_id = get_post_meta($order_id, '_customer_user', true);
 
@@ -546,8 +533,8 @@ function bluem_init_mandate_gateway_class()
             // if (isset($user_meta['bluem_latest_mandate_amount'][0])) {
             // 	$mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
             // } else {
-
             // }
+
             if (isset($statusUpdateObject->EMandateStatus->AcceptanceReport->MaxAmount)) {
                 $mandate_amount = (float) ($statusUpdateObject->EMandateStatus->AcceptanceReport->MaxAmount . "");
             } else {
@@ -557,8 +544,6 @@ function bluem_init_mandate_gateway_class()
                 var_dump($mandate_amount);
                 echo PHP_EOL;
             }
-            // die();
-
 
             $settings = get_option('bluem_woocommerce_options');
             $maxAmountEnabled = (isset($settings['maxAmountEnabled']) ? ($settings['maxAmountEnabled'] == "1") : false);
@@ -567,8 +552,6 @@ function bluem_init_mandate_gateway_class()
             } else {
                 $maxAmountFactor = 1.0;
             }
-
-
 
             if (self::VERBOSE) {
                 echo "mandate_amount: {$mandate_amount}" . PHP_EOL;
@@ -596,6 +579,7 @@ function bluem_init_mandate_gateway_class()
                         }
                     }
                 }
+
             } else {
                 $mandate_successful = true;
             }
@@ -611,7 +595,8 @@ function bluem_init_mandate_gateway_class()
                             __(
                                 "Machtiging (Mandaat ID $mandateID) is gelukt
                                  en goedgekeurd; via webhook",
-                                'wc-gateway-bluem')
+                                'wc-gateway-bluem'
+                            )
                         );
                     }
                     // iff order is within size, update to processing
@@ -654,8 +639,6 @@ function bluem_init_mandate_gateway_class()
          */
         public function mandates_callback()
         {
-            // echo "In mandate callback";
-
             $this->bluem = new Integration($this->bluem_config);
 
             if (!isset($_GET['mandateID'])) {
@@ -664,39 +647,17 @@ function bluem_init_mandate_gateway_class()
             }
             $mandateID = $_GET['mandateID'];
 
-            if (!isset($_GET['type']) || !in_array("" . $_GET['type'], ['default', 'simple'])) {
-                $type = "default";
-            } else {
-                $type = $_GET['type'];
-            }
-
-            if ($type == "simple") {
-            } else {
-            }
 
             $order = $this->getOrder($mandateID);
             if (is_null($order)) {
                 $this->renderPrompt("Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code {$mandateID} bij je gegevens.");
                 exit;
             }
-            $user_id = $order->get_user_id();
 
-            // $order_meta = $order->get_meta_data();
             $entranceCode = $order->get_meta('bluem_entrancecode');
 
-            // echo "Entrance: ";
-            // var_dump($entranceCode);
-            // die();
-            // $mandateID = "415195c2dfc02ffa";
-
             $response = $this->bluem->MandateStatus($mandateID, $entranceCode);
-            // var_dump($mandateID);
-            // var_dump($response);
-            // die();
-            // if(is_null($response) || is_string($response)) {
-            // 	$this->renderPrompt("Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status");
-            // 	exit;
-            // }
+
 
             if (!$response->Status()) {
                 $this->renderPrompt("Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status");
@@ -713,7 +674,6 @@ function bluem_init_mandate_gateway_class()
 
             $statusUpdateObject = $response->EMandateStatusUpdate;
             $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
-            // var_dump($statusCode);
 
             $statusCode ="Pending";
 
@@ -824,7 +784,6 @@ function bluem_init_mandate_gateway_class()
                     );
                 }
             }
-
 
             if ($maxAmountEnabled) {
 
@@ -938,7 +897,6 @@ function bluem_init_mandate_gateway_class()
     }
 
 
-
     add_action('bluem_woocommerce_valid_mandate_callback', 'bluem_woocommerce_valid_mandate_callback_function', 10, 2);
 
     function bluem_woocommerce_valid_mandate_callback_function($user_id, $response)
@@ -955,7 +913,9 @@ function bluem_init_mandate_gateway_class()
         ?>
         <?php //var_dump($user->ID);
         ?>
-        <h2>Bluem eMandate Metadata</h2>
+        <h2>
+            Bluem eMandate Metadata
+        </h2>
         <table class="form-table">
             <tr>
                 <th><label for="bluem_latest_mandate_id">Meest recente MandateID</label></th>
@@ -985,11 +945,12 @@ function bluem_init_mandate_gateway_class()
                     <span class="description">Dit is de omvang van de laatste machtiging</span>
                 </td>
             </tr>
-
-
         </table>
+
 <?php
     }
+
+
     add_action(
         'personal_options_update',
         'bluem_woocommerce_mandates_save_extra_profile_fields'
@@ -1048,74 +1009,74 @@ function bluem_woocommerce_mandates_settings_section()
 // ********************** Mandate specific
 function bluem_woocommerce_settings_render_merchantID()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('merchantID'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('merchantID'));
 }
 function bluem_woocommerce_settings_render_merchantSubId()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('merchantSubId'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('merchantSubId'));
 }
 function bluem_woocommerce_settings_render_thanksPage()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('thanksPage'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('thanksPage'));
 }
 function bluem_woocommerce_settings_render_eMandateReason()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('eMandateReason'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('eMandateReason'));
 }
 function bluem_woocommerce_settings_render_localInstrumentCode()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('localInstrumentCode'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('localInstrumentCode'));
 }
 function bluem_woocommerce_settings_render_requestType()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('requestType'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('requestType'));
 }
 function bluem_woocommerce_settings_render_sequenceType()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('sequenceType'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('sequenceType'));
 }
 
 function bluem_woocommerce_settings_render_successMessage()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('successMessage'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('successMessage'));
 }
 
 function bluem_woocommerce_settings_render_errorMessage()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('errorMessage'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('errorMessage'));
 }
 
 function bluem_woocommerce_settings_render_purchaseIDPrefix()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('purchaseIDPrefix'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('purchaseIDPrefix'));
 }
 
 function bluem_woocommerce_settings_render_debtorReferenceFieldName()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('debtorReferenceFieldName'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('debtorReferenceFieldName'));
 }
 
 function bluem_woocommerce_settings_render_thanksPageURL()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('thanksPageURL'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('thanksPageURL'));
 }
 
 function bluem_woocommerce_settings_render_mandate_id_counter()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('mandate_id_counter'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('mandate_id_counter'));
 }
 function bluem_woocommerce_settings_render_maxAmountEnabled()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('maxAmountEnabled'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('maxAmountEnabled'));
 }
 function bluem_woocommerce_settings_render_maxAmountFactor()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('maxAmountFactor'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('maxAmountFactor'));
 }
 
 function bluem_woocommerce_settings_render_useMandatesDebtorWallet()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_mandates_option('useMandatesDebtorWallet'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('useMandatesDebtorWallet'));
 }
 
 
@@ -1230,7 +1191,7 @@ if (isset($bluem_options['useMandatesDebtorWallet']) && $bluem_options['useManda
 
         // switch()
 
-        $bluem_config = _get_bluem_config();
+        $bluem_config = bluem_woocommerce_get_config();
         $bluem = new Integration($bluem_config);
         $BICs = $bluem->retrieveBICsForContext("Mandates");
 

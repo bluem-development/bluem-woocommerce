@@ -16,7 +16,7 @@ add_shortcode('bluem_identificatieformulier', 'bluem_idin_form');
 function bluem_idin_form()
 {
 
-    $bluem_config = _get_bluem_config();
+    $bluem_config = bluem_woocommerce_get_config();
 
     if (isset($bluem_config->IDINShortcodeOnlyAfterLogin) 
         && $bluem_config->IDINShortcodeOnlyAfterLogin=="1" 
@@ -126,7 +126,7 @@ function bluem_idin_shortcode_callback()
     if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback") === false) {
         // return;
     } else {
-        $bluem_config = _get_bluem_config();
+        $bluem_config = bluem_woocommerce_get_config();
         // echo "YOO";
         // echo home_url($bluem_config->IDINPageURL);
         $bluem = new Integration($bluem_config);
@@ -421,7 +421,7 @@ function bluem_parse_IDINDescription($input) {
 function bluem_idin_execute($callback=null, $redirect=true)
 {
     global $current_user;
-    $bluem_config = _get_bluem_config();
+    $bluem_config = bluem_woocommerce_get_config();
 
     if (isset($bluem_config->IDINDescription)) {
         $description = bluem_parse_IDINDescription($bluem_config->IDINDescription);

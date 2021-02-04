@@ -12,8 +12,8 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     // WooCommerce specific code incoming here
 }
 
-function _bluem_get_idin_option($key) {
-	$options = _bluem_get_idin_options();
+function bluem_woocommerce_get_idin_option($key) {
+	$options = bluem_woocommerce_get_idin_options();
 	if(array_key_exists($key,$options))
 	{
 		return $options[$key];
@@ -21,7 +21,7 @@ function _bluem_get_idin_option($key) {
 	return false;
 }
 
-function _bluem_get_idin_options()
+function bluem_woocommerce_get_idin_options()
 {
     
     $idinDescriptionTags = (
@@ -145,38 +145,38 @@ if (isset($options['IDINPageURL'])) {
 
 function bluem_woocommerce_settings_render_IDINSuccessMessage()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINSuccessMessage'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_idin_option('IDINSuccessMessage'));
 }
 
 function bluem_woocommerce_settings_render_IDINErrorMessage()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINErrorMessage'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_idin_option('IDINErrorMessage'));
 }
 
 function bluem_woocommerce_settings_render_IDINPageURL()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINPageURL'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_idin_option('IDINPageURL'));
 }
 
 function bluem_woocommerce_settings_render_IDINCategories()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINCategories'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_idin_option('IDINCategories'));
 }
 
 function bluem_woocommerce_settings_render_IDINBrandID()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINBrandID'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_idin_option('IDINBrandID'));
 }
 
 
 function bluem_woocommerce_settings_render_IDINShortcodeOnlyAfterLogin()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINShortcodeOnlyAfterLogin'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_idin_option('IDINShortcodeOnlyAfterLogin'));
 }
 
 function bluem_woocommerce_settings_render_IDINDescription()
 {
-    bluem_woocommerce_settings_render_input(_bluem_get_idin_option('IDINDescription'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_idin_option('IDINDescription'));
 }
 
 

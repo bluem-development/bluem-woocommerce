@@ -109,9 +109,14 @@ These results can be obtained as an object by using the following PHP code in a 
             echo $results->BirthDateResponse; // prints 1975-07-25
             echo $results->NameResponse->LegalLastName; // prints Vries
         }
-
-
 ```
+
+## important notes when compiling:
+
+- delete `vendor/daanrijpkema/bluem-php/examples` to be sure as it is not necessary in production.
+
+
+
 
 # Support
 If you have any questions, please send an email to [info@daanrijpkema.com](mailto:info@daanrijpkema.com).
