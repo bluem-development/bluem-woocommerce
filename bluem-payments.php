@@ -314,9 +314,14 @@ function bluem_init_payment_gateway_class()
          */
         public function payments_webhook()
         {
-            if($_GET['env'] && is_string($_GET['env']) && in_array($_GET['env'],['test','prod']))
+            if ($_GET['env'] && is_string($_GET['env']) 
+                && in_array(
+                    sanitize_text_field($_GET['env']), 
+                    ['test','prod']
+                )
+            )
             {
-                $env = $_GET['env'];
+                $env = sanitize_text_field($_GET['env']);
             } else {
                 $env = "test";
             }
@@ -455,7 +460,7 @@ function bluem_init_payment_gateway_class()
                 $this->renderPrompt("Fout: geen juiste entranceCode teruggekregen bij payment_callback. Neem contact op met de webshop en vermeld je contactgegevens.");
                 exit;
             }
-            $entranceCode = $_GET['entranceCode'];
+            $entranceCode = sanitize_text_field($_GET['entranceCode']);
 
             $order = $this->getOrderByEntranceCode($entranceCode);
             // var_dump($entranceCode);

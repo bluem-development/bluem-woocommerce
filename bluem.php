@@ -2,9 +2,9 @@
 
 /**
  * Plugin Name: Bluem
- * Version: 1.0.0
+ * Version: 1.1.0
  * Plugin URI: https://github.com/DaanRijpkema/bluem-woocommerce
- * Description: Bluem WooCommerce integration for many functions: Payments and eMandates payment gateway and iDIN identity verification
+ * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Daan Rijpkema
  * Author URI: https://github.com/DaanRijpkema/
  * Requires at least: 5.0
@@ -32,16 +32,16 @@ require __DIR__ . '/vendor/autoload.php';
 
 // get specific gateways and helpers
 if (bluem_module_enabled('mandates')) {
-    include_once __DIR__ . '/bluem-woocommerce-mandates.php';
-    include_once __DIR__ . '/bluem-woocommerce-mandates-shortcode.php';
+    include_once __DIR__ . '/bluem-mandates.php';
+    include_once __DIR__ . '/bluem-mandates-shortcode.php';
 }
 if (bluem_module_enabled('payments')) {
-    include_once __DIR__ . '/bluem-woocommerce-payments.php';
+    include_once __DIR__ . '/bluem-payments.php';
 }
 
 if (bluem_module_enabled('idin')) {
-    include_once __DIR__ . '/bluem-woocommerce-idin.php';
-    include_once __DIR__ . '/bluem-woocommerce-idin-shortcode.php';
+    include_once __DIR__ . '/bluem-idin.php';
+    include_once __DIR__ . '/bluem-idin-shortcode.php';
 }
 
 /**
@@ -98,7 +98,7 @@ add_action('admin_menu', 'bluem_woocommerce_settings_handler');
 
 function bluem_woocommerce_tab() {
     $default_tab = null;
-  return isset($_GET['tab']) ? $_GET['tab'] : $default_tab;
+  return isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : $default_tab;
 
 }
 /**
@@ -109,10 +109,9 @@ function bluem_woocommerce_tab() {
 function bluem_woocommerce_settings_page()
 {
 
-    //Get the active tab from the $_GET param
-    $tab = bluem_woocommerce_tab();
+    //Get the active tab from the GET param
+    $tab = bluem_woocommerce_tab(); ?>
 
-?>
     <style>
         .bluem-form-control {
             width: 100%;
@@ -476,7 +475,7 @@ function bluem_woocommerce_get_core_options()
         'suppress_woo' => [
             'key' => 'suppress_woo',
             'title' => 'bluem_suppress_woo',
-            'name' => 'WooCommerce negeren?',
+            'name' => 'WooCommerce gebruiken?',
             'description' => 'Zet dit op "WooCommerce niet gebruiken" als je deze plug-in wilt gebruiken op deze site zonder WooCommerce functionaliteiten.',
             'type' => 'select',
             'default' => '0',

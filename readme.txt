@@ -2,13 +2,13 @@
 Contributors: daanrijpkema
 Donate link: https://daanrijpkema.github.io
 Tags: wordpress, plugin, woocommerce, bluem,payment,services,idin,mandates,ideal
-Requires at least: 4.0
-Tested up to: 4.0
-Stable tag: 1.0
+Requires at least: 5.0
+Tested up to: 5.6.1
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This is the official Bluem WordPress and WooCommerce plug-in for integration of its services
+This is the official Bluem plug-in that offers an integration of its services for WordPress and WooCommerce 
 
 == Description ==
 
@@ -25,7 +25,7 @@ Concretely, the plug-in delivers:
 
 Installing "bluem-woocommerce" can be done by using the following steps:
 
-1. Download the plugin 
+1. Download the plugin
 1. Upload the ZIP file through the 'Plugins > Add New > Upload' screen in your WordPress dashboard
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Activate the preferred modules from the 'Settings > Bluem' page.

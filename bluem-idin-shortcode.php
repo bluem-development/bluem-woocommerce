@@ -9,17 +9,16 @@ use Bluem\BluemPHP\Integration;
 add_shortcode('bluem_identificatieformulier', 'bluem_idin_form');
 
 /**
-* Shortcode: `[bluem_identificatieformulier]`
-*
-* @return void
-*/
+ * Shortcode: `[bluem_identificatieformulier]`
+ *
+ * @return void
+ */
 function bluem_idin_form()
 {
-
     $bluem_config = bluem_woocommerce_get_config();
 
-    if (isset($bluem_config->IDINShortcodeOnlyAfterLogin) 
-        && $bluem_config->IDINShortcodeOnlyAfterLogin=="1" 
+    if (isset($bluem_config->IDINShortcodeOnlyAfterLogin)
+        && $bluem_config->IDINShortcodeOnlyAfterLogin=="1"
         && !is_user_logged_in()
     ) {
         return "";
@@ -28,8 +27,8 @@ function bluem_idin_form()
     // ob_start();
 
     $r ='';
-    $validated = esc_attr(get_user_meta(get_current_user_id(), "bluem_idin_validated", true)) == "1";
-    // var_dump($validated);
+    $validated = get_user_meta(get_current_user_id(), "bluem_idin_validated", true) == "1";
+
     if ($validated) {
         if (isset($bluem_config->IDINSuccessMessage)) {
             $r.= "<p>" . $bluem_config->IDINSuccessMessage . "</p>";
@@ -39,9 +38,7 @@ function bluem_idin_form()
 
         $r.= "Je hebt de identificatieprocedure eerder voltooid. Bedankt<br>";
         // $results = bluem_idin_retrieve_results();
-
         // $r.= "<pre>";
-
         // foreach ($results as $k => $v) {
         //     if (!is_object($v)) {
         //         $r.= "$k: $v";
@@ -55,18 +52,18 @@ function bluem_idin_form()
         // }
         // // var_dump($results);
         // $r.= "</pre>";
+        // return;
         return $r;
-    // return;
     } else {
-        if (isset($_GET['result']) && $_GET['result'] == "false") {
+        if (isset($_GET['result']) && sanitize_text_field($_GET['result']) == "false") {
             $r.= '<div class="">';
 
             if (isset($bluem_config->IDINErrorMessage)) {
                 $r.= "<p>" . $bluem_config->IDINErrorMessage . "</p>";
             } else {
                 $r.= "<p>Er is een fout opgetreden. Uw verzoek is geannuleerd.</p>";
-                // $r.= "<p>Uw machtiging is succesvol ontvangen. Hartelijk dank.</p>";
             }
+
             if (isset($_SESSION['BluemIDINTransactionURL']) && $_SESSION['BluemIDINTransactionURL'] !== "") {
                 $retryURL = $_SESSION['BluemIDINTransactionURL'];
                 $r.= "<p><a href='{$retryURL}' target='_self' alt='probeer opnieuw' class='button'>Probeer het opnieuw</a></p>";
@@ -77,10 +74,7 @@ function bluem_idin_form()
         } else {
             $r.= "Je hebt de identificatieprocedure nog niet voltooid.<br>";
             $r.= '<form action="' . home_url('bluem-woocommerce/idin_execute') . '" method="post">';
-            $r.= '<p>';
-            // $r.= $bluem_config->debtorReferenceFieldName . ' (verplicht) <br/>';
-            // $r.= '<input type="text" name="bluem_debtorReference" pattern="[a-zA-Z0-9 ]+" value="' . (isset($_POST["bluem_debtorReference"]) ? esc_attr($_POST["bluem_debtorReference"]) : '') . '" size="40" />';
-            $r.= '</p>';
+            // todo add custom fields
             $r.= '<p>';
             $r.= '<p><input type="submit" name="bluem_idin_submitted" class="bluem-woocommerce-button bluem-woocommerce-button-idin" value="Identificeren.."></p>';
             $r.= '</form>';
@@ -94,10 +88,10 @@ function bluem_idin_form()
 
 add_action('parse_request', 'bluem_idin_shortcode_idin_execute');
 /**
-* This function is called POST from the form rendered on a page or post
-*
-* @return void
-*/
+ * This function is called POST from the form rendered on a page or post
+ *
+ * @return void
+ */
 function bluem_idin_shortcode_idin_execute()
 {
     $shortcode_execution_url = "bluem-woocommerce/idin_execute";
@@ -107,18 +101,15 @@ function bluem_idin_shortcode_idin_execute()
         return;
     }
 
-    // if the submit button is clicked, send the email
-    // if (isset($_POST['bluem_idin_submitted'])) {
-        bluem_idin_execute();
-    // }
+    bluem_idin_execute();
+
 }
 /* ******** CALLBACK ****** */
 add_action('parse_request', 'bluem_idin_shortcode_callback');
 /**
-* This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Session, sent for a SUD to the Bluem API.
-*
-* @return void
-*/
+ * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Session, sent for a SUD to the Bluem API.
+ *
+ */
 function bluem_idin_shortcode_callback()
 {
     // var_dump(strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback"));
@@ -157,79 +148,83 @@ function bluem_idin_shortcode_callback()
             update_user_meta(get_current_user_id(), "bluem_idin_validated", false);
 
             switch ($statusCode) {
-                case 'Success':
-                    // case 'New':
-                    // do what you need to do in case of success!
+            case 'Success':
+                // case 'New':
+                // do what you need to do in case of success!
 
-                    // retrieve a report that contains the information based on the request type:
-                    $identityReport = $statusResponse->GetIdentityReport();
-                    update_user_meta(get_current_user_id(), "bluem_idin_results", json_encode($identityReport));
+                // retrieve a report that contains the information based on the request type:
+                $identityReport = $statusResponse->GetIdentityReport();
+                update_user_meta(get_current_user_id(), "bluem_idin_results", json_encode($identityReport));
 
-                    update_user_meta(get_current_user_id(), "bluem_idin_validated", true);
-                            // var_dump($updresult);
-                            // die();
+                update_user_meta(get_current_user_id(), "bluem_idin_validated", true);
+                // var_dump($updresult);
+                // die();
 
-                            // this contains an object with key-value pairs of relevant data from the bank:
-                            /*
-                            example contents:
-                            ["DateTime"]=>
-                            //  string(24) "2020-10-16T15:30:45.803Z"
-                            // ["CustomerIDResponse"]=>
-                            // string(21) "FANTASYBANK1234567890"
-                            // ["AddressResponse"]=>
-                            // object(Bluem\BluemPHP\IdentityStatusBluemResponse)#4 (5) {
-                                //     ["Street"]=>
-                                //     string(12) "Pascalstreet"
-                                //     ["HouseNumber"]=>
-                                //     string(2) "19"
-                                //     ["PostalCode"]=>
-                                //     string(6) "0000AA"
-                                //     ["City"]=>
-                                //     string(6) "Aachen"
-                                //     ["CountryCode"]=>
-                                //     string(2) "DE"
-                                // }
-                                // ["BirthDateResponse"]=>
-                                // string(10) "1975-07-25"
-                                */
-                                // store that information and process it.
+                // this contains an object with key-value pairs of relevant data from the bank:
+                /*
+                example contents:
+                ["DateTime"]=>
+                //  string(24) "2020-10-16T15:30:45.803Z"
+                // ["CustomerIDResponse"]=>
+                // string(21) "FANTASYBANK1234567890"
+                // ["AddressResponse"]=>
+                // object(Bluem\BluemPHP\IdentityStatusBluemResponse)#4 (5) {
+                //     ["Street"]=>
+                //     string(12) "Pascalstreet"
+                //     ["HouseNumber"]=>
+                //     string(2) "19"
+                //     ["PostalCode"]=>
+                //     string(6) "0000AA"
+                //     ["City"]=>
+                //     string(6) "Aachen"
+                //     ["CountryCode"]=>
+                //     string(2) "DE"
+                // }
+                // ["BirthDateResponse"]=>
+                // string(10) "1975-07-25"
+                */
+                // store that information and process it.
 
-                                // You can for example use the BirthDateResponse to determine the age of the user and act accordingly
-                                // echo "REDIRECTING";
-                                // die();
-                                wp_redirect(home_url($bluem_config->IDINPageURL) . "?result=true");
-                                exit;
-                            break;
-                            case 'Processing':
-                                echo "Request has status Processing";
-                                // no break
-                                case 'Pending':
-                                    echo "Request has status Pending";
-                                    // do something when the request is still processing (for example tell the user to come back later to this page)
-                                break;
-                                case 'Cancelled':
-                                    echo "Request has status Cancelled";
-                                    // do something when the request has been canceled by the user
-                                break;
-                                case 'Open':
-                                    echo "Request has status Open";
-                                    // do something when the request has not yet been completed by the user, redirecting to the transactionURL again
-                                break;
-                                case 'Expired':
-                                    echo "Request has status Expired";
-                                    // do something when the request has expired
-                                break;
-                                // case 'New':
-                                    //     echo "New request";
-                                    // break;
-                                    default:
-                                    // unexpected status returned, show an error
-                                break;
-                            }
-            wp_redirect(home_url($bluem_config->IDINPageURL) . "?result=false&status={$statusCode}");
+                // You can for example use the BirthDateResponse to determine the age of the user and act accordingly
+                wp_redirect(home_url($bluem_config->IDINPageURL) . "?result=true");
+                exit;
+            break;
+            case 'Processing':
+                echo "Request has status Processing";
+                // no break
+            case 'Pending':
+                    echo "Request has status Pending";
+                    // do something when the request is still processing (for example tell the user to come back later to this page)
+                break;
+            case 'Cancelled':
+                    echo "Request has status Cancelled";
+                    // do something when the request has been canceled by the user
+                break;
+            case 'Open':
+                    echo "Request has status Open";
+                    // do something when the request has not yet been completed by the user, redirecting to the transactionURL again
+                break;
+            case 'Expired':
+                    echo "Request has status Expired";
+                    // do something when the request has expired
+                break;
+            // case 'New':
+                    //     echo "New request";
+                    // break;
+            default:
+                    // unexpected status returned, show an error
+                break;
+            }
+            wp_redirect(
+                home_url($bluem_config->IDINPageURL) .
+                "?result=false&status={$statusCode}"
+            );
         } else {
             // no proper response received, tell the user
-            wp_redirect(home_url($bluem_config->IDINPageURL) . "?result=false&status=no_response");
+            wp_redirect(
+                home_url($bluem_config->IDINPageURL) .
+                "?result=false&status=no_response"
+            );
         }
     }
 }
@@ -253,7 +248,7 @@ Bluem settings
 <tr>
 <th><label for="bluem_idin_entrance_code">bluem_idin_entrance_code</label></th>
 <td>
-<input type="text" name="bluem_idin_entrance_code" id="bluem_idin_entrance_code" value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_idin_entrance_code', true)); ?>" class="regular-text" /><br />
+<input type="text" name="bluem_idin_entrance_code" id="bluem_idin_entrance_code" value="<?php echo get_user_meta($user->ID, 'bluem_idin_entrance_code', true); ?>" class="regular-text" /><br />
 <span class="description">Recentste Entrance code voor Bluem iDIN requests</span>
 </td>
 </tr>
@@ -261,7 +256,7 @@ Bluem settings
 <th><label for="bluem_idin_transaction_id">bluem_idin_transaction_id</label></th>
 
 <td>
-<input type="text" name="bluem_idin_transaction_id" id="bluem_idin_transaction_id" value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_idin_transaction_id', true)); ?>" class="regular-text" /><br />
+<input type="text" name="bluem_idin_transaction_id" id="bluem_idin_transaction_id" value="<?php echo get_user_meta($user->ID, 'bluem_idin_transaction_id', true); ?>" class="regular-text" /><br />
 <span class="description">Hier wordt het meest recente transaction ID geplaatst; en gebruikt bij het doen van een volgende identificatie.</span>
 </td>
 </tr>
@@ -269,7 +264,7 @@ Bluem settings
 <th><label for="bluem_idin_transaction_url">bluem_idin_transaction_url</label></th>
 
 <td>
-<input type="text" name="bluem_idin_transaction_url" id="bluem_idin_transaction_url" value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_idin_transaction_url', true)); ?>" class="regular-text" /><br />
+<input type="text" name="bluem_idin_transaction_url" id="bluem_idin_transaction_url" value="<?php echo get_user_meta($user->ID, 'bluem_idin_transaction_url', true); ?>" class="regular-text" /><br />
 <span class="description">Hier wordt het meest recente transactieURL geplaatst; .</span>
 </td>
 </tr>
@@ -283,10 +278,10 @@ Status en Resultaten van IDIN requests
 </span>
 
 <select class="form-control" name="bluem_idin_validated" id="bluem_idin_validated">
-<option value="0" <?php if (esc_attr(get_user_meta($user->ID, 'bluem_idin_validated', true))== "0") {
+<option value="0" <?php if (get_user_meta($user->ID,'bluem_idin_validated', true)== "0") {
     echo "selected='selected'";
 } ?>>Identificatie nog niet uitgevoerd</option>
-<option value="1" <?php if (esc_attr(get_user_meta($user->ID, 'bluem_idin_validated', true))== "1") {
+<option value="1" <?php if (get_user_meta($user->ID,'bluem_idin_validated', true)== "1") {
     echo "selected='selected'";
 } ?>>Identificatie succesvol uitgevoerd</option>
 </select>
@@ -305,7 +300,7 @@ Status en Resultaten van IDIN requests
 
 Of de validatie is gelukt, kan je  verkrijgen door in een plug-in of template de volgende PHP code te gebruiken:
 
-<blockquote style="border: 1px solid #aaa; 
+<blockquote style="border: 1px solid #aaa;
 border-radius:5px; margin:10pt 0 0 0; padding:5pt 15pt;"><pre>if(function_exists('bluem_idin_user_validated')) {
     $validated = bluem_idin_user_validated();
 
@@ -320,7 +315,7 @@ border-radius:5px; margin:10pt 0 0 0; padding:5pt 15pt;"><pre>if(function_exists
 Deze resultaten zijn als object te verkrijgen door in een plug-in of template de volgende PHP code te gebruiken:
 </p>
 <p>
-<blockquote style="border: 1px solid #aaa; border-radius:5px; 
+<blockquote style="border: 1px solid #aaa; border-radius:5px;
 margin:10pt 0 0 0; padding:5pt 15pt;">
 <pre>if(function_exists('bluem_idin_retrieve_results')) {
         $results = bluem_idin_retrieve_results();
@@ -347,23 +342,23 @@ function bluem_woocommerce_idin_save_extra_profile_fields($user_id)
     update_user_meta(
         $user_id,
         'bluem_idin_entrance_code',
-        esc_attr($_POST['bluem_idin_entrance_code'])
+        sanitize_text_field($_POST['bluem_idin_entrance_code'])
     );
     update_user_meta(
         $user_id,
         'bluem_idin_transaction_id',
-        esc_attr($_POST['bluem_idin_transaction_id'])
+        sanitize_text_field($_POST['bluem_idin_transaction_id'])
     );
     update_user_meta(
         $user_id,
         'bluem_idin_transaction_url',
-        esc_attr($_POST['bluem_idin_transaction_url'])
+        sanitize_text_field($_POST['bluem_idin_transaction_url'])
     );
 
     update_user_meta(
         $user_id,
         'bluem_idin_validated',
-        esc_attr($_POST['bluem_idin_validated'])
+        sanitize_text_field($_POST['bluem_idin_validated'])
     );
 }
 
@@ -410,11 +405,11 @@ function bluem_parse_IDINDescription($input) {
 
 
     $result = str_replace($tags, $replaces, $input);
-    $invalid_chars = ['[',']','{','}','!','#']; 
+    $invalid_chars = ['[',']','{','}','!','#'];
     // @todo Add full list of invalid chars for description based on XSD
     $result = str_replace($invalid_chars,'',$result);
-    
-    $result = substr($result,0,128); 
+
+    $result = substr($result,0,128);
     return $result;
 }
 
@@ -482,14 +477,14 @@ function bluem_idin_execute($callback=null, $redirect=true)
             return ['result'=>true,'url'=>$transactionURL];
         }
     } else {
-        
+
         $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
         Vermeld onderstaande informatie aan het websitebeheer:";
         //     <br><pre>";
         // bluem_generic_tabler($response);
         // echo "</pre>";
         if ($response->Error() !=="") {
-            $msg.= "<br>Response: " . 
+            $msg.= "<br>Response: " .
             $response->Error();
         } else {
             $msg .= "algemene fout";

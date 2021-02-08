@@ -969,17 +969,17 @@ function bluem_init_mandate_gateway_class()
         update_user_meta(
             $user_id,
             'bluem_latest_mandate_id',
-            esc_attr($_POST['bluem_latest_mandate_id'])
+            esc_attr(sanitize_text_field($_POST['bluem_latest_mandate_id']))
         );
         update_user_meta(
             $user_id,
             'bluem_latest_mandate_entrance_code',
-            esc_attr($_POST['bluem_latest_mandate_entrance_code'])
+            esc_attr(sanitize_text_field($_POST['bluem_latest_mandate_entrance_code']))
         );
         update_user_meta(
             $user_id,
             'bluem_latest_mandate_amount',
-            esc_attr($_POST['bluem_latest_mandate_amount'])
+            esc_attr(sanitize_text_field($_POST['bluem_latest_mandate_amount']))
         );
     }
 }
