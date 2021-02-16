@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Bluem
  * Version: 1.1.0
- * Plugin URI: https://github.com/DaanRijpkema/bluem-woocommerce
+ * Plugin URI: https://github.com/DaanRijpkema/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Daan Rijpkema
  * Author URI: https://github.com/DaanRijpkema/
@@ -68,7 +68,7 @@ function bluem_woocommerce_no_woocommerce_notice()
         $bluem_options = get_option('bluem_woocommerce_options');
         if (!isset($bluem_options['suppress_woo']) || $bluem_options['suppress_woo']=="0") {
             echo '<div class="notice notice-error is-dismissible">
-            <p>Bluem WooCommerce is afhankelijk van WooCommerce - activeer deze plug-in ook. Je kan deze melding en WooCommerce gerelateerde functionaliteiten ook uitzetten bij de <a href="'.admin_url('options-general.php?page=bluem-woocommerce').'">Instellingen</a>.</p>
+            <p>Bluem WooCommerce is afhankelijk van WooCommerce - activeer deze plug-in ook. Je kan deze melding en WooCommerce gerelateerde functionaliteiten ook uitzetten bij de <a href="'.admin_url('options-general.php?page=bluem').'">Instellingen</a>.</p>
             </div>';
         }
     }
@@ -88,7 +88,7 @@ function bluem_woocommerce_settings_handler()
         'Bluem',
         'Bluem',
         'manage_options',
-        'bluem-woocommerce',
+        'bluem',
         'bluem_woocommerce_settings_page'
     );
 }
@@ -130,7 +130,7 @@ function bluem_woocommerce_settings_page()
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
     <!-- Here are our tabs -->
     <nav class="nav-tab-wrapper">
-      <a href="<?php echo admin_url('options-general.php?page=bluem-woocommerce');?>"
+      <a href="<?php echo admin_url('options-general.php?page=bluem');?>"
       class="nav-tab
         <?php if ($tab===null) {
             echo "nav-tab-active";
@@ -141,7 +141,7 @@ function bluem_woocommerce_settings_page()
 
       <?php if(bluem_module_enabled('mandates')) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem-woocommerce&tab=mandates');?>"
+        <a href="<?php echo admin_url('options-general.php?page=bluem&tab=mandates');?>"
             class="nav-tab
             <?php if($tab==='mandates') { echo "nav-tab-active"; } ?>
             ">
@@ -151,7 +151,7 @@ function bluem_woocommerce_settings_page()
 
     <?php if(bluem_module_enabled('payments')) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem-woocommerce&tab=payments');?>"
+        <a href="<?php echo admin_url('options-general.php?page=bluem&tab=payments');?>"
             class="nav-tab
             <?php if($tab==='payments') { echo "nav-tab-active"; } ?>
             ">
@@ -161,13 +161,16 @@ function bluem_woocommerce_settings_page()
 
     <?php if(bluem_module_enabled('idin')) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem-woocommerce&tab=idin');?>"
+        <a href="<?php echo admin_url('options-general.php?page=bluem&tab=idin');?>"
             class="nav-tab
             <?php if($tab==='idin') { echo "nav-tab-active"; } ?>
             ">
             iDIN (Identity)
         </a>
         <?php } ?>
+
+
+        <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">Problemen, vragen of suggesties? Neem contact op via e-mail</a>
     </nav>
 
 
@@ -524,8 +527,18 @@ function bluem_woocommerce_get_config()
 
 function bluem_woocommerce_modules_settings_section()
 {
-    echo '<p>Schakel hier de onderdelen uit die jouw website wel of niet nodig heeft, zodat je efficiënt kan werken.</p>';
 
+    
+    echo '<p>
+    <img src="'.
+    home_url('/wp-content/plugins/bluem/assets/bluem/logo.png').
+    '" style="float:left; max-height:64px; margin:10pt;"/>
+    Je hebt een geactiveerde account nodig bij Bluem.
+    De gegevens die je ontvangt via e-mail kan je hieronder
+    en per specifiek onderdeel invullen.</p>';
+    echo '<p>
+    Schakel hier de onderdelen uit die jouw website wel of niet nodig heeft,
+    zodat je efficiënt kan werken.</p>';
 // var_dump(get_option('bluem_woocommerce_options'));
 }
 

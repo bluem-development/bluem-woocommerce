@@ -16,7 +16,7 @@ use Carbon\Carbon;
 add_filter('woocommerce_payment_gateways', 'bluem_add_gateway_class_payments',12);
 function bluem_add_gateway_class_payments($gateways)
 {
-    $gateways[] = 'BlueM_Gateway_Payments'; // your class name is here
+    $gateways[] = 'Bluem_Gateway_Payments'; // your class name is here
     return $gateways;
 }
 
@@ -30,7 +30,7 @@ add_action('plugins_loaded', 'bluem_init_payment_gateway_class');
 function bluem_init_payment_gateway_class()
 {
 
-    class BlueM_Gateway_Payments extends WC_Payment_Gateway
+    class Bluem_Gateway_Payments extends WC_Payment_Gateway
     {
         /**
          * This boolean will cause more output to be generated for testing purposes. Keep it at false for the production environment or final testing

@@ -309,7 +309,8 @@ border-radius:5px; margin:10pt 0 0 0; padding:5pt 15pt;"><pre>if(function_exists
     } else {
         // not validated
     }
-}</pre></blockquote>
+}</pre>
+</blockquote>
 </p>
 <p>
 Deze resultaten zijn als object te verkrijgen door in een plug-in of template de volgende PHP code te gebruiken:

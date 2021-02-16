@@ -1,9 +1,10 @@
 === bluem-woocommerce ===
-Contributors: daanrijpkema
+Contributors: bluempaymentservices
 Donate link: https://daanrijpkema.github.io
 Tags: wordpress, plugin, woocommerce, bluem,payment,services,idin,mandates,ideal
 Requires at least: 5.0
 Tested up to: 5.6.1
+Requires PHP: 7.0
 Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -61,11 +62,20 @@ Shortcode: `[bluem_identificatieformulier]`
 == Frequently asked questions == 
 Coming soon
 
-== Releases ==
+== Upgrade Notice ==
+Please deactivate and delete any previous versions of this plug-in prior to 1.1 to prevent naming conflicts to occur. Your settings will still be saved.
 
-=== 1.0: Initial public release as plug-in ===
-3rd of February 2021: After several months of BETA, we are now ready to deliver this plug-in to the public through the WordPress plug-in archive.
 
+== Changelog ==
+
+- 1.1: Update and rename based on review for WordPress plugin approval (16th of Februari 2021)
+- 1.0: Initial public release as plug-in: (3rd of February 2021): After several months of BETA, we are now ready to deliver this plug-in to the public through the WordPress plug-in archive.
+
+== Screenshots ==
+
+1. When configured, this is how the checkout procedure will look with either eMandates or Payments activated
+2. This is the general settings page, showing the versatility of the plug-in.
+3. This is the payment gateway settings page: the two possible gateways are automatically added and configurable from within WooCommerce.
 
 == Support ==
 If you have any questions, please reach out to me via email at d.rijpkema@bluem.nl. I aim to respond to requests within 5 working days.
