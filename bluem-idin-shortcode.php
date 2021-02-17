@@ -241,19 +241,23 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user)
 <h2>Bluem iDIN Metadata</h2>
 <p>
 Ga naar
-<a href="<?php echo home_url("wp-admin/options-general.php?page=bluem-woocommerce"); ?>">
-Bluem settings
+<a href="<?php echo home_url("wp-admin/options-general.php?page=bluem"); ?>">
+Bluem instellingen
 </a>.</p>
 <table class="form-table">
 <tr>
-<th><label for="bluem_idin_entrance_code">bluem_idin_entrance_code</label></th>
+<th><label for="bluem_idin_entrance_code">
+    Bluem iDIN entrance code
+</label></th>
 <td>
 <input type="text" name="bluem_idin_entrance_code" id="bluem_idin_entrance_code" value="<?php echo get_user_meta($user->ID, 'bluem_idin_entrance_code', true); ?>" class="regular-text" /><br />
 <span class="description">Recentste Entrance code voor Bluem iDIN requests</span>
 </td>
 </tr>
 <tr>
-<th><label for="bluem_idin_transaction_id">bluem_idin_transaction_id</label></th>
+<th><label for="bluem_idin_transaction_id">
+    Bluem iDIN transaction ID
+</label></th>
 
 <td>
 <input type="text" name="bluem_idin_transaction_id" id="bluem_idin_transaction_id" value="<?php echo get_user_meta($user->ID, 'bluem_idin_transaction_id', true); ?>" class="regular-text" /><br />
@@ -261,11 +265,13 @@ Bluem settings
 </td>
 </tr>
 <tr>
-<th><label for="bluem_idin_transaction_url">bluem_idin_transaction_url</label></th>
+<th><label for="bluem_idin_transaction_url">
+    Bluem iDIN transaction URL
+</label></th>
 
 <td>
 <input type="text" name="bluem_idin_transaction_url" id="bluem_idin_transaction_url" value="<?php echo get_user_meta($user->ID, 'bluem_idin_transaction_url', true); ?>" class="regular-text" /><br />
-<span class="description">Hier wordt het meest recente transactieURL geplaatst; .</span>
+<span class="description">Hier wordt het meest recente transactie URL geplaatst; .</span>
 </td>
 </tr>
 
@@ -326,9 +332,18 @@ margin:10pt 0 0 0; padding:5pt 15pt;">
     }</pre>
     </blockquote>
     </p>
+    <p>
+    <strong>
+    Checkout blokkeren als iDIN niet is uitgevoerd:
+    </strong>
+    <br>
+Voeg een filter toe voor id <code>bluem_checkout_check_idin_validated_fiter</code> als u een filter wilt toevoegen om de checkout procedure te blokkeren op basis van de IDIN validatie procedure die is voltooid.<br>
+Als de geïnjecteerde functie true retourneert, wordt de kassa ingeschakeld. Als false wordt geretourneerd, wordt de kassa geblokkeerd en wordt een melding getoond.
+</p>
     </td>
     </tr>
     </table>
+
     <?php
 }
 add_action('personal_options_update', 'bluem_woocommerce_idin_save_extra_profile_fields');
@@ -496,4 +511,41 @@ function bluem_idin_execute($callback=null, $redirect=true)
         exit;
     }
     exit;
+}
+
+
+
+
+
+add_action( 'woocommerce_check_cart_items', 'bluem_checkout_check_idin_validated' ); // Cart and Checkout
+function bluem_checkout_check_idin_validated() 
+{
+    if (!function_exists('bluem_idin_user_validated')) {
+        return;
+    }
+
+    if(bluem_checkout_check_idin_validated_fiter()==false) {
+        wc_add_notice( __("Verifieer eerst je identiteit via de mijn account pagina", "woocommerce"), 'error' );
+    }
+
+    return;    
+}
+
+add_filter(
+    'bluem_checkout_check_idin_validated_fiter', 
+    'bluem_checkout_check_idin_validated_fiter_function', 
+    10, 
+    1
+);
+function bluem_checkout_check_idin_validated_fiter()
+{
+    // override this function if you want to add a filter to block the checkout procedure based on the IDIN validation procedure being completed.
+    // if you return true, the checkout is enabled. If you return false, the checkout is blocked and a notice is shown.
+
+    // example:
+    // if (!bluem_idin_user_validated()) {
+    //   return false;
+    // }   
+    
+    return true;
 }

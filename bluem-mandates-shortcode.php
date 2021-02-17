@@ -201,11 +201,15 @@ function bluem_mandateform()
     global $current_user;
 
     $bluem_config = bluem_woocommerce_get_config();
-    $bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_mandates_callback');
+    $bluem_config->merchantReturnURLBase = home_url(
+        'wc-api/bluem_mandates_callback'
+    );
+
     $bluem = new Integration($bluem_config);
 
     $user_allowed = apply_filters(
-        'bluem_woocommerce_mandate_shortcode_allow_user',true
+        'bluem_woocommerce_mandate_shortcode_allow_user',
+        true
     );
 
     if (!$user_allowed) {
@@ -214,26 +218,23 @@ function bluem_mandateform()
 
     $validated = get_user_meta($current_user->ID, "bluem_mandates_validated", true);
     $mandateID = get_user_meta($current_user->ID, "bluem_latest_mandate_id", true);
-
     $validated = get_user_meta($current_user->ID, "bluem_mandates_validated", true);
-        if ($validated!=="1") {
-            echo '<form action="' . home_url('bluem-woocommerce/mandate_shortcode_execute') . '" method="post">';
-            echo '<p>Je moet nog een automatische incasso machtiging afgeven.';
-            // echo $bluem_config->debtorReferenceFieldName . ' (verplicht) <br/>';
-            echo '<input type="hidden" name="bluem_debtorReference" value="' .$current_user->ID. '"  />';
-            echo '</p>';
-            echo '<p>';
-            echo '<p><input type="submit" name="bluem-submitted"  class="bluem-woocommerce-button bluem-woocommerce-button-mandates" value="Machtiging proces starten.."></p>';
-            echo '</form>';
-        } else {
-            echo "Bedankt voor je machtiging met machtiging ID: {$mandateID}";
-        }
 
-        return ob_get_clean();
+    if ($validated!=="1") {
+        echo '<form action="' . home_url('bluem-woocommerce/mandate_shortcode_execute') . '" method="post">';
+        echo '<p>Je moet nog een automatische incasso machtiging afgeven.';
+        // echo $bluem_config->debtorReferenceFieldName . ' (verplicht) <br/>';
+        echo '<input type="hidden" name="bluem_debtorReference" value="' .$current_user->ID. '"  />';
+        echo '</p>';
+        echo '<p>';
+        echo '<p><input type="submit" name="bluem-submitted"  class="bluem-woocommerce-button bluem-woocommerce-button-mandates" value="Machtiging proces starten.."></p>';
+        echo '</form>';
+    } else {
+        echo "Bedankt voor je machtiging met machtiging ID: {$mandateID}";
+    }
+
+    return ob_get_clean();
 }
-
-
-
 
 add_filter('bluem_woocommerce_mandate_shortcode_allow_user', 'bluem_woocommerce_mandate_shortcode_allow_user_function', 10, 1);
 

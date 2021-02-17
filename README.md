@@ -110,6 +110,28 @@ These results can be obtained as an object by using the following PHP code in a 
             echo $results->NameResponse->LegalLastName; // prints Vries
         }
 ```
+## Blocking a checkout procedure when using iDIN shortcodes
+
+Add a filter for id `bluem_checkout_check_idin_validated_fiter` if you want to add a filter to block the checkout procedure based on the IDIN validation procedure being completed.
+If the injected function returns true, the checkout is enabled. If you return false, the checkout is blocked and a notice is shown.
+
+Example that would block checkout if validation is not executed:
+```php
+add_filter(
+    'bluem_checkout_check_idin_validated_fiter', 
+    'my_plugin_check_idin_validated_fiter_function', 
+    10, 
+    1
+);
+function my_plugin_check_idin_validated_fiter_function()
+{
+    if (!bluem_idin_user_validated()) {
+      return false;
+    }
+    return true;
+}
+```
+By default, this is disabled as it is quite context specific if the webshop is strict.
 
 ## important notes when compiling:
 

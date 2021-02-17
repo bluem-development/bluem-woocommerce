@@ -209,7 +209,7 @@ function bluem_init_mandate_gateway_class()
             $this->icon = ''; // URL of the icon that will be displayed on checkout page near your gateway name
             $this->has_fields = true; // in case you need a custom credit card form
             $this->method_title = 'Bluem Digitaal IncassoMachtiging (eMandate)';
-            $this->method_description = 'Bluem eMandate Payment Gateway voor WordPress - WooCommerce. Alle instellingen zijn in te stellen onder <a href="' . home_url('wp-admin/options-general.php?page=bluem-woocommerce') . '">Instellingen &rarr; Bluem</a>'; // will be displayed on the options page
+            $this->method_description = 'Bluem eMandate Payment Gateway voor WordPress - WooCommerce. Alle instellingen zijn in te stellen onder <a href="' . admin_url('options-general.php?page=bluem') . '">Instellingen &rarr; Bluem</a>';
 
 
             // gateways can support subscriptions, refunds, saved payment methods,

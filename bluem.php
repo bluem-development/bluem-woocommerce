@@ -529,9 +529,10 @@ function bluem_woocommerce_modules_settings_section()
 {
 
     
-    echo '<p>
+    echo '
+    <p>
     <img src="'.
-    home_url('/wp-content/plugins/bluem/assets/bluem/logo.png').
+    plugin_dir_url(__FILE__).'assets/bluem/logo.png'.
     '" style="float:left; max-height:64px; margin:10pt;"/>
     Je hebt een geactiveerde account nodig bij Bluem.
     De gegevens die je ontvangt via e-mail kan je hieronder
@@ -542,24 +543,31 @@ function bluem_woocommerce_modules_settings_section()
 // var_dump(get_option('bluem_woocommerce_options'));
 }
 
-function bluem_woocommerce_modules_render_mandates_activation() {
+function bluem_woocommerce_modules_render_mandates_activation()
+{
     bluem_woocommerce_modules_render_generic_activation("mandates");
 }
 
-function bluem_woocommerce_modules_render_payments_activation() {
+function bluem_woocommerce_modules_render_payments_activation()
+{
     bluem_woocommerce_modules_render_generic_activation("payments");
 }
 
-function bluem_woocommerce_modules_render_idin_activation() {
+function bluem_woocommerce_modules_render_idin_activation()
+{
     bluem_woocommerce_modules_render_generic_activation("idin");
 }
 
 
-function bluem_woocommerce_settings_render_suppress_woo() {
-    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_option('suppress_woo'));
+function bluem_woocommerce_settings_render_suppress_woo()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_option('suppress_woo')
+    );
 }
 
-function bluem_woocommerce_modules_render_generic_activation($module) {
+function bluem_woocommerce_modules_render_generic_activation($module)
+{
 
     $field = [
         'key'=> "{$module}_enabled",
@@ -592,45 +600,43 @@ function bluem_module_enabled($module)
 
 
 
-  /**
-         * Retrieve header HTML for error/message prompts
-         *
-         * @return String
-         */
-        function bluem_woocommerce_simpleheader(): String
-        {
-            return "<!DOCTYPE html><html><body><div
-            style='font-family:Arial,sans-serif;display:block;
-            margin:40pt auto; padding:10pt 20pt; border:1px solid #eee;
-            background:#fff; max-width:500px;'>";
-        }
-        /**
-         * Retrieve footer HTML for error/message prompt. Can include a simple link back to the webshop home URL.
-         *
-         * @param Bool $include_link
-         * @return String
-         */
-        function bluem_woocommerce_simplefooter(Bool $include_link = true): String
-        {
-            return ($include_link ? "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug</a></p>" : "") .
-                "</div></body></html>";
-        }
+/**
+ * Retrieve header HTML for error/message prompts
+ *
+ * @return String
+ */
+function bluem_woocommerce_simpleheader(): String
+{
+    return "<!DOCTYPE html><html><body><div
+    style='font-family:Arial,sans-serif;display:block;
+    margin:40pt auto; padding:10pt 20pt; border:1px solid #eee;
+    background:#fff; max-width:500px;'>";
+}
+/**
+ * Retrieve footer HTML for error/message prompt. Can include a simple link back to the webshop home URL.
+ *
+ * @param Bool $include_link
+ * @return String
+ */
+function bluem_woocommerce_simplefooter(Bool $include_link = true): String
+{
+    return ($include_link ? "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug</a></p>" : "") .
+        "</div></body></html>";
+}
 
-        /**
-         * Render a piece of HTML sandwiched beteween a simple header and footer, with an optionally included link back home
-         *
-         * @param String $html
-         * @param boolean $include_link
-         * @return void
-         */
-        function bluem_woocommerce_prompt(String $html, $include_link = true)
-        {
-            echo bluem_woocommerce_simpleheader();
-            echo $html;
-            echo bluem_woocommerce_simplefooter($include_link);
-        }
-
-
+/**
+ * Render a piece of HTML sandwiched beteween a simple header and footer, with an optionally included link back home
+ *
+ * @param String $html
+ * @param boolean $include_link
+ * @return void
+ */
+function bluem_woocommerce_prompt(String $html, $include_link = true)
+{
+    echo bluem_woocommerce_simpleheader();
+    echo $html;
+    echo bluem_woocommerce_simplefooter($include_link);
+}
 
 /**
  * bluem_generic_tabler

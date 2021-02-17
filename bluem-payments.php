@@ -75,7 +75,6 @@ function bluem_init_payment_gateway_class()
                 $bluem_config->brandID = $bluem_config->paymentBrandID;
             }
 
-            //home_url('wc-api/bluem_payments_callback');
             $this->bluem_config = $bluem_config;
             $this->bluem = new BluemCoreIntegration($bluem_config);
 
