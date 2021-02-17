@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Bluem
- * Version: 1.1.0
+ * Version: 1.2
  * Plugin URI: https://github.com/DaanRijpkema/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Daan Rijpkema

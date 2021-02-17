@@ -5,7 +5,7 @@ Tags: wordpress, plugin, woocommerce, bluem,payment,services,idin,mandates,ideal
 Requires at least: 5.0
 Tested up to: 5.6.1
 Requires PHP: 7.0
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,7 +67,7 @@ Please deactivate and delete any previous versions of this plug-in prior to 1.1 
 
 
 == Changelog ==
-
+- 1.2: Updated layout references, added optional `bluem_checkout_check_idin_validated_fiter`
 - 1.1: Update and rename based on review for WordPress plugin approval (16th of Februari 2021)
 - 1.0: Initial public release as plug-in: (3rd of February 2021): After several months of BETA, we are now ready to deliver this plug-in to the public through the WordPress plug-in archive.
 
