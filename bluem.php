@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Plugin Name: Bluem
- * Version: 1.2
+ * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
+ * Version: 1.2.1
  * Plugin URI: https://github.com/DaanRijpkema/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Daan Rijpkema
@@ -334,10 +334,7 @@ function bluem_woocommerce_settings_render_senderID()
 {
     bluem_woocommerce_settings_render_input(bluem_woocommerce_get_option('senderID'));
 }
-function bluem_woocommerce_settings_render_brandID()
-{
-    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_option('brandID'));
-}
+
 function bluem_woocommerce_settings_render_test_accessToken()
 {
     bluem_woocommerce_settings_render_input(bluem_woocommerce_get_option('test_accessToken'));
@@ -435,13 +432,7 @@ function bluem_woocommerce_get_core_options()
             'description' => 'Het sender ID, uitgegeven door Bluem. Begint met een S, gevolgd door een getal.',
             'default' => ""
         ],
-        'brandID' => [
-            'key' => 'brandID',
-            'title' => 'bluem_brandID',
-            'name' => 'Bluem Brand ID',
-            'description' => 'Wat is je BrandID? Gegeven door Bluem',
-            'default' => ''
-        ],
+        
         'test_accessToken' => [
             'key' => 'test_accessToken',
             'title' => 'bluem_test_accessToken',

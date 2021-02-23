@@ -1,11 +1,11 @@
-=== bluem-woocommerce ===
+=== Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout ===
 Contributors: bluempaymentservices
 Donate link: https://daanrijpkema.github.io
 Tags: wordpress, plugin, woocommerce, bluem,payment,services,idin,mandates,ideal
 Requires at least: 5.0
 Tested up to: 5.6.1
 Requires PHP: 7.0
-Stable tag: 1.2
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,7 +24,7 @@ Concretely, the plug-in delivers:
 
 == Installation ==
 
-Installing "bluem-woocommerce" can be done by using the following steps:
+Installing this plugin can be done by using the following steps:
 
 1. Download the plugin
 1. Upload the ZIP file through the 'Plugins > Add New > Upload' screen in your WordPress dashboard
@@ -53,7 +53,8 @@ Connected to woocommerce as a payment gateway. Enable it as a module in Settings
 From that moment onwards you can utilize the gateway during checkout.
 
 === Identity ===
-Currently available as shortcode: 
+
+Currently available as shortcode, see below!
 
 ==== Identity Shortcode ====
 Activated if iDIN  is activated as a module from the Settings > Bluem page.

@@ -36,6 +36,13 @@ function bluem_woocommerce_get_mandates_option($key)
 function bluem_woocommerce_get_mandates_options()
 {
     return [
+        'brandID' => [
+            'key' => 'brandID',
+            'title' => 'bluem_brandID',
+            'name' => 'Bluem Brand ID',
+            'description' => 'Wat is je Bluem eMandates BrandID? Gegeven door Bluem',
+            'default' => ''
+        ],
         'merchantID' => [
             'key' => 'merchantID',
             'title' => 'bluem_merchantID',
@@ -1007,6 +1014,11 @@ function bluem_woocommerce_mandates_settings_section()
 }
 
 // ********************** Mandate specific
+
+function bluem_woocommerce_settings_render_brandID()
+{
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_option('brandID'));
+}
 function bluem_woocommerce_settings_render_merchantID()
 {
     bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('merchantID'));
