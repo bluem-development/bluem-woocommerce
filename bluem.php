@@ -112,17 +112,17 @@ function bluem_woocommerce_settings_page()
     //Get the active tab from the GET param
     $tab = bluem_woocommerce_tab(); ?>
 
-    <style>
-        .bluem-form-control {
-            width: 100%;
-        }
+<style>
+.bluem-form-control {
+    width: 100%;
+}
 
-        .bluem-settings {
-            /* column-count: 2;
+.bluem-settings {
+    /* column-count: 2;
             column-gap: 40px; */
-            padding:20px;
-        }
-    </style>
+    padding: 20px;
+}
+</style>
 
 
 <div class="wrap">
@@ -130,39 +130,35 @@ function bluem_woocommerce_settings_page()
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
     <!-- Here are our tabs -->
     <nav class="nav-tab-wrapper">
-      <a href="<?php echo admin_url('options-general.php?page=bluem');?>"
-      class="nav-tab
+        <a href="<?php echo admin_url('options-general.php?page=bluem');?>" class="nav-tab
         <?php if ($tab===null) {
             echo "nav-tab-active";
         } ?>
       ">
-        Algemene instellingen
-      </a>
+            Algemene instellingen
+        </a>
 
-      <?php if(bluem_module_enabled('mandates')) { ?>
+        <?php if(bluem_module_enabled('mandates')) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem&tab=mandates');?>"
-            class="nav-tab
+        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_mandates');?>" class="nav-tab
             <?php if($tab==='mandates') { echo "nav-tab-active"; } ?>
             ">
             Digitaal Incassomachtigen (eMandates)
         </a>
         <?php } ?>
 
-    <?php if(bluem_module_enabled('payments')) { ?>
+        <?php if(bluem_module_enabled('payments')) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem&tab=payments');?>"
-            class="nav-tab
+        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_payments');?>" class="nav-tab
             <?php if($tab==='payments') { echo "nav-tab-active"; } ?>
             ">
             iDEAL (ePayments)
         </a>
         <?php } ?>
 
-    <?php if(bluem_module_enabled('idin')) { ?>
+        <?php if(bluem_module_enabled('idin')) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem&tab=idin');?>"
-            class="nav-tab
+        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_idin');?>" class="nav-tab
             <?php if($tab==='idin') { echo "nav-tab-active"; } ?>
             ">
             iDIN (Identity)
@@ -170,7 +166,8 @@ function bluem_woocommerce_settings_page()
         <?php } ?>
 
 
-        <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">Problemen, vragen of suggesties? Neem contact op via e-mail</a>
+        <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">Problemen,
+            vragen of suggesties? Neem contact op via e-mail</a>
     </nav>
 
 
@@ -179,14 +176,16 @@ function bluem_woocommerce_settings_page()
 
         <form action="options.php" method="post">
 
-        <?php if(is_null($tab)) {
+            <?php if(is_null($tab)) {
             ?>
+            <div style="display:none;">
+        <?php
+    } ?>
             <?php
         settings_fields('bluem_woocommerce_modules_options');
         do_settings_sections('bluem_woocommerce_modules');
         ?>
-        <?php
-        } ?>
+            </div>
             <?php
 
             settings_fields('bluem_woocommerce_options');
@@ -198,7 +197,7 @@ function bluem_woocommerce_settings_page()
 
     </div>
 </div>
-    <?php
+<?php
 }
 
 
@@ -240,6 +239,15 @@ function bluem_woocommerce_register_settings()
             "bluem_woocommerce_modules_section"
         );
 
+
+        add_settings_field(
+            "suppress_warning",
+            _("In admin omgeving waarschuwen als plugin nog niet goed is ingesteld"),
+            "bluem_woocommerce_modules_render_suppress_warning",
+            "bluem_woocommerce",
+            "bluem_woocommerce_modules_section"
+        );
+
         add_settings_section('bluem_woocommerce_general_section', 'Algemene instellingen', 'bluem_woocommerce_general_settings_section', 'bluem_woocommerce');
         $general_settings = bluem_woocommerce_get_core_options();
         foreach ($general_settings as $key => $ms) {
@@ -253,7 +261,8 @@ function bluem_woocommerce_register_settings()
         }
     }
 
-    if ($tab == "mandates" && bluem_module_enabled('mandates')) {
+
+    if (bluem_module_enabled('mandates')) {
         add_settings_section('bluem_woocommerce_mandates_section', 'Machtiging instellingen', 'bluem_woocommerce_mandates_settings_section', 'bluem_woocommerce');
 
         $mandates_settings = bluem_woocommerce_get_mandates_options();
@@ -270,7 +279,8 @@ function bluem_woocommerce_register_settings()
             }
         }
     }
-    if ($tab == "payments" && bluem_module_enabled('payments')) {
+
+    if (bluem_module_enabled('payments')) {
         add_settings_section('bluem_woocommerce_payments_section', 'iDeal payments instellingen', 'bluem_woocommerce_payments_settings_section', 'bluem_woocommerce');
 
 
@@ -288,7 +298,8 @@ function bluem_woocommerce_register_settings()
             }
         }
     }
-    if ($tab == "idin" && bluem_module_enabled('idin')) {
+
+    if (bluem_module_enabled('idin')) {
         add_settings_section('bluem_woocommerce_idin_section', 'iDIN instellingen', 'bluem_woocommerce_idin_settings_section', 'bluem_woocommerce');
 
 
@@ -366,18 +377,46 @@ function bluem_woocommerce_settings_render_input($field)
     ?>
 
 
-        <select class='form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>' name='bluem_woocommerce_options[<?php echo $key; ?>]'>
-            <?php
+<select class='form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
+    name='bluem_woocommerce_options[<?php echo $key; ?>]'>
+    <?php
             foreach ($field['options'] as $option_value => $option_name) {
             ?>
-                <option value="<?php echo $option_value; ?>" <?php if (isset($values[$key]) && $values[$key] !== "" && $option_value == $values[$key]) {
+    <option value="<?php echo $option_value; ?>" <?php if (isset($values[$key]) && $values[$key] !== "" && $option_value == $values[$key]) {
                                                                     echo "selected='selected'";
                                                                 } ?>><?php echo $option_name; ?></option>
-            <?php
+    <?php
             }
             ?>
-        </select>
-    <?php
+</select>
+<?php
+    } elseif ($field['type'] == "bool") {
+        // var_dump($values[$key]);
+        ?>
+<div class="form-check form-check-inline">
+    <label class="form-check-label" for="<?php echo $key;?>_1">
+        <input class="form-check-input" type="radio"
+        name="bluem_woocommerce_options[<?php echo $key;?>]"
+        id="<?php echo $key;?>_1" value="1"
+        <?php if(isset($values[$key]) && $values[$key]=="1") { echo "checked";} elseif($field['default'] =="1") {
+            echo "checked";
+        } ?>
+        >
+         Ja
+    </label>
+</div>
+<div class="form-check form-check-inline">
+    <label class="form-check-label" for="<?php echo $key;?>_0">
+        <input class="form-check-input" type="radio"
+        name="bluem_woocommerce_options[<?php echo $key;?>]"
+        id="<?php echo $key;?>_0" value="0"
+        <?php if(isset($values[$key]) && $values[$key]=="0") { echo "checked";} elseif($field['default'] =="0") { echo "checked"; } ?>
+        >
+         Nee
+    </label>
+</div>
+        <?php
+
     } else {
         $attrs = [];
         if ($field['type'] == "password") {
@@ -392,18 +431,22 @@ function bluem_woocommerce_settings_render_input($field)
             $attrs['type'] = "text";
         }
     ?>
-        <input class='bluem-form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>' name='bluem_woocommerce_options[<?php echo $key; ?>]' value='<?php echo (isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?>' <?php foreach ($attrs as $akey => $aval) {
+<input class='bluem-form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
+    name='bluem_woocommerce_options[<?php echo $key; ?>]'
+    value='<?php echo (isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?>'
+    <?php foreach ($attrs as $akey => $aval) {
                                                                                                                                                                                                                                                     echo "$akey='$aval' ";
                                                                                                                                                                                                                                                 } ?> />
-    <?php
+<?php
     }
     ?>
 
-    <?php if (isset($field['description']) && $field['description'] !== "") {
+<?php if (isset($field['description']) && $field['description'] !== "") {
     ?>
 
-        <br><label style='color:ddd;' for='bluem_woocommerce_settings_<?php echo $key; ?>'><?php echo $field['description']; ?></label>
-    <?php
+<br><label style='color:ddd;'
+    for='bluem_woocommerce_settings_<?php echo $key; ?>'><?php echo $field['description']; ?></label>
+<?php
     } ?>
 
 
@@ -422,7 +465,10 @@ function bluem_woocommerce_get_core_options()
             'type' => 'select',
             'default' => 'test',
             'options' =>
-            ['prod' => "Productie (live)", 'test' => 'Test']
+            [
+                'test' => 'Test',
+                'prod' => "Productie (live)",
+            ]
             // acceptance eventueel later toevoegen
         ],
         'senderID' => [
@@ -432,7 +478,7 @@ function bluem_woocommerce_get_core_options()
             'description' => 'Het sender ID, uitgegeven door Bluem. Begint met een S, gevolgd door een getal.',
             'default' => ""
         ],
-        
+
         'test_accessToken' => [
             'key' => 'test_accessToken',
             'title' => 'bluem_test_accessToken',
@@ -519,7 +565,7 @@ function bluem_woocommerce_get_config()
 function bluem_woocommerce_modules_settings_section()
 {
 
-    
+
     echo '
     <p>
     <img src="'.
@@ -547,6 +593,11 @@ function bluem_woocommerce_modules_render_payments_activation()
 function bluem_woocommerce_modules_render_idin_activation()
 {
     bluem_woocommerce_modules_render_generic_activation("idin");
+}
+
+function bluem_woocommerce_modules_render_suppress_warning()
+{
+    bluem_woocommerce_modules_render_generic_activation("suppress_warning");
 }
 
 
@@ -637,35 +688,151 @@ function bluem_woocommerce_prompt(String $html, $include_link = true)
 function bluem_generic_tabler($data)
 {
     ?>
-    <table class="table widefat">
+<table class="table widefat">
     <?php
     $i = 0;
     foreach ($data as $key => $value) {
         if ($i == 0) {
             ?>
-                <tr>
-                    <?php
+    <tr>
+        <?php
                     foreach ($value as $kkey => $vvalue) {
                         ?>
-                        <th>
-                            <?php echo $kkey; ?>
-                        </th><?php
+        <th>
+            <?php echo $kkey; ?>
+        </th><?php
                     } ?>
-                </tr>
+    </tr>
 
-            <?php
+    <?php
         } ?>
-        <tr>
-            <?php
+    <tr>
+        <?php
             foreach ($value as $kkey => $vvalue) {
                 ?>
-                <td>
-                    <?php echo $vvalue; ?>
-                </td><?php
+        <td>
+            <?php echo $vvalue; ?>
+        </td><?php
             } ?>
 
-        </tr><?php
+    </tr><?php
         $i++;
     } ?>
-    </table><?php
+</table><?php
+}
+
+
+
+
+
+/**
+ * Check if Setup is complete
+ **/
+
+
+// if (!arra($options('')))
+// get_option('bluem_woocommerce_options'))) {
+    // bluem_woocommerce();
+// } else {
+
+    // NO WCFM found, notify the admin!
+    add_action('admin_notices', 'bluem_setup_incomplete');
+    // return;
+    // throw new Exception("WooCommerce not activated, add this plugin first", 1);
+// }
+
+
+// https://www.wpbeginner.com/wp-tutorials/how-to-add-admin-notices-in-wordpress/
+function bluem_setup_incomplete()
+{
+    if (!is_admin()) {
+        return;
+    }
+
+    if(!bluem_module_enabled('suppress_warning')) {
+        return;
+    }
+
+    $options = get_option('bluem_woocommerce_options');
+
+    $valid_setup = true;
+    $messages = [];
+    if (!array_key_exists('senderID', $options)
+        || (array_key_exists('senderID', $options)
+        && $options['senderID'] === "")
+    ) {
+        $messages[] = "SenderID mist";
+        $valid_setup = false;
+    }
+    if (!array_key_exists('test_accessToken', $options)
+        || (array_key_exists('test_accessToken', $options)
+        && $options['test_accessToken'] === "")
+    ) {
+        $messages[] = "Test accessToken mist";
+        $valid_setup = false;
+    }
+
+    if (isset($options['environment'])
+        && $options['environment'] == "prod"
+        && (!array_key_exists('production_accessToken', $options)
+            || (array_key_exists('production_accessToken', $options)
+            && $options['production_accessToken'] === "")
+        )
+    ) {
+        $messages[] = "Production accessToken mist";
+        $valid_setup = false;
+    }
+
+
+    if (bluem_module_enabled('mandates')
+        && (
+            !array_key_exists('BrandID', $options)
+            || (
+                array_key_exists('BrandID', $options)
+                && $options['BrandID'] === ""
+            )
+        )
+    ) {
+        $messages[] = "eMandates BrandID mist";
+        $valid_setup = false;
+    }
+    if (bluem_module_enabled('idin')
+        && (
+            !array_key_exists('IDINBrandID', $options)
+            || (
+                array_key_exists('IDINBrandID', $options)
+                && $options['IDINBrandID'] === ""
+            )
+        )
+    ) {
+        $messages[] = "iDIN BrandID  mist";
+        $valid_setup = false;
+    }
+
+
+    // @todo add more checks
+    if ($valid_setup) {
+        return;
+    }
+
+    echo '<div class="notice notice-warning is-dismissible">
+        <p><strong>De Bluem integratie is nog niet volledig ingesteld:</strong><br>
+        ';
+    foreach ($messages as $m) {
+        echo "$m<br>";
+    }
+    echo '
+        </p>';
+
+    if (get_admin_page_title() !== "Bluem") {
+        echo '
+            <p><a href="
+            '.admin_url('options-general.php?page=bluem').'
+            ">
+            Klik hier om de plugin verder in te stellen.
+            </a>
+            </p>';
+    }
+
+    echo '</div>';
 }

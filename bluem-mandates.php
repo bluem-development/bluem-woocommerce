@@ -995,7 +995,6 @@ function bluem_woocommerce_mandates_settings_section()
 {
     $mandate_id_counter = get_option('bluem_woocommerce_mandate_id_counter');
 
-
     // The below code is useful when you want the mandate_id to start counting at a fixed minimum.
     // This is what had to be implemented for H2OPro; one of the first clients.
     // @todo: convert to action so it can be overriden by third-party developers such as H2OPro.
@@ -1004,7 +1003,7 @@ function bluem_woocommerce_mandates_settings_section()
         update_option('bluem_woocommerce_mandate_id_counter', $mandate_id_counter);
     }
 
-    echo '<p>Hier kan je alle belangrijke gegevens instellen rondom Machtigingen. Lees de readme bij de plug-in voor meer informatie.</p>';
+    echo '<p><a id="tab_mandates"></a> Hier kan je alle belangrijke gegevens instellen rondom Machtigingen. Lees de readme bij de plug-in voor meer informatie.</p>';
 
     echo "<p>Huidige mandaat ID counter: ";
     echo $mandate_id_counter;

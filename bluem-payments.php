@@ -535,7 +535,8 @@ function bluem_init_payment_gateway_class()
 
 function bluem_woocommerce_payments_settings_section()
 {
-    echo '<p>Hier kan je alle belangrijke gegevens instellen rondom iDeal transacties. Lees de readme bij de plug-in voor meer informatie.</p>';
+    echo '<p><a id="tab_payments"></a>
+    Hier kan je alle belangrijke gegevens instellen rondom iDeal transacties. Lees de readme bij de plug-in voor meer informatie.</p>';
 }
 
 function bluem_woocommerce_get_payments_option($key) {

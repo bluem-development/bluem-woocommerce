@@ -13,7 +13,7 @@ This is the official Bluem plug-in that offers an integration of its services fo
 
 == Description ==
 
-BlueM WordPress and WooCommerce integration allows you to connect your website to Bluem's eMandate, ePayments and iDIN Identity services.
+The Bluem WordPress and WooCommerce integration allows you to connect your website to Bluem's ePayments, eMandate and iDIN Identity services.
 Concretely, the plug-in delivers:
 
 - a payment gateway to accept eMandate transactions within a WooCommerce-activated website
