@@ -67,8 +67,9 @@ function bluem_woocommerce_no_woocommerce_notice()
 
         $bluem_options = get_option('bluem_woocommerce_options');
         if (!isset($bluem_options['suppress_woo']) || $bluem_options['suppress_woo']=="0") {
-            echo '<div class="notice notice-error is-dismissible">
-            <p>Bluem WooCommerce is afhankelijk van WooCommerce - activeer deze plug-in ook. Je kan deze melding en WooCommerce gerelateerde functionaliteiten ook uitzetten bij de <a href="'.admin_url('options-general.php?page=bluem').'">Instellingen</a>.</p>
+            echo '<div class="notice notice-warning is-dismissible">
+            <p>De Bluem integratie is deels afhankelijk van WooCommerce - activeer deze plug-in ook.<br>
+            Je kan deze melding en WooCommerce gerelateerde functionaliteiten ook uitzetten bij de <a href="'.admin_url('options-general.php?page=bluem').'">Instellingen</a>.</p>
             </div>';
         }
     }
@@ -631,7 +632,8 @@ function bluem_woocommerce_modules_render_generic_activation($module)
 function bluem_module_enabled($module)
 {
     $bluem_options = get_option('bluem_woocommerce_options');
-    if (!isset($bluem_options["{$module}_enabled"])
+    if ($bluem_options!==false 
+        && !isset($bluem_options["{$module}_enabled"])
         || $bluem_options["{$module}_enabled"]=="1"
     ) {
         return true;
@@ -749,72 +751,76 @@ function bluem_setup_incomplete()
         return;
     }
 
-    if(!bluem_module_enabled('suppress_warning')) {
+    if($options !== false && !bluem_module_enabled('suppress_warning')) {
         return;
     }
 
     $options = get_option('bluem_woocommerce_options');
+    if($options == false) {
+        $messages[] = "Account gegevens missen";
+    } else {
 
-    $valid_setup = true;
-    $messages = [];
-    if (!array_key_exists('senderID', $options)
+        $valid_setup = true;
+        $messages = [];
+        if (!array_key_exists('senderID', $options)
         || (array_key_exists('senderID', $options)
         && $options['senderID'] === "")
-    ) {
-        $messages[] = "SenderID mist";
-        $valid_setup = false;
-    }
-    if (!array_key_exists('test_accessToken', $options)
+        ) {
+            $messages[] = "SenderID mist";
+            $valid_setup = false;
+        }
+        if (!array_key_exists('test_accessToken', $options)
         || (array_key_exists('test_accessToken', $options)
         && $options['test_accessToken'] === "")
-    ) {
-        $messages[] = "Test accessToken mist";
-        $valid_setup = false;
-    }
-
-    if (isset($options['environment'])
+        ) {
+            $messages[] = "Test accessToken mist";
+            $valid_setup = false;
+        }
+        
+        if (isset($options['environment'])
         && $options['environment'] == "prod"
         && (!array_key_exists('production_accessToken', $options)
-            || (array_key_exists('production_accessToken', $options)
-            && $options['production_accessToken'] === "")
+        || (array_key_exists('production_accessToken', $options)
+        && $options['production_accessToken'] === "")
         )
-    ) {
-        $messages[] = "Production accessToken mist";
-        $valid_setup = false;
-    }
-
-
-    if (bluem_module_enabled('mandates')
+        ) {
+            $messages[] = "Production accessToken mist";
+            $valid_setup = false;
+        }
+        
+        
+        if (bluem_module_enabled('mandates')
         && (
             !array_key_exists('BrandID', $options)
             || (
                 array_key_exists('BrandID', $options)
                 && $options['BrandID'] === ""
-            )
-        )
-    ) {
-        $messages[] = "eMandates BrandID mist";
-        $valid_setup = false;
-    }
-    if (bluem_module_enabled('idin')
-        && (
-            !array_key_exists('IDINBrandID', $options)
-            || (
-                array_key_exists('IDINBrandID', $options)
-                && $options['IDINBrandID'] === ""
-            )
-        )
-    ) {
-        $messages[] = "iDIN BrandID  mist";
-        $valid_setup = false;
-    }
-
-
-    // @todo add more checks
-    if ($valid_setup) {
-        return;
-    }
-
+                )
+                )
+                ) {
+                    $messages[] = "eMandates BrandID mist";
+                    $valid_setup = false;
+                }
+                if (bluem_module_enabled('idin')
+                && (
+                    !array_key_exists('IDINBrandID', $options)
+                    || (
+                        array_key_exists('IDINBrandID', $options)
+                        && $options['IDINBrandID'] === ""
+                        )
+                        )
+                        ) {
+                            $messages[] = "iDIN BrandID  mist";
+                            $valid_setup = false;
+                        }
+                        
+                        
+                        // @todo add more checks
+                        if ($valid_setup) {
+                            return;
+                        }
+                    }
+                        
     echo '<div class="notice notice-warning is-dismissible">
         <p><strong>De Bluem integratie is nog niet volledig ingesteld:</strong><br>
         ';

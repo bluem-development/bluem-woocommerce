@@ -558,7 +558,7 @@ function bluem_checkout_check_idin_validated()
 
     if ($scenario > 0) {
 
-        $validated = true;// bluem_idin_user_validated();
+        $validated = bluem_idin_user_validated();
         $validation_message = "Identificatie is vereist alvorens de bestelling kan worden afgerond.";
         // above 0: any form of verification is required
         if (!$validated) {
@@ -572,7 +572,7 @@ function bluem_checkout_check_idin_validated()
 
             // get report from user metadata
             $results = bluem_idin_retrieve_results();
-
+            
             // identified? but is this person OK of age?
             if($scenario == 1 || $scenario == 3) {
                 // we gaan er standaard vanuit dat de leeftijd NIET toereikend is
