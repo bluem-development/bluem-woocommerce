@@ -41,8 +41,9 @@ if (bluem_module_enabled('payments')) {
 
 if (bluem_module_enabled('idin')) {
     include_once __DIR__ . '/bluem-idin.php';
-    include_once __DIR__ . '/bluem-idin-shortcode.php';
 }
+
+// @todo: add login module later
 
 /**
  * Check if WooCommerce is active
@@ -521,7 +522,10 @@ function bluem_woocommerce_get_core_options()
             'type' => 'select',
             'default' => '0',
             'options' =>
-            ['0' => "WooCommerce wel gebruiken", '1' => 'WooCommerce NIET gebruiken']
+            [
+                '0' => "WooCommerce wel gebruiken", 
+                '1' => 'WooCommerce NIET gebruiken'
+            ]
         ]
     ];
 }
@@ -751,11 +755,13 @@ function bluem_setup_incomplete()
         return;
     }
 
-    if($options !== false && !bluem_module_enabled('suppress_warning')) {
+    
+    $options = get_option('bluem_woocommerce_options');
+
+    if ($options !== false && !bluem_module_enabled('suppress_warning')) {
         return;
     }
 
-    $options = get_option('bluem_woocommerce_options');
     if($options == false) {
         $messages[] = "Account gegevens missen";
     } else {
