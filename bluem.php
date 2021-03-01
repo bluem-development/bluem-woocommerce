@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.2.1
+ * Version: 1.2.2
  * Plugin URI: https://github.com/DaanRijpkema/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Daan Rijpkema
