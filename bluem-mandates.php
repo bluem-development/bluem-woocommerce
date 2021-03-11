@@ -1019,7 +1019,7 @@ function bluem_woocommerce_mandates_settings_section()
 
 function bluem_woocommerce_settings_render_brandID()
 {
-    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_option('brandID'));
+    bluem_woocommerce_settings_render_input(bluem_woocommerce_get_mandates_option('brandID'));
 }
 function bluem_woocommerce_settings_render_merchantID()
 {

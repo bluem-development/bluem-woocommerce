@@ -5,7 +5,7 @@ Tags: wordpress, plugin, woocommerce, bluem,payment,services,idin,mandates,ideal
 Requires at least: 5.0
 Tested up to: 5.6.1
 Requires PHP: 7.0
-Stable tag: 1.2.1
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 

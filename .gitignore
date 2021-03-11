@@ -1,5 +1,6 @@
 node*
 vendor*
+vendor
 .gitignore
 .vscode
 .DS_Store

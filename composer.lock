@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3bf2422f7acc921c540cdbf33b1002d0",
+    "content-hash": "74e761dd652760f0a364407899fe9de4",
     "packages": [
         {
             "name": "daanrijpkema/bluem-php",
-            "version": "0.9.8.2",
+            "version": "1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DaanRijpkema/bluem-php.git",
-                "reference": "8140b08e3cd207e65ad214c7b4d6cae4614da016"
+                "reference": "9516d2a432b2954ecff1a77aa31444b839f3c9cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/8140b08e3cd207e65ad214c7b4d6cae4614da016",
-                "reference": "8140b08e3cd207e65ad214c7b4d6cae4614da016",
+                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/9516d2a432b2954ecff1a77aa31444b839f3c9cf",
+                "reference": "9516d2a432b2954ecff1a77aa31444b839f3c9cf",
                 "shasum": ""
             },
             "require": {
@@ -57,22 +57,22 @@
             ],
             "support": {
                 "issues": "https://github.com/daanrijpkema/bluem-php",
-                "source": "https://github.com/DaanRijpkema/bluem-php/tree/0.9.8.2"
+                "source": "https://github.com/DaanRijpkema/bluem-php/tree/1.1"
             },
-            "time": "2021-01-19T09:03:42+00:00"
+            "time": "2021-03-11T12:28:49+00:00"
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.45.1",
+            "version": "2.46.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "528783b188bdb853eb21239b1722831e0f000a8d"
+                "reference": "2fd2c4a77d58a4e95234c8a61c5df1f157a91bf4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/528783b188bdb853eb21239b1722831e0f000a8d",
-                "reference": "528783b188bdb853eb21239b1722831e0f000a8d",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/2fd2c4a77d58a4e95234c8a61c5df1f157a91bf4",
+                "reference": "2fd2c4a77d58a4e95234c8a61c5df1f157a91bf4",
                 "shasum": ""
             },
             "require": {
@@ -152,7 +152,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-02-11T18:30:17+00:00"
+            "time": "2021-02-24T17:30:44+00:00"
         },
         {
             "name": "pear/http_request2",
@@ -546,16 +546,16 @@
         },
         {
             "name": "symfony/translation",
-            "version": "v5.2.3",
+            "version": "v5.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
-                "reference": "c021864d4354ee55160ddcfd31dc477a1bc77949"
+                "reference": "0947ab1e3aabd22a6bef393874b2555d2bb976da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/c021864d4354ee55160ddcfd31dc477a1bc77949",
-                "reference": "c021864d4354ee55160ddcfd31dc477a1bc77949",
+                "url": "https://api.github.com/repos/symfony/translation/zipball/0947ab1e3aabd22a6bef393874b2555d2bb976da",
+                "reference": "0947ab1e3aabd22a6bef393874b2555d2bb976da",
                 "shasum": ""
             },
             "require": {
@@ -572,7 +572,7 @@
                 "symfony/yaml": "<4.4"
             },
             "provide": {
-                "symfony/translation-implementation": "2.0"
+                "symfony/translation-implementation": "2.3"
             },
             "require-dev": {
                 "psr/log": "~1.0",
@@ -619,7 +619,7 @@
             "description": "Provides tools to internationalize your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/translation/tree/v5.2.3"
+                "source": "https://github.com/symfony/translation/tree/v5.2.5"
             },
             "funding": [
                 {
@@ -635,7 +635,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-01-27T10:15:41+00:00"
+            "time": "2021-03-06T07:59:01+00:00"
         },
         {
             "name": "symfony/translation-contracts",
