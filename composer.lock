@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "74e761dd652760f0a364407899fe9de4",
+    "content-hash": "468b4098aff14e6d0231d5c7831a9f0a",
     "packages": [
         {
             "name": "daanrijpkema/bluem-php",
-            "version": "1.1",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DaanRijpkema/bluem-php.git",
-                "reference": "9516d2a432b2954ecff1a77aa31444b839f3c9cf"
+                "reference": "0cb7f1091783a3cfcb882e1cf58b7aca09e3129e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/9516d2a432b2954ecff1a77aa31444b839f3c9cf",
-                "reference": "9516d2a432b2954ecff1a77aa31444b839f3c9cf",
+                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/0cb7f1091783a3cfcb882e1cf58b7aca09e3129e",
+                "reference": "0cb7f1091783a3cfcb882e1cf58b7aca09e3129e",
                 "shasum": ""
             },
             "require": {
@@ -57,9 +57,9 @@
             ],
             "support": {
                 "issues": "https://github.com/daanrijpkema/bluem-php",
-                "source": "https://github.com/DaanRijpkema/bluem-php/tree/1.1"
+                "source": "https://github.com/DaanRijpkema/bluem-php/tree/1.1.1"
             },
-            "time": "2021-03-11T12:28:49+00:00"
+            "time": "2021-03-11T15:58:49+00:00"
         },
         {
             "name": "nesbot/carbon",

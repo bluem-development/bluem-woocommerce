@@ -364,6 +364,8 @@ function bluem_init_mandate_gateway_class()
          */
         public function process_payment($order_id)
         {
+            // @todo: LOG TRANSactions
+
             $verbose = false;
             $this->bluem = new Integration($this->bluem_config);
             $order = wc_get_order($order_id);
