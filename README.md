@@ -1,4 +1,5 @@
-*This is the developer repository for the bluem-woocommerce WordPress and WooCommerce plug-in. The stable, production-ready version of the plug-in will be available from the WordPress plug-in directory soon.*
+*This is the developer repository and notes for the bluem WordPress and WooCommerce plug-in. 
+The stable, production-ready version of the plug-in is available from the WordPress plug-in directory: [wordpress.org/plugins/bluem/](https://wordpress.org/plugins/bluem/).*
 
 Use this repository to get insight and possibly contribute to the development of this plug-in.
 
@@ -138,7 +139,10 @@ By default, this is disabled as it is quite context specific if the webshop is s
 - delete `vendor/daanrijpkema/bluem-php/examples` to be sure as it is not necessary in production.
 
 
-
-
 # Support
 If you have any questions, please send an email to [info@daanrijpkema.com](mailto:info@daanrijpkema.com).
+
+
+# Notes / todo's
+
+- Perform iDIN check not in cart but at checkout; make a setting where you can choose the location (either, or both); request by DrankStunter

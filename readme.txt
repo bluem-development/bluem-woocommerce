@@ -3,7 +3,7 @@ Contributors: bluempaymentservices
 Donate link: https://daanrijpkema.github.io
 Tags: Bluem,Payments,iDIN,iDEAL,Incassomachtigen,woocommerce, bluem, payment gateway, payments, ideal, paypal, mandates, identity, idin, age verification, iban-name check 
 Requires at least: 5.0
-Tested up to: 5.6.1
+Tested up to: 5.7.0
 Requires PHP: 7.0
 Stable tag: 1.2.5
 License: GPLv2 or later
@@ -85,6 +85,8 @@ Please deactivate and delete any previous versions of this plug-in prior to 1.1 
 
 
 == Changelog ==
+
+- 1.2.6: Improved guest checkout identification blocking; improved cart url redirection in IDIN; Tested up to WordPress v5.7 and updated metadata to reflect this. Improved metadata management in user profile; woocommerce 5.1 compatibility
 - 1.2.* Bugfixes
 - 1.2: Updated layout references, added optional `bluem_checkout_check_idin_validated_fiter`
 - 1.1: Update and rename based on review for WordPress plugin approval (16th of Februari 2021)

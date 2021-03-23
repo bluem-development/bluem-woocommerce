@@ -2,13 +2,13 @@
 
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.2.5
+ * Version: 1.2.6
  * Plugin URI: https://wordpress.org/plugins/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Bluem Payment Services
  * Author URI: https://bluem.nl
  * Requires at least: 5.0
- * Tested up to: 5.6.1
+ * Tested up to: 5.7
  *
  * Text Domain: bluem
  * Domain Path: /lang/
@@ -136,7 +136,7 @@ function bluem_woocommerce_settings_page()
         <?php if ($tab===null) {
             echo "nav-tab-active";
         } ?>
-      ">
+        ">
             Algemene instellingen
         </a>
 
