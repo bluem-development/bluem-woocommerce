@@ -498,6 +498,22 @@ function bluem_init_mandate_gateway_class()
 
                 // redirect cast to string, for AJAX response handling
                 $transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
+
+
+                bluem_db_create_request(
+                    [
+                        'entrance_code'=>$entranceCode,
+                        'transaction_id'=>$mandate_id,
+                        'transaction_url'=>$transactionURL,
+                        'user_id'=>get_current_user_id(),
+                        'timestamp'=> date("Y-m-d H:i:s"),
+                        'description'=>"Mandate request {$order_id} {$customer_id}",
+                        'debtor_reference'=>"",
+                        'type'=>"mandates",
+                        'order_id'=>$order_id,
+                        'payload'=>''
+                    ]
+                );
                 return array(
                     'result' => 'success',
                     'redirect' => $transactionURL
@@ -705,7 +721,7 @@ function bluem_init_mandate_gateway_class()
 
             } elseif ($statusCode === "Cancelled") {
                 $order->update_status(
-                    'cancelled', 
+                    'cancelled',
                     __('Machtiging is geannuleerd', 'wc-gateway-bluem')
                 );
 
@@ -719,9 +735,9 @@ function bluem_init_mandate_gateway_class()
                 exit;
             } elseif ($statusCode === "Expired") {
                 $order->update_status(
-                    'failed', 
+                    'failed',
                     __(
-                        'Machtiging is verlopen', 
+                        'Machtiging is verlopen',
                         'wc-gateway-bluem'
                     )
                 );
@@ -732,9 +748,9 @@ function bluem_init_mandate_gateway_class()
                 exit;
             } else {
                 $order->update_status(
-                    'failed', 
+                    'failed',
                     __(
-                        'Machtiging is gefaald: fout of onbekende status', 
+                        'Machtiging is gefaald: fout of onbekende status',
                         'wc-gateway-bluem'
                     )
                 );
@@ -955,6 +971,24 @@ function bluem_init_mandate_gateway_class()
                         value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_latest_mandate_amount', true)); ?>"
                         class="regular-text" /><br />
                     <span class="description">Dit is de omvang van de laatste machtiging</span>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="bluem_mandates_validated">machtiging via shortcode valide?</label></th>
+                <td>
+                <?php
+                $curValidatedVal = (int) esc_attr(get_user_meta($user->ID, 'bluem_mandates_validated', true));
+                // var_dump($curValidatedVal);
+                ?>
+                    <select name="bluem_mandates_validated" id="bluem_mandates_validated">
+                        <option value="1" <?php if($curValidatedVal == 1) echo "selected";?>>
+                            Ja
+                        </option>
+                        <option value="0" <?php if($curValidatedVal == 0) echo "selected";?>>
+                            Nee
+                        </option>
+                    </select><br />
+                    <span class="description">Is een machtiging via shortcode doorgekomen?</span>
                 </td>
             </tr>
         </table>

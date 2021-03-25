@@ -25,7 +25,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-
+global $bluem_db_version;
+$bluem_db_version = 1.2;
 
 // get composer dependencies
 require __DIR__ . '/vendor/autoload.php';
@@ -42,6 +43,9 @@ if (bluem_module_enabled('payments')) {
 if (bluem_module_enabled('idin')) {
     include_once __DIR__ . '/bluem-idin.php';
 }
+
+// database functions
+include_once __DIR__ . '/bluem-db.php';
 
 // @todo: add login module later
 
@@ -91,10 +95,84 @@ function bluem_woocommerce_settings_handler()
         'Bluem',
         'manage_options',
         'bluem',
-        'bluem_woocommerce_settings_page'
+        'bluem_settings_page'
     );
 }
 add_action('admin_menu', 'bluem_woocommerce_settings_handler');
+
+
+
+/**
+ * Register the necessary administrative pages in the WordPress back-end.
+ *
+ * @return void
+ */
+function bluem_register_menu()
+{
+    add_menu_page(
+        "bluem_admin_requests_view",
+        "Bluem",
+        "manage_options",
+        "bluem_admin_requests_view",
+        "bluem_admin_requests_view",
+        'dashicons-money'
+    );
+  
+    // add_submenu_page
+    //     "bluem",
+    //     "Instellingen",
+    //     "Instellingen",
+    //     "manage_options",
+    //     "bluem_settings_page",
+    //     "bluem_settings_page"
+    // );
+    // add_submenu_page(
+    //     "bluem",
+    //     "Instellingen",
+    //     "Instellingen",
+    //     "manage_options",
+    //     "bluem_settings_page",
+    //     "bluem_settings_page"
+    // );
+}
+add_action('admin_menu', 'bluem_register_menu', 9);
+
+
+
+function bluem_admin_requests_view() {
+    
+    global $wpdb;
+    date_default_timezone_set('Europe/Amsterdam');
+    $wpdb->time_zone = 'Europe/Amsterdam';
+
+    $requests = $wpdb->get_results("SELECT *  FROM bluem_requests");
+    $logs = $wpdb->get_results("SELECT *  FROM  bluem_requests_log ORDER BY `timestamp` DESC");
+
+    if(isset($_GET['tab']) && $_GET['tab'] !== "" ) {
+
+        $tab = $_GET['tab'];
+    } else {
+        $tab = "index";
+    }
+
+
+    $users = get_users();
+    $users_by_id = [];
+    foreach ($users as $user) {
+        $users_by_id[$user->ID] = $user;
+    }
+
+    include_once 'views/requests.php';
+
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -108,7 +186,7 @@ function bluem_woocommerce_tab() {
  *
  * @return void
  */
-function bluem_woocommerce_settings_page()
+function bluem_settings_page()
 {
 
     //Get the active tab from the GET param
@@ -167,7 +245,9 @@ function bluem_woocommerce_settings_page()
         </a>
         <?php } ?>
 
-
+        <a href="<?php echo admin_url('admin.php?page=bluem_admin_requests_view');?>" class="nav-tab">
+            Verzoeken overzicht
+        </a>
         <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">Problemen,
             vragen of suggesties? Neem contact op via e-mail</a>
     </nav>
@@ -860,3 +940,7 @@ function bluem_setup_incomplete()
     // wp-admin/admin.php?page=wc-settings&tab=checkout
     
 }
+
+
+
+

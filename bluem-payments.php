@@ -290,12 +290,29 @@ function bluem_init_payment_gateway_class()
                 $debtorReference = "". $response->PaymentTransactionResponse->debtorReference;
                 update_post_meta($order_id, 'bluem_debtor_Reference', $debtorReference);
 
-                // var_dump($response);
-                // die();
-
-                // die();
                 // redirect cast to string, for AJAX response handling
                 $transactionURL = ($response->PaymentTransactionResponse->TransactionURL . "");
+
+
+
+                bluem_db_create_request(
+                    [
+                        'entrance_code'=>$entranceCode,
+                        'transaction_id'=>$transactionID,
+                        'transaction_url'=>$transactionURL,
+                        'user_id'=>get_current_user_id(),
+                        'timestamp'=> date("Y-m-d H:i:s"),
+                        'description'=>$description,
+                        'debtor_reference'=>$debtorReference,
+                        'type'=>"payments",
+                        'order_id'=>$order_id,
+                        'payload'=>''
+                    ]
+                );
+
+
+
+
                 return array(
                     'result' => 'success',
                     'redirect' => $transactionURL
@@ -306,16 +323,6 @@ function bluem_init_payment_gateway_class()
                 );
             }
         }
-
-        // public function payments_webhook_test()
-        // {
-        // 	$this->payments_webhook("test");
-        // }
-
-        // public function payments_webhook_prod()
-        // {
-        // 	$this->payments_webhook("prod");
-        // }
 
 
         /**
@@ -509,11 +516,18 @@ function bluem_init_payment_gateway_class()
             $statusUpdateObject = $response->PaymentStatusUpdate;
             $statusCode = $statusUpdateObject->Status . "";
 
+            $request_from_db = bluem_db_get_request_by_transaction_id($transactionID);
+
             if ($statusCode === "Success") {
 
                 $order->update_status('processing', __('Betaling is binnengekomen', 'wc-gateway-bluem'));
 
-
+                bluem_db_update_request(
+                    $request_from_db->id,
+                    [
+                        'status'=>$statusCode
+                    ]
+                );
                 $order->add_order_note( __("Betalingsproces voltooid") );
 
                 $this->bluem_thankyou($order->get_id());

@@ -220,6 +220,9 @@ function bluem_mandateform()
     $mandateID = get_user_meta($current_user->ID, "bluem_latest_mandate_id", true);
     $validated = get_user_meta($current_user->ID, "bluem_mandates_validated", true);
 
+    // var_dump($mandateID);
+    // var_dump($validated);
+
     if ($validated!=="1") {
         echo '<form action="' . home_url('bluem-woocommerce/mandate_shortcode_execute') . '" method="post">';
         echo '<p>Je moet nog een automatische incasso machtiging afgeven.';

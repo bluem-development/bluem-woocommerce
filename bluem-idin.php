@@ -503,10 +503,10 @@ function bluem_idin_form()
         if (isset($bluem_config->IDINSuccessMessage)) {
             $r.= "<p>" . $bluem_config->IDINSuccessMessage . "</p>";
         } else {
-            $r.= "<p>Uw verzoek is succesvol ontvangen. Hartelijk dank.</p>";
+            $r.= "<p>Uw identificatieverzoek is ontvangen. Hartelijk dank.</p>";
         }
 
-        $r.= "Je hebt de identificatieprocedure eerder voltooid. Bedankt<br>";
+        // $r.= "Je hebt de identificatieprocedure eerder voltooid. Bedankt<br>";
         // $results = bluem_idin_retrieve_results();
         // $r.= "<pre>";
         // foreach ($results as $k => $v) {
@@ -638,6 +638,10 @@ function bluem_idin_shortcode_callback()
         if ($statusResponse->ReceivedResponse()) {
             $statusCode = ($statusResponse->GetStatusCode());
             
+
+            $request_from_db = bluem_db_get_request_by_transaction_id($transactionID);
+
+
             if (is_user_logged_in()) {
                 update_user_meta(get_current_user_id(), "bluem_idin_validated", false);
             } else {
@@ -740,7 +744,31 @@ function bluem_idin_shortcode_callback()
                         }
                     }
                 }
+                // var_dump($request_from_db);
+                if(isset($request_from_db) && $request_from_db!==false) {
 
+                    if ($request_from_db->payload!=="" ) {
+                        
+                        try {
+                            
+                            $oldPayload = json_decode($request_from_db->payload);
+                        } catch(Throwable $th) {
+                            $oldPayload = new Stdclass;
+                        }
+                    } else {
+                        $oldPayload = new Stdclass;
+                    }
+                    $oldPayload->report = $identityReport;
+                    
+                    bluem_db_update_request(
+                        $request_from_db->id,
+                        [
+                            'status'=>$statusCode,
+                            'payload'=>json_encode($oldPayload)
+                            ]
+                        );
+                        
+                    }
 
                 // You can for example use the BirthDateResponse to determine the age of the user and act accordingly
                 if ($goto == false) {
@@ -752,25 +780,55 @@ function bluem_idin_shortcode_callback()
             break;
             case 'Processing':
                 echo "Request has status Processing";
+                bluem_db_update_request(
+                    $request_from_db->id,
+                    [
+                        'status'=>$statusCode
+                    ]
+                );
                 // @todo: improve this flow
                 // no break
             case 'Pending':
-                    echo "Request has status Pending";
-                    // @todo: improve this flow
-                    // do something when the request is still processing (for example tell the user to come back later to this page)
+                echo "Request has status Pending";
+                bluem_db_update_request(
+                    $request_from_db->id,
+                    [
+                        'status'=>$statusCode
+                    ]
+                );
+                // @todo: improve this flow
+                // do something when the request is still processing (for example tell the user to come back later to this page)
                 break;
             case 'Cancelled':
                     echo "Request has status Cancelled";
+                    bluem_db_update_request(
+                        $request_from_db->id,
+                        [
+                            'status'=>$statusCode
+                        ]
+                    );
                     // @todo: improve this flow
                     // do something when the request has been canceled by the user
                 break;
             case 'Open':
                     echo "Request has status Open";
+                    bluem_db_update_request(
+                        $request_from_db->id,
+                        [
+                            'status'=>$statusCode
+                        ]
+                    );
                     // @todo: improve this flow
                     // do something when the request has not yet been completed by the user, redirecting to the transactionURL again
                 break;
             case 'Expired':
                     echo "Request has status Expired";
+                    bluem_db_update_request(
+                        $request_from_db->id,
+                        [
+                            'status'=>$statusCode
+                        ]
+                    );
                     // @todo: improve this flow
                     // do something when the request has expired
                 break;
@@ -1125,12 +1183,30 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
 
     $response = $bluem->PerformRequest($request);
 
-    session_start();
+    if (!session_id()) {
+        session_start();
+    }
 
     if ($response->ReceivedResponse()) {
         $entranceCode = $response->GetEntranceCode();
         $transactionID = $response->GetTransactionID();
         $transactionURL = $response->GetTransactionURL();
+
+        bluem_db_create_request(
+            [
+                'entrance_code'=>$entranceCode,
+                'transaction_id'=>$transactionID,
+                'transaction_url'=>$transactionURL,
+                'user_id'=>(is_user_logged_in() ? $current_user->ID : 0),
+                'timestamp'=> date("Y-m-d H:i:s"),
+                'description'=>$description,
+                'debtor_reference'=>$debtorReference,
+                'type'=>"identity",
+                'order_id'=>null,
+                'payload'=>''
+            ]
+        );
+
 
         // save this in our user meta data store
         if (is_user_logged_in()) {
@@ -1188,14 +1264,150 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
     exit;
 }
 
+// https://www.businessbloomer.com/woocommerce-visual-hook-guide-checkout-page/
+// add_action( 'woocommerce_review_order_before_payment', 'bluem_checkout_check_idin_validated' );
+
+add_action('woocommerce_review_order_before_payment', 'bluem_checkout_idin_notice');
+function bluem_checkout_idin_notice()
+{
+    global $current_user;
+    
+    
+    // use a setting if this check has to be incurred
+    if ( !is_checkout() ) {
+        return;
+    }
+
+    if (!function_exists('bluem_idin_user_validated')) {
+        return;
+    }
+    $identify_button_html = "<br><a href='".
+        home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true')."'
+        target='_self' class='button bluem-identify-button'>Klik hier om je te identificeren</a><br>";
+
+    $options = get_option('bluem_woocommerce_options');
+
+    if (isset($options['idin_scenario_active']) && $options['idin_scenario_active']!=="") {
+        $scenario = (int) $options['idin_scenario_active'];
+    }
+
+    if ($scenario > 0) {
+        
+        echo "<h3>Identificatie</h3>";
+
+        $validated = bluem_idin_user_validated();
+        $validation_message = "Identificatie is vereist alvorens de bestelling kan worden afgerond.";
+        
+        // above 0: any form of verification is required
+        if (!$validated) {
+           echo "<p>{$validation_message} {$identify_button_html}</p>";
+                return;
+        } 
 
 
 
-add_action('woocommerce_check_cart_items', 'bluem_checkout_check_idin_validated'); // Cart and Checkout
+            // get report from user metadata
+            // $results = bluem_idin_retrieve_results();
+            // identified? but is this person OK of age?
+            if ($scenario == 1 || $scenario == 3) {
+                // we gaan er standaard vanuit dat de leeftijd NIET toereikend is
+                $age_valid = false;
+
+                if (is_user_logged_in()) {
+                    $ageCheckResponse = get_user_meta(
+                        $current_user->ID,
+                        'bluem_idin_report_agecheckresponse',
+                        true
+                    );
+                } else {
+                    // for debugging
+                    // $_SESSION['bluem_idin_report_agecheckresponse'] = "true";
+                    
+                    $ageCheckResponse = $_SESSION['bluem_idin_report_agecheckresponse'];
+                }
+                // var_dump($_SESSION['bluem_idin_report_agecheckresponse']);
+
+                // var_dump($ageCheckResponse);
+                // check on age based on response of AgeCheckRequest in user meta
+                // if ($scenario == 1)
+                // {
+                if (isset($ageCheckResponse)) {
+                    if ($ageCheckResponse == "true") {
+
+                    // TRUE Teruggekregen van de bank
+                        $age_valid = true;
+                    } else {
+                        // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
+                        $validation_message = "Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.";
+
+                        $age_valid = false;
+                    }
+                } else {
+                    // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
+                    $validation_message = "We hebben uw leeftijd niet kunnen opvragen bij de identificatie.<BR>  Neem contact op met de webshop support.";
+
+                    $age_valid = false;
+                }
+                // }
+
+                // check on age based on response of BirthDateRequest in user meta
+                // if ($scenario == 3)
+                // {
+                //     $min_age = bluem_idin_get_min_age();
+
+
+                //     // echo $results->BirthDateResponse; // prints 1975-07-25
+                //     if (isset($results->BirthDateResponse) && $results->BirthDateResponse!=="") {
+
+                //         $user_age = bluem_idin_get_age_based_on_date($results->BirthDateResponse);
+                //         if ($user_age < $min_age) {
+                //             $validation_message = "Je leeftijd, $user_age, is niet toereikend. De minimumleeftijd is {$min_age} jaar.
+                //             <br>Identificeer jezelf opnieuw of neem contact op.";
+                //             $age_valid = false;
+                //         } else {
+                //             $age_valid = true;
+                //         }
+                //     } else {
+
+                //         // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
+                //         $validation_message = "We hebben je leeftijd niet kunnen opvragen bij de identificatie.<BR>
+                //         Neem contact op met de webshop support.";
+                //         $age_valid =false;
+                //     }
+                // }
+                
+            
+                if (!$age_valid) {
+                    echo "<p>{$validation_message} {$identify_button_html}</p>";
+                        return;
+                } else {
+                    echo "<p>Je leeftijd is geverifieerd, bedankt.</p>";
+                        return;
+                }
+        }
+    }
+
+    // <p>Identificatie is vereist alvorens je deze bestelling kan plaatsen</p>";
+    
+    if (bluem_checkout_check_idin_validated_filter()==false) {
+        echo __(
+            "Verifieer eerst je identiteit via de mijn account pagina",
+            "woocommerce"
+        );
+        return;
+    }
+}
+// add_action('woocommerce_check_cart_items', 'bluem_checkout_check_idin_validated'); // Cart and Checkout
+add_action( 'woocommerce_after_checkout_validation', 'bluem_checkout_check_idin_validated');
 function bluem_checkout_check_idin_validated()
 {
     global $current_user;
-
+    
+    
+    // use a setting if this check has to be incurred
+    if ( !is_checkout() ) {
+        return;
+    }
 
     if (!function_exists('bluem_idin_user_validated')) {
         return;
@@ -1439,5 +1651,18 @@ function bluem_order_email_identity_meta_data( $fields, $sent_to_admin, $order )
         
     }
     return $fields;
+
+}
+
+
+add_action('woocommerce_review_order_before_payment', 'bluem_idin_before_payment_notice');
+function bluem_idin_before_payment_notice()
+{
+
+
+
+
+
+
 
 }
