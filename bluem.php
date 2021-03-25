@@ -848,4 +848,15 @@ function bluem_setup_incomplete()
     }
 
     echo '</div>';
+
+
+
+    // @todo: add warning when Payments Bluem module is activated but the Payments WooCommerce payment gateway is not activated yet - with a link to activate it
+    // wp-admin/admin.php?page=wc-settings&tab=checkout
+    // 127.0.0.1/wp-admin/admin.php?page=wc-settings&tab=checkout&section=bluem_payments
+    // enable button on payment gateway settings is superfluous
+
+    // @todo: add warning when Mandates Bluem module is activated but the Mandates WooCommerce payment gateway is not activated yet - with a link to activate it
+    // wp-admin/admin.php?page=wc-settings&tab=checkout
+    
 }
