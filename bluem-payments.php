@@ -123,6 +123,18 @@ function bluem_init_payment_gateway_class()
             $order = wc_get_order($order_id);
             $url = $order->get_view_order_url();
 
+            $options = get_option('bluem_woocommerce_options');
+            if (isset($options['paymentCompleteRedirectType'])) {
+                if ($options['paymentCompleteRedirectType'] == "custom"
+                    && isset($options['paymentCompleteRedirectCustomURL'])
+                    && $options['paymentCompleteRedirectCustomURL']!==""
+                ) {
+                    $url = site_url($options['paymentCompleteRedirectCustomURL']);
+                } else {
+                    $url = $order->get_view_order_url();
+                }
+            }
+
             if (!$order->has_status('failed')) {
                 wp_safe_redirect($url);
                 exit;
@@ -557,7 +569,28 @@ function bluem_woocommerce_get_payments_options()
             'name' => 'Bluem Brand ID voor Payments',
             'description' => 'het paymentBrandID, ontvangen van Bluem specifiek voor betalingen',
             'default' => ''
-        ]
+        ],
+        'paymentCompleteRedirectType' => [
+            'key' => 'paymentCompleteRedirectType',
+            'title' => 'bluem_paymentCompleteRedirectType',
+            'name' => 'Waarheen verwijzen na succesvolle betaling?',
+            'description' => 'Als de gebruiker heeft betaald, waar moet dan naar verwezen worden?',
+            'type' => 'select',
+            'default' => 'order_details',
+            'options' => [
+                'order_details' => 'Pagina met Order gegevens (standaard)',
+                'custom' => 'Eigen URL (vul hieronder in)'
+            ]
+        ],
+        'paymentCompleteRedirectCustomURL' => [
+            'key' => 'paymentCompleteRedirectCustomURL',
+            'title' => 'bluem_paymentCompleteRedirectCustomURL',
+            'name' => 'Eigen interne URL om klant naar te verwijzen',
+            'description' => "Indien hierboven 'Eigen URL' is gekozen, vul hier dan de URL in waarnaar doorverwezen moet worden. Je kan bijv. <code>thanks</code> invullen om de klant naar <strong>".site_url("thanks"). "</strong> te verwijzen",
+            'type' => 'text',
+            'default' => ''
+        ],
+        
     ];
 }
 
@@ -569,6 +602,24 @@ function bluem_woocommerce_settings_render_paymentBrandID()
         bluem_woocommerce_get_payments_option('paymentBrandID')
     );
 }
+
+
+function bluem_woocommerce_settings_render_paymentCompleteRedirectType()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_payments_option('paymentCompleteRedirectType')
+    );
+}
+
+function bluem_woocommerce_settings_render_paymentCompleteRedirectCustomURL()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_payments_option('paymentCompleteRedirectCustomURL')
+    );
+}
+
+
+
 
 // https://www.skyverge.com/blog/how-to-create-a-simple-woocommerce-payment-gateway/
 
