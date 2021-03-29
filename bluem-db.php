@@ -11,7 +11,6 @@ function bluem_db_create_requests_table()
     $installed_ver = (float)get_option("bluem_db_version");
 
     if ($installed_ver < $bluem_db_version) {
-
         $charset_collate = $wpdb->get_charset_collate();
 
         include_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -89,7 +88,8 @@ function bluem_db_create_request($request_object)
     return $insert_result;
 }
 
-function bluem_db_request_log($request_id, $description, $log_data = []) {
+function bluem_db_request_log($request_id, $description, $log_data = [])
+{
     global $wpdb, $current_user;
     date_default_timezone_set('Europe/Amsterdam');
     $wpdb->time_zone = 'Europe/Amsterdam';
@@ -112,7 +112,7 @@ function bluem_db_update_request($request_id, $request_object)
     $wpdb->time_zone = 'Europe/Amsterdam';
 
     
-    if(!bluem_db_validated_request_wellformed($request_object)) {
+    if (!bluem_db_validated_request_wellformed($request_object)) {
         return false;
     }
     $update_result = $wpdb->update(
@@ -121,7 +121,7 @@ function bluem_db_update_request($request_id, $request_object)
         [
             'id' => $request_id
             ]
-        );
+    );
         
     if ($update_result) {
         bluem_db_request_log(
@@ -140,11 +140,11 @@ function bluem_db_update_request($request_id, $request_object)
  * @param [type] $request
  * @return void
  */
-function bluem_db_validated_request_wellformed($request) {
+function bluem_db_validated_request_wellformed($request)
+{
 
     // @todo: check all available fields on their format
     return true;
-
 }
 
 /**
@@ -153,21 +153,22 @@ function bluem_db_validated_request_wellformed($request) {
  * @param [type] $request
  * @return void
  */
-function bluem_db_validated_request($request) {
+function bluem_db_validated_request($request)
+{
 
-    // check if present 
-        // entrance_code
-        // transaction_id
-        // transaction_url
-        // user_id
-        // timestamp
-        // description
-        // type
+    // check if present
+    // entrance_code
+    // transaction_id
+    // transaction_url
+    // user_id
+    // timestamp
+    // description
+    // type
 
     // optional fields
-        // debtor_reference
-        // order_id
-        // payload
+    // debtor_reference
+    // order_id
+    // payload
 
     // and well formed
     if (!bluem_db_validated_request_wellformed($request)) {
@@ -175,11 +176,11 @@ function bluem_db_validated_request($request) {
     }
 
     return true;
-
 }
 
 
-function bluem_db_get_request_fields() {
+function bluem_db_get_request_fields()
+{
     return [
         'id',
         'entrance_code',
@@ -198,19 +199,21 @@ function bluem_db_get_request_fields() {
 function bluem_db_get_request_by_id($request_id)
 {
     $res = bluem_db_get_request_by_keyvalue(
-        'id', $request_id
+        'id',
+        $request_id
     );
     return count($res)>0?$res[0]:false;
 }
 function bluem_db_get_request_by_transaction_id($transaction_id)
 {
     $res = bluem_db_get_request_by_keyvalue(
-        'transaction_id', $transaction_id
+        'transaction_id',
+        $transaction_id
     );
     return count($res)>0?$res[0]:false;
 }
 
-function bluem_db_get_request_by_keyvalue($key,$value)
+function bluem_db_get_request_by_keyvalue($key, $value)
 {
     global $wpdb;
 
@@ -219,19 +222,17 @@ function bluem_db_get_request_by_keyvalue($key,$value)
         bluem_db_get_request_fields()
     )
     ) {
-
         return false;
     }
 
-    
     $wpdb->show_errors(); //setting the Show or Display errors option to true
     // @todo: Prepare this statement a bit more; https://developer.wordpress.org/reference/classes/wpdb/
     $query = "SELECT *  FROM  `bluem_requests` WHERE `{$key}` = '{$value}'";
-    try { 
+    try {
         return $wpdb->get_results(
             $query
         );
-    } catch(Throwable $th) {
+    } catch (Throwable $th) {
         return false;
     }
 }

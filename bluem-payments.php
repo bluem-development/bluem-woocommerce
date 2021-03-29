@@ -13,7 +13,7 @@ use Carbon\Carbon;
 /*
  * This action hook registers our PHP class as a WooCommerce payment gateway
  */
-add_filter('woocommerce_payment_gateways', 'bluem_add_gateway_class_payments',12);
+add_filter('woocommerce_payment_gateways', 'bluem_add_gateway_class_payments', 12);
 function bluem_add_gateway_class_payments($gateways)
 {
     $gateways[] = 'Bluem_Gateway_Payments'; // your class name is here
@@ -25,11 +25,10 @@ function bluem_add_gateway_class_payments($gateways)
  */
 
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-add_action('plugins_loaded', 'bluem_init_payment_gateway_class');
+    add_action('plugins_loaded', 'bluem_init_payment_gateway_class');
 }
 function bluem_init_payment_gateway_class()
 {
-
     class Bluem_Gateway_Payments extends WC_Payment_Gateway
     {
         /**
@@ -93,7 +92,7 @@ function bluem_init_payment_gateway_class()
 
             // ********** Allow filtering Orders based on TransactionID **********
             add_filter(
-                'woocommerce_order_data_store_cpt_get_orders_query', 
+                'woocommerce_order_data_store_cpt_get_orders_query',
                 function ($query, $query_vars) {
                     if (!empty($query_vars['bluem_transactionid'])) {
                         $query['meta_query'][] = array(
@@ -102,7 +101,9 @@ function bluem_init_payment_gateway_class()
                         );
                     }
                     return $query;
-                }, 10, 2
+                },
+                10,
+                2
             );
 
 
@@ -226,8 +227,7 @@ function bluem_init_payment_gateway_class()
             $entranceCode = $this->bluem->CreateEntranceCode();
 
             update_post_meta($order_id, 'bluem_entrancecode', $entranceCode);
-            if(!is_null($customer_id) &&  $customer_id!="" && $customer_id!="0")
-            {
+            if (!is_null($customer_id) &&  $customer_id!="" && $customer_id!="0") {
                 $description = "Klant {$customer_id} Bestelling {$order_id}";
             } else {
                 $description = "Bestelling {$order_id}";
@@ -248,15 +248,26 @@ function bluem_init_payment_gateway_class()
             );
 
             // temp overrides
-            $request->paymentReference = str_replace('-','',$request->paymentReference);
+            $request->paymentReference = str_replace('-', '', $request->paymentReference);
             $request->type_identifier = "createTransaction";
             $request->dueDateTime = $dueDateTime->toDateTimeLocalString() . ".000Z";
             $request->debtorReturnURL = home_url("wc-api/bluem_payments_callback?entranceCode={$entranceCode}");
 
+            $payload = json_encode(
+                [
+                    'amount'=>$amount,
+                    'currency'=>$currency,
+                    'due_date'=>$request->dueDateTime,
+                    'payment_reference'=>$request->paymentReference
+                ]
+            );
+
+
 
             // allow third parties to add additional data to the request object through this additional action
             $request = apply_filters(
-                'bluem_woocommerce_enhance_payment_request', $request
+                'bluem_woocommerce_enhance_payment_request',
+                $request
             );
             // "https://localhost?entranceCode=".$entranceCode.'&amp;transactionID='.$transactionID;
 
@@ -280,8 +291,7 @@ function bluem_init_payment_gateway_class()
             $order->update_status('pending', __('Awaiting Bluem Payment Signature', 'wc-gateway-bluem'));
 
             if (isset($response->PaymentTransactionResponse->TransactionURL)) {
-
-                $order->add_order_note( __("Betalingsproces geinitieerd") );
+                $order->add_order_note(__("Betalingsproces geinitieerd"));
 
                 $transactionID = "". $response->PaymentTransactionResponse->TransactionID;
                 update_post_meta($order_id, 'bluem_transactionid', $transactionID);
@@ -306,7 +316,7 @@ function bluem_init_payment_gateway_class()
                         'debtor_reference'=>$debtorReference,
                         'type'=>"payments",
                         'order_id'=>$order_id,
-                        'payload'=>''
+                        'payload'=>$payload
                     ]
                 );
 
@@ -332,13 +342,12 @@ function bluem_init_payment_gateway_class()
          */
         public function payments_webhook()
         {
-            if ($_GET['env'] && is_string($_GET['env']) 
+            if ($_GET['env'] && is_string($_GET['env'])
                 && in_array(
-                    sanitize_text_field($_GET['env']), 
+                    sanitize_text_field($_GET['env']),
                     ['test','prod']
                 )
-            )
-            {
+            ) {
                 $env = sanitize_text_field($_GET['env']);
             } else {
                 $env = "test";
@@ -363,7 +372,6 @@ function bluem_init_payment_gateway_class()
             $order_status = $order->get_status();
 
             if (self::VERBOSE) {
-
                 echo "order_status: {$order_status}" . PHP_EOL;
                 echo "webhook_status: {$webhook_status}" . PHP_EOL;
             }
@@ -378,7 +386,7 @@ function bluem_init_payment_gateway_class()
             // }
 
 
-            if(isset($statusUpdateObject->PaymentStatus->AcceptanceReport->MaxAmount)) {
+            if (isset($statusUpdateObject->PaymentStatus->AcceptanceReport->MaxAmount)) {
                 $mandate_amount = (float) ($statusUpdateObject->PaymentStatus->AcceptanceReport->MaxAmount . "");
             } else {
                 $mandate_amount = (float) 0.0;	// mandate amount is not set, so it is unlimited
@@ -396,26 +404,29 @@ function bluem_init_payment_gateway_class()
             $mandate_successful = false;
 
             if ($mandate_amount !== 0.0) {
-
                 $order_price = $order->get_total();
                 $max_order_amount = (float) ($order_price * 1.1);
-                if (self::VERBOSE) "max_order_amount: {$max_order_amount}" . PHP_EOL;
+                if (self::VERBOSE) {
+                    "max_order_amount: {$max_order_amount}" . PHP_EOL;
+                }
 
                 if ($mandate_amount >= $max_order_amount) {
                     $mandate_successful = true;
-                    if (self::VERBOSE) "mandate is enough" . PHP_EOL;
+                    if (self::VERBOSE) {
+                        "mandate is enough" . PHP_EOL;
+                    }
                 } else {
-                    if (self::VERBOSE) "mandate is too small" . PHP_EOL;
+                    if (self::VERBOSE) {
+                        "mandate is too small" . PHP_EOL;
+                    }
                 }
             }
             if ($webhook_status === "Success") {
-
                 if ($order_status === "processing") {
                     // order is already marked as processing, nothing more is necessary
                 } elseif ($order_status === "pending") {
                     // check if maximum of order does not exceed mandate size based on user metadata
                     if ($mandate_successful) {
-
                         $order->update_status('processing', __('Betaling is gelukt en goedgekeurd; via webhook', 'wc-gateway-bluem'));
                     }
                     // iff order is within size, update to processing
@@ -491,8 +502,7 @@ function bluem_init_payment_gateway_class()
 
             // $order_meta = $order->get_meta_data();
             $transactionID = $order->get_meta('bluem_transactionid');
-            if($transactionID=="")
-            {
+            if ($transactionID=="") {
                 $this->renderPrompt("No transaction ID found. Neem contact op met de webshop en vermeld de code {$entranceCode} bij je gegevens.");
                 die();
             }
@@ -518,20 +528,23 @@ function bluem_init_payment_gateway_class()
 
             $request_from_db = bluem_db_get_request_by_transaction_id($transactionID);
 
-            if ($statusCode === "Success") {
-
-                $order->update_status('processing', __('Betaling is binnengekomen', 'wc-gateway-bluem'));
+            if($statusCode !== $request_from_db->status)
+            {
 
                 bluem_db_update_request(
                     $request_from_db->id,
                     [
                         'status'=>$statusCode
-                    ]
-                );
-                $order->add_order_note( __("Betalingsproces voltooid") );
+                        ]
+                    );
+                    
+                }
+            if ($statusCode === "Success") {
+                $order->update_status('processing', __('Betaling is binnengekomen', 'wc-gateway-bluem'));
+
+                $order->add_order_note(__("Betalingsproces voltooid"));
 
                 $this->bluem_thankyou($order->get_id());
-
             } elseif ($statusCode === "Cancelled") {
                 $order->update_status('cancelled', __('Betaling is geannuleerd', 'wc-gateway-bluem'));
 
@@ -539,7 +552,6 @@ function bluem_init_payment_gateway_class()
                 // terug naar order pagina om het opnieuw te proberen?
                 exit;
             } elseif ($statusCode === "Open" || $statusCode == "Pending") {
-
                 $this->renderPrompt("De betaling is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
                 // callback pagina beschikbaar houden om het opnieuw te proberen?
                 // is simpelweg SITE/wc-api/bluem_callback?transactionID=$transactionID
@@ -565,10 +577,10 @@ function bluem_woocommerce_payments_settings_section()
     Hier kan je alle belangrijke gegevens instellen rondom iDeal transacties. Lees de readme bij de plug-in voor meer informatie.</p>';
 }
 
-function bluem_woocommerce_get_payments_option($key) {
+function bluem_woocommerce_get_payments_option($key)
+{
     $options = bluem_woocommerce_get_payments_options();
-    if(array_key_exists($key,$options))
-    {
+    if (array_key_exists($key, $options)) {
         return $options[$key];
     }
     return false;
@@ -651,4 +663,3 @@ function bluem_woocommerce_enhance_payment_request_function($request)
     // do something with the Bluem payment request, use this in third-party extensions of this system
     return $request;
 }
-

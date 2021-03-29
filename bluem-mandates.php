@@ -140,12 +140,12 @@ function bluem_woocommerce_get_mandates_options()
             'default' => ''
         ],
         'thanksPageURL'=> [
-        	'key'=>'thanksPageURL',
-        	'title'=>'bluem_thanksPageURL',
-        	'name'=>'thanksPageURL',
-        	'description'=>"Indien je de Machtigingen shortcode gebruikt: Op welke pagina wordt de shortcode geplaatst?",
-        	'type'=>'text',
-        	'default'=>''
+            'key'=>'thanksPageURL',
+            'title'=>'bluem_thanksPageURL',
+            'name'=>'thanksPageURL',
+            'description'=>"Indien je de Machtigingen shortcode gebruikt: Op welke pagina wordt de shortcode geplaatst?",
+            'type'=>'text',
+            'default'=>''
         ],
         'mandate_id_counter' => [
             'key' => 'mandate_id_counter',
@@ -235,7 +235,7 @@ function bluem_init_mandate_gateway_class()
             // ********** CREATING Bluem Configuration **********
             $this->bluem_config = bluem_woocommerce_get_config();
 
-            if(isset($this->bluem_config->localInstrumentCode) && $this->bluem_config->localInstrumentCode=="B2B") {
+            if (isset($this->bluem_config->localInstrumentCode) && $this->bluem_config->localInstrumentCode=="B2B") {
                 $this->method_title = 'Bluem Zakelijke Incassomachtiging (eMandate)';
             }
 
@@ -452,9 +452,18 @@ function bluem_init_mandate_gateway_class()
                 $mandate_id
             );
 
+
+            $payload = json_encode(
+                [
+                    'amount'=>$order->get_total(),
+                    'created_mandate_id'=>$mandate_id
+                ]
+            );
+
             // allow third parties to add additional data to the request object through this additional action
             $request = apply_filters(
-                'bluem_woocommerce_enhance_mandate_request', $request
+                'bluem_woocommerce_enhance_mandate_request',
+                $request
             );
 
             $response = $this->bluem->PerformRequest($request);
@@ -511,7 +520,7 @@ function bluem_init_mandate_gateway_class()
                         'debtor_reference'=>"",
                         'type'=>"mandates",
                         'order_id'=>$order_id,
-                        'payload'=>''
+                        'payload'=>$payload
                     ]
                 );
                 return array(
@@ -607,7 +616,6 @@ function bluem_init_mandate_gateway_class()
                         }
                     }
                 }
-
             } else {
                 $mandate_successful = true;
             }
@@ -705,10 +713,24 @@ function bluem_init_mandate_gateway_class()
 
             $statusCode ="Pending";
 
+
+            
+            $request_from_db = bluem_db_get_request_by_transaction_id($mandateID);
+
+            if ($statusCode !== $request_from_db->status) {
+
+                bluem_db_update_request(
+                    $request_from_db->id,
+                    [
+                        'status'=>$statusCode
+                    ]
+                );
+            }
+
+
             if ($statusCode === "Success") {
                 $this->validateMandate($response, $order, true, true, true, $mandateID, $entranceCode);
             } elseif ($statusCode ==="Pending") {
-
                 $this->renderPrompt(
                     "<p>Uw machtiging wacht op goedkeuring van
                     een andere ondertekenaar namens uw organisatie.<br>
@@ -718,7 +740,6 @@ function bluem_init_mandate_gateway_class()
                     reflecteren op deze site.</p>"
                 );
                 exit;
-
             } elseif ($statusCode === "Cancelled") {
                 $order->update_status(
                     'cancelled',
@@ -978,13 +999,16 @@ function bluem_init_mandate_gateway_class()
                 <td>
                 <?php
                 $curValidatedVal = (int) esc_attr(get_user_meta($user->ID, 'bluem_mandates_validated', true));
-                // var_dump($curValidatedVal);
-                ?>
+        // var_dump($curValidatedVal);?>
                     <select name="bluem_mandates_validated" id="bluem_mandates_validated">
-                        <option value="1" <?php if($curValidatedVal == 1) echo "selected";?>>
+                        <option value="1" <?php if ($curValidatedVal == 1) {
+            echo "selected";
+        } ?>>
                             Ja
                         </option>
-                        <option value="0" <?php if($curValidatedVal == 0) echo "selected";?>>
+                        <option value="0" <?php if ($curValidatedVal == 0) {
+            echo "selected";
+        } ?>>
                             Nee
                         </option>
                     </select><br />
@@ -1179,10 +1203,11 @@ if (isset($bluem_options['useMandatesDebtorWallet']) && $bluem_options['useManda
     add_action(
         'woocommerce_after_checkout_validation',
         'bluem_woocommerce_validate_checkout_bic_choice',
-        10, 2
+        10,
+        2
     );
 
-    function bluem_woocommerce_validate_checkout_bic_choice( $fields, $errors )
+    function bluem_woocommerce_validate_checkout_bic_choice($fields, $errors)
     {
 
         // if ( preg_match( '/\\d/', $fields[ 'billing_first_name' ] ) || preg_match( '/\\d/', $fields[ 'billing_last_name' ] )  ){
@@ -1199,19 +1224,20 @@ if (isset($bluem_options['useMandatesDebtorWallet']) && $bluem_options['useManda
 
 
     // Fires after WordPress has finished loading, but before any headers are sent.
-    add_action( 'init', 'script_enqueuer' );
+    add_action('init', 'script_enqueuer');
 
-    function script_enqueuer() {
+    function script_enqueuer()
+    {
 
         // Register the JS file with a unique handle, file location, and an array of dependencies
-        wp_register_script( "bluem_woocommerce_bic_retriever", plugin_dir_url(__FILE__).'js/bluem_woocommerce_bic_retriever.js', array('jquery') );
+        wp_register_script("bluem_woocommerce_bic_retriever", plugin_dir_url(__FILE__).'js/bluem_woocommerce_bic_retriever.js', array('jquery'));
 
         // localize the script to your domain name, so that you can reference the url to admin-ajax.php file easily
-        wp_localize_script( 'bluem_woocommerce_bic_retriever', 'myAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));
+        wp_localize_script('bluem_woocommerce_bic_retriever', 'myAjax', array( 'ajaxurl' => admin_url('admin-ajax.php')));
 
         // enqueue jQuery library and the script you registered above
-        wp_enqueue_script( 'jquery' );
-        wp_enqueue_script( 'bluem_woocommerce_bic_retriever' );
+        wp_enqueue_script('jquery');
+        wp_enqueue_script('bluem_woocommerce_bic_retriever');
     }
 
 
@@ -1232,7 +1258,8 @@ if (isset($bluem_options['useMandatesDebtorWallet']) && $bluem_options['useManda
     // add_action("wp_ajax_nopriv_bluem_retrieve_bics_ajax", "please_login");
 
     // define the function to be fired for logged in users
-    function bluem_retrieve_bics_ajax() {
+    function bluem_retrieve_bics_ajax()
+    {
 
         // nonce check for an extra layer of security, the function will exit if it fails
         //    if ( !wp_verify_nonce( $_REQUEST['nonce'], "bluem_retrieve_bics_ajax_nonce")) {
@@ -1246,17 +1273,17 @@ if (isset($bluem_options['useMandatesDebtorWallet']) && $bluem_options['useManda
         $BICs = $bluem->retrieveBICsForContext("Mandates");
 
 
-        if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             echo json_encode($BICs);
-        }
-        else {
+        } else {
             header("Location: ".$_SERVER["HTTP_REFERER"]);
         }
         die();
     }
 
     // define the function to be fired for logged out users
-    function please_login() {
+    function please_login()
+    {
         echo "You must log in to like";
         die();
     }
@@ -1295,4 +1322,3 @@ function bluem_woocommerce_enhance_mandate_request_function($request)
     // do something with the Bluem Mandate request, use this in third-party extensions of this system
     return $request;
 }
-
