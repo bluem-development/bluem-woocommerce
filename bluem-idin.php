@@ -190,12 +190,20 @@ function bluem_woocommerce_get_idin_options()
         'key' => 'IDINDescription',
         'title' => 'bluem_IDINDescription',
         'name' => 'Formaat beschrijving request',
-        'description' => 'Geef het format waaraan de beschrijving van 
+        'description' => '
+        
+        <div style="width:400px; float:right; margin:10px; font-size: 9pt;
+        border: 1px solid #ddd;
+        padding: 10pt;
+        border-radius: 5pt;">
+        Mogelijke invulvelden: '.
+        $idinDescriptionTable.
+        '<br>Let op: max 128 tekens. Toegestane karakters: <code>-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$</code></div>'
+        .
+        'Geef het format waaraan de beschrijving van 
             een identificatie request moet voldoen, met automatisch ingevulde velden.<br>Dit gegeven wordt ook weergegeven in de Bluem portal als de \'Inzake\' tekst.   
-            <br>Voorbeeld Huidige waarde: <code style=\'display:block;\'>'.
-            $idinDescriptionCurrentValue.'</code><br>Mogelijke invulvelden '.
-            $idinDescriptionTable.
-            "<br>Let op: max 128 tekens. Toegestane karakters: <code>-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$</code>",
+            <br>Voorbeeld huidige waarde: <code style=\'display:inline-block;\'>'.
+            $idinDescriptionCurrentValue.'</code><br>',
         'default' => 'Identificatie {gebruikersnaam}'
     ],
 
@@ -218,8 +226,9 @@ function bluem_woocommerce_idin_settings_section()
 {
     $options = get_option('bluem_woocommerce_options'); ?>
     <p><a id="tab_idin"></a>
-    Hier kan je alle belangrijke gegevens instellen rondom iDIN (Identificatie). Lees de readme bij de plug-in voor meer informatie.</p>
+    Hier kan je alle belangrijke gegevens instellen rondom iDIN (Identificatie).</p>
     <h3>
+    <span class="dashicons dashicons-saved"></span>
     Automatische check:
     </h3>
     <p>
@@ -267,6 +276,7 @@ function bluem_woocommerce_idin_settings_section()
                     } ?>
 
     <h3>
+    <span class="dashicons dashicons-welcome-write-blog"></span>
        Zelf op een pagina een iDIN verzoek initiëren
     </h3>
     <p>Het iDIN formulier werkt ook een shortcode, welke je kan plaatsen op een pagina, post of in een template. De shortcode is als volgt: 
@@ -284,12 +294,15 @@ if (isset($options['IDINPageURL'])) {
                     } ?></code>).
     </p>
     <h3>
+    <span class="dashicons dashicons-editor-help"></span>
        Waar vind ik de gegevens?
     </h3>
     <p>
         Gegevens worden na een identificatie opgeslagen bij het user profile als metadata. Je kan deze velden zien als je bij een gebruiker kijkt.
+        Kijk bijvoorbeeld bij <a href="<?php echo admin_url('profile.php');?>" target="_blank">je eigen profiel</a>.
     </p>
     <h3>
+    <span class="dashicons dashicons-admin-settings"></span>
        Identity instellingen en voorkeuren 
     </h3>
     <?php
@@ -575,8 +588,10 @@ function bluem_idin_shortcode_idin_execute()
     if (array_key_exists('redirect_to_checkout', $_GET)
         && sanitize_text_field($_GET['redirect_to_checkout']) == "true"
     ) {
-        // 1.2.6: added cart url instead of static cart as this is front-end language dependent
-        $goto = wc_get_cart_url();
+        // v1.2.6: added cart url instead of static cart as this is front-end language dependent
+        // $goto = wc_get_cart_url();
+        // v1.2.8: added checkout url instead of cart url :)
+        $goto = wc_get_checkout_url();
     }
 
     bluem_idin_execute(null, true, $goto);
@@ -601,7 +616,7 @@ function bluem_idin_shortcode_callback()
 
         $goto = $bluem_config->IDINPageURL;
         if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart") !== false) {
-            $goto = 'cart';
+            $goto = wc_get_checkout_url();
         }
 
         if (is_user_logged_in()) {
@@ -1295,7 +1310,8 @@ function bluem_checkout_idin_notice()
         $idin_logo_html = bluem_get_idin_logo_html();
         // above 0: any form of verification is required
         if (!$validated) {
-            echo "<p style='display:block; padding:15pt; border:1px solid #ddd; border-radius:2px; margin-top:10px; margin-bottom:10px;'>{$idin_logo_html}  {$validation_message} {$identify_button_html}</p>";
+            echo "<div style='min-height:130px; display:block; padding:15pt; border:1px solid #50afed; border-radius:4px; margin-top:10px; margin-bottom:10px;'>
+            {$idin_logo_html}  {$validation_message} <div style='display:block; text-align:center; clear:both;'>{$identify_button_html}</div></div>";
             return;
         }
 
@@ -1333,13 +1349,13 @@ function bluem_checkout_idin_notice()
                     $age_valid = true;
                 } else {
                     // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
-                    $validation_message = "Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.";
+                    $validation_message = "Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.";
 
                     $age_valid = false;
                 }
             } else {
                 // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
-                $validation_message = "We hebben uw leeftijd niet kunnen opvragen bij de identificatie.<BR>  Neem contact op met de webshop support.";
+                $validation_message = "We hebben uw leeftijd nog niet kunnen opvragen bij de identificatie.<BR>  Neem contact op met de webshop support.";
 
                 $age_valid = false;
             }
@@ -1373,10 +1389,10 @@ function bluem_checkout_idin_notice()
                 
             
             if (!$age_valid) {
-                echo "<p>{$validation_message} {$identify_button_html}</p>";
+                echo "<div style='min-height:130px; display:block; padding:15pt; border:1px solid #50afed; border-radius:4px; margin-top:10px; margin-bottom:10px;'>{$idin_logo_html} {$validation_message} <div style='display:block; text-align:center; clear:both;'>{$identify_button_html}</div></div>";
                 return;
             } else {
-                echo "<p>Je leeftijd is geverifieerd, bedankt.</p>";
+                echo "<div style='min-height:130px; display:block; padding:15pt; border:1px solid #50afed; border-radius:4px; margin-top:10px; margin-bottom:10px;'>{$idin_logo_html} Je leeftijd is geverifieerd, bedankt.</div>";
                 return;
             }
         }
@@ -1427,7 +1443,7 @@ function bluem_checkout_check_idin_validated()
         // above 0: any form of verification is required
         if (!$validated) {
             wc_add_notice(
-                __("{$idin_logo_html} {$validation_message} {$identify_button_html}", "woocommerce"),
+                __("{$idin_logo_html} {$validation_message} <div style='display:block; text-align:center; clear:both;'>{$identify_button_html}</div>", "woocommerce"),
                 'error'
             );
         } else {
@@ -1506,7 +1522,7 @@ function bluem_checkout_check_idin_validated()
                 if (!$age_valid) {
                     wc_add_notice(
                         __(
-                            "{$idin_logo_html} {$validation_message} {$identify_button_html}",
+                            "{$idin_logo_html} {$validation_message} <div style='display:block; text-align:center; clear:both;'>{$identify_button_html}</div>",
                             "woocommerce"
                         ),
                         'error'

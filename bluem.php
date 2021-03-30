@@ -117,7 +117,7 @@ function bluem_register_menu()
         "bluem_admin_requests_view",
         'dashicons-money'
     );
-  
+
     // add_submenu_page
     //     "bluem",
     //     "Instellingen",
@@ -139,7 +139,37 @@ add_action('admin_menu', 'bluem_register_menu', 9);
 
 
 
+
 function bluem_admin_requests_view()
+{
+    if (isset($_GET['request_id']) && $_GET['request_id']!=="") {
+        bluem_admin_requests_view_request();
+    } else {
+        bluem_admin_requests_view_all();
+    }
+}
+
+function bluem_admin_requests_view_request()
+{
+    global $wpdb;
+    date_default_timezone_set('Europe/Amsterdam');
+    $wpdb->time_zone = 'Europe/Amsterdam';
+
+    $id = $_GET['request_id'];
+
+    $request_query = $wpdb->get_results("SELECT * FROM `bluem_requests` WHERE `id` = $id LIMIT 1");
+    if (count($request_query)==0) {
+        bluem_admin_requests_view_all();
+        return;
+    }
+
+    $request = (object)$request_query[0];
+    $request_author = get_user_by('id', $request->user_id);
+
+    $logs = $wpdb->get_results("SELECT *  FROM  `bluem_requests_log` WHERE `request_id` = $id ORDER BY `timestamp` DESC");
+    include_once 'views/request.php';
+}
+function bluem_admin_requests_view_all()
 {
     global $wpdb;
     date_default_timezone_set('Europe/Amsterdam');
@@ -151,41 +181,24 @@ function bluem_admin_requests_view()
     $requests['payments'] = [];
     $requests['mandates'] = [];
 
+
+    // if (isset($_GET['tab']) && $_GET['tab'] !== "") {
+    //     $tab = $_GET['tab'];
+    // } else {
+    //     $tab = "index";
+    // }
+
     foreach ($_requests as $_r) {
         $requests[$_r->type][] = $_r;
     }
-
-    $logs = $wpdb->get_results("SELECT *  FROM  `bluem_requests_log` ORDER BY `timestamp` DESC");
-
-    if (isset($_GET['tab']) && $_GET['tab'] !== "") {
-        $tab = $_GET['tab'];
-    } else {
-        $tab = "index";
-    }
-
-
     $users = get_users();
     $users_by_id = [];
     foreach ($users as $user) {
         $users_by_id[$user->ID] = $user;
     }
 
-
-    // var_dump($users_by_id);
-    // die();
-
     include_once 'views/requests.php';
 }
-
-
-
-
-
-
-
-
-
-
 
 function bluem_woocommerce_tab()
 {
@@ -213,19 +226,25 @@ function bluem_settings_page()
             column-gap: 40px; */
     padding: 20px;
 }
+
+h2 {
+    border-top:5px solid #ddd; padding-top:10pt;
+}
 </style>
 
 
 <div class="wrap">
-    <!-- Print the page title -->
-    <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-    <!-- Here are our tabs -->
+    <h1>
+        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php echo esc_html(get_admin_page_title()); ?>
+    </h1>
     <nav class="nav-tab-wrapper">
         <a href="<?php echo admin_url('options-general.php?page=bluem'); ?>" class="nav-tab
         <?php if ($tab===null) {
         echo "nav-tab-active";
     } ?>
         ">
+        <span class="dashicons dashicons-admin-settings"></span>
             Algemene instellingen
         </a>
 
@@ -236,7 +255,8 @@ function bluem_settings_page()
         echo "nav-tab-active";
     } ?>
             ">
-            Digitaal Incassomachtigen (eMandates)
+            <span class="dashicons dashicons-money"></span>
+                        Digitaal Incassomachtigen (eMandates)
         </a>
         <?php } ?>
 
@@ -247,6 +267,8 @@ function bluem_settings_page()
         echo "nav-tab-active";
     } ?>
             ">
+
+            <span class="dashicons dashicons-money-alt"></span>
             iDEAL (ePayments)
         </a>
         <?php } ?>
@@ -258,15 +280,19 @@ function bluem_settings_page()
         echo "nav-tab-active";
     } ?>
             ">
+            <span class="dashicons dashicons-businessperson"></span>
             iDIN (Identity)
         </a>
         <?php } ?>
 
         <a href="<?php echo admin_url('admin.php?page=bluem_admin_requests_view'); ?>" class="nav-tab">
+        <span class="dashicons dashicons-database-view"></span>
             Verzoeken overzicht
         </a>
-        <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">Problemen,
-            vragen of suggesties? Neem contact op via e-mail</a>
+        <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">
+        <span class="dashicons dashicons-editor-help"></span>
+        Neem contact op via e-mail
+        </a>
     </nav>
 
 
@@ -275,11 +301,6 @@ function bluem_settings_page()
 
         <form action="options.php" method="post">
 
-            <?php if (is_null($tab)) {
-        ?>
-            <div style="display:none;">
-        <?php
-    } ?>
             <?php
         settings_fields('bluem_woocommerce_modules_options');
     do_settings_sections('bluem_woocommerce_modules'); ?>
@@ -288,9 +309,13 @@ function bluem_settings_page()
 
             settings_fields('bluem_woocommerce_options');
     do_settings_sections('bluem_woocommerce'); ?>
+
+    
             <input name="submit" class="button button-primary" type="submit" value="<?php esc_attr_e('Save'); ?>" />
         </form>
-
+<?php 
+bluem_render_footer(false);
+?>
 
     </div>
 </div>
@@ -300,7 +325,15 @@ function bluem_settings_page()
 
 function bluem_woocommerce_general_settings_section()
 {
-    echo '<p>Hier kan je alle belangrijke gegevens instellen rondom Bluem algemeen. Lees de readme bij de plug-in voor meer informatie.</p>';
+    echo '<p>Hier kan je alle belangrijke gegevens instellen rondom Bluem algemeen. <br>
+    <span class="dashicons dashicons-unlock"></span>
+    Let op:
+    Je hebt een geactiveerde account nodig bij Bluem.
+    De gegevens die je ontvangt via e-mail kan je hieronder
+    en per specifiek onderdeel invullen.
+    </p>';
+    // Lees de readme bij de plug-in voor meer informatie.
+    bluem_render_footer(false);
 }
 
 
@@ -662,12 +695,7 @@ function bluem_woocommerce_modules_settings_section()
 {
     echo '
     <p>
-    '.bluem_get_bluem_logo_html().'
-    Je hebt een geactiveerde account nodig bij Bluem.
-    De gegevens die je ontvangt via e-mail kan je hieronder
-    en per specifiek onderdeel invullen.</p>';
-    echo '<p>
-    Schakel hier de onderdelen uit die jouw website wel of niet nodig heeft,
+    Zet hier gemakkelijk    de de diensten aan of uit die jouw website wel of niet nodig heeft,
     zodat je efficiënt kan werken.</p>';
 }
 
@@ -839,7 +867,7 @@ function bluem_setup_incomplete()
         return;
     }
 
-    
+
     $options = get_option('bluem_woocommerce_options');
 
     if ($options !== false && !bluem_module_enabled('suppress_warning')) {
@@ -865,7 +893,7 @@ function bluem_setup_incomplete()
             $messages[] = "Test accessToken mist";
             $valid_setup = false;
         }
-        
+
         if (isset($options['environment'])
         && $options['environment'] == "prod"
         && (
@@ -877,8 +905,8 @@ function bluem_setup_incomplete()
             $messages[] = "Production accessToken mist";
             $valid_setup = false;
         }
-        
-        
+
+
         if (bluem_module_enabled('mandates')
         && (
             !array_key_exists('brandID', $options)
@@ -891,7 +919,7 @@ function bluem_setup_incomplete()
             $messages[] = "eMandates brandID mist";
             $valid_setup = false;
         }
-                
+
         if (bluem_module_enabled('idin')
                 && (
                     !array_key_exists('IDINBrandID', $options)
@@ -904,14 +932,14 @@ function bluem_setup_incomplete()
             $messages[] = "iDIN BrandID  mist";
             $valid_setup = false;
         }
-                        
-                        
+
+
         // @todo add more checks
         if ($valid_setup) {
             return;
         }
     }
-                        
+
     echo '<div class="notice notice-warning is-dismissible">
         <p><strong>De Bluem integratie is nog niet volledig ingesteld:</strong><br>
         ';

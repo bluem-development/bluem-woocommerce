@@ -85,6 +85,7 @@ Please deactivate and delete any previous versions of this plug-in prior to 1.1 
 
 
 == Changelog ==
+- 1.2.8: Improved requests view page and general user interface
 - 1.2.7: Added request logging in database with a clean new UI page; added redirect configuration for payments; moved iDIN check to checkout procedure
 - 1.2.6: Improved guest checkout identification blocking; improved cart url redirection in IDIN; Tested up to WordPress v5.7 and updated metadata to reflect this. Improved metadata management in user profile; woocommerce 5.1 compatibility
 - 1.2.* Bugfixes

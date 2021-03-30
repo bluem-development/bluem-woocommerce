@@ -126,7 +126,7 @@ function bluem_woocommerce_get_mandates_options()
         'purchaseIDPrefix' => [
             'key' => 'purchaseIDPrefix',
             'title' => 'bluem_purchaseIDPrefix',
-            'name' => 'purchaseIDPrefix',
+            'name' => 'Automatisch Voorvoegsel bij klantreferentie',
             'description' => "Welke korte tekst moet voor de debtorReference weergegeven worden bij een transactie in de Bluem incassomachtiging portaal. Dit kan handig zijn om Bluem transacties makkelijk te kunnen identificeren.",
             'type' => 'text',
             'default' => ''
@@ -134,7 +134,7 @@ function bluem_woocommerce_get_mandates_options()
         'debtorReferenceFieldName' => [
             'key' => 'debtorReferenceFieldName',
             'title' => 'bluem_debtorReferenceFieldName',
-            'name' => 'debtorReferenceFieldName',
+            'name' => 'Shortcode label voor klantreferentie bij invulformulier',
             'description' => "Welk label moet bij het invulveld in het formulier komen te staan? Dit kan bijvoorbeeld 'volledige naam' of 'klantnummer' zijn.",
             'type' => 'text',
             'default' => ''
@@ -142,23 +142,23 @@ function bluem_woocommerce_get_mandates_options()
         'thanksPageURL'=> [
             'key'=>'thanksPageURL',
             'title'=>'bluem_thanksPageURL',
-            'name'=>'thanksPageURL',
-            'description'=>"Indien je de Machtigingen shortcode gebruikt: Op welke pagina wordt de shortcode geplaatst?",
+            'name'=>'URL van bedankpagina',
+            'description'=>"Indien je de Machtigingen shortcode gebruikt: Op welke pagina wordt de shortcode geplaatst? Dit is een slug, dus als je <code>thanks</code> invult, wordt de gehele URL: ".site_url("thanks"),
             'type'=>'text',
             'default'=>''
         ],
         'mandate_id_counter' => [
             'key' => 'mandate_id_counter',
             'title' => 'bluem_mandate_id_counter',
-            'name' => 'mandate_id_counter',
-            'description' => "Op welk getal wil je mandaat op idt moment nummeren? Dit getal verhoogt zichzelf.",
+            'name' => 'Begingetal mandaat ID\'s',
+            'description' => "Op welk getal wil je mandaat op idt moment nummeren? Dit getal wordt vervolgens automatisch opgehoogd.",
             'type' => 'text',
             'default' => '1'
         ],
         'maxAmountEnabled' => [
             'key' => 'maxAmountEnabled',
             'title' => 'bluem_maxAmountEnabled',
-            'name' => 'maxAmountEnabled',
+            'name' => 'Check op maximale bestelwaarde voor incassomachtigingen',
             'description' => "Wil je dat er een check wordt uitgevoerd op de maximale waarde van de incasso, indien er een beperkte bedrag incasso machtiging is afgegeven? Zet dit gegeven dan op 'wel checken'. Er wordt dan een foutmelding gegeven als een klant een bestelling plaatst met een toegestaan bedrag dat lager is dan het orderbedrag (vermenigvuldigd met het volgende gegeven, de factor). Is de machtiging onbeperkt of anders groter dan het orderbedrag, dan wordt de machtiging geaccepteerd.",
             'type' => 'select',
             'default' => '0',
@@ -172,7 +172,7 @@ function bluem_woocommerce_get_mandates_options()
         'maxAmountFactor' => [
             'key' => 'maxAmountFactor',
             'title' => 'bluem_maxAmountFactor',
-            'name' => 'maxAmountFactor',
+            'name' => 'Welke factor van de bestelling mag het maximale bestelbedrag zijn?',
             'description' => "Als er een max amount wordt meegestuurd, wat is dan het maximale bedrag wat wordt toegestaan? Gebaseerd op de order grootte.",
             'type' => 'number',
             'attrs' => ['step' => '0.01', 'min' => '0.00', 'max' => '999.00', 'placeholder' => '1.00'],
@@ -181,7 +181,7 @@ function bluem_woocommerce_get_mandates_options()
         'useMandatesDebtorWallet' => [
             'key' => 'useMandatesDebtorWallet',
             'title' => 'bluem_useMandatesDebtorWallet',
-            'name' => 'useMandatesDebtorWallet',
+            'name' => 'Selecteer bank in Bluem Portal?',
             'description' => "Wil je dat er in deze website al een bank moet worden geselecteerd bij de Checkout procedure, in plaats van in de Bluem Portal? Indien je 'Gebruik eigen checkout' selecteert, wordt er een veld toegevoegd aan de WooCommerce checkout pagina waar je een van de beschikbare banken kan selecteren.",
             'type' => 'select',
             'default' => '0',
@@ -1066,13 +1066,12 @@ function bluem_woocommerce_mandates_settings_section()
         update_option('bluem_woocommerce_mandate_id_counter', $mandate_id_counter);
     }
 
-    echo '<p><a id="tab_mandates"></a> Hier kan je alle belangrijke gegevens instellen rondom Machtigingen. Lees de readme bij de plug-in voor meer informatie.</p>';
-
-    echo "<p>Huidige mandaat ID counter: ";
-    echo $mandate_id_counter;
-    echo "</p>";
-
-    echo "<p>Huidige Carbon tijd: " . Carbon::now()->timezone('Europe/Amsterdam')->toDateTimeString() . "</p>";
+    echo '<p><a id="tab_mandates"></a> Hier kan je alle belangrijke gegevens instellen rondom Machtigingen.</p>';
+//  Lees de readme bij de plug-in voor meer informatie.
+    // echo "<p>Huidige mandaat ID counter: ";
+    // echo $mandate_id_counter;
+    // echo "</p>";
+    // echo "<p>Huidige Carbon tijd: " . Carbon::now()->timezone('Europe/Amsterdam')->toDateTimeString() . "</p>";
 }
 
 // ********************** Mandate specific

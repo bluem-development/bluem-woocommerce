@@ -216,6 +216,8 @@ function bluem_db_get_request_by_transaction_id($transaction_id)
 function bluem_db_get_request_by_keyvalue($key, $value)
 {
     global $wpdb;
+    date_default_timezone_set('Europe/Amsterdam');
+    $wpdb->time_zone = 'Europe/Amsterdam';
 
     if (!in_array(
         $key,

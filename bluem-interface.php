@@ -7,15 +7,17 @@ function bluem_get_idin_logo_html()
 {
     return "<img src='".
         plugin_dir_url(__FILE__)."assets/bluem/idin.png' class='bluem-idin-logo'
-        style='float:left; max-height:64px; margin:10pt; margin-right:20pt;'/>";
+        style='float:left; max-height:64px; margin:10pt 20pt 0 10pt;'/>";
 }
 
 // @todo make a stylesheet and include it, move all inline styles there.
 
-function bluem_get_bluem_logo_html() {
+function bluem_get_bluem_logo_html($height=64) {
     return '<img src="'.
     plugin_dir_url(__FILE__).'assets/bluem/logo.png'.
-    '" class="bluem-bluem-logo" style="float:left; max-height:64px; margin:10pt;"/>';
+    '" class="bluem-bluem-logo" style="'.
+    "float:left; max-height:{$height}px; margin:10pt;  margin-bottom:0; ".
+    '"/>';
 }
 
 
@@ -61,7 +63,9 @@ function bluem_render_request_table($requests, $users_by_id=[])
         } ?>
     </td>
     <td>
-    <?php echo $r->description; ?>
+    <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$r->id); ?>" target="_self">
+        <?php echo $r->description; ?>
+    </a>
     <br>
     <span style="color:#aaa; font-size:9pt;">
     <?php echo $r->transaction_id; ?>
@@ -182,4 +186,28 @@ echo $status;
                     break;
                 }
     }
+}
+
+
+function bluem_render_footer($align_right = true) {
+    ?>
+
+    <p style="display:block; 
+        <?php 
+        if ($align_right) { 
+            echo 'text-align:right;'; 
+        }
+        ?>
+    ">
+    Problemen,
+        vragen of suggesties? 
+        <br>
+    <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin"  
+    target="_blank" 
+    style="text-decoration:none;">
+    <span class="dashicons dashicons-editor-help"></span>
+        Neem contact op via e-mail</a>
+
+    </p>
+        <?php
 }
