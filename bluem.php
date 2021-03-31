@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.2.7
+ * Version: 1.2.8
  * Plugin URI: https://wordpress.org/plugins/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Bluem Payment Services
@@ -310,12 +310,11 @@ h2 {
             settings_fields('bluem_woocommerce_options');
     do_settings_sections('bluem_woocommerce'); ?>
 
-    
+
             <input name="submit" class="button button-primary" type="submit" value="<?php esc_attr_e('Save'); ?>" />
         </form>
-<?php 
-bluem_render_footer(false);
-?>
+<?php
+bluem_render_footer(false); ?>
 
     </div>
 </div>
@@ -770,7 +769,7 @@ function bluem_woocommerce_simpleheader(): String
     return "<!DOCTYPE html><html><body><div
     style='font-family:Arial,sans-serif;display:block;
     margin:40pt auto; padding:10pt 20pt; border:1px solid #eee;
-    background:#fff; max-width:500px;'>";
+    background:#fff; max-width:500px;'>".bluem_get_bluem_logo_html(48);
 }
 /**
  * Retrieve footer HTML for error/message prompt. Can include a simple link back to the webshop home URL.
@@ -780,8 +779,11 @@ function bluem_woocommerce_simpleheader(): String
  */
 function bluem_woocommerce_simplefooter(Bool $include_link = true): String
 {
-    return ($include_link ? "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug</a></p>" : "") .
-        "</div></body></html>";
+    return (
+        $include_link
+        ? "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug</a></p>"
+        : ""
+    ) . "</div></body></html>";
 }
 
 /**
@@ -795,7 +797,9 @@ function bluem_woocommerce_prompt(String $html, $include_link = true)
 {
     echo bluem_woocommerce_simpleheader();
     echo $html;
-    echo bluem_woocommerce_simplefooter($include_link);
+    echo bluem_woocommerce_simplefooter(
+        $include_link
+    );
 }
 
 /**
@@ -812,61 +816,34 @@ function bluem_generic_tabler($data)
     foreach ($data as $key => $value) {
         if ($i == 0) {
             ?>
-    <tr>
-        <?php
-                    foreach ($value as $kkey => $vvalue) {
-                        ?>
-        <th>
-            <?php echo $kkey; ?>
-        </th><?php
-                    } ?>
-    </tr>
-
-    <?php
+            <tr><?php
+                foreach ($value as $kkey => $vvalue) { ?>
+                    <th>
+                        <?php echo $kkey; ?>
+                    </th><?php
+                } ?>
+            </tr><?php
         } ?>
-    <tr>
-        <?php
-            foreach ($value as $kkey => $vvalue) {
-                ?>
-        <td>
-            <?php echo $vvalue; ?>
-        </td><?php
+        <tr>
+            <?php
+            foreach ($value as $kkey => $vvalue) { ?>
+                <td>
+                    <?php echo $vvalue; ?>
+                </td><?php
             } ?>
-
-    </tr><?php
+        </tr><?php
         $i++;
     } ?>
 </table><?php
 }
 
-
-
-
-
-/**
- * Check if Setup is complete
- **/
-
-
-// if (!arra($options('')))
-// get_option('bluem_woocommerce_options'))) {
-    // bluem_woocommerce();
-// } else {
-
-    // NO WCFM found, notify the admin!
-    add_action('admin_notices', 'bluem_setup_incomplete');
-    // return;
-    // throw new Exception("WooCommerce not activated, add this plugin first", 1);
-// }
-
-
-// https://www.wpbeginner.com/wp-tutorials/how-to-add-admin-notices-in-wordpress/
+// Reference: https://www.wpbeginner.com/wp-tutorials/how-to-add-admin-notices-in-wordpress/
+add_action('admin_notices', 'bluem_setup_incomplete');
 function bluem_setup_incomplete()
 {
     if (!is_admin()) {
         return;
     }
-
 
     $options = get_option('bluem_woocommerce_options');
 
@@ -921,20 +898,16 @@ function bluem_setup_incomplete()
         }
 
         if (bluem_module_enabled('idin')
-                && (
-                    !array_key_exists('IDINBrandID', $options)
-                    || (
-                        array_key_exists('IDINBrandID', $options)
-                        && $options['IDINBrandID'] === ""
-                    )
-                )
-                        ) {
+            && (!array_key_exists('IDINBrandID', $options)
+            || (array_key_exists('IDINBrandID', $options)
+            && $options['IDINBrandID'] === ""))
+        ) {
             $messages[] = "iDIN BrandID  mist";
             $valid_setup = false;
         }
 
-
         // @todo add more checks
+
         if ($valid_setup) {
             return;
         }
@@ -960,8 +933,6 @@ function bluem_setup_incomplete()
     }
 
     echo '</div>';
-
-
 
     // @todo: add warning when Payments Bluem module is activated but the Payments WooCommerce payment gateway is not activated yet - with a link to activate it
     // wp-admin/admin.php?page=wc-settings&tab=checkout
