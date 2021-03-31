@@ -789,17 +789,17 @@ function bluem_idin_shortcode_callback()
                     );
                 }
                 
-        if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart") !== false) {
-            $goto = wc_get_checkout_url();
+                if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart") !== false) {
+                    $goto = wc_get_checkout_url();
 
-        } else {
-            $goto = $bluem_config->IDINPageURL;
+                } else {
+                    $goto = $bluem_config->IDINPageURL;
 
-            if ($goto == false || $goto == "") {
-                $goto = home_url();
-            }
-        }
-        wp_redirect($goto);
+                    if ($goto == false || $goto == "") {
+                        $goto = home_url();
+                    }
+                }
+                wp_redirect($goto);
 
 
                 exit;
