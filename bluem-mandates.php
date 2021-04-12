@@ -364,7 +364,7 @@ function bluem_init_mandate_gateway_class()
          */
         public function process_payment($order_id)
         {
-            // @todo: LOG TRANSactions
+            
 
             $verbose = false;
             $this->bluem = new Integration($this->bluem_config);
@@ -442,7 +442,11 @@ function bluem_init_mandate_gateway_class()
             }
 
             $order_id = $order->get_order_number();
+            
             $customer_id = get_post_meta($order_id, '_customer_user', true);
+            //@todo improve retrieval of user id?
+                        
+
 
             $mandate_id = $this->bluem->CreateMandateId($order_id, $customer_id);
 
@@ -508,13 +512,13 @@ function bluem_init_mandate_gateway_class()
                 // redirect cast to string, for AJAX response handling
                 $transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
 
-
+                // Logging transaction
                 bluem_db_create_request(
                     [
                         'entrance_code'=>$entranceCode,
                         'transaction_id'=>$mandate_id,
                         'transaction_url'=>$transactionURL,
-                        'user_id'=>get_current_user_id(),
+                        'user_id'=> get_current_user_id(),
                         'timestamp'=> date("Y-m-d H:i:s"),
                         'description'=>"Mandate request {$order_id} {$customer_id}",
                         'debtor_reference'=>"",
@@ -710,11 +714,7 @@ function bluem_init_mandate_gateway_class()
 
             $statusUpdateObject = $response->EMandateStatusUpdate;
             $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
-
-            $statusCode ="Pending";
-
-
-            
+           
             $request_from_db = bluem_db_get_request_by_transaction_id($mandateID);
 
             if ($statusCode !== $request_from_db->status) {
@@ -954,19 +954,39 @@ function bluem_init_mandate_gateway_class()
     }
 
 
-    add_action('show_user_profile', 'bluem_woocommerce_mandates_show_extra_profile_fields');
+    add_action('show_user_profile', 'bluem_woocommerce_mandates_show_extra_profile_fields',2);
     add_action('edit_user_profile', 'bluem_woocommerce_mandates_show_extra_profile_fields');
 
     function bluem_woocommerce_mandates_show_extra_profile_fields($user)
     {
+        $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID,"mandates");
         ?>
-        <?php //var_dump($user->ID);
-        ?>
-        <h2>
-            Bluem eMandate Metadata
-        </h2>
         <table class="form-table">
+        <table class="form-table">
+                <tr>
+<th>
+    <h3>
+        Digitale Incassomachtigingen
+    </h3>
+</th>
+                </tr>
+        <?php 
+            
+            ?>
+
+        <?php if(isset($bluem_requests) && count($bluem_requests)>0) { ?>
             <tr>
+        <th>
+        Verzoeken uitgevoerd
+        </th>
+        <td>
+        <?php
+            bluem_render_requests_list($bluem_requests);?>
+        </td>
+            </tr>
+        <?php } else {
+            // legacy code?>
+        <tr>
                 <th><label for="bluem_latest_mandate_id">Meest recente MandateID</label></th>
                 <td>
                     <input type="text" name="bluem_latest_mandate_id" id="bluem_latest_mandate_id"
@@ -994,8 +1014,11 @@ function bluem_init_mandate_gateway_class()
                     <span class="description">Dit is de omvang van de laatste machtiging</span>
                 </td>
             </tr>
+
+            <?php
+        } ?>
             <tr>
-                <th><label for="bluem_mandates_validated">machtiging via shortcode valide?</label></th>
+                <th><label for="bluem_mandates_validated">Machtiging via shortcode valide?</label></th>
                 <td>
                 <?php
                 $curValidatedVal = (int) esc_attr(get_user_meta($user->ID, 'bluem_mandates_validated', true));
@@ -1012,7 +1035,7 @@ function bluem_init_mandate_gateway_class()
                             Nee
                         </option>
                     </select><br />
-                    <span class="description">Is een machtiging via shortcode doorgekomen?</span>
+                    <span class="description">Is een machtiging via shortcode doorgekomen? indien van toepassing kan je dit hier overschrijven</span>
                 </td>
             </tr>
         </table>
@@ -1066,7 +1089,7 @@ function bluem_woocommerce_mandates_settings_section()
         update_option('bluem_woocommerce_mandate_id_counter', $mandate_id_counter);
     }
 
-    echo '<p><a id="tab_mandates"></a> Hier kan je alle belangrijke gegevens instellen rondom Machtigingen.</p>';
+    echo '<p><a id="tab_mandates"></a> Hier kan je alle belangrijke gegevens instellen rondom Digitale Incassomachtigingen.</p>';
 //  Lees de readme bij de plug-in voor meer informatie.
     // echo "<p>Huidige mandaat ID counter: ";
     // echo $mandate_id_counter;

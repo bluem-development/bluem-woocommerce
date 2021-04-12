@@ -233,6 +233,9 @@ function bluem_init_payment_gateway_class()
                 $description = "Bestelling {$order_id}";
             }
 
+            // $description.
+            // $description.="0000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+
             $debtorReference = "{$order_id}";
             $amount = $order->get_total();
             $currency = "EUR";
@@ -262,26 +265,13 @@ function bluem_init_payment_gateway_class()
                 ]
             );
 
-
-
             // allow third parties to add additional data to the request object through this additional action
             $request = apply_filters(
                 'bluem_woocommerce_enhance_payment_request',
                 $request
             );
-            // "https://localhost?entranceCode=".$entranceCode.'&amp;transactionID='.$transactionID;
 
-            // $request->paymentReference = str_replace('-','',$request->paymentReference);
-
-            // echo "<pre> ". htmlspecialchars($request->XmlString()). "</pre> ";
-            // die();
             $response = $this->bluem->PerformRequest($request);
-            // $response = $this->bluem->CreateNewTransaction($customer_id, $order_id);
-            // "simple",$simple_redirect_url);
-            // var_dump($response);
-            // die();
-            // Mark as on-hold (we're awaiting the payment)
-            // https://docs.woocommerce.com/document/managing-orders/
             // Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled',
 
 
@@ -307,21 +297,18 @@ function bluem_init_payment_gateway_class()
 
                 bluem_db_create_request(
                     [
-                        'entrance_code'=>$entranceCode,
-                        'transaction_id'=>$transactionID,
-                        'transaction_url'=>$transactionURL,
-                        'user_id'=>get_current_user_id(),
-                        'timestamp'=> date("Y-m-d H:i:s"),
-                        'description'=>$description,
-                        'debtor_reference'=>$debtorReference,
-                        'type'=>"payments",
-                        'order_id'=>$order_id,
-                        'payload'=>$payload
+                        'entrance_code' => $entranceCode,
+                        'transaction_id' => $transactionID,
+                        'transaction_url' => $transactionURL,
+                        'user_id' => get_current_user_id(),
+                        'timestamp' =>  date("Y-m-d H:i:s"),
+                        'description' => $description,
+                        'debtor_reference' => $debtorReference,
+                        'type' => "payments",
+                        'order_id' => $order_id,
+                        'payload' => $payload
                     ]
                 );
-
-
-
 
                 return array(
                     'result' => 'success',
@@ -662,4 +649,39 @@ function bluem_woocommerce_enhance_payment_request_function($request)
 {
     // do something with the Bluem payment request, use this in third-party extensions of this system
     return $request;
+}
+
+
+
+
+add_action('show_user_profile', 'bluem_woocommerce_payments_show_extra_profile_fields',2);
+add_action('edit_user_profile', 'bluem_woocommerce_payments_show_extra_profile_fields');
+
+function bluem_woocommerce_payments_show_extra_profile_fields($user)
+{
+    $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID, "payments"); ?>
+    <table class="form-table">
+    <table class="form-table">
+            <tr>
+<th>
+<h3>
+    Betalingen
+</h3>
+</th>
+            </tr>
+    <?php
+        
+        ?>
+
+    <?php if (isset($bluem_requests) && count($bluem_requests)>0) { ?>
+        <tr>
+    <th>
+    Verzoeken uitgevoerd
+    </th>
+    <td>
+    <?php
+        bluem_render_requests_list($bluem_requests);?>
+    </td>
+        </tr>
+    <?php }
 }

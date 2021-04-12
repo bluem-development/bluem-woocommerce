@@ -32,12 +32,12 @@ function bluem_render_request_table($requests, $users_by_id=[])
 
 <thead>
     <tr>
-    <th>Gebruiker</th>
-    <th>Verzoek</th>
-    <th>Datum</th>
-    <th>Extra informatie</th>
-    <th>Status</th>
-    <th></th>
+    <th style="width:20%;">Gebruiker</th>
+    <th style="width:20%;">Verzoek</th>
+    <th style="width:20%;">Datum</th>
+    <th style="width:20%;">Extra informatie</th>
+    <th style="width:20%;">Status</th>
+    <th style="width:20%;"></th>
     </tr>
 </thead>
 <tbody>
@@ -50,17 +50,7 @@ function bluem_render_request_table($requests, $users_by_id=[])
 
     <td>
     <?php 
-    if (isset($users_by_id[(int)$r->user_id])) {
-            ?>
-<a href="<?php echo admin_url("user-edit.php?user_id=".$r->user_id); ?>" target="_blank">
-        <?php
-        echo $users_by_id[(int)$r->user_id]->user_nicename; ?>
-        </a>
-
-        <?php
-        } else {
-            echo "Gast/onbekend";
-        } ?>
+   bluem_render_request_user($r,$users_by_id); ?>
     </td>
     <td>
     <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$r->id); ?>" target="_self">
@@ -173,7 +163,15 @@ function bluem_render_request_status($status)
                         In verwerking</span>";
                     break;
                     }
-            
+            case 'failure':
+                {
+
+                    echo "<span style='color:#ac1111'>
+                    
+                    <span class='dashicons dashicons-dismiss'></span>
+                    Gefaald</span>";
+                    break;
+                }
                 
                 
                 
@@ -188,7 +186,19 @@ echo $status;
     }
 }
 
+function bluem_render_request_user($r,$users_by_id) {
+    if (isset($users_by_id[(int)$r->user_id])) {
+        ?>
+        <a href="<?php echo admin_url("user-edit.php?user_id=".$r->user_id); ?>" target="_blank">
+    <?php
+    echo $users_by_id[(int)$r->user_id]->user_nicename; ?>
+    </a>
 
+    <?php
+    } else {
+        echo "Gast/onbekend";
+    }
+}
 function bluem_render_footer($align_right = true) {
     ?>
 
@@ -211,3 +221,56 @@ function bluem_render_footer($align_right = true) {
     </p>
         <?php
 }
+
+
+
+function bluem_render_requests_list($requests) {
+    ?>
+    <div class="bluem-request-list">
+    <?php foreach($requests as $r) {
+        ?>
+        <div class="bluem-request-list-item">
+            <div class="bluem-request-list-item-row" style="font-size: 14pt;">
+            <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$r->id); ?>" target="_self">
+            <?php echo $r->description; ?>
+            </a>
+            </div>
+            <div class="bluem-request-list-item-row">
+
+            <span class="bluem-request-label">
+                Transactienummer: 
+            </span>
+            <?php echo $r->transaction_id; ?>
+
+            </div>
+            <?php if(isset($r->debtor_reference) && $r->debtor_reference !=="") {
+                ?>
+            <div class="bluem-request-list-item-row">
+            <span class="bluem-request-label">
+            Klantreferentie 
+                <?php echo $r->debtor_reference; ?>
+            </span>
+            </div>
+            <?php } ?>
+            <div class="bluem-request-list-item-row">
+
+            <span class="bluem-request-label">
+            Tijdstip
+            </span>
+                <?php $rdate = strtotime($r->timestamp); ?>
+                <?php echo date("d-m-Y H:i:s", $rdate); ?>
+            </div>
+
+            
+            <div class="bluem-request-list-item-row">
+
+            <span class="bluem-request-label">
+                Status: 
+            </span>
+            <?php bluem_render_request_status($r->status);?>     
+            </div>
+        </div>
+        <?php 
+    } ?>
+    </div>
+    <?php } 

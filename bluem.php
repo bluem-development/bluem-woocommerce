@@ -66,6 +66,18 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
 }
 
 
+
+// Update CSS within in Admin
+function bluem_add_admin_style() {
+    wp_enqueue_style('admin-styles', plugin_dir_url(__FILE__).'/css/admin.css');
+  }
+  add_action('admin_enqueue_scripts', 'bluem_add_admin_style');
+
+
+
+
+
+
 // https://www.wpbeginner.com/wp-tutorials/how-to-add-admin-notices-in-wordpress/
 function bluem_woocommerce_no_woocommerce_notice()
 {
@@ -216,26 +228,11 @@ function bluem_settings_page()
     //Get the active tab from the GET param
     $tab = bluem_woocommerce_tab(); ?>
 
-<style>
-.bluem-form-control {
-    width: 100%;
-}
+<div class="wrap bluem-settings-container">
+    <div class="bluem-settings-header">
 
-.bluem-settings {
-    /* column-count: 2;
-            column-gap: 40px; */
-    padding: 20px;
-}
-
-h2 {
-    border-top:5px solid #ddd; padding-top:10pt;
-}
-</style>
-
-
-<div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php echo bluem_get_bluem_logo_html(24); ?>
         <?php echo esc_html(get_admin_page_title()); ?>
     </h1>
     <nav class="nav-tab-wrapper">
@@ -245,7 +242,7 @@ h2 {
     } ?>
         ">
         <span class="dashicons dashicons-admin-settings"></span>
-            Algemene instellingen
+            Algemeen
         </a>
 
         <?php if (bluem_module_enabled('mandates')) { ?>
@@ -256,7 +253,9 @@ h2 {
     } ?>
             ">
             <span class="dashicons dashicons-money"></span>
-                        Digitaal Incassomachtigen (eMandates)
+                        <!-- Digitaal  -->
+                        Incassomachtigen
+                         <!-- (eMandates) -->
         </a>
         <?php } ?>
 
@@ -269,7 +268,8 @@ h2 {
             ">
 
             <span class="dashicons dashicons-money-alt"></span>
-            iDEAL (ePayments)
+            iDEAL
+             <!-- (ePayments) -->
         </a>
         <?php } ?>
 
@@ -281,34 +281,36 @@ h2 {
     } ?>
             ">
             <span class="dashicons dashicons-businessperson"></span>
-            iDIN (Identity)
+            Identiteit
+            <!-- iDIN (Identity) -->
         </a>
         <?php } ?>
 
         <a href="<?php echo admin_url('admin.php?page=bluem_admin_requests_view'); ?>" class="nav-tab">
         <span class="dashicons dashicons-database-view"></span>
-            Verzoeken overzicht
+            Verzoeken
+             <!-- overzicht -->
         </a>
         <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">
         <span class="dashicons dashicons-editor-help"></span>
-        Neem contact op via e-mail
+        Ondersteuning via e-mail
         </a>
     </nav>
 
 
-
+    </div>
     <div class="bluem-settings">
 
         <form action="options.php" method="post">
 
             <?php
         settings_fields('bluem_woocommerce_modules_options');
-    do_settings_sections('bluem_woocommerce_modules'); ?>
-            </div>
+        do_settings_sections('bluem_woocommerce_modules'); ?>
+            
             <?php
 
             settings_fields('bluem_woocommerce_options');
-    do_settings_sections('bluem_woocommerce'); ?>
+            do_settings_sections('bluem_woocommerce'); ?>
 
 
             <input name="submit" class="button button-primary" type="submit" value="<?php esc_attr_e('Save'); ?>" />
@@ -392,7 +394,7 @@ function bluem_woocommerce_register_settings()
 
 
     if (bluem_module_enabled('mandates')) {
-        add_settings_section('bluem_woocommerce_mandates_section', 'Machtiging instellingen', 'bluem_woocommerce_mandates_settings_section', 'bluem_woocommerce');
+        add_settings_section('bluem_woocommerce_mandates_section', 'Digitale Incassomachtiging instellingen', 'bluem_woocommerce_mandates_settings_section', 'bluem_woocommerce');
 
         $mandates_settings = bluem_woocommerce_get_mandates_options();
         if (is_array($mandates_settings) && count($mandates_settings) > 0) {
