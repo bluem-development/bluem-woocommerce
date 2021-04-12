@@ -962,22 +962,10 @@ function bluem_init_mandate_gateway_class()
         $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID,"mandates");
         ?>
         <table class="form-table">
-        <table class="form-table">
-                <tr>
-<th>
-    <h3>
-        Digitale Incassomachtigingen
-    </h3>
-</th>
-                </tr>
-        <?php 
-            
-            ?>
-
         <?php if(isset($bluem_requests) && count($bluem_requests)>0) { ?>
             <tr>
         <th>
-        Verzoeken uitgevoerd
+        Digitale Incassomachtigingen
         </th>
         <td>
         <?php
@@ -1038,8 +1026,7 @@ function bluem_init_mandate_gateway_class()
                     <span class="description">Is een machtiging via shortcode doorgekomen? indien van toepassing kan je dit hier overschrijven</span>
                 </td>
             </tr>
-        </table>
-
+            </table>
 <?php
     }
 

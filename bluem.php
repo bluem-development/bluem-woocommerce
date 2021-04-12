@@ -451,6 +451,34 @@ function bluem_woocommerce_register_settings()
 add_action('admin_init', 'bluem_woocommerce_register_settings');
 
 
+add_action('show_user_profile', 'bluem_woocommerce_show_general_profile_fields', 1);
+
+function bluem_woocommerce_show_general_profile_fields() {
+?>
+    <h2>
+    <?php echo bluem_get_bluem_logo_html(48);?>
+    <!-- Identiteit verificatie via Bluem -->
+    Bluem onderdelen
+    </h2>
+    <table class="form-table">
+    
+    <tr>
+    <th>
+    Configureren?
+    </th>
+    <td>
+    Ga naar de
+    <a href="<?php echo home_url("wp-admin/options-general.php?page=bluem"); ?>">
+    instellingen</a> om het gedrag van elk Bluem onderdeel te wijziggen.
+    </td>
+    </tr>
+    </table>
+ <?php   
+}
+
+
+// Settings functions
+
 function bluem_woocommerce_get_option($key)
 {
     $options = bluem_woocommerce_get_core_options();

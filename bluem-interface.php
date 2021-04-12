@@ -247,9 +247,9 @@ function bluem_render_requests_list($requests) {
                 ?>
             <div class="bluem-request-list-item-row">
             <span class="bluem-request-label">
-            Klantreferentie 
-                <?php echo $r->debtor_reference; ?>
+                Klantreferentie 
             </span>
+            <?php echo $r->debtor_reference; ?>
             </div>
             <?php } ?>
             <div class="bluem-request-list-item-row">

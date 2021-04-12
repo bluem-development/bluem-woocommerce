@@ -854,17 +854,7 @@ function bluem_idin_shortcode_callback()
     }
 }
 
-add_action('show_user_profile', 'bluem_woocommerce_show_general_profile_fields', 1);
 
-function bluem_woocommerce_show_general_profile_fields() {
-?>
-    <h2>
-    <?php echo bluem_get_bluem_logo_html(48);?>
-    <!-- Identiteit verificatie via Bluem -->
-    Bluem Verzoeken
-    </h2>
- <?php   
-}
 
 add_action('show_user_profile', 'bluem_woocommerce_idin_show_extra_profile_fields',2);
 add_action('edit_user_profile', 'bluem_woocommerce_idin_show_extra_profile_fields');
@@ -874,15 +864,8 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user)
 
     $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID,"identity");
     ?>
-            <table class="form-table">
-                <tr>
-<th>
-
-    <h3>
-        Identiteit
-    </h3>
-</th>
-                </tr>
+          <table class="form-table">
+              
     <?php 
         
         ?>
@@ -890,7 +873,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user)
     <?php if(isset($bluem_requests) && count($bluem_requests)>0) { ?>
         <tr>
     <th>
-    Verzoeken uitgevoerd
+    Identiteit
     </th>
     <td>
     <?php
@@ -902,7 +885,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user)
 
 <tr>
 <th>
-    Verzoeken uitgevoerd
+Identiteit
     </th>
         <td>
 Nog geen verzoeken uitgevoerd.
@@ -937,17 +920,6 @@ class="regular-text" /><br />
     }
 ?>
 
-<tr>
-<th>
-Configureren?
-</th>
-<td>
-Ga naar
-<a href="<?php echo home_url("wp-admin/options-general.php?page=bluem"); ?>">
-Bluem instellingen
-</a> om het gedrag van verificatie te wijziggen.
-</td>
-</tr>
 
 <th>
 <label for="bluem_idin_report_agecheckresponse">
@@ -1000,23 +972,22 @@ class="regular-text" /><br />
 </th>
 
 <td>
-<span class="description">
-Status en Resultaten van iDIN requests
-</span>
-
-<select class="form-control" name="bluem_idin_validated" id="bluem_idin_validated">
-<option value="0" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "0") {
-    echo "selected='selected'";
-} ?>>Identificatie nog niet uitgevoerd</option>
+    
+    <select class="form-control" name="bluem_idin_validated" id="bluem_idin_validated">
+        <option value="0" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "0") {
+            echo "selected='selected'";
+        } ?>>Identificatie nog niet uitgevoerd</option>
 <option value="1" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "1") {
     echo "selected='selected'";
 } ?>>Identificatie succesvol uitgevoerd</option>
 </select>
+<span class="description" style="display:block;">
+Status en Resultaten van iDIN requests
+</span>
 </div>
 </td>
 </tr>
-
-
+</table>
     <?php
 }
 add_action('personal_options_update', 'bluem_woocommerce_idin_save_extra_profile_fields');

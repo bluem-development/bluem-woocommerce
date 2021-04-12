@@ -661,14 +661,6 @@ function bluem_woocommerce_payments_show_extra_profile_fields($user)
 {
     $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID, "payments"); ?>
     <table class="form-table">
-    <table class="form-table">
-            <tr>
-<th>
-<h3>
-    Betalingen
-</h3>
-</th>
-            </tr>
     <?php
         
         ?>
@@ -676,12 +668,14 @@ function bluem_woocommerce_payments_show_extra_profile_fields($user)
     <?php if (isset($bluem_requests) && count($bluem_requests)>0) { ?>
         <tr>
     <th>
-    Verzoeken uitgevoerd
+    iDEAL Betalingen
     </th>
     <td>
     <?php
         bluem_render_requests_list($bluem_requests);?>
     </td>
         </tr>
-    <?php }
+    <?php } ?>
+    </table>
+    <?php
 }
