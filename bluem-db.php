@@ -218,38 +218,38 @@ function bluem_db_get_requests_by_keyvalue($key, $value)
     return bluem_db_get_requests_by_keyvalues([$key=>$value]);
 }
 
-function bluem_db_get_requests_by_keyvalues($keyvalues=[]) 
+function bluem_db_get_requests_by_keyvalues($keyvalues=[])
 {
-global $wpdb;
-date_default_timezone_set('Europe/Amsterdam');
-$wpdb->time_zone = 'Europe/Amsterdam';
+    global $wpdb;
+    date_default_timezone_set('Europe/Amsterdam');
+    $wpdb->time_zone = 'Europe/Amsterdam';
 
-$wpdb->show_errors(); //setting the Show or Display errors option to true
-// @todo: Prepare this statement a bit more; https://developer.wordpress.org/reference/classes/wpdb/
+    $wpdb->show_errors(); //setting the Show or Display errors option to true
+    // @todo: Prepare this statement a bit more; https://developer.wordpress.org/reference/classes/wpdb/
 
-if(count($keyvalues)>0) {
-    $i = 0;
-    $kvs = " WHERE ";
-    foreach($keyvalues as $key => $value) {
-        $kvs.= "`{$key}` = '{$value}'";
-        $i++;
-        if($i<count($keyvalues)) {
-            $kvs .= " AND ";
+    if (count($keyvalues)>0) {
+        $i = 0;
+        $kvs = " WHERE ";
+        foreach ($keyvalues as $key => $value) {
+            $kvs.= "`{$key}` = '{$value}'";
+            $i++;
+            if ($i<count($keyvalues)) {
+                $kvs .= " AND ";
+            }
         }
     }
-}
-$query = "SELECT *  FROM  `bluem_requests`{$kvs}";
-try {
-    return $wpdb->get_results(
-        $query
-    );
-} catch (Throwable $th) {
-    return false;
-}
+    $query = "SELECT *  FROM  `bluem_requests`{$kvs}";
+    try {
+        return $wpdb->get_results(
+            $query
+        );
+    } catch (Throwable $th) {
+        return false;
+    }
 }
 
 
-function bluem_db_get_requests_by_user_id($user_id = null) 
+function bluem_db_get_requests_by_user_id($user_id = null)
 {
     global $current_user;
     
@@ -265,7 +265,7 @@ function bluem_db_get_requests_by_user_id($user_id = null)
 }
 
 
-function bluem_db_get_requests_by_user_id_and_type($user_id = null,$type="") 
+function bluem_db_get_requests_by_user_id_and_type($user_id = null, $type="")
 {
     global $current_user;
     
@@ -284,3 +284,39 @@ function bluem_db_get_requests_by_user_id_and_type($user_id = null,$type="")
     return $res!==false && count($res)>0?$res:[];
 }
 
+function bluem_db_get_most_recent_request($user_id=null, $type="mandates")
+{
+    global $current_user;
+    
+    if (is_null($user_id)) {
+        $user_id = $current_user->ID;
+    }
+
+    if (!in_array(
+        $type,
+        ['mandates', 'payments', 'identity']
+    )
+    ) {
+        return false;
+    }
+
+    global $wpdb;
+    date_default_timezone_set('Europe/Amsterdam');
+    $wpdb->time_zone = 'Europe/Amsterdam';
+
+    $wpdb->show_errors(); //setting the Show or Display errors option to true
+
+    $query = "SELECT *  FROM  `bluem_requests` WHERE `user_id` = '{$user_id}' and `type` = '{$type}' ORDER BY `timestamp` DESC LIMIT 1 ";
+    try {
+        $results = $wpdb->get_results(
+            $query
+        );
+
+        if (count($results)>0) {
+            return $results[0];
+        }
+        return false;
+    } catch (Throwable $th) {
+        return false;
+    }
+}

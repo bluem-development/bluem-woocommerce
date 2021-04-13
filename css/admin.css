@@ -1,61 +1,73 @@
 /* (C) Daan Rijpkema, for
-Bluem 2021 
+Bluem 2021
 */
+
 .bluem-request-list {
     border: 1px solid #aaa;
     background: white;
     border-radius: 4pt;
-    padding:5pt 0 5pt 0;
+    padding: 5pt 0 5pt 0;
 }
-.bluem-request-list .bluem-request-list-item
-{
 
-    padding: 5pt 12pt 5pt 12pt;
-    width:100%;
+.bluem-request-list .bluem-request-list-item {
+    padding: 5pt 0;
+    width: 100%;
     display: block;
     overflow: hidden;
 }
-.bluem-request-list .bluem-request-list-item:nth-child(n+2) {
-    border-bottom:1px solid #aaa; 
+
+.bluem-request-list .bluem-request-list-item:nth-child(n+1) {
+    border-bottom: 1px solid #aaa;
 }
+
+.bluem-request-list .bluem-request-list-item:last-child {
+    border-bottom: none
+}
+
 .bluem-request-list-item-row {
-    padding-bottom: 3pt;;
+    padding-bottom: 3pt;
+    margin-left: 12pt;
 }
 
 .bluem-request-card-body {
-    padding:20pt;
-     background-color:#fff;
-     border:1px solid #ddd;
-     margin:6px;
-    margin-top:0;
-    /* min-height: 600px; */
+    padding: 20pt;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    margin: 6px;
+    margin-top: 0;
 }
+
 .bluem-request-label {
-    color:#aaa;
+    color: #aaa;
     display: inline-block;
     margin-right: 20px;
-    width:130px;
+    width: 140px;
 }
 
 .bluem-settings-header {
-    
-background: #efefef;
-width: 100%;
-padding-bottom:6pt;
+    background: #efefef;
+    width: 100%;
+    padding-bottom: 6pt;
 }
-
 
 .bluem-form-control {
     width: 100%;
 }
 
 .bluem-settings {
-    /* column-count: 2;
-            column-gap: 40px; */
     padding: 20px;
 }
 
 h2.bluem-settings-h2:nth-child(n+2) {
-    /* border-top:5px solid #ddd;  */
-    padding-top:10pt;
+    padding-top: 10pt;
+}
+
+.bluem-request-list-item-floater {
+    float: right;
+    width: 30%;
+    display: block;
+}
+
+.bluem-request-list-item-row-title {
+    font-size: 14pt;
 }

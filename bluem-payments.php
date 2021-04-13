@@ -516,17 +516,14 @@ function bluem_init_payment_gateway_class()
 
             $request_from_db = bluem_db_get_request_by_transaction_id($transactionID);
 
-            if($statusCode !== $request_from_db->status)
-            {
-
+            if ($statusCode !== $request_from_db->status) {
                 bluem_db_update_request(
                     $request_from_db->id,
                     [
                         'status'=>$statusCode
                         ]
-                    );
-                    
-                }
+                );
+            }
             if ($statusCode === "Success") {
                 $order->update_status('processing', __('Betaling is binnengekomen', 'wc-gateway-bluem'));
 
@@ -652,16 +649,14 @@ function bluem_woocommerce_enhance_payment_request_function($request)
     return $request;
 }
 
-
-
-
-add_action('show_user_profile', 'bluem_woocommerce_payments_show_extra_profile_fields',2);
+add_action('show_user_profile', 'bluem_woocommerce_payments_show_extra_profile_fields', 2);
 add_action('edit_user_profile', 'bluem_woocommerce_payments_show_extra_profile_fields');
 
 function bluem_woocommerce_payments_show_extra_profile_fields($user)
 {
     $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID, "payments"); ?>
     <table class="form-table">
+    <a id="user_payments"></a>
     <?php
         
         ?>

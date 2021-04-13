@@ -364,8 +364,6 @@ function bluem_init_mandate_gateway_class()
          */
         public function process_payment($order_id)
         {
-            
-
             $verbose = false;
             $this->bluem = new Integration($this->bluem_config);
             $order = wc_get_order($order_id);
@@ -719,7 +717,6 @@ function bluem_init_mandate_gateway_class()
             $request_from_db = bluem_db_get_request_by_transaction_id($mandateID);
 
             if ($statusCode !== $request_from_db->status) {
-
                 bluem_db_update_request(
                     $request_from_db->id,
                     [
@@ -955,15 +952,16 @@ function bluem_init_mandate_gateway_class()
     }
 
 
-    add_action('show_user_profile', 'bluem_woocommerce_mandates_show_extra_profile_fields',2);
+    add_action('show_user_profile', 'bluem_woocommerce_mandates_show_extra_profile_fields', 2);
     add_action('edit_user_profile', 'bluem_woocommerce_mandates_show_extra_profile_fields');
 
     function bluem_woocommerce_mandates_show_extra_profile_fields($user)
     {
-        $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID,"mandates");
-        ?>
+        $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID, "mandates"); ?>
         <table class="form-table">
-        <?php if(isset($bluem_requests) && count($bluem_requests)>0) { ?>
+        <a id="user_mandates"></a>
+
+        <?php if (isset($bluem_requests) && count($bluem_requests)>0) { ?>
             <tr>
         <th>
         Digitale Incassomachtigingen
@@ -974,7 +972,7 @@ function bluem_init_mandate_gateway_class()
         </td>
             </tr>
         <?php } else {
-            // legacy code?>
+                // legacy code?>
         <tr>
                 <th><label for="bluem_latest_mandate_id">Meest recente MandateID</label></th>
                 <td>
@@ -1005,7 +1003,7 @@ function bluem_init_mandate_gateway_class()
             </tr>
 
             <?php
-        } ?>
+            } ?>
             <tr>
                 <th><label for="bluem_mandates_validated">Machtiging via shortcode valide?</label></th>
                 <td>
@@ -1078,7 +1076,7 @@ function bluem_woocommerce_mandates_settings_section()
     }
 
     echo '<p><a id="tab_mandates"></a> Hier kan je alle belangrijke gegevens instellen rondom Digitale Incassomachtigingen.</p>';
-//  Lees de readme bij de plug-in voor meer informatie.
+    //  Lees de readme bij de plug-in voor meer informatie.
     // echo "<p>Huidige mandaat ID counter: ";
     // echo $mandate_id_counter;
     // echo "</p>";

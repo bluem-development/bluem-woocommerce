@@ -215,10 +215,14 @@ function bluem_woocommerce_get_idin_options()
         'type' => 'bool',
         'default' => '1',
     ],
-
-
-
-
+    'idin_add_address_in_order_emails' => [
+        'key' => 'idin_add_address_in_order_emails',
+        'title' => 'bluem_idin_add_address_in_order_emails',
+        'name' => 'Identificatie adres in emails',
+        'description' => "Moet de adres van identificatie worden weergegeven in de order notificatie email naar de klant en naar jezelf?",
+        'type' => 'bool',
+        'default' => '1',
+    ],
     ];
 }
 
@@ -299,7 +303,7 @@ if (isset($options['IDINPageURL'])) {
     </h3>
     <p>
         Gegevens worden na een identificatie opgeslagen bij het user profile als metadata. Je kan deze velden zien als je bij een gebruiker kijkt.
-        Kijk bijvoorbeeld bij <a href="<?php echo admin_url('profile.php');?>" target="_blank">je eigen profiel</a>.
+        Kijk bijvoorbeeld bij <a href="<?php echo admin_url('profile.php'); ?>" target="_blank">je eigen profiel</a>.
     </p>
     <h3>
     <span class="dashicons dashicons-admin-settings"></span>
@@ -415,6 +419,14 @@ function bluem_woocommerce_settings_render_idin_add_field_in_order_emails()
 {
     bluem_woocommerce_settings_render_input(
         bluem_woocommerce_get_idin_option('idin_add_field_in_order_emails')
+    );
+}
+
+
+function bluem_woocommerce_settings_render_idin_add_address_in_order_emails()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_add_address_in_order_emails')
     );
 }
 
@@ -653,7 +665,6 @@ function bluem_idin_shortcode_callback()
             $request_from_db = bluem_db_get_request_by_transaction_id($transactionID);
 
             if ($request_from_db->status !== $statusCode) {
-
                 bluem_db_update_request(
                     $request_from_db->id,
                     [
@@ -665,7 +676,9 @@ function bluem_idin_shortcode_callback()
 
             if (is_user_logged_in()) {
                 update_user_meta(
-                    get_current_user_id(), "bluem_idin_validated", false
+                    get_current_user_id(),
+                    "bluem_idin_validated",
+                    false
                 );
             } else {
                 $_SESSION['bluem_idin_validated'] = false;
@@ -791,7 +804,6 @@ function bluem_idin_shortcode_callback()
 
                 if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart") !== false) {
                     $goto = wc_get_checkout_url();
-
                 } else {
                     $goto = $bluem_config->IDINPageURL;
 
@@ -856,21 +868,19 @@ function bluem_idin_shortcode_callback()
 
 
 
-add_action('show_user_profile', 'bluem_woocommerce_idin_show_extra_profile_fields',2);
+add_action('show_user_profile', 'bluem_woocommerce_idin_show_extra_profile_fields', 2);
 add_action('edit_user_profile', 'bluem_woocommerce_idin_show_extra_profile_fields');
 
 function bluem_woocommerce_idin_show_extra_profile_fields($user)
 {
-
-    $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID,"identity");
-    ?>
+    $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID, "identity"); ?>
           <table class="form-table">
-              
-    <?php 
+          <a id="user_identity"></a>
+    <?php
         
         ?>
 
-    <?php if(isset($bluem_requests) && count($bluem_requests)>0) { ?>
+    <?php if (isset($bluem_requests) && count($bluem_requests)>0) { ?>
         <tr>
     <th>
     Identiteit
@@ -881,7 +891,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user)
     </td>
         </tr>
     <?php } else {
-        ?>
+            ?>
 
 <tr>
 <th>
@@ -917,8 +927,7 @@ class="regular-text" /><br />
 
 <tr>
 <?php
-    }
-?>
+        } ?>
 
 
 <th>
@@ -932,14 +941,14 @@ Respons van bank op leeftijdscontrole, indien van toepassing
 <?php $ageCheckResponse = get_user_meta($user->ID, 'bluem_idin_report_agecheckresponse', true); ?>
 <select class="form-control" name="bluem_idin_report_agecheckresponse" id="bluem_idin_report_agecheckresponse">
 <option value="" <?php if ($ageCheckResponse == "") {
-    echo "selected='selected'";
-} ?>>Leeftijdcheck nog niet uitgevoerd</option>
+            echo "selected='selected'";
+        } ?>>Leeftijdcheck nog niet uitgevoerd</option>
 <option value="false" <?php if ($ageCheckResponse == "false") {
-    echo "selected='selected'";
-} ?>>Leeftijd niet toereikend bevonden</option>
+            echo "selected='selected'";
+        } ?>>Leeftijd niet toereikend bevonden</option>
 <option value="true" <?php if ($ageCheckResponse == "true") {
-    echo "selected='selected'";
-} ?>>Leeftijd toereikend bevonden</option>
+            echo "selected='selected'";
+        } ?>>Leeftijd toereikend bevonden</option>
 </select>
 
 <br>
@@ -978,8 +987,8 @@ class="regular-text" /><br />
             echo "selected='selected'";
         } ?>>Identificatie nog niet uitgevoerd</option>
 <option value="1" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "1") {
-    echo "selected='selected'";
-} ?>>Identificatie succesvol uitgevoerd</option>
+            echo "selected='selected'";
+        } ?>>Identificatie succesvol uitgevoerd</option>
 </select>
 <span class="description" style="display:block;">
 Status en Resultaten van iDIN requests
@@ -1165,7 +1174,6 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
     }
 
     if ($response->ReceivedResponse()) {
-
         $entranceCode = $response->GetEntranceCode();
         $transactionID = $response->GetTransactionID();
         $transactionURL = $response->GetTransactionURL();
@@ -1273,8 +1281,7 @@ function bluem_checkout_idin_notice()
         $idin_logo_html = bluem_get_idin_logo_html();
         // above 0: any form of verification is required
         if (!$validated) {
-            
-            echo bluem_idin_generate_notice($validation_message,true);
+            echo bluem_idin_generate_notice($validation_message, true);
 
             return;
         }
@@ -1353,7 +1360,6 @@ function bluem_checkout_idin_notice()
 
 
             if (!$age_valid) {
-                
                 echo bluem_idin_generate_notice($validation_message, true);
                 return;
             } else {
@@ -1631,6 +1637,46 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
             'value'=> $validation_text
         ];
     }
+
+
+    
+    if (!array_key_exists('idin_add_address_in_order_emails', $options)
+        || (array_key_exists('idin_add_address_in_order_emails', $options)
+        && $options['idin_add_address_in_order_emails'] == "1")
+    ) {
+        $request = bluem_db_get_most_recent_request($current_user->ID, "identity");
+        if ($request !== false) {
+            $pl = json_decode($request->payload);
+            // var_dump($request);
+            // var_dump($pl);
+            // die();
+            // echo "<HR>";
+            $address_text = "";
+            if (isset($pl->report->AddressResponse->Street)) {
+                $address_text.= $pl->report->AddressResponse->Street." ";
+            }
+            if (isset($pl->report->AddressResponse->HouseNumber)) {
+                $address_text.= $pl->report->AddressResponse->HouseNumber." ";
+            }
+            $address_text.="<br>";
+            if (isset($pl->report->AddressResponse->PostalCode)) {
+                $address_text.= $pl->report->AddressResponse->PostalCode." ";
+            }
+            if (isset($pl->report->AddressResponse->City)) {
+                $address_text.= $pl->report->AddressResponse->City." ";
+            }
+            if (isset($pl->report->AddressResponse->CountryCode)) {
+                $address_text.= $pl->report->AddressResponse->CountryCode."";
+            }
+            
+            $fields['bluem_idin_address'] = [
+                'label'=> __('Adres uit verificatie', 'bluem'),
+                'value'=> $address_text
+            ];
+            // var_dump($address_text);
+            // die();
+        }
+    }
     return $fields;
 }
 
@@ -1672,12 +1718,12 @@ function bluem_idin_generate_notice(String $message ="", bool $button = false) :
 
     $html .= "<div style='margin-left:100px; display:block; width:auto; height:auto;'>
         {$message}";
-        if ($button) {
-            $html .= "<div style='' class='bluem-idin-button'>";
-            $html .= "{$idin_button_html}";
-            $html .= "</div>";
-        }
-        $html .= "
+    if ($button) {
+        $html .= "<div style='' class='bluem-idin-button'>";
+        $html .= "{$idin_button_html}";
+        $html .= "</div>";
+    }
+    $html .= "
     </div>";
     $html .= "</div>";
     return $html;

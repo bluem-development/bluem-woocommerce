@@ -1,5 +1,5 @@
 <?php
-
+use Carbon\Carbon;
 
 // @todo create a language file and consistently localize everything
 
@@ -12,7 +12,8 @@ function bluem_get_idin_logo_html()
 
 // @todo make a stylesheet and include it, move all inline styles there.
 
-function bluem_get_bluem_logo_html($height=64) {
+function bluem_get_bluem_logo_html($height=64)
+{
     return '<img src="'.
     plugin_dir_url(__FILE__).'assets/bluem/logo.png'.
     '" class="bluem-bluem-logo" style="'.
@@ -23,11 +24,10 @@ function bluem_get_bluem_logo_html($height=64) {
 
 function bluem_render_request_table($requests, $users_by_id=[])
 {
-    if(count($requests)==0) {
-        echo "<p>".__("Nog geen verzoeken",'bluem')."</p>";
+    if (count($requests)==0) {
+        echo "<p>".__("Nog geen verzoeken", 'bluem')."</p>";
         return;
-    }
-    ?>
+    } ?>
 <table class="table widefat">
 
 <thead>
@@ -49,8 +49,8 @@ function bluem_render_request_table($requests, $users_by_id=[])
 
 
     <td>
-    <?php 
-   bluem_render_request_user($r,$users_by_id); ?>
+    <?php
+   bluem_render_request_user($r, $users_by_id); ?>
     </td>
     <td>
     <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$r->id); ?>" target="_self">
@@ -60,26 +60,38 @@ function bluem_render_request_table($requests, $users_by_id=[])
     <span style="color:#aaa; font-size:9pt;">
     <?php echo $r->transaction_id; ?>
     <br>
-    <?php if(isset($r->debtor_reference) && $r->debtor_reference !=="") {
-        echo "Klantreferentie: ".$r->debtor_reference; 
-    } ?>
+    <?php if (isset($r->debtor_reference) && $r->debtor_reference !=="") {
+       echo "Klantreferentie: ".$r->debtor_reference;
+   } ?>
     </span>
     </td>
-    <td>
         <?php $rdate = strtotime($r->timestamp); ?>
-        <?php echo date("d-m-Y H:i:s", $rdate); ?>
+        <?php $rdate = Carbon::parse($r->timestamp, 'Europe/Amsterdam'); ?>
+    <td title="<?php echo $rdate->format("d-m-Y H:i:s"); ?>">
+    <?php
+        if ($rdate->diffInDays(Carbon::now())>=1) {
+            echo $rdate->format("d-m-Y H:i:s");
+        } else {
+            echo $rdate->diffForHumans(Carbon::now(), null, true, 1);
+        } ?>
 
     </td>
     <td>
     <?php
-        if (!is_null($r->order_id)) { 
-            
-            $order = new \WC_Order($r->order_id); 		
-            
-            ?>
+        if (!is_null($r->order_id)) {
+            try {
+                $order = new \WC_Order($r->order_id);
+            } catch (Throwable $th) {
+                $order = false;
+            }
+            if ($order !== false) {
+                ?>
             <a href="<?php echo admin_url("post.php?post={$r->order_id}&action=edit"); ?>" target="_blank">
-            Order <?php echo $r->order_id ?> (<?php echo wc_price($order->get_total());?>)
+            Bestelling <?php echo $r->order_id ?> (<?php echo wc_price($order->get_total()); ?>)
             </a><?php
+            } else {
+                echo "&nbsp;";
+            }
         } ?>
     </td>
     <td>
@@ -186,10 +198,11 @@ echo $status;
     }
 }
 
-function bluem_render_request_user($r,$users_by_id) {
+function bluem_render_request_user($r, $users_by_id)
+{
     if (isset($users_by_id[(int)$r->user_id])) {
         ?>
-        <a href="<?php echo admin_url("user-edit.php?user_id=".$r->user_id); ?>" target="_blank">
+        <a href="<?php echo admin_url("user-edit.php?user_id=".$r->user_id."#user_".$r->type); ?>" target="_blank">
     <?php
     echo $users_by_id[(int)$r->user_id]->user_nicename; ?>
     </a>
@@ -199,15 +212,15 @@ function bluem_render_request_user($r,$users_by_id) {
         echo "Gast/onbekend";
     }
 }
-function bluem_render_footer($align_right = true) {
+function bluem_render_footer($align_right = true)
+{
     ?>
 
     <p style="display:block; 
-        <?php 
-        if ($align_right) { 
-            echo 'text-align:right;'; 
-        }
-        ?>
+        <?php
+        if ($align_right) {
+            echo 'text-align:right;';
+        } ?>
     ">
     Problemen,
         vragen of suggesties? 
@@ -224,15 +237,84 @@ function bluem_render_footer($align_right = true) {
 
 
 
-function bluem_render_requests_list($requests) {
+function bluem_render_requests_list($requests)
+{
     ?>
     <div class="bluem-request-list">
-    <?php foreach($requests as $r) {
-        ?>
+    <?php foreach ($requests as $r) {
+        $pl = json_decode($r->payload); ?>
         <div class="bluem-request-list-item">
-            <div class="bluem-request-list-item-row" style="font-size: 14pt;">
+
+
+        <?php
+        if ($r->type == "payments" || $r->type == "mandates") {
+            if (!is_null($pl)) {
+                ?>
+                <div class="bluem-request-list-item-floater">
+                    <?php
+                    foreach ($pl as $k=>$v) {
+                        bluem_render_obj_row_recursive($k, $v);
+                    } ?>
+                </div><?php
+            }
+        } elseif ($r->type == "identity") {
+            ?>
+            <div class="bluem-request-list-item-floater">
+                <?php
+                if (!is_null($pl)) {
+                    if (isset($pl->report->CustomerIDResponse)
+                        && $pl->report->CustomerIDResponse."" != ""
+                    ) { ?>
+   <div>
+   <span class="bluem-request-label">
+   CustomerID: 
+            </span>
+            <?php echo $pl->report->CustomerIDResponse; ?>
+                        <?php
+                    } ?>
+                </div>
+
+<div>
+   <span class="bluem-request-label">
+   Adres
+            </span>
+            <?php foreach ($pl->report->AddressResponse as $k=>$v) {
+                        echo "{$v} ";
+                    } ?>
+            
+                </div>
+<div>
+   <span class="bluem-request-label">
+   Geb.datum
+            </span>
+            <?php echo $pl->report->BirthDateResponse; ?>
+                     
+        
+                </div>
+<div>
+   <span class="bluem-request-label">
+   E-mail
+            </span>
+            <?php echo $pl->report->EmailResponse; ?>
+                     
+                </div>
+<div>
+   <span class="bluem-request-label">
+   Telefoonnr.
+            </span>
+            <?php echo $pl->report->TelephoneResponse1; ?>
+                     
+                </div>
+
+            <?php
+                } ?>
+        </div>
+        <?php
+        } ?>
+
+            <div class="bluem-request-list-item-row bluem-request-list-item-row-title">
             <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$r->id); ?>" target="_self">
-            <?php echo $r->description; ?>
+            <?php echo $r->description; ?> 
             </a>
             </div>
             <div class="bluem-request-list-item-row">
@@ -243,15 +325,16 @@ function bluem_render_requests_list($requests) {
             <?php echo $r->transaction_id; ?>
 
             </div>
-            <?php if(isset($r->debtor_reference) && $r->debtor_reference !=="") {
-                ?>
+            <?php if (isset($r->debtor_reference) && $r->debtor_reference !=="") {
+            ?>
             <div class="bluem-request-list-item-row">
             <span class="bluem-request-label">
                 Klantreferentie 
             </span>
             <?php echo $r->debtor_reference; ?>
             </div>
-            <?php } ?>
+            <?php
+        } ?>
             <div class="bluem-request-list-item-row">
 
             <span class="bluem-request-label">
@@ -267,10 +350,31 @@ function bluem_render_requests_list($requests) {
             <span class="bluem-request-label">
                 Status: 
             </span>
-            <?php bluem_render_request_status($r->status);?>     
+            <?php bluem_render_request_status($r->status); ?>     
             </div>
         </div>
-        <?php 
+        <?php
     } ?>
     </div>
-    <?php } 
+    <?php
+}
+
+
+function bluem_render_obj_row_recursive($key, $value, $level = 0)
+{
+    $nicekey = ucfirst(str_replace(['_','Response1','Response'], [' ','',''], $key));
+    if ($level>1) {
+        $nicekey = str_repeat("&nbsp;&nbsp;", $level-1).$nicekey;
+    }
+    if (is_string($value)) {
+        echo "<span class='bluem-request-label'>
+       {$nicekey}: 
+       </span>
+       {$value}";
+    } else {
+        foreach ($value as $valuekey => $valuevalue) {
+            bluem_render_obj_row_recursive($valuekey, $valuevalue, $level+1);
+        }
+    }
+    echo "<br>";
+}
