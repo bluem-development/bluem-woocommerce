@@ -9,7 +9,6 @@
             <span class="dashicons dashicons-arrow-left-alt"></span>
             Alle verzoeken
         </a>
-        <!-- <a href="#" class="nav-tab nav-active tab-active active" style="background-color: #eee;">Alle verzoeken</a> -->
         <a href="<?php echo admin_url('options-general.php?page=bluem');?>" class="nav-tab">
             <span class="dashicons dashicons-admin-settings"></span>
             Algemene instellingen
@@ -18,13 +17,10 @@
     <div class="bluem-request-card-body">
         <div style="display:inline-block; vertical-align:top; width:40%;">
 
-            <h2>Verzoek</h2>
-            <p>
-                <span class="bluem-request-label">
-                    Type:
-                </span>
+            <h2>
                 <?php echo ucfirst($request->type);?>
-            </p>
+                Verzoek
+            </h2>
             <p>
                 <span class="bluem-request-label">
                     Omschrijving:
@@ -41,30 +37,21 @@
                 <br>
                 <span class="bluem-request-label">
                     Klantreferentie:
-                </span>
-
-                <?php
-        echo $request->debtor_reference;
-} ?>
+                </span><?php
+                    echo $request->debtor_reference;
+            } ?>
             </p>
             <p>
                 <span class="bluem-request-label">
                     Gebruiker:
-                </span>
-
-                <?php
-    if (isset($request_author) && !is_null($request_author)) {
-        ?>
-                <a href="<?php echo admin_url("user-edit.php?user_id=".$request->user_id); ?>" target="_blank">
-                    <?php
-        echo $request_author->user_nicename; ?>
-                </a>
-
-                <?php
-    } else {
-        echo "Gast/onbekend";
-    } ?>
-
+                </span><?php
+                if (isset($request_author) && !is_null($request_author) && $request_author!==false && isset($request_author->user_nicename)) { ?>
+                    <a href="<?php echo admin_url("user-edit.php?user_id=".$request->user_id); ?>" target="_blank"><?php
+                        echo $request_author->user_nicename; ?>
+                    </a><?php
+                } else {
+                    echo "Gast/onbekend";
+                } ?>
             </p>
             <p>
                 <span class="bluem-request-label">
@@ -107,9 +94,9 @@
             <?php
             if (count($logs)>0) {
             ?>
-                <h4>Gebeurtenissen:
-                </h4>
-                <ul>
+            <h4>Gebeurtenissen:
+            </h4>
+            <ul>
                 <?php
 
     foreach ($logs as $log) {

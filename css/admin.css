@@ -2,6 +2,31 @@
 Bluem 2021
 */
 
+
+/* https://stackoverflow.com/questions/23989463/how-to-set-tbody-height-with-overflow-scroll/23989771 */
+
+.bluem-requests-table tbody {
+    display: block;
+    max-height: 500px;
+    overflow: auto;
+}
+
+.bluem-requests-table thead,
+.bluem-requests-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    /* even columns width , fix width of table too*/
+}
+
+.bluem-requests-table thead {
+    width: calc( 100% - 1em)/* scrollbar is average 1em/16px width, remove it from thead width */
+}
+
+table.bluem-requests-table {
+    /* width: 400px; */
+}
+
 .bluem-request-list {
     border: 1px solid #aaa;
     background: white;
