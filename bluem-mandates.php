@@ -508,9 +508,9 @@ function bluem_init_mandate_gateway_class()
                     'environment'=>$this->bluem->environment,
                     'amount'=>$order->get_total(),
                     'created_mandate_id'=>$mandate_id,
-                    'localInstrumentCode'=>$this->bluem->config->localInstrumentCode,
-                    'requestType'=>$this->bluem->config->requestType,
-                    'sequenceType'=>$this->bluem->config->sequenceType,
+                    'local_instrument_code'=>$this->bluem_config->localInstrumentCode,
+                    'issuing_type'=>$this->bluem_config->requestType,
+                    'sequence_type'=>$this->bluem_config->sequenceType,
                     'linked_orders'=>[$order_id]
                 ]
             );
