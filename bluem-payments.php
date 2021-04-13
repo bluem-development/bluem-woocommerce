@@ -255,6 +255,7 @@ function bluem_init_payment_gateway_class()
 
             $payload = json_encode(
                 [
+                    'environment' => $this->bluem->environment,
                     'amount'=>$amount,
                     'currency'=>$currency,
                     'due_date'=>$request->dueDateTime,

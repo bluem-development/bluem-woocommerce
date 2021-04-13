@@ -785,10 +785,10 @@ function bluem_idin_shortcode_callback()
                         [
                             'status'=>$statusCode,
                             'payload'=>json_encode($oldPayload)
-                            ]
+                        ]
                     );
                 }
-                
+
                 if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart") !== false) {
                     $goto = wc_get_checkout_url();
 
@@ -1205,7 +1205,9 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
                 'debtor_reference'=>$debtorReference,
                 'type'=>"identity",
                 'order_id'=>null,
-                'payload'=>''
+                'payload'=>json_encode([
+                    'environment' => $bluem->environment
+                ])
             ]
         );
 
@@ -1280,10 +1282,7 @@ function bluem_checkout_idin_notice()
     if (!function_exists('bluem_idin_user_validated')) {
         return;
     }
-    $identify_button_html = "<br><a href='".
-        home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true')."'
-        target='_self' class='button bluem-identify-button' style='margin-top:5px; display:inline-block'>Klik hier om je te identificeren</a><br>";
-
+  
     $options = get_option('bluem_woocommerce_options');
 
     if (isset($options['idin_scenario_active']) && $options['idin_scenario_active']!=="") {
@@ -1298,8 +1297,9 @@ function bluem_checkout_idin_notice()
         $idin_logo_html = bluem_get_idin_logo_html();
         // above 0: any form of verification is required
         if (!$validated) {
-            echo "<div style='min-height:130px; display:block; padding:15pt; border:1px solid #50afed; border-radius:4px; margin-top:10px; margin-bottom:10px;'>
-            {$idin_logo_html}  {$validation_message} <div style='display:block; text-align:center; clear:both;'>{$identify_button_html}</div></div>";
+            
+            echo bluem_idin_generate_notice($validation_message,true);
+
             return;
         }
 
@@ -1377,10 +1377,11 @@ function bluem_checkout_idin_notice()
 
 
             if (!$age_valid) {
-                echo "<div style='min-height:130px; display:block; padding:15pt; border:1px solid #50afed; border-radius:4px; margin-top:10px; margin-bottom:10px;'>{$idin_logo_html} {$validation_message} <div style='display:block; text-align:center; clear:both;'>{$identify_button_html}</div></div>";
+                
+                echo bluem_idin_generate_notice($validation_message, true);
                 return;
             } else {
-                echo "<div style='min-height:130px; display:block; padding:15pt; border:1px solid #50afed; border-radius:4px; margin-top:10px; margin-bottom:10px;'>{$idin_logo_html} Je leeftijd is geverifieerd, bedankt.</div>";
+                echo bluem_idin_generate_notice("Je leeftijd is geverifieerd, bedankt.");
                 return;
             }
         }
@@ -1389,10 +1390,11 @@ function bluem_checkout_idin_notice()
     // <p>Identificatie is vereist alvorens je deze bestelling kan plaatsen</p>";
 
     if (bluem_checkout_check_idin_validated_filter()==false) {
-        echo __(
-            "Verifieer eerst je identiteit via de mijn account pagina",
-            "woocommerce"
-        );
+        echo bluem_idin_generate_notice("Verifieer eerst je identiteit.", true);
+        // echo __(
+        //     "Verifieer eerst je identiteit via de mijn account pagina",
+        //     "woocommerce"
+        // );
         return;
     }
 }
@@ -1431,7 +1433,7 @@ function bluem_checkout_check_idin_validated()
         // above 0: any form of verification is required
         if (!$validated) {
             wc_add_notice(
-                __("{$idin_logo_html} {$validation_message} <div style='display:block; text-align:center; clear:both;'>{$identify_button_html}</div>", "woocommerce"),
+                bluem_idin_generate_notice($validation_message, true),
                 'error'
             );
         } else {
@@ -1509,10 +1511,7 @@ function bluem_checkout_check_idin_validated()
                 // }
                 if (!$age_valid) {
                     wc_add_notice(
-                        __(
-                            "{$idin_logo_html} {$validation_message} <div style='display:block; text-align:center; clear:both;'>{$identify_button_html}</div>",
-                            "woocommerce"
-                        ),
+                        bluem_idin_generate_notice($validation_message, true),
                         'error'
                     );
                 }
@@ -1523,15 +1522,20 @@ function bluem_checkout_check_idin_validated()
     // custom user-based checks:
     if (bluem_checkout_check_idin_validated_filter()==false) {
         wc_add_notice(
-            $idin_logo_html . __(
-                "Verifieer eerst je identiteit via de mijn account pagina",
-                "woocommerce"
-            ),
+            bluem_idin_generate_notice($validation_message, true),
             'error'
         );
+        // wc_add_notice(
+        //     $idin_logo_html . __(
+        //         "Verifieer eerst je identiteit via de mijn account pagina",
+        //         "woocommerce"
+        //     ),
+        //     'error'
+        // );
     }
     return;
 }
+// @todo: simplify and merge above two functions bluem_checkout_check_idin_validated and bluem_checkout_idin_notice
 
 add_filter(
     'bluem_checkout_check_idin_validated_filter',
@@ -1633,6 +1637,7 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
     // ];
 
     $options = get_option('bluem_woocommerce_options');
+    
     if (!array_key_exists('idin_add_field_in_order_emails', $options)
         || (array_key_exists('idin_add_field_in_order_emails', $options)
         && $options['idin_add_field_in_order_emails'] == "1")
@@ -1657,4 +1662,47 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
 add_action('woocommerce_review_order_before_payment', 'bluem_idin_before_payment_notice');
 function bluem_idin_before_payment_notice()
 {
+}
+
+
+
+/**
+ * Generate the necessary HTML to show a notice concerning iDIN status
+ *
+ * @param String $message
+ * @param boolean $button
+ * @return String
+ */
+function bluem_idin_generate_notice(String $message ="", bool $button = false) : String
+{
+    $idin_logo_html = "<img src='".
+    plugin_dir_url(__FILE__)."assets/bluem/idin.png' class='bluem-idin-logo'
+    style='position:absolute; top:15pt; left:15pt; max-height:64px; '/>";
+
+    $idin_button_html = "<br><a href='".
+        home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true').
+        "' target='_self' class='button bluem-identify-button' style='display:inline-block'>
+            Klik hier om je te identificeren
+        </a><br>";
+
+    $html = "<div style='position:relative; 
+    width:auto;
+    min-height:110px; display:block; 
+    padding:15pt; border:1px solid #50afed; 
+    border-radius:4px; margin-top:10px; 
+    margin-bottom:10px;
+    '>";
+    $html .= "{$idin_logo_html}";
+
+    $html .= "<div style='margin-left:100px; display:block; width:auto; height:auto;'>
+        {$message}";
+        if ($button) {
+            $html .= "<div style='' class='bluem-idin-button'>";
+            $html .= "{$idin_button_html}";
+            $html .= "</div>";
+        }
+        $html .= "
+    </div>";
+    $html .= "</div>";
+    return $html;
 }

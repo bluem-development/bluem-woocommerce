@@ -455,6 +455,7 @@ function bluem_init_mandate_gateway_class()
 
             $payload = json_encode(
                 [
+                    'environment'=>$this->bluem->environment,
                     'amount'=>$order->get_total(),
                     'created_mandate_id'=>$mandate_id
                 ]

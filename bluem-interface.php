@@ -211,3 +211,32 @@ function bluem_render_footer($align_right = true) {
     </p>
         <?php
 }
+
+
+
+function bluem_render_extra_data_row($k, $v) 
+{
+    ?>
+    <li>
+    <span class="request-label">
+    
+    <?php
+    echo $k; ?>
+    </span>
+&nbsp;
+    <?php
+    if(is_string($v)) {
+        echo $v;
+    } else {
+        if(is_object($v) || is_array($v)) {
+            foreach($v as $vk => $vv) {
+                bluem_render_extra_data_row( "&rarr; ". $vk,$vv);
+            }
+        } else {
+            print_r($v);
+        }
+    } ?>
+
+    </li>
+<?php
+}
