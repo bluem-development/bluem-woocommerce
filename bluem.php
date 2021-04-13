@@ -1008,3 +1008,48 @@ function bluem_setup_incomplete()
     // @todo: add warning when Mandates Bluem module is activated but the Mandates WooCommerce payment gateway is not activated yet - with a link to activate it
     // wp-admin/admin.php?page=wc-settings&tab=checkout
 }
+
+
+
+// Adding Meta container admin shop_order pages
+add_action('add_meta_boxes', 'bluem_order_requests_metabox');
+
+/**
+ * bluem_order_requests_metabox
+ *
+ * @return void
+ */
+function bluem_order_requests_metabox()
+{
+    add_meta_box(
+        'bluem_order_requests_metabox_content', 
+        __('Bluem request(s)', 
+        'bluem'), 
+        'bluem_order_requests_metabox_content', 
+        'shop_order', 
+        'normal', 
+        'default'
+    );
+}
+
+/**
+ * Adding Meta field in the meta container admin shop_order pages
+ *
+ * @return void
+ */
+function bluem_order_requests_metabox_content()
+{
+
+    global $post;
+    $order_id = $post->ID;
+    $order = wc_get_order($order_id);
+
+    $requests = bluem_db_get_requests_by_keyvalue("order_id", $order_id);
+    // var_dump($requests);
+
+    if (isset($requests) && count($requests)>0) {
+        bluem_render_requests_list($requests);
+    } else {
+        echo "No requests yet";
+    }
+}

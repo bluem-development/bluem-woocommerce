@@ -380,7 +380,7 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0)
         $nicekey = "";
     } else {
 
-        $nicekey = ucfirst(str_replace(['_','Response1','Response'], [' ','',''], $key));
+        $nicekey = ucfirst(str_replace(['_','Response1','Response','id'], [' ','','','ID'], $key));
         if ($level>1) {
             $nicekey = str_repeat("&nbsp;&nbsp;", $level-1).$nicekey;
         }
@@ -395,12 +395,13 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0)
             echo "{$value}";
 
     } else {
+        if ($nicekey!=="") {
+            echo "<span class='bluem-request-label'>
+        {$nicekey}: 
+        </span>";
+        }
         if(is_iterable($value)) {
-            if ($nicekey!=="") {
-                echo "<span class='bluem-request-label'>
-            {$nicekey}: 
-            </span><br>";
-            }
+            echo "<br>";
             foreach ($value as $valuekey => $valuevalue) {
                 if ($key == "linked_orders") {
                     $valuevalue = "<a href='".admin_url("post.php?post={$valuevalue}&action=edit")."' target='_blank'>$valuevalue</a>";
@@ -409,7 +410,7 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0)
                 bluem_render_obj_row_recursive($valuekey, $valuevalue, $level+1);
             }
         } else {
-            print_r($value);
+            echo ($value);
         }
     }
     echo "<br>";
