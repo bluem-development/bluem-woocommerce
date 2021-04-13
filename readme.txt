@@ -5,7 +5,7 @@ Tags: Bluem,Payments,iDIN,iDEAL,Incassomachtigen,woocommerce, bluem, payment gat
 Requires at least: 5.0
 Tested up to: 5.7.0
 Requires PHP: 7.0
-Stable tag: 1.2.8
+Stable tag: 1.2.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,7 +85,7 @@ Please deactivate and delete any previous versions of this plug-in prior to 1.1 
 
 
 == Changelog ==
-- 1.2.9b: Fixed iDIN redirect problem; improved idin Message formatting
+- 1.2.9: Fixed iDIN redirect problem; improved idin Message formatting; Added user profile Bluem transactions and added viewing of payload within transaction requests; stability fixes; layout fixes
 - 1.2.8: Improved requests view page and general user interface
 - 1.2.7: Added request logging in database with a clean new UI page; added redirect configuration for payments; moved iDIN check to checkout procedure
 - 1.2.6: Improved guest checkout identification blocking; improved cart url redirection in IDIN; Tested up to WordPress v5.7 and updated metadata to reflect this. Improved metadata management in user profile; woocommerce 5.1 compatibility

@@ -855,21 +855,42 @@ function bluem_idin_shortcode_callback()
 }
 
 
-add_action('show_user_profile', 'bluem_woocommerce_idin_show_extra_profile_fields');
+
+add_action('show_user_profile', 'bluem_woocommerce_idin_show_extra_profile_fields',2);
 add_action('edit_user_profile', 'bluem_woocommerce_idin_show_extra_profile_fields');
 
 function bluem_woocommerce_idin_show_extra_profile_fields($user)
 {
+
+    $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID,"identity");
     ?>
-<?php //var_dump($user->ID);
-?>
-<h2>Bluem iDIN Metadata</h2>
-<p>
-Ga naar
-<a href="<?php echo home_url("wp-admin/options-general.php?page=bluem"); ?>">
-Bluem instellingen
-</a> om het gedrag van verificatie te wijziggen.</p>
-<table class="form-table">
+          <table class="form-table">
+              
+    <?php 
+        
+        ?>
+
+    <?php if(isset($bluem_requests) && count($bluem_requests)>0) { ?>
+        <tr>
+    <th>
+    Identiteit
+    </th>
+    <td>
+    <?php
+        bluem_render_requests_list($bluem_requests);?>
+    </td>
+        </tr>
+    <?php } else {
+        ?>
+
+<tr>
+<th>
+Identiteit
+    </th>
+        <td>
+Nog geen verzoeken uitgevoerd.
+    </td>
+</tr>
 <tr>
 <th>
 <label for="bluem_idin_entrance_code">
@@ -895,6 +916,11 @@ class="regular-text" /><br />
 </tr>
 
 <tr>
+<?php
+    }
+?>
+
+
 <th>
 <label for="bluem_idin_report_agecheckresponse">
 Respons van bank op leeftijdscontrole, indien van toepassing
@@ -946,72 +972,22 @@ class="regular-text" /><br />
 </th>
 
 <td>
-<span class="description">
-Status en Resultaten van iDIN requests
-</span>
-
-<select class="form-control" name="bluem_idin_validated" id="bluem_idin_validated">
-<option value="0" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "0") {
-    echo "selected='selected'";
-} ?>>Identificatie nog niet uitgevoerd</option>
+    
+    <select class="form-control" name="bluem_idin_validated" id="bluem_idin_validated">
+        <option value="0" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "0") {
+            echo "selected='selected'";
+        } ?>>Identificatie nog niet uitgevoerd</option>
 <option value="1" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "1") {
     echo "selected='selected'";
 } ?>>Identificatie succesvol uitgevoerd</option>
 </select>
+<span class="description" style="display:block;">
+Status en Resultaten van iDIN requests
+</span>
 </div>
 </td>
 </tr>
-<table class="form-table">
-<tr>
-<td>
-<pre><?php print_r(bluem_idin_retrieve_results()); ?></pre>
-</td>
-<td>
-
-<h3>
-    Checkout blokkeren als iDIN niet is uitgevoerd:
-</h3>
-<p>
-    Ga naar Instellingen - Bluem en stel deze checkout blokkade in onder Identity instellingen.
-<!-- Voeg een filter toe voor id <code>bluem_checkout_check_idin_validated_filter</code> als u een filter wilt toevoegen om de checkout procedure te blokkeren op basis van de iDIN validatie procedure die is voltooid.<br>
-Als de geïnjecteerde functie true retourneert, wordt de kassa ingeschakeld. Als false wordt geretourneerd, wordt de kassa geblokkeerd en wordt een melding getoond. -->
-</p>
-<h3>Programmatisch met iDIN resultaten werken</h3>
-</p>
-<p>
-
-Of de validatie is gelukt, kan je  verkrijgen door in een plug-in of template de volgende PHP code te gebruiken:
-
-<blockquote style="border: 1px solid #aaa;
-border-radius:5px; margin:10pt 0 0 0; padding:5pt 15pt;"><pre>if (function_exists('bluem_idin_user_validated')) {
-    $validated = bluem_idin_user_validated();
-
-    if ($validated) {
-        // validated
-    } else {
-        // not validated
-    }
-}</pre>
-</blockquote>
-</p>
-<p>
-Deze resultaten zijn als object te verkrijgen door in een plug-in of template de volgende PHP code te gebruiken:
-</p>
-<p>
-<blockquote style="border: 1px solid #aaa; border-radius:5px;
-margin:10pt 0 0 0; padding:5pt 15pt;">
-<pre>if (function_exists('bluem_idin_retrieve_results')) {
-        $results = bluem_idin_retrieve_results();
-        // print, show or save the results:
-        echo $results->BirthDateResponse; // prints 1975-07-25
-        echo $results->NameResponse->LegalLastName; // prints Vries
-    }</pre>
-    </blockquote>
-    </p>
-    </td>
-    </tr>
-    </table>
-
+</table>
     <?php
 }
 add_action('personal_options_update', 'bluem_woocommerce_idin_save_extra_profile_fields');

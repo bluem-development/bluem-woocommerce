@@ -198,43 +198,89 @@ function bluem_db_get_request_fields()
 
 function bluem_db_get_request_by_id($request_id)
 {
-    $res = bluem_db_get_request_by_keyvalue(
+    $res = bluem_db_get_requests_by_keyvalue(
         'id',
         $request_id
     );
-    return count($res)>0?$res[0]:false;
+    return $res!==false && count($res)>0?$res[0]:false;
 }
 function bluem_db_get_request_by_transaction_id($transaction_id)
 {
-    $res = bluem_db_get_request_by_keyvalue(
+    $res = bluem_db_get_requests_by_keyvalue(
         'transaction_id',
         $transaction_id
     );
-    return count($res)>0?$res[0]:false;
+    return $res!==false && count($res)>0?$res[0]:false;
 }
 
-function bluem_db_get_request_by_keyvalue($key, $value)
+function bluem_db_get_requests_by_keyvalue($key, $value)
 {
-    global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    return bluem_db_get_requests_by_keyvalues([$key=>$value]);
+}
 
-    if (!in_array(
-        $key,
-        bluem_db_get_request_fields()
-    )
-    ) {
-        return false;
-    }
+function bluem_db_get_requests_by_keyvalues($keyvalues=[]) 
+{
+global $wpdb;
+date_default_timezone_set('Europe/Amsterdam');
+$wpdb->time_zone = 'Europe/Amsterdam';
 
-    $wpdb->show_errors(); //setting the Show or Display errors option to true
-    // @todo: Prepare this statement a bit more; https://developer.wordpress.org/reference/classes/wpdb/
-    $query = "SELECT *  FROM  `bluem_requests` WHERE `{$key}` = '{$value}'";
-    try {
-        return $wpdb->get_results(
-            $query
-        );
-    } catch (Throwable $th) {
-        return false;
+$wpdb->show_errors(); //setting the Show or Display errors option to true
+// @todo: Prepare this statement a bit more; https://developer.wordpress.org/reference/classes/wpdb/
+
+if(count($keyvalues)>0) {
+    $i = 0;
+    $kvs = " WHERE ";
+    foreach($keyvalues as $key => $value) {
+        $kvs.= "`{$key}` = '{$value}'";
+        $i++;
+        if($i<count($keyvalues)) {
+            $kvs .= " AND ";
+        }
     }
 }
+$query = "SELECT *  FROM  `bluem_requests`{$kvs}";
+try {
+    return $wpdb->get_results(
+        $query
+    );
+} catch (Throwable $th) {
+    return false;
+}
+}
+
+
+function bluem_db_get_requests_by_user_id($user_id = null) 
+{
+    global $current_user;
+    
+    if (is_null($user_id)) {
+        $user_id = $current_user->ID;
+    }
+
+    $res = bluem_db_get_requests_by_keyvalue(
+        'user_id',
+        $user_id
+    );
+    return $res!==false && count($res)>0?$res:[];
+}
+
+
+function bluem_db_get_requests_by_user_id_and_type($user_id = null,$type="") 
+{
+    global $current_user;
+    
+    if (is_null($user_id)) {
+        $user_id = $current_user->ID;
+    }
+
+    // @todo Throw an error when type is not given, or default to wildcard
+
+    $res = bluem_db_get_requests_by_keyvalues(
+        [
+            'user_id'=>$user_id,
+            'type'=>$type
+        ]
+    );
+    return $res!==false && count($res)>0?$res:[];
+}
+
