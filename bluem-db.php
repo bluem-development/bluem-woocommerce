@@ -242,13 +242,17 @@ function bluem_db_get_request_by_transaction_id_and_type($transaction_id,$type)
     return $res!==false && count($res)>0?$res[0]:false;
 }
 
-function bluem_db_get_requests_by_keyvalue($key, $value, $sort_dir="ASC", $limit = 0)
-{
-    return bluem_db_get_requests_by_keyvalues([$key=>$value], $sort_dir, $limit);
+function bluem_db_get_requests_by_keyvalue(
+    $key, $value, $sort_key = null, $sort_dir="ASC", $limit = 0
+) {
+    return bluem_db_get_requests_by_keyvalues(
+        [ $key => $value ], $sort_key, $sort_dir, $limit
+    );
 }
 
-function bluem_db_get_requests_by_keyvalues($keyvalues=[],$sort_key=null, $sort_dir="ASC", $limit = 0)
-{
+function bluem_db_get_requests_by_keyvalues(
+    $keyvalues=[],$sort_key=null, $sort_dir="ASC", $limit = 0
+) {
     global $wpdb;
     date_default_timezone_set('Europe/Amsterdam');
     $wpdb->time_zone = 'Europe/Amsterdam';
