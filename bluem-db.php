@@ -111,7 +111,7 @@ function bluem_db_update_request($request_id, $request_object)
     date_default_timezone_set('Europe/Amsterdam');
     $wpdb->time_zone = 'Europe/Amsterdam';
 
-    
+
     if (!bluem_db_validated_request_wellformed($request_object)) {
         return false;
     }
@@ -122,11 +122,11 @@ function bluem_db_update_request($request_id, $request_object)
             'id' => $request_id
             ]
     );
-        
+
     if ($update_result) {
         bluem_db_request_log(
             $request_id,
-            "Updated request. New data: ".json_encode($request_object)
+            "Updated request.<br><span style='font-family:monospace; font-size:9pt;'>New data: ".json_encode($request_object)."</span>"
         );
         return true;
     } else {
@@ -204,6 +204,24 @@ function bluem_db_get_request_by_id($request_id)
     );
     return $res!==false && count($res)>0?$res[0]:false;
 }
+
+
+
+function bluem_db_delete_request_by_id($request_id) {
+    global $wpdb;
+    date_default_timezone_set('Europe/Amsterdam');
+    $wpdb->time_zone = 'Europe/Amsterdam';
+
+    $wpdb->show_errors();
+
+    $query = $wpdb->delete( 'bluem_requests', ['id'=>$request_id]);
+    $query2 = $wpdb->delete( 'bluem_requests_log', ['request_id'=>$request_id]);
+    return $query && $query2;
+}
+
+
+
+
 function bluem_db_get_request_by_transaction_id($transaction_id)
 {
     $res = bluem_db_get_requests_by_keyvalue(
@@ -213,12 +231,23 @@ function bluem_db_get_request_by_transaction_id($transaction_id)
     return $res!==false && count($res)>0?$res[0]:false;
 }
 
-function bluem_db_get_requests_by_keyvalue($key, $value)
+function bluem_db_get_request_by_transaction_id_and_type($transaction_id,$type)
 {
-    return bluem_db_get_requests_by_keyvalues([$key=>$value]);
+    $res = bluem_db_get_requests_by_keyvalues(
+        [
+            'transaction_id' => $transaction_id,
+            'type' => $type
+        ]
+    );
+    return $res!==false && count($res)>0?$res[0]:false;
 }
 
-function bluem_db_get_requests_by_keyvalues($keyvalues=[])
+function bluem_db_get_requests_by_keyvalue($key, $value, $sort_dir="ASC", $limit = 0)
+{
+    return bluem_db_get_requests_by_keyvalues([$key=>$value], $sort_dir, $limit);
+}
+
+function bluem_db_get_requests_by_keyvalues($keyvalues=[],$sort_key=null, $sort_dir="ASC", $limit = 0)
 {
     global $wpdb;
     date_default_timezone_set('Europe/Amsterdam');
@@ -239,6 +268,17 @@ function bluem_db_get_requests_by_keyvalues($keyvalues=[])
         }
     }
     $query = "SELECT *  FROM  `bluem_requests`{$kvs}";
+    if (!is_null($sort_key) && $sort_key!==""
+        && in_array($sort_dir, ['ASC', 'DESC'])
+    ) {
+        $query .= " ORDER BY {$sort_key} {$sort_dir}";
+    }
+
+    if (!is_null($limit) && $limit!==""
+        && is_numeric($limit) && $limit >0
+    ) {
+        $query .= " LIMIT {$limit}";
+    }
     try {
         return $wpdb->get_results(
             $query
@@ -252,7 +292,7 @@ function bluem_db_get_requests_by_keyvalues($keyvalues=[])
 function bluem_db_get_requests_by_user_id($user_id = null)
 {
     global $current_user;
-    
+
     if (is_null($user_id)) {
         $user_id = $current_user->ID;
     }
@@ -268,7 +308,7 @@ function bluem_db_get_requests_by_user_id($user_id = null)
 function bluem_db_get_requests_by_user_id_and_type($user_id = null, $type="")
 {
     global $current_user;
-    
+
     if (is_null($user_id)) {
         $user_id = $current_user->ID;
     }
@@ -279,7 +319,9 @@ function bluem_db_get_requests_by_user_id_and_type($user_id = null, $type="")
         [
             'user_id'=>$user_id,
             'type'=>$type
-        ]
+        ],
+        'timestamp',
+        'DESC'
     );
     return $res!==false && count($res)>0?$res:[];
 }
@@ -287,7 +329,7 @@ function bluem_db_get_requests_by_user_id_and_type($user_id = null, $type="")
 function bluem_db_get_most_recent_request($user_id=null, $type="mandates")
 {
     global $current_user;
-    
+
     if (is_null($user_id)) {
         $user_id = $current_user->ID;
     }
@@ -306,7 +348,12 @@ function bluem_db_get_most_recent_request($user_id=null, $type="mandates")
 
     $wpdb->show_errors(); //setting the Show or Display errors option to true
 
-    $query = "SELECT *  FROM  `bluem_requests` WHERE `user_id` = '{$user_id}' and `type` = '{$type}' ORDER BY `timestamp` DESC LIMIT 1 ";
+    $query = "SELECT *
+        FROM  `bluem_requests`
+        WHERE `user_id` = '{$user_id}'
+            AND `type` = '{$type}'
+        ORDER BY `timestamp` DESC
+        LIMIT 1 ";
     try {
         $results = $wpdb->get_results(
             $query

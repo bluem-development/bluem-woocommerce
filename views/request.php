@@ -146,6 +146,19 @@
     }
             ?>
             </p>
+
+
+            <p>
+<span class="bluem-request-label">
+
+    Administratie:
+</span>
+            <br>
+
+
+            <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$request->id."&admin_action=delete");?>" 
+                class="button bluem-button-danger">Verwijder dit verzoek direct</a>
+            </p>
         </div>
 
         <?php

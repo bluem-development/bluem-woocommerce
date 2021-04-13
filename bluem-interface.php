@@ -34,8 +34,8 @@ function bluem_render_request_table($requests, $users_by_id=[])
 
     <thead>
         <tr>
-            <th style="width:20%;">Gebruiker</th>
             <th style="width:20%;">Verzoek</th>
+            <th style="width:20%;">Gebruiker</th>
             <th style="width:20%;">Datum</th>
             <th style="width:20%;">Extra informatie</th>
             <th style="width:20%;">Status</th>
@@ -51,10 +51,6 @@ function bluem_render_request_table($requests, $users_by_id=[])
 
 
             <td>
-                <?php
-   bluem_render_request_user($r, $users_by_id); ?>
-            </td>
-            <td>
                 <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$r->id); ?>"
                     target="_self">
                     <?php echo $r->description; ?>
@@ -64,9 +60,13 @@ function bluem_render_request_table($requests, $users_by_id=[])
                     <?php echo $r->transaction_id; ?>
                     <br>
                     <?php if (isset($r->debtor_reference) && $r->debtor_reference !=="") {
-       echo "Klantreferentie: ".$r->debtor_reference;
-   } ?>
+                        echo "Klantreferentie: ".$r->debtor_reference;
+                    } ?>
                 </span>
+            </td>
+            <td>
+                <?php
+   bluem_render_request_user($r, $users_by_id); ?>
             </td>
             <?php $rdate = strtotime($r->timestamp); ?>
             <?php $rdate = Carbon::parse($r->timestamp, 'Europe/Amsterdam'); ?>
@@ -178,6 +178,16 @@ function bluem_render_request_status($status)
                         <span class='dashicons dashicons-marker'></span>
                         In verwerking</span>";
                     break;
+                    }
+
+                    case 'insufficient': 
+                        { 
+
+                            echo "<span style='color:#ac1111'>
+                    
+                            <span class='dashicons dashicons-dismiss'></span>
+                            Ontoereikend</span>";
+                            break;
                     }
             case 'failure':
                 {
@@ -365,18 +375,41 @@ function bluem_render_requests_list($requests)
 
 function bluem_render_obj_row_recursive($key, $value, $level = 0)
 {
-    $nicekey = ucfirst(str_replace(['_','Response1','Response'], [' ','',''], $key));
-    if ($level>1) {
-        $nicekey = str_repeat("&nbsp;&nbsp;", $level-1).$nicekey;
-    }
-    if (is_string($value)) {
-        echo "<span class='bluem-request-label'>
-       {$nicekey}: 
-       </span>
-       {$value}";
+    if (is_numeric($key)) {
+        $key = "";
+        $nicekey = "";
     } else {
-        foreach ($value as $valuekey => $valuevalue) {
-            bluem_render_obj_row_recursive($valuekey, $valuevalue, $level+1);
+
+        $nicekey = ucfirst(str_replace(['_','Response1','Response'], [' ','',''], $key));
+        if ($level>1) {
+            $nicekey = str_repeat("&nbsp;&nbsp;", $level-1).$nicekey;
+        }
+    }
+        if (is_string($value)) {
+            
+            if ($nicekey!=="") {
+                echo "<span class='bluem-request-label'>
+                {$nicekey}: 
+                </span> ";
+            }
+            echo "{$value}";
+
+    } else {
+        if(is_iterable($value)) {
+            if ($nicekey!=="") {
+                echo "<span class='bluem-request-label'>
+            {$nicekey}: 
+            </span><br>";
+            }
+            foreach ($value as $valuekey => $valuevalue) {
+                if ($key == "linked_orders") {
+                    $valuevalue = "<a href='".admin_url("post.php?post={$valuevalue}&action=edit")."' target='_blank'>$valuevalue</a>";
+                }
+                
+                bluem_render_obj_row_recursive($valuekey, $valuevalue, $level+1);
+            }
+        } else {
+            print_r($value);
         }
     }
     echo "<br>";

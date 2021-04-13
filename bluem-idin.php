@@ -1252,6 +1252,7 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
 // https://www.businessbloomer.com/woocommerce-visual-hook-guide-checkout-page/
 // add_action( 'woocommerce_review_order_before_payment', 'bluem_checkout_check_idin_validated' );
 
+// CHECKOUT review message
 add_action('woocommerce_review_order_before_payment', 'bluem_checkout_idin_notice');
 function bluem_checkout_idin_notice()
 {
@@ -1383,16 +1384,24 @@ function bluem_checkout_idin_notice()
 
 
 // add_action('woocommerce_check_cart_items', 'bluem_checkout_check_idin_validated'); // Cart and Checkout
-add_action('woocommerce_after_checkout_validation', 'bluem_checkout_check_idin_validated');
+
+/**
+ * Show notice!
+ */
+add_action('template_redirect', 'bluem_checkout_check_idin_validated');
 function bluem_checkout_check_idin_validated()
 {
     global $current_user;
-
-
-    // use a setting if this check has to be incurred
-    if (!is_checkout()) {
+// ! is_user_logged_in() && 
+    if (is_checkout() && ! is_wc_endpoint_url() ) {
+        // wc_add_notice( sprintf( __('This is my <strong>"custom message"</strong> and I can even add a button to the right… <a href="%s" class="button alt">My account</a>'), get_permalink( get_option('woocommerce_myaccount_page_id') ) ), 'notice' );
+    } else {
         return;
     }
+    // use a setting if this check has to be incurred
+    // if (!is_checkout()) {
+    //     return;
+    // }
 
     if (!function_exists('bluem_idin_user_validated')) {
         return;
@@ -1415,7 +1424,7 @@ function bluem_checkout_check_idin_validated()
         // above 0: any form of verification is required
         if (!$validated) {
             wc_add_notice(
-                bluem_idin_generate_notice($validation_message, true),
+                bluem_idin_generate_notice($validation_message, true, false,false),
                 'error'
             );
         } else {
@@ -1441,26 +1450,24 @@ function bluem_checkout_check_idin_validated()
                 }
                 // var_dump($_SESSION['bluem_idin_report_agecheckresponse']);
 
-                // var_dump($ageCheckResponse);
                 // check on age based on response of AgeCheckRequest in user meta
                 // if ($scenario == 1)
                 // {
-                if (isset($ageCheckResponse)) {
+                    $age_valid = false;
+                if (isset($ageCheckResponse) && $ageCheckResponse !="") {
                     if ($ageCheckResponse == "true") {
 
                     // TRUE Teruggekregen van de bank
                         $age_valid = true;
                     } else {
                         // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
-                        $validation_message = "Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden.
-                    Neem bij vragen contact op met de webshop support.";
+                        $validation_message = "Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden.";
 
                         $age_valid = false;
                     }
                 } else {
                     // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
-                    $validation_message = "We hebben uw leeftijd niet kunnen opvragen bij de identificatie.<BR>
-                    Neem contact op met de webshop support.";
+                    $validation_message = "We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure";
 
                     $age_valid = false;
                 }
@@ -1493,8 +1500,13 @@ function bluem_checkout_check_idin_validated()
                 // }
                 if (!$age_valid) {
                     wc_add_notice(
-                        bluem_idin_generate_notice($validation_message, true),
+                        bluem_idin_generate_notice($validation_message,true,false,false),
                         'error'
+                    );
+                } else {
+                    wc_add_notice(
+                        "Je leeftijd is geverifieerd.",
+                        'success'
                     );
                 }
             }
@@ -1504,7 +1516,7 @@ function bluem_checkout_check_idin_validated()
     // custom user-based checks:
     if (bluem_checkout_check_idin_validated_filter()==false) {
         wc_add_notice(
-            bluem_idin_generate_notice($validation_message, true),
+            bluem_idin_generate_notice($validation_message, true,  false,false),
             'error'
         );
         // wc_add_notice(
@@ -1593,30 +1605,7 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
     global $current_user;
 
     // if(!is_admin()) {
-
     // }
-
-
-    // $fields['bluem_idin_entrance_code'] = [
-    //     'label'=>__('bluem_idin_entrance_code','bluem'),
-    //     'value'=> get_user_meta($current_user->ID, 'bluem_idin_entrance_code', true)
-    // ];
-    // $fields['bluem_idin_transaction_id'] = [
-    //     'label'=>__('bluem_idin_transaction_id','bluem'),
-    //     'value'=> get_user_meta($current_user->ID, 'bluem_idin_transaction_id', true)
-    // ];
-    // $fields['bluem_idin_transaction_url'] = [
-    //     'label'=>__('bluem_idin_transaction_url','bluem'),
-    //     'value'=> get_user_meta($current_user->ID, 'bluem_idin_transaction_url', true)
-    // ];
-    // $fields['bluem_idin_report_last_verification_timestamp'] = [
-    //     'label'=>__('bluem_idin_report_last_verification_timestamp','bluem'),
-    //     'value'=> get_user_meta($current_user->ID, 'bluem_idin_report_last_verification_timestamp', true)
-    // ];
-    // $fields['bluem_idin_report_customeridresponse'] = [
-    //     'label'=>__('bluem_idin_report_customeridresponse','bluem'),
-    //     'value'=> get_user_meta($current_user->ID, 'bluem_idin_report_customeridresponse', true)
-    // ];
 
     $options = get_option('bluem_woocommerce_options');
     
@@ -1695,28 +1684,33 @@ function bluem_idin_before_payment_notice()
  * @param boolean $button
  * @return String
  */
-function bluem_idin_generate_notice(String $message ="", bool $button = false) : String
+function bluem_idin_generate_notice(String $message ="", bool $button = false, bool $logo = true, bool $border = true) : String
 {
     $idin_logo_html = "<img src='".
     plugin_dir_url(__FILE__)."assets/bluem/idin.png' class='bluem-idin-logo'
     style='position:absolute; top:15pt; left:15pt; max-height:64px; '/>";
 
-    $idin_button_html = "<br><a href='".
+    $idin_button_html = "<a href='".
         home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true').
         "' target='_self' class='button bluem-identify-button' style='display:inline-block'>
             Klik hier om je te identificeren
         </a><br>";
 
-    $html = "<div style='position:relative; 
+    $html = "<div style='position:relative;".
+    ($border?"border-radius:4px; 
     width:auto;
-    min-height:110px; display:block; 
-    padding:15pt; border:1px solid #50afed; 
-    border-radius:4px; margin-top:10px; 
+    min-height:110px; 
+    display:block; 
+    padding:15pt; 
+    margin-top:10px; 
     margin-bottom:10px;
-    '>";
-    $html .= "{$idin_logo_html}";
+    border:1px solid #50afed;":"")."'>";
+    if($logo) {
+        $html .= "{$idin_logo_html}";
+    }
 
-    $html .= "<div style='margin-left:100px; display:block; width:auto; height:auto;'>
+    $html .= "<div style='
+    ".($border?"margin-left:100px; display:block; width:auto; height:auto;":"")."'>
         {$message}";
     if ($button) {
         $html .= "<div style='' class='bluem-idin-button'>";

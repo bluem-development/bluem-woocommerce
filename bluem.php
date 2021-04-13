@@ -145,7 +145,16 @@ add_action('admin_menu', 'bluem_register_menu', 9);
 function bluem_admin_requests_view()
 {
     if (isset($_GET['request_id']) && $_GET['request_id']!=="") {
-        bluem_admin_requests_view_request();
+
+        if (isset($_GET['admin_action']) && $_GET['admin_action']=="delete") {
+            bluem_db_delete_request_by_id($_GET['request_id']);
+            wp_redirect(
+                admin_url("admin.php?page=bluem_admin_requests_view")
+            );
+        } else {
+
+            bluem_admin_requests_view_request();
+        }
     } else {
         bluem_admin_requests_view_all();
     }
@@ -177,7 +186,7 @@ function bluem_admin_requests_view_all()
     date_default_timezone_set('Europe/Amsterdam');
     $wpdb->time_zone = 'Europe/Amsterdam';
 
-    $_requests = $wpdb->get_results("SELECT *  FROM `bluem_requests`");
+    $_requests = $wpdb->get_results("SELECT *  FROM `bluem_requests` ORDER BY `type` ASC, `timestamp` DESC");
 
     $requests['identity'] = [];
     $requests['payments'] = [];
