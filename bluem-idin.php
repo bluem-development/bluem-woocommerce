@@ -1257,10 +1257,14 @@ add_action('woocommerce_review_order_before_payment', 'bluem_checkout_idin_notic
 function bluem_checkout_idin_notice()
 {
     global $current_user;
-
+    
+    // if no woo
+    if (!function_exists("is_checkout") || !function_exists('is_wc_endpoint_url')) {
+        return;
+    }
 
     // use a setting if this check has to be incurred
-    if (!is_checkout()) {
+    if (function_exists("is_checkout") && !is_checkout()) {
         return;
     }
 
@@ -1393,11 +1397,17 @@ function bluem_checkout_check_idin_validated()
 {
     global $current_user;
 // ! is_user_logged_in() && 
-    if (is_checkout() && ! is_wc_endpoint_url() ) {
-        // wc_add_notice( sprintf( __('This is my <strong>"custom message"</strong> and I can even add a button to the right… <a href="%s" class="button alt">My account</a>'), get_permalink( get_option('woocommerce_myaccount_page_id') ) ), 'notice' );
-    } else {
+    
+    if (!function_exists("is_checkout") || !function_exists('is_wc_endpoint_url')) {
         return;
     }
+        // only run this check in Woo  
+        if (is_checkout() && ! is_wc_endpoint_url() ) {
+            // wc_add_notice( sprintf( __('This is my <strong>"custom message"</strong> and I can even add a button to the right… <a href="%s" class="button alt">My account</a>'), get_permalink( get_option('woocommerce_myaccount_page_id') ) ), 'notice' );
+        } else {
+            return;
+        }
+    
     // use a setting if this check has to be incurred
     // if (!is_checkout()) {
     //     return;
