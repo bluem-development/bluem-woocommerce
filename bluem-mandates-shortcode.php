@@ -180,6 +180,19 @@ function bluem_mandate_mandate_shortcode_callback()
     $statusUpdateObject = $response->EMandateStatusUpdate;
     $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
 
+
+    $request_from_db = bluem_db_get_request_by_transaction_id_and_type(
+        $mandateID,
+        "mandates"
+    );
+    if ($statusCode !== $request_from_db->status) {
+        bluem_db_update_request(
+            $request_from_db->id,
+            [
+                'status'=>$statusCode
+                ]
+            );
+        }
     // Handling the response.
     if ($statusCode === "Success") {
         update_user_meta($current_user->ID, "bluem_mandates_validated", true);
