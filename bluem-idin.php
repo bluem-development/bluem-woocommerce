@@ -223,6 +223,22 @@ function bluem_woocommerce_get_idin_options()
         'type' => 'bool',
         'default' => '1',
     ],
+    'idin_add_name_in_order_emails' => [
+        'key' => 'idin_add_name_in_order_emails',
+        'title' => 'bluem_idin_add_name_in_order_emails',
+        'name' => 'Identificatie naam in emails',
+        'description' => "Moet de naam van identificatie worden weergegeven in de order notificatie email naar de klant en naar jezelf?",
+        'type' => 'bool',
+        'default' => '1',
+    ],
+    'idin_add_birthdate_in_order_emails' => [
+        'key' => 'idin_add_birthdate_in_order_emails',
+        'title' => 'bluem_idin_add_birthdate_in_order_emails',
+        'name' => 'Identificatie geboortedatum in emails',
+        'description' => "Moet de geboortedatum van identificatie worden weergegeven in de order notificatie email naar de klant en naar jezelf?",
+        'type' => 'bool',
+        'default' => '1',
+    ],
     ];
 }
 
@@ -427,6 +443,20 @@ function bluem_woocommerce_settings_render_idin_add_address_in_order_emails()
 {
     bluem_woocommerce_settings_render_input(
         bluem_woocommerce_get_idin_option('idin_add_address_in_order_emails')
+    );
+}
+
+function bluem_woocommerce_settings_render_idin_add_name_in_order_emails()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_add_name_in_order_emails')
+    );
+}
+
+function bluem_woocommerce_settings_render_idin_add_birthdate_in_order_emails()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_add_birthdate_in_order_emails')
     );
 }
 
@@ -877,7 +907,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user)
           <table class="form-table">
           <a id="user_identity"></a>
     <?php
-        
+
         ?>
 
     <?php if (isset($bluem_requests) && count($bluem_requests)>0) { ?>
@@ -981,7 +1011,7 @@ class="regular-text" /><br />
 </th>
 
 <td>
-    
+
     <select class="form-control" name="bluem_idin_validated" id="bluem_idin_validated">
         <option value="0" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "0") {
             echo "selected='selected'";
@@ -1257,7 +1287,7 @@ add_action('woocommerce_review_order_before_payment', 'bluem_checkout_idin_notic
 function bluem_checkout_idin_notice()
 {
     global $current_user;
-    
+
     // if no woo
     if (!function_exists("is_checkout") || !function_exists('is_wc_endpoint_url')) {
         return;
@@ -1271,7 +1301,7 @@ function bluem_checkout_idin_notice()
     if (!function_exists('bluem_idin_user_validated')) {
         return;
     }
-  
+
     $options = get_option('bluem_woocommerce_options');
 
     if (isset($options['idin_scenario_active']) && $options['idin_scenario_active']!=="") {
@@ -1396,18 +1426,18 @@ add_action('template_redirect', 'bluem_checkout_check_idin_validated');
 function bluem_checkout_check_idin_validated()
 {
     global $current_user;
-// ! is_user_logged_in() && 
-    
+    // ! is_user_logged_in() &&
+
     if (!function_exists("is_checkout") || !function_exists('is_wc_endpoint_url')) {
         return;
     }
-        // only run this check in Woo  
-        if (is_checkout() && ! is_wc_endpoint_url() ) {
-            // wc_add_notice( sprintf( __('This is my <strong>"custom message"</strong> and I can even add a button to the right… <a href="%s" class="button alt">My account</a>'), get_permalink( get_option('woocommerce_myaccount_page_id') ) ), 'notice' );
-        } else {
-            return;
-        }
-    
+    // only run this check in Woo
+    if (is_checkout() && ! is_wc_endpoint_url()) {
+        // wc_add_notice( sprintf( __('This is my <strong>"custom message"</strong> and I can even add a button to the right… <a href="%s" class="button alt">My account</a>'), get_permalink( get_option('woocommerce_myaccount_page_id') ) ), 'notice' );
+    } else {
+        return;
+    }
+
     // use a setting if this check has to be incurred
     // if (!is_checkout()) {
     //     return;
@@ -1434,7 +1464,7 @@ function bluem_checkout_check_idin_validated()
         // above 0: any form of verification is required
         if (!$validated) {
             wc_add_notice(
-                bluem_idin_generate_notice($validation_message, true, false,false),
+                bluem_idin_generate_notice($validation_message, true, false, false),
                 'error'
             );
         } else {
@@ -1463,7 +1493,7 @@ function bluem_checkout_check_idin_validated()
                 // check on age based on response of AgeCheckRequest in user meta
                 // if ($scenario == 1)
                 // {
-                    $age_valid = false;
+                $age_valid = false;
                 if (isset($ageCheckResponse) && $ageCheckResponse !="") {
                     if ($ageCheckResponse == "true") {
 
@@ -1510,7 +1540,7 @@ function bluem_checkout_check_idin_validated()
                 // }
                 if (!$age_valid) {
                     wc_add_notice(
-                        bluem_idin_generate_notice($validation_message,true,false,false),
+                        bluem_idin_generate_notice($validation_message, true, false, false),
                         'error'
                     );
                 } else {
@@ -1526,7 +1556,7 @@ function bluem_checkout_check_idin_validated()
     // custom user-based checks:
     if (bluem_checkout_check_idin_validated_filter()==false) {
         wc_add_notice(
-            bluem_idin_generate_notice($validation_message, true,  false,false),
+            bluem_idin_generate_notice($validation_message, true, false, false),
             'error'
         );
         // wc_add_notice(
@@ -1618,7 +1648,7 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
     // }
 
     $options = get_option('bluem_woocommerce_options');
-    
+
     if (!array_key_exists('idin_add_field_in_order_emails', $options)
         || (array_key_exists('idin_add_field_in_order_emails', $options)
         && $options['idin_add_field_in_order_emails'] == "1")
@@ -1638,18 +1668,14 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
     }
 
 
-    
+    $request = bluem_db_get_most_recent_request($current_user->ID, "identity");
+    $pl = json_decode($request->payload);
+
     if (!array_key_exists('idin_add_address_in_order_emails', $options)
         || (array_key_exists('idin_add_address_in_order_emails', $options)
         && $options['idin_add_address_in_order_emails'] == "1")
     ) {
-        $request = bluem_db_get_most_recent_request($current_user->ID, "identity");
         if ($request !== false) {
-            $pl = json_decode($request->payload);
-            // var_dump($request);
-            // var_dump($pl);
-            // die();
-            // echo "<HR>";
             $address_text = "";
             if (isset($pl->report->AddressResponse->Street)) {
                 $address_text.= $pl->report->AddressResponse->Street." ";
@@ -1667,13 +1693,78 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
             if (isset($pl->report->AddressResponse->CountryCode)) {
                 $address_text.= $pl->report->AddressResponse->CountryCode."";
             }
-            
+
             $fields['bluem_idin_address'] = [
                 'label'=> __('Adres uit verificatie', 'bluem'),
                 'value'=> $address_text
             ];
-            // var_dump($address_text);
+        // var_dump($address_text);
             // die();
+        } else {
+            $fields['bluem_idin_address'] = [
+                'label'=> __('Adres uit verificatie', 'bluem'),
+                'value'=> "Onbekend"
+            ];
+        }
+    }
+
+
+    if (!array_key_exists('idin_add_name_in_order_emails', $options)
+        || (array_key_exists('idin_add_name_in_order_emails', $options)
+        && $options['idin_add_name_in_order_emails'] == "1")
+    ) {
+        if ($request !== false) {
+            $name_text = "";
+            if (isset($pl->report->NameResponse->Initials)
+                && $pl->report->NameResponse->Initials!==""
+            ) {
+                $name_text.= $pl->report->NameResponse->Initials." ";
+            }
+            if (isset($pl->report->NameResponse->LegalLastNamePrefix)
+                && $pl->report->NameResponse->LegalLastNamePrefix!==""
+            ) {
+                $name_text.= $pl->report->NameResponse->LegalLastNamePrefix." ";
+            }
+            if (isset($pl->report->NameResponse->LegalLastName)
+                && $pl->report->NameResponse->LegalLastName!==""
+            ) {
+                $name_text.= $pl->report->NameResponse->LegalLastName." ";
+            }
+
+            $fields['bluem_idin_name'] = [
+                'label'=> __('Naam uit verificatie', 'bluem'),
+                'value'=> $name_text
+            ];
+        } else {
+            $fields['bluem_idin_name'] = [
+                'label'=> __('Naam uit verificatie', 'bluem'),
+                'value'=> "Onbekend"
+            ];
+        }
+    }
+
+
+    if (!array_key_exists('idin_add_birthdate_in_order_emails', $options)
+        || (array_key_exists('idin_add_birthdate_in_order_emails', $options)
+        && $options['idin_add_birthdate_in_order_emails'] == "1")
+    ) {
+        if ($request !== false) {
+            $birthdate_text = "";
+            if (isset($pl->report->BirthDateResponse)
+                && $pl->report->BirthDateResponse!==""
+            ) {
+                $birthdate_text.= $pl->report->BirthDateResponse." ";
+            }
+
+            $fields['bluem_idin_birthdate'] = [
+                'label'=> __('Geboortedatum uit verificatie', 'bluem'),
+                'value'=> $birthdate_text
+            ];
+        } else {
+            $fields['bluem_idin_birthdate'] = [
+                'label'=> __('Geboortedatum uit verificatie', 'bluem'),
+                'value'=> "Onbekend"
+            ];
         }
     }
     return $fields;
@@ -1707,15 +1798,15 @@ function bluem_idin_generate_notice(String $message ="", bool $button = false, b
         </a><br>";
 
     $html = "<div style='position:relative;".
-    ($border?"border-radius:4px; 
+    ($border?"border-radius:4px;
     width:auto;
-    min-height:110px; 
-    display:block; 
-    padding:15pt; 
-    margin-top:10px; 
+    min-height:110px;
+    display:block;
+    padding:15pt;
+    margin-top:10px;
     margin-bottom:10px;
     border:1px solid #50afed;":"")."'>";
-    if($logo) {
+    if ($logo) {
         $html .= "{$idin_logo_html}";
     }
 
