@@ -97,15 +97,15 @@ h2.bluem-settings-h2:nth-child(n+2) {
     font-size: 14pt;
 }
 
-.bluem-button-danger {
-    color: #fff;
-    border-color: #b12222;
-    background: #c10e0e;
+a.bluem-button-danger {
+    color: #fff !important;
+    border-color: #b12222 !important;
+    background: #c10e0e !important;
 }
 
-.bluem-button-danger:hover,
-.bluem-button-danger:active {
-    color: #fff;
-    border-color: #810b0b;
-    background: #810b0b;
+a.bluem-button-danger:hover,
+a.bluem-button-danger:active {
+    color: #fff !important;
+    border-color: #810b0b !important;
+    background: #810b0b !important;
 }

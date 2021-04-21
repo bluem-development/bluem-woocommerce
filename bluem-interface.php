@@ -400,17 +400,17 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0)
         {$nicekey}: 
         </span>";
         }
-        if(is_iterable($value)) {
+        if(is_iterable($value) || is_object($value)) {
             echo "<br>";
             foreach ($value as $valuekey => $valuevalue) {
                 if ($key == "linked_orders") {
-                    $valuevalue = "<a href='".admin_url("post.php?post={$valuevalue}&action=edit")."' target='_blank'>$valuevalue</a>";
+                    $valuevalue = "<a href='". admin_url("post.php?post={$valuevalue}&action=edit")."' target='_blank'>$valuevalue</a>";
                 }
                 
                 bluem_render_obj_row_recursive($valuekey, $valuevalue, $level+1);
             }
         } else {
-            echo ($value);
+            var_dump($value);
         }
     }
     echo "<br>";

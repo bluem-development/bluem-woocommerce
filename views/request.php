@@ -148,7 +148,10 @@
             </p>
 
 
-            <p>
+        </div>
+
+
+        <div style="clear:both; display:block; width:100%;">
 <span class="bluem-request-label">
 
     Administratie:
@@ -157,10 +160,11 @@
 
 
             <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$request->id."&admin_action=delete");?>" 
-                class="button bluem-button-danger">Verwijder dit verzoek direct</a>
-            </p>
-        </div>
-
+                class="button bluem-button-danger">Verwijder dit verzoek direct</a> 
+                <br>
+                
+                Let op: data wordt dan onherroepelijk verwijderd!
+            </div>
         <?php
 if ($request->type == "identity") {
     ?>
