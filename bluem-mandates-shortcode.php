@@ -60,27 +60,29 @@ function bluem_mandate_shortcode_execute()
             $request->entranceCode.""
         );
 
+        
+        
         // Actually perform the request.
         $response = $bluem->PerformRequest($request);
-
+        
         if (!isset($response->EMandateTransactionResponse->TransactionURL)) {
             $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
             Vermeld onderstaande informatie aan het websitebeheer:";
-
+            
             if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
                 $msg.= "<br>Response: " .
                 $response->EMandateTransactionResponse->Error->ErrorMessage;
             } else {
                 $msg .= "<br>Algemene fout";
             }
-
-
+            
+            
             bluem_woocommerce_prompt($msg);
             exit;
         }
 
-        $_SESSION['bluem_mandateId'] =$mandate_id;
         $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
+        $_SESSION['bluem_mandateId'] =$mandate_id;
         update_user_meta(
             $current_user->ID,
             "bluem_latest_mandate_id",
@@ -89,8 +91,30 @@ function bluem_mandate_shortcode_execute()
 
         // redirect cast to string, necessary for AJAX response handling
         $transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
-
         $_SESSION['bluem_recentTransactionURL'] = $transactionURL;
+
+        bluem_db_create_request(
+            [
+                'entrance_code'=>$request->entranceCode,
+                'transaction_id'=>$request->mandateID,
+                'transaction_url'=>$transactionURL,
+                'user_id'=> get_current_user_id(),
+                'timestamp'=> date("Y-m-d H:i:s"),
+                'description'=>"Mandate request",
+                'debtor_reference'=>$debtorReference,
+                'type'=>"mandates",
+                'order_id'=>"",
+                'payload'=>json_encode(
+                    [
+                        'created_via'=>'shortcode',
+                        'environment'=>$bluem->environment,
+                        'created_mandate_id'=>$mandate_id,
+                    ]
+                )
+            ]
+        );
+
+
 
         if (ob_get_length()!==false && ob_get_length()>0) {
             ob_clean();
