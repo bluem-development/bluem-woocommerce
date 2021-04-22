@@ -58,10 +58,6 @@ function bluem_render_request_table($requests, $users_by_id=[])
                 <br>
                 <span style="color:#aaa; font-size:9pt;">
                     <?php echo $r->transaction_id; ?>
-                    <br>
-                    <?php if (isset($r->debtor_reference) && $r->debtor_reference !=="") {
-            echo "Klantreferentie: ".$r->debtor_reference;
-        } ?>
                 </span>
             </td>
             <td>
@@ -96,6 +92,16 @@ function bluem_render_request_table($requests, $users_by_id=[])
                     echo "&nbsp;";
                 }
             } ?>
+            <?php if (isset($r->debtor_reference) && $r->debtor_reference !=="") {
+            ?>
+            
+            <span style="color:#aaa; font-size:9pt; display:block;">Klantreferentie: 
+            <?php
+            echo $r->debtor_reference;
+            ?>
+            </span>
+            <?php
+        } ?>
             </td>
             <td>
                 <?php bluem_render_request_status($r->status); ?>

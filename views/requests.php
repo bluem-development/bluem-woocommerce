@@ -1,7 +1,7 @@
 <div class="wrap">
     <h1>
         <?php echo bluem_get_bluem_logo_html(48);?>
-        Bluem &middot; Verzoeken overzicht</h1>
+        Bluem &middot; Verzoeken</h1>
     <nav class="nav-tab-wrapper">
         <a href="#" class="nav-tab nav-active tab-active active" style="background-color: #fff;">
             Alle verzoeken</a>
@@ -16,13 +16,12 @@
             vragen of suggesties? Neem contact op via e-mail</a>
     </nav>
     <p>
-        Hieronder vind je een overzicht van alle Bluem verzoeken die gemaakt zijn sinds versie 1.2.7 van de Bluem
+        Hieronder staat een overzicht van alle Bluem verzoeken die gemaakt zijn sinds versie 1.2.7 van de Bluem
         plugin.
-        Bekijk meer informatie over de transacties in je <a href='https://viamijnbank.net/'
-            target='_blank'>viamijnbank.net dashboard</a>.
-    </p>
-    <p>
         Klik op een verzoek voor meer gedetailleerde informatie.
+    <br>
+        Bekijk nog meer informatie over alle transacties in het <a href='https://viamijnbank.net/'
+            target='_blank'>viamijnbank.net dashboard</a>.
     </p>
     <?php
         foreach ($requests as $cat => $rs) {
