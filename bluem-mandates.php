@@ -525,7 +525,6 @@ function bluem_init_mandate_gateway_class()
             }
 
             if (is_a($response, "Bluem\BluemPHP\ErrorBluemResponse", false)) {
-                // var_dump($mandate_id);
                 throw new Exception("An error occured in the payment method. Please contact the webshop owner with this message:  " . $response->error());
             }
 
@@ -533,7 +532,6 @@ function bluem_init_mandate_gateway_class()
 
             $attrs = $response->EMandateTransactionResponse->attributes();
 
-            // var_dump($attrs['entranceCode'] . "");
             if (!isset($attrs['entranceCode'])) {
                 throw new Exception("An error occured in reading the transaction response. Please contact the webshop owner");
             }
@@ -783,10 +781,6 @@ function bluem_init_mandate_gateway_class()
                 );
             }
 
-            // var_dump($request_from_db->status);
-            // var_dump($statusCode);
-            // die();
-
             if ($statusCode === "Success") {
                 $this->validateMandate($response, $order, true, true, true, $mandateID, $entranceCode);
             } elseif ($statusCode ==="Pending") {
@@ -975,15 +969,6 @@ function bluem_init_mandate_gateway_class()
                                 false
                             );
 
-                         
-                            // $status_update = bluem_db_update_request(
-                            //     $request_from_db->id,
-                            //     [
-                            //         'status'=>"Insufficient"
-                            //     ]
-                            // );
-                            // var_dump($status_update);
-                            // die();
                             bluem_db_request_log(
                                 $request_id,
                                 "User tried to give use this mandate with maxamount 

@@ -581,7 +581,7 @@ function bluem_woocommerce_settings_render_input($field)
 </select>
 <?php
     } elseif ($field['type'] == "bool") {
-        // var_dump($values[$key]);?>
+?>
 <div class="form-check form-check-inline">
     <label class="form-check-label" for="<?php echo $key; ?>_1">
         <input class="form-check-input" type="radio"
@@ -1045,7 +1045,6 @@ function bluem_order_requests_metabox_content()
     $order = wc_get_order($order_id);
 
     $requests = bluem_db_get_requests_by_keyvalue("order_id", $order_id);
-    // var_dump($requests);
 
     if (isset($requests) && count($requests)>0) {
         bluem_render_requests_list($requests);

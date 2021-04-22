@@ -662,7 +662,6 @@ function bluem_idin_shortcode_callback()
             $transactionID = get_user_meta(get_current_user_id(), "bluem_idin_transaction_id", true);
             $transactionURL = get_user_meta(get_current_user_id(), "bluem_idin_transaction_url", true);
         } else {
-            // session_start();
             if (isset($_SESSION["bluem_idin_entrance_code"]) && !is_null($_SESSION["bluem_idin_entrance_code"])) {
                 $entranceCode = $_SESSION["bluem_idin_entrance_code"];
             } else {
@@ -1093,27 +1092,11 @@ function bluem_idin_user_validated()
     if (is_user_logged_in()) {
         return get_user_meta(get_current_user_id(), "bluem_idin_validated", true) == "1";
     } else {
-        // session_start();
-
-        // var_dump($_SESSION);
         if (isset($_SESSION['bluem_idin_validated']) && $_SESSION['bluem_idin_validated'] === true) {
             return true;
         } else {
             return false;
         }
-        // return $_SESSION['bluem_idin_validated'];
-        // echo "NOT LOGGED IN, checking sessh";
-        // var_dump($current_user);
-
-        // die();
-        // if (!session_id()) {
-
-        //     return false;
-        //     // session_start();
-        // } else {
-
-        // }
-        // session_start();
     }
 }
 
@@ -1199,9 +1182,7 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
 
     $response = $bluem->PerformRequest($request);
 
-    if (!session_id()) {
-        session_start();
-    }
+    bluem_register_session();
 
     if ($response->ReceivedResponse()) {
         $entranceCode = $response->GetEntranceCode();

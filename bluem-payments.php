@@ -480,15 +480,13 @@ function bluem_init_payment_gateway_class()
             $entranceCode = sanitize_text_field($_GET['entranceCode']);
 
             $order = $this->getOrderByEntranceCode($entranceCode);
-            // var_dump($entranceCode);
-            // var_dump($order);
+
             if (is_null($order)) {
                 $this->renderPrompt("Fout: order niet gevonden in webshop. Neem contact op met de webshop en vermeld de code {$entranceCode} bij je gegevens.");
                 exit;
             }
             $user_id = $order->get_user_id();
 
-            // $order_meta = $order->get_meta_data();
             $transactionID = $order->get_meta('bluem_transactionid');
             if ($transactionID=="") {
                 $this->renderPrompt("No transaction ID found. Neem contact op met de webshop en vermeld de code {$entranceCode} bij je gegevens.");
