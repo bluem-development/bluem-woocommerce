@@ -1302,6 +1302,14 @@ function bluem_checkout_idin_notice()
         return;
     }
 
+    // don't show this notice on the my-account page (DrankStunter Request, 22-04-2021)
+    if (is_page('my-account')
+        || is_page('mijn-account')
+    ) {
+        return;
+    }
+
+
     $options = get_option('bluem_woocommerce_options');
 
     if (isset($options['idin_scenario_active']) && $options['idin_scenario_active']!=="") {
@@ -1431,17 +1439,20 @@ function bluem_checkout_check_idin_validated()
     if (!function_exists("is_checkout") || !function_exists('is_wc_endpoint_url')) {
         return;
     }
+
     // only run this check in Woo
     if (is_checkout() && ! is_wc_endpoint_url()) {
         // wc_add_notice( sprintf( __('This is my <strong>"custom message"</strong> and I can even add a button to the right… <a href="%s" class="button alt">My account</a>'), get_permalink( get_option('woocommerce_myaccount_page_id') ) ), 'notice' );
     } else {
         return;
     }
-
-    // use a setting if this check has to be incurred
-    // if (!is_checkout()) {
-    //     return;
-    // }
+    
+    // don't show this notice on the my-account page (DrankStunter Request, 22-04-2021)
+    if (is_page('my-account')
+        || is_page('mijn-account')
+    ) {
+        return;
+    }
 
     if (!function_exists('bluem_idin_user_validated')) {
         return;
