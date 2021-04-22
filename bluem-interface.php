@@ -60,8 +60,8 @@ function bluem_render_request_table($requests, $users_by_id=[])
                     <?php echo $r->transaction_id; ?>
                     <br>
                     <?php if (isset($r->debtor_reference) && $r->debtor_reference !=="") {
-                        echo "Klantreferentie: ".$r->debtor_reference;
-                    } ?>
+            echo "Klantreferentie: ".$r->debtor_reference;
+        } ?>
                 </span>
             </td>
             <td>
@@ -81,21 +81,21 @@ function bluem_render_request_table($requests, $users_by_id=[])
             </td>
             <td>
                 <?php
-        if (!is_null($r->order_id)) {
-            try {
-                $order = new \WC_Order($r->order_id);
-            } catch (Throwable $th) {
-                $order = false;
-            }
-            if ($order !== false) {
-                ?>
+            if (!is_null($r->order_id) && $r->order_id !="0") {
+                try {
+                    $order = new \WC_Order($r->order_id);
+                } catch (Throwable $th) {
+                    $order = false;
+                }
+                if ($order !== false) {
+                    ?>
                 <a href="<?php echo admin_url("post.php?post={$r->order_id}&action=edit"); ?>" target="_blank">
                     Bestelling <?php echo $r->order_id ?> (<?php echo wc_price($order->get_total()); ?>)
                 </a><?php
-            } else {
-                echo "&nbsp;";
-            }
-        } ?>
+                } else {
+                    echo "&nbsp;";
+                }
+            } ?>
             </td>
             <td>
                 <?php bluem_render_request_status($r->status); ?>
@@ -180,8 +180,8 @@ function bluem_render_request_status($status)
                     break;
                     }
 
-                    case 'insufficient': 
-                        { 
+                    case 'insufficient':
+                        {
 
                             echo "<span style='color:#ac1111'>
                     
@@ -379,28 +379,25 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0)
         $key = "";
         $nicekey = "";
     } else {
-
         $nicekey = ucfirst(str_replace(['_','Response1','Response','id'], [' ','','','ID'], $key));
         if ($level>1) {
             $nicekey = str_repeat("&nbsp;&nbsp;", $level-1).$nicekey;
         }
     }
-        if (is_string($value)) {
-            
-            if ($nicekey!=="") {
-                echo "<span class='bluem-request-label'>
+    if (is_string($value)) {
+        if ($nicekey!=="") {
+            echo "<span class='bluem-request-label'>
                 {$nicekey}: 
                 </span> ";
-            }
-            echo "{$value}";
-
+        }
+        echo "{$value}";
     } else {
         if ($nicekey!=="") {
             echo "<span class='bluem-request-label'>
         {$nicekey}: 
         </span>";
         }
-        if(is_iterable($value) || is_object($value)) {
+        if (is_iterable($value) || is_object($value)) {
             echo "<br>";
             foreach ($value as $valuekey => $valuevalue) {
                 if ($key == "linked_orders") {

@@ -32,14 +32,13 @@
                     Transactienummer:
                 </span>
                 <?php echo $request->transaction_id; ?>
-                <?php if (isset($request->debtor_reference) && $request->debtor_reference !=="") {
-    ?>
+                <?php if (isset($request->debtor_reference) && $request->debtor_reference !=="") { ?>
                 <br>
                 <span class="bluem-request-label">
                     Klantreferentie:
                 </span><?php
                     echo $request->debtor_reference;
-            } ?>
+                } ?>
             </p>
             <p>
                 <span class="bluem-request-label">
@@ -70,52 +69,65 @@
             </p>
 
             <?php
-        if (!is_null($request->order_id)) {
-            try {
-                $order = new \WC_Order($request->order_id);
-            } catch (Throwable $th) {
-                $order = false;
-            }
-            if ($order !==false) {
-                ?>
-            <p>
-                <span class="bluem-request-label">
-                    Bestelling:
-                </span>
-                <a href="<?php echo admin_url("post.php?post={$request->order_id}&action=edit"); ?>" target="_blank">
-                    <?php echo $request->order_id ?> (<?php echo wc_price($order->get_total()); ?>)
-                </a>
-            </p>
-            <?php
-            }
-        } ?>
+            if (!is_null($request->order_id) && $request->order_id !="0") {
+                try {
+                    $order = new \WC_Order($request->order_id);
+                } catch (Throwable $th) {
+                    $order = false;
+                }
+                if ($order !==false) {
+                    ?>
+                <p>
+                    <span class="bluem-request-label">
+                        Bestelling:
+                    </span>
+                    <a href="<?php echo admin_url("post.php?post={$request->order_id}&action=edit"); ?>" target="_blank">
+                        <?php echo $request->order_id ?> (<?php echo wc_price($order->get_total()); ?>)
+                    </a>
+                </p>
+                <?php
+                }
+            } ?>
 
 
-            <?php
-            if (count($logs)>0) {
-            ?>
+        <?php if (count($logs)>0) { ?>
             <h4>Gebeurtenissen:
             </h4>
             <ul>
                 <?php
 
-    foreach ($logs as $log) {
-        $ldate = strtotime($log->timestamp); ?>
-                <li>
-                    <span class="bluem-request-label">
-                        <?php echo date("d-m-Y H:i", $ldate); ?>
-                    </span>
-                    <?php echo $log->description; ?>
+                foreach ($logs as $log) {
+                    $ldate = strtotime($log->timestamp);
+                    
+                    $d = str_replace(
+                        ["<br><span style='font-family:monospace; font-size:9pt;'>", "</span>"],
+                        "",
+                        $log->description
+                    );
+                    $dparts = explode("New data: ", $d, 2); ?>
+                            <li>
+                                <span class="bluem-request-label">
+                                    <?php echo date("d-m-Y H:i", $ldate); ?>
+                                </span>
+                                <?php echo $dparts[0]; ?>
+            <?php if (isset($dparts[1])) { ?>&nbsp;
+            <abbr title="<?php
+                echo str_replace('"', '', $dparts[1]);
+                ?>"><span class="dashicons dashicons-info-outline"></span></abbr>
+
+
+                <?php
+            } ?>
                 </li>
                 <?php
     } ?>
             </ul>
             <?php
-        } ?>
+            } ?>
         </div>
         <div style="display:inline-block; vertical-align:top; width:40%; margin-left:5%">
             <?php if (isset($request->transaction_url)) {
-    ?>
+                ?>
             <p>
 
                 <span class="bluem-request-label">
@@ -129,11 +141,10 @@
             </p>
 
             <?php
-} ?>
+            } ?>
             <?php
 
         $pl = json_decode($request->payload);
-    // var_dump($pl);
     if (!is_null($pl)) {
         ?>
             <h4>
@@ -151,23 +162,20 @@
         </div>
 
 
-        <div style="clear:both; display:block; width:100%;">
-<span class="bluem-request-label">
-
-    Administratie:
-</span>
+        <div style="clear:both; display:block; width:100%; border-top:1px solid #ddd; padding-top:5pt;  ">
+            <span class="bluem-request-label">
+                Administratie:
+            </span>
             <br>
-
-
             <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$request->id."&admin_action=delete");?>" 
-                class="button bluem-button-danger">Verwijder dit verzoek direct</a> 
+                class="button bluem-button-danger" style="margin-top:5pt;">Verwijder dit verzoek direct</a> 
                 <br>
                 
                 Let op: data wordt dan onherroepelijk verwijderd!
             </div>
         <?php
 if ($request->type == "identity") {
-    ?>
+                ?>
         <div style="padding:20pt;">
             <h3>
                 Extra opmerkingen aangaande programmatisch met iDIN resultaten werken:
@@ -205,9 +213,9 @@ margin:10pt 0 0 0; padding:5pt 15pt;">
     }</pre>
             </blockquote>
             </p>
-        </div>
-        <?php
-} ?>
+        </div><?php
+        }
+        ?>
     </div>
     <?php bluem_render_footer(); ?>
 </div>

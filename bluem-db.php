@@ -126,7 +126,7 @@ function bluem_db_update_request($request_id, $request_object)
     if ($update_result) {
         bluem_db_request_log(
             $request_id,
-            "Updated request.<br><span style='font-family:monospace; font-size:9pt;'>New data: ".json_encode($request_object)."</span>"
+            "Updated request. New data: ".json_encode($request_object)
         );
         return true;
     } else {
@@ -207,15 +207,16 @@ function bluem_db_get_request_by_id($request_id)
 
 
 
-function bluem_db_delete_request_by_id($request_id) {
+function bluem_db_delete_request_by_id($request_id)
+{
     global $wpdb;
     date_default_timezone_set('Europe/Amsterdam');
     $wpdb->time_zone = 'Europe/Amsterdam';
 
     $wpdb->show_errors();
 
-    $query = $wpdb->delete( 'bluem_requests', ['id'=>$request_id]);
-    $query2 = $wpdb->delete( 'bluem_requests_log', ['request_id'=>$request_id]);
+    $query = $wpdb->delete('bluem_requests', ['id'=>$request_id]);
+    $query2 = $wpdb->delete('bluem_requests_log', ['request_id'=>$request_id]);
     return $query && $query2;
 }
 
@@ -231,7 +232,7 @@ function bluem_db_get_request_by_transaction_id($transaction_id)
     return $res!==false && count($res)>0?$res[0]:false;
 }
 
-function bluem_db_get_request_by_transaction_id_and_type($transaction_id,$type)
+function bluem_db_get_request_by_transaction_id_and_type($transaction_id, $type)
 {
     $res = bluem_db_get_requests_by_keyvalues(
         [
@@ -243,15 +244,25 @@ function bluem_db_get_request_by_transaction_id_and_type($transaction_id,$type)
 }
 
 function bluem_db_get_requests_by_keyvalue(
-    $key, $value, $sort_key = null, $sort_dir="ASC", $limit = 0
+    $key,
+    $value,
+    $sort_key = null,
+    $sort_dir="ASC",
+    $limit = 0
 ) {
     return bluem_db_get_requests_by_keyvalues(
-        [ $key => $value ], $sort_key, $sort_dir, $limit
+        [ $key => $value ],
+        $sort_key,
+        $sort_dir,
+        $limit
     );
 }
 
 function bluem_db_get_requests_by_keyvalues(
-    $keyvalues=[],$sort_key=null, $sort_dir="ASC", $limit = 0
+    $keyvalues=[],
+    $sort_key=null,
+    $sort_dir="ASC",
+    $limit = 0
 ) {
     global $wpdb;
     date_default_timezone_set('Europe/Amsterdam');

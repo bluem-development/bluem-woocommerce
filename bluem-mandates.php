@@ -385,7 +385,6 @@ function bluem_init_mandate_gateway_class()
             $retrieved_request_from_db = false;
             $request = bluem_db_get_most_recent_request($user_id, "mandates");
             if ($request !== false) {
-
                 $bluem_latest_mandate_id = $request->transaction_id;
 
                 $pl = json_decode($request->payload);
@@ -397,7 +396,6 @@ function bluem_init_mandate_gateway_class()
                 }
                 $bluem_latest_mandate_entrance_code = $request->entrance_code;
                 $retrieved_request_from_db = true;
-
             } else {
                 // no latest request found, also trying in user metadata (legacy)
 
@@ -419,7 +417,6 @@ function bluem_init_mandate_gateway_class()
                 } else {
                     $ready = false;
                 }
-
             }
 
             if ($ready &&
@@ -471,10 +468,6 @@ function bluem_init_mandate_gateway_class()
                                         'payload'=>json_encode($cur_payload)
                                     ]
                                 );
-
-
-
-
                             }
 
                             return array(
@@ -787,12 +780,12 @@ function bluem_init_mandate_gateway_class()
                     [
                         'status'=>$statusCode
                         ]
-                    );
-                }
+                );
+            }
 
-                // var_dump($request_from_db->status);
-                // var_dump($statusCode);  
-                // die();
+            // var_dump($request_from_db->status);
+            // var_dump($statusCode);
+            // die();
 
             if ($statusCode === "Success") {
                 $this->validateMandate($response, $order, true, true, true, $mandateID, $entranceCode);
@@ -943,14 +936,13 @@ function bluem_init_mandate_gateway_class()
                             $maxAmountResponse->amount
                         );
 
-                        if($request_id !=="" && $request_from_db!==false) {
-
+                        if ($request_id !=="" && $request_from_db!==false) {
                             $payload = json_decode($request_from_db->payload);
-                            if(!is_null($payload) && $payload !==false) {
-                                if(isset($maxAmountResponse->amount)) {
-                                    $payload->max_amount = $maxAmountResponse->amount; 
+                            if (!is_null($payload) && $payload !==false) {
+                                if (isset($maxAmountResponse->amount)) {
+                                    $payload->max_amount = $maxAmountResponse->amount;
                                 }
-                                if(isset($maxAmountResponse->currency)) {
+                                if (isset($maxAmountResponse->currency)) {
                                     $payload->max_amount = $maxAmountResponse->currency;
                                 }
                                 bluem_db_update_request(
@@ -961,8 +953,6 @@ function bluem_init_mandate_gateway_class()
                                 );
                             }
                         }
-
-                        
                     }
                     $allowed_margin = ($order_total_plus <= $maxAmountResponse->amount);
                     if (self::VERBOSE) {
@@ -986,23 +976,23 @@ function bluem_init_mandate_gateway_class()
                             );
 
                          
-                                // $status_update = bluem_db_update_request(
-                                //     $request_from_db->id,
-                                //     [
-                                //         'status'=>"Insufficient"
-                                //     ]
-                                // );
-                                // var_dump($status_update);
-                                // die();
-                                bluem_db_request_log(
-                                    $request_id,
-                                    "User tried to give use this mandate with maxamount 
+                            // $status_update = bluem_db_update_request(
+                            //     $request_from_db->id,
+                            //     [
+                            //         'status'=>"Insufficient"
+                            //     ]
+                            // );
+                            // var_dump($status_update);
+                            // die();
+                            bluem_db_request_log(
+                                $request_id,
+                                "User tried to give use this mandate with maxamount 
                                     &euro; {$maxAmountResponse->amount}, but the Order <a href='".
                                     admin_url("post.php?post=".$order->get_id()."&action=edit").
                                     "' target='_self'>ID ".$order->get_id()."</a> grand
                                     total including correction is &euro; {$order_total_plus_string}. 
                                     The user is prompted to create a new mandate to fulfill this order."
-                                );
+                            );
                             
 
                             exit;
@@ -1130,8 +1120,12 @@ function bluem_init_mandate_gateway_class()
                 <th><label for="bluem_mandates_validated">Machtiging via shortcode valide?</label></th>
                 <td>
                 <?php
-                $curValidatedVal = (int) esc_attr(get_user_meta($user->ID, 'bluem_mandates_validated', true));
-        // var_dump($curValidatedVal);?>
+                $curValidatedVal = (int) esc_attr(
+                    get_user_meta(
+                        $user->ID, 'bluem_mandates_validated', true
+                    )
+                );
+        ?>
                     <select name="bluem_mandates_validated" id="bluem_mandates_validated">
                         <option value="1" <?php if ($curValidatedVal == 1) {
             echo "selected";
@@ -1181,6 +1175,11 @@ function bluem_init_mandate_gateway_class()
             $user_id,
             'bluem_latest_mandate_amount',
             esc_attr(sanitize_text_field($_POST['bluem_latest_mandate_amount']))
+        );
+        update_user_meta(
+            $user_id,
+            'bluem_mandates_validated',
+            esc_attr(sanitize_text_field($_POST['bluem_mandates_validated']))
         );
     }
 }

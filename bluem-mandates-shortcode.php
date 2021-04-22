@@ -27,13 +27,27 @@ function bluem_mandate_shortcode_execute()
     global $current_user;
     // if the submit button is clicked, send the email
     if (isset($_POST['bluem-submitted'])) {
-        $debtorReference = sanitize_text_field($_POST["bluem_debtorReference"]);
+        $debtorReference = "";
+        if (isset($_POST["bluem_debtorReference"])) {
+            $debtorReference = sanitize_text_field($_POST["bluem_debtorReference"]);
+        } else {
+            if (is_user_logged_in()) {
+                $debtorReference = $current_user->user_nicename();
+            } else {
+                $debtorReference = "";
+            }
+        }
         $bluem_config = bluem_woocommerce_get_config();
         $bluem_config->merchantReturnURLBase = home_url(
             "bluem-woocommerce/mandate_shortcode_callback"
         );
-
+        
         $preferences = get_option('bluem_woocommerce_options');
+        
+        
+        $bluem_config->eMandateReason = "Incasso machtiging ".$debtorReference;
+
+
         $bluem = new Integration($bluem_config);
 
         $mandate_id_counter = get_option('bluem_woocommerce_mandate_id_counter');
@@ -43,6 +57,7 @@ function bluem_mandate_shortcode_execute()
         }
         $mandate_id = $mandate_id_counter + 1;
         update_option('bluem_woocommerce_mandate_id_counter', $mandate_id);
+
 
         $request = $bluem->CreateMandateRequest(
             $debtorReference,
@@ -191,8 +206,8 @@ function bluem_mandate_mandate_shortcode_callback()
             [
                 'status'=>$statusCode
                 ]
-            );
-        }
+        );
+    }
     // Handling the response.
     if ($statusCode === "Success") {
         update_user_meta($current_user->ID, "bluem_mandates_validated", true);
@@ -253,7 +268,7 @@ function bluem_mandateform()
     // var_dump($mandateID);
     // var_dump($validated);
 
-    if ($validated!=="1") {
+    if ((int)$validated!==1) {
         echo '<form action="' . home_url('bluem-woocommerce/mandate_shortcode_execute') . '" method="post">';
         echo '<p>Je moet nog een automatische incasso machtiging afgeven.';
         // echo $bluem_config->debtorReferenceFieldName . ' (verplicht) <br/>';
