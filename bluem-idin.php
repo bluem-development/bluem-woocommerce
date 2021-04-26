@@ -100,7 +100,8 @@ function bluem_woocommerce_get_idin_options()
             'key' => 'idin_request_name',
             'title' => 'bluem_idin_request_name',
             'name' => 'Naam opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, wil je dan de naam opvragen?",
+            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
+                wil je dan de naam opvragen?",
             'type' => 'bool',
             'default' => '1',
         ],
@@ -108,7 +109,8 @@ function bluem_woocommerce_get_idin_options()
             'key' => 'idin_request_address',
             'title' => 'bluem_idin_request_address',
             'name' => 'Adres opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, wil je dan het woonadres opvragen?",
+            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
+                wil je dan het woonadres opvragen?",
             'type' => 'bool',
             'default' => '1',
         ],
@@ -116,7 +118,9 @@ function bluem_woocommerce_get_idin_options()
             'key' => 'idin_request_birthdate',
             'title' => 'bluem_idin_request_birthdate',
             'name' => 'Geboortedatum opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, wil je dan de geboortedatum opvragen? Dit gegeven wordt ALTIJD opgevraagd indien je ook op de minimumleeftijd controleert",
+            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
+                wil je dan de geboortedatum opvragen? Dit gegeven wordt ALTIJD opgevraagd 
+                indien je ook op de minimumleeftijd controleert",
             'type' => 'bool',
             'default' => '1',
         ],
@@ -124,15 +128,17 @@ function bluem_woocommerce_get_idin_options()
             'key' => 'idin_request_gender',
             'title' => 'bluem_idin_request_gender',
             'name' => 'Geslacht opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, wil je dan het geslacht opvragen?",
+            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
+                wil je dan het geslacht opvragen?",
             'type' => 'bool',
             'default' => '0',
         ],
         'idin_request_telephone' => [
             'key' => 'idin_request_telephone',
             'title' => 'bluem_idin_request_telephone',
-            'name' => 'Adres opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, wil je dan het telefoonnummer opvragen?",
+            'name' => 'Telefoonnummer opvragen?',
+            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
+                wil je dan het telefoonnummer opvragen?",
             'type' => 'bool',
             'default' => '1',
         ],
@@ -140,7 +146,8 @@ function bluem_woocommerce_get_idin_options()
             'key' => 'idin_request_email',
             'title' => 'bluem_idin_request_email',
             'name' => 'E-mailadres opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, wil je dan het e-mailadres opvragen?",
+            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
+                wil je dan het e-mailadres opvragen?",
             'type' => 'bool',
             'default' => '1',
         ],
@@ -838,8 +845,11 @@ function bluem_idin_shortcode_callback()
 
                     if ($goto == false || $goto == "") {
                         $goto = home_url();
+                    } else {
+                        $goto = home_url($bluem_config->IDINPageURL);
                     }
                 }
+
                 wp_redirect($goto);
 
 
