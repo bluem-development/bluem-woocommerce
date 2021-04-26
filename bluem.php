@@ -8,7 +8,7 @@
  * Author: Bluem Payment Services
  * Author URI: https://bluem.nl
  * Requires at least: 5.0
- * Tested up to: 5.7
+ * Tested up to: 5.7.1
  *
  * Text Domain: bluem
  * Domain Path: /lang/
