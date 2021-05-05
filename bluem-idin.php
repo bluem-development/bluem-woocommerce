@@ -707,6 +707,7 @@ function bluem_idin_shortcode_callback()
                         'status'=>$statusCode
                     ]
                 );
+                
             }
 
 
@@ -838,6 +839,10 @@ function bluem_idin_shortcode_callback()
                     );
                 }
 
+                bluem_transaction_notification_email(
+                    $request_from_db->id
+                );
+
                 if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart") !== false) {
                     $goto = wc_get_checkout_url();
                 } else {
@@ -891,6 +896,12 @@ function bluem_idin_shortcode_callback()
                     // unexpected status returned, show an error
                 break;
             }
+
+            
+            bluem_transaction_notification_email(
+                $request_from_db->id
+            );
+            
             wp_redirect(
                 home_url($goto) .
                 "?result=false&status={$statusCode}"
@@ -1744,7 +1755,6 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
             ];
         }
     }
-
 
     if (!array_key_exists('idin_add_birthdate_in_order_emails', $options)
         || (array_key_exists('idin_add_birthdate_in_order_emails', $options)

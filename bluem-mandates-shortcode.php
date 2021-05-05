@@ -41,10 +41,10 @@ function bluem_mandate_shortcode_execute()
         $bluem_config->merchantReturnURLBase = home_url(
             "bluem-woocommerce/mandate_shortcode_callback"
         );
-        
+
         $preferences = get_option('bluem_woocommerce_options');
-        
-        
+
+
         $bluem_config->eMandateReason = "Incasso machtiging ".$debtorReference;
 
 
@@ -75,23 +75,22 @@ function bluem_mandate_shortcode_execute()
             $request->entranceCode.""
         );
 
-        
-        
         // Actually perform the request.
         $response = $bluem->PerformRequest($request);
-        
+
+
         if (!isset($response->EMandateTransactionResponse->TransactionURL)) {
             $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
             Vermeld onderstaande informatie aan het websitebeheer:";
-            
+
             if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
                 $msg.= "<br>Response: " .
                 $response->EMandateTransactionResponse->Error->ErrorMessage;
             } else {
                 $msg .= "<br>Algemene fout";
             }
-            
-            
+
+
             bluem_woocommerce_prompt($msg);
             exit;
         }
@@ -108,28 +107,27 @@ function bluem_mandate_shortcode_execute()
         $transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
         $_SESSION['bluem_recentTransactionURL'] = $transactionURL;
 
-        bluem_db_create_request(
+        $db_creation_result = bluem_db_create_request(
             [
-                'entrance_code'=>$request->entranceCode,
-                'transaction_id'=>$request->mandateID,
-                'transaction_url'=>$transactionURL,
-                'user_id'=> get_current_user_id(),
-                'timestamp'=> date("Y-m-d H:i:s"),
-                'description'=>"Mandate request",
-                'debtor_reference'=>$debtorReference,
-                'type'=>"mandates",
-                'order_id'=>"",
-                'payload'=>json_encode(
-                    [
-                        'created_via'=>'shortcode',
-                        'environment'=>$bluem->environment,
-                        'created_mandate_id'=>$mandate_id,
-                    ]
-                )
+            'entrance_code'=>$request->entranceCode,
+            'transaction_id'=>$request->mandateID,
+            'transaction_url'=>$transactionURL,
+            'user_id'=> get_current_user_id(),
+            'timestamp'=> date("Y-m-d H:i:s"),
+            'description'=>"Mandate request",
+            'debtor_reference'=>$debtorReference,
+            'type'=>"mandates",
+            'order_id'=>"",
+            'payload'=>json_encode(
+                [
+                'created_via'=>'shortcode',
+                'environment'=>$bluem->environment,
+                'created_mandate_id'=>$mandate_id,
+                ]
+            )
             ]
         );
-
-
+        
 
         if (ob_get_length()!==false && ob_get_length()>0) {
             ob_clean();
@@ -141,7 +139,7 @@ function bluem_mandate_shortcode_execute()
     exit;
 }
 
-/* ******** CALLBACK ****** */
+            /* ******** CALLBACK ****** */
 add_action('parse_request', 'bluem_mandate_mandate_shortcode_callback');
 /**
  * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Session, sent for a SUD to the Bluem API.
@@ -207,7 +205,14 @@ function bluem_mandate_mandate_shortcode_callback()
                 'status'=>$statusCode
                 ]
         );
+        // also update locally for email notification
+        $request_from_db->status = $statusCode;
     }
+
+    bluem_transaction_notification_email(
+        $request_from_db->id
+    );
+
     // Handling the response.
     if ($statusCode === "Success") {
         update_user_meta($current_user->ID, "bluem_mandates_validated", true);

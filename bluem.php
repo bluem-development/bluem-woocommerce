@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.2.9
+ * Version: 1.2.11
  * Plugin URI: https://wordpress.org/plugins/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Bluem Payment Services
@@ -715,10 +715,116 @@ function bluem_woocommerce_get_core_options()
                 '0' => "WooCommerce wel gebruiken",
                 '1' => 'WooCommerce NIET gebruiken'
             ]
-        ]
+        ],
+
+        'transaction_notification_email' => [
+            'key' => 'transaction_notification_email',
+            'title' => 'bluem_transaction_notification_email',
+            'name' => 'Ontvangen e-mail notificatie voor elke nieuwe transactie?',
+            'description' => "Geef hier aan of je automatisch een notificatie e-mail wil ontvangen met transactie details",
+            'type' => 'select',
+            'default' => '0',
+            'options' => ['0' => 'Geen e-mail notificatie (standaard)', '1' => 'Stuur notificatie voor elke transactie naar '.get_option('admin_email')],
+        ],
     ];
 }
 
+
+/**
+ * This function executes a notification mail, if this is set as such in the settings.
+ */
+function bluem_transaction_notification_email(
+    $request_id
+) {
+
+    $debug = false;
+    
+    $settings = get_option('bluem_woocommerce_options');
+    
+    $data = bluem_db_get_request_by_id($request_id);
+    if (is_null($data)) {
+        return;
+    }
+    
+    if (!isset($settings['transaction_notification_email']) 
+    || (isset($settings['transaction_notification_email']) 
+    && $settings['transaction_notification_email'] == 1)
+    ) {
+        
+        if ($debug) {
+            echo "Sending notification email for request. Data:";
+            var_dump($data);
+        }
+       
+        $author_name = "administratie van ".get_bloginfo('name');
+        //get_the_author_meta('user_nicename');
+
+        $to = esc_attr(
+            get_option("admin_email")
+        );
+        
+        $subject = "Notificatie Bluem ".ucfirst($data->type). " verzoek &middot; ID ".$data->transaction_id;
+        if(isset($data->status)) {
+            $subject .=" &middot; status: $data->status ";
+        }
+        $subject .= "&middot; ". get_bloginfo('name');
+        
+        $message = "<p>Beste {$author_name},</p>";
+        $message .= "<p>Er is een nieuw Bluem ".ucfirst($data->type)." verzoek verwerkt met de volgende gegevens:</p><p>";
+        // $data->payload = json_decode($data->payload);
+        
+        ob_start();
+        foreach ($data as $k=>$v) {
+
+            if($k=="payload") {
+                echo "<br><strong>Meer details</strong>:<br>  Zie admin interface<br>";
+                continue;
+            }
+
+            if(is_null($v)) {
+                continue;
+            }
+            
+            bluem_render_obj_row_recursive(
+                "<strong>".ucfirst($k)."</strong>",
+                $v
+            );
+            // if(is_string($v)) {
+            //     $message.="<li><strong>$k</strong>: &nbsp; $v</li>";
+            // } else {
+            //     $message.="<li><strong>$k</strong>: &nbsp;";
+            //     $message.=var_dump($v, true);
+            //     $message.="</li>";
+            // }
+        }
+        $message_p = ob_get_clean();
+        $message.=$message_p;
+        $message.="</p>";
+        $message.="<p>Ga naar de site op ".home_url()." om dit verzoek in detail te bekijken.</p>";
+        $message = nl2br($message);
+        
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+        
+        if ($debug) {
+            echo "<HR> ".PHP_EOL;
+            var_dump($to);
+            var_dump($subject);
+            echo "<HR> ".PHP_EOL;
+            echo($message);
+            echo "<HR> ".PHP_EOL;
+            var_dump($headers);
+            die();
+            
+        }
+        $mailing = wp_mail($to, $subject, $message, $headers);
+
+        if ($mailing) {
+            bluem_db_request_log($request_id, "Sent notification mail to ".$to);
+        }
+        return $mailing;
+        // die();
+    }
+}
 
 
 function bluem_woocommerce_get_config()
@@ -792,6 +898,14 @@ function bluem_woocommerce_settings_render_suppress_woo()
         bluem_woocommerce_get_option('suppress_woo')
     );
 }
+
+function bluem_woocommerce_settings_render_transaction_notification_email()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_option('transaction_notification_email')
+    );
+}
+
 
 function bluem_woocommerce_modules_render_generic_activation($module)
 {

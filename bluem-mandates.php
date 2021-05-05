@@ -781,6 +781,7 @@ function bluem_init_mandate_gateway_class()
                 );
             }
 
+
             if ($statusCode === "Success") {
                 $this->validateMandate($response, $order, true, true, true, $mandateID, $entranceCode);
             } elseif ($statusCode ==="Pending") {
@@ -799,6 +800,9 @@ function bluem_init_mandate_gateway_class()
                     __('Machtiging is geannuleerd', 'wc-gateway-bluem')
                 );
 
+                bluem_transaction_notification_email(
+                    $request_from_db->id
+                );
                 $this->renderPrompt("Je hebt de mandaat ondertekening geannuleerd");
                 // terug naar order pagina om het opnieuw te proberen?
                 exit;
@@ -816,6 +820,9 @@ function bluem_init_mandate_gateway_class()
                     )
                 );
 
+                bluem_transaction_notification_email(
+                    $request_from_db->id
+                );
                 $this->renderPrompt(
                     "Fout: De mandaat of het verzoek daartoe is verlopen"
                 );
@@ -827,6 +834,10 @@ function bluem_init_mandate_gateway_class()
                         'Machtiging is gefaald: fout of onbekende status',
                         'wc-gateway-bluem'
                     )
+                );
+                
+                bluem_transaction_notification_email(
+                    $request_from_db->id
                 );
                 //$statusCode == "Failure"
                 $this->renderPrompt(
@@ -1021,6 +1032,10 @@ function bluem_init_mandate_gateway_class()
                     )
                 );
 
+
+                bluem_transaction_notification_email(
+                    $request_id
+                );
 
                 do_action(
                     'bluem_woocommerce_valid_mandate_callback',

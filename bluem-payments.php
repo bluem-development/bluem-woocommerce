@@ -233,9 +233,6 @@ function bluem_init_payment_gateway_class()
                 $description = "Bestelling {$order_id}";
             }
 
-            // $description.
-            // $description.="0000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-
             $debtorReference = "{$order_id}";
             $amount = $order->get_total();
             $currency = "EUR";
@@ -522,31 +519,51 @@ function bluem_init_payment_gateway_class()
                         ]
                 );
             }
+
+
+
             if ($statusCode === "Success") {
                 $order->update_status('processing', __('Betaling is binnengekomen', 'wc-gateway-bluem'));
 
                 $order->add_order_note(__("Betalingsproces voltooid"));
 
+                bluem_transaction_notification_email(
+                    $request_from_db->id
+                );
+
                 $this->bluem_thankyou($order->get_id());
             } elseif ($statusCode === "Cancelled") {
                 $order->update_status('cancelled', __('Betaling is geannuleerd', 'wc-gateway-bluem'));
 
+                
+                bluem_transaction_notification_email(
+                    $request_from_db->id
+                );
                 $this->renderPrompt("Je hebt de betaling geannuleerd");
                 // terug naar order pagina om het opnieuw te proberen?
                 exit;
             } elseif ($statusCode === "Open" || $statusCode == "Pending") {
+                bluem_transaction_notification_email(
+                    $request_from_db->id
+                );
                 $this->renderPrompt("De betaling is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
                 // callback pagina beschikbaar houden om het opnieuw te proberen?
                 // is simpelweg SITE/wc-api/bluem_callback?transactionID=$transactionID
                 exit;
             } elseif ($statusCode === "Expired") {
                 $order->update_status('failed', __('Betaling is verlopen', 'wc-gateway-bluem'));
-
+                bluem_transaction_notification_email(
+                    $request_from_db->id
+                );
+                
                 $this->renderPrompt("Fout: De betaling of het verzoek daartoe is verlopen");
                 exit;
             } else {
                 $order->update_status('failed', __('Betaling is gefaald: fout of onbekende status', 'wc-gateway-bluem'));
                 //$statusCode == "Failure"
+                bluem_transaction_notification_email(
+                    $request_from_db->id
+                );
                 $this->renderPrompt("Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status");
                 exit;
             }
@@ -599,7 +616,6 @@ function bluem_woocommerce_get_payments_options()
             'type' => 'text',
             'default' => ''
         ],
-        
     ];
 }
 

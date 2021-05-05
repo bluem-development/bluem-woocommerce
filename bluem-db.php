@@ -71,21 +71,24 @@ function bluem_db_create_request($request_object)
     $wpdb->time_zone = 'Europe/Amsterdam';
 
     if (!bluem_db_validated_request($request_object)) {
-        return false;
+        return -1;
     }
 
     $insert_result = $wpdb->insert(
         "bluem_requests",
         $request_object
     );
+
     if ($insert_result) {
         $request_id = $wpdb->insert_id;
         bluem_db_request_log(
             $request_id,
             "Created request"
         );
+        return $wpdb->insert_id;
+    } else {
+        return -1;
     }
-    return $insert_result;
 }
 
 function bluem_db_request_log($request_id, $description, $log_data = [])
@@ -316,7 +319,7 @@ function bluem_db_get_requests_by_user_id($user_id = null)
         'user_id',
         $user_id
     );
-    return $res!==false && count($res)>0?$res:[];
+    return $res!==false && count($res) > 0 ? $res : [];
 }
 
 
@@ -338,7 +341,7 @@ function bluem_db_get_requests_by_user_id_and_type($user_id = null, $type="")
         'timestamp',
         'DESC'
     );
-    return $res!==false && count($res)>0?$res:[];
+    return $res!==false && count($res) > 0 ? $res : [];
 }
 
 function bluem_db_get_most_recent_request($user_id=null, $type="mandates")
