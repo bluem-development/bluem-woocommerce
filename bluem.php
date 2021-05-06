@@ -9,7 +9,10 @@
  * Author URI: https://bluem.nl
  * Requires at least: 5.0
  * Tested up to: 5.7.1
- *
+ * 
+ * WC requires at least: 5.0.0
+ * WC tested up to: 5.2.2
+ * 
  * Text Domain: bluem
  * Domain Path: /lang/
  *
@@ -763,11 +766,11 @@ function bluem_transaction_notification_email(
             get_option("admin_email")
         );
         
-        $subject = "Notificatie Bluem ".ucfirst($data->type). " verzoek &middot; ID ".$data->transaction_id;
+        $subject = "[".get_bloginfo('name')."] ";
+        $subject .= "Notificatie Bluem ".ucfirst($data->type). " verzoek › ID ".$data->transaction_id;
         if(isset($data->status)) {
-            $subject .=" &middot; status: $data->status ";
+            $subject .=" › status: $data->status ";
         }
-        $subject .= "&middot; ". get_bloginfo('name');
         
         $message = "<p>Beste {$author_name},</p>";
         $message .= "<p>Er is een nieuw Bluem ".ucfirst($data->type)." verzoek verwerkt met de volgende gegevens:</p><p>";
