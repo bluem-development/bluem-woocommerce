@@ -1264,14 +1264,11 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
     } else {
         $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
         Vermeld onderstaande informatie aan het websitebeheer:";
-        //     <br><pre>";
-        // bluem_generic_tabler($response);
-        // echo "</pre>";
         if ($response->Error() !=="") {
             $msg.= "<br>Response: " .
             $response->Error();
         } else {
-            $msg .= "algemene fout";
+            $msg .= "<br>Algemene fout";
         }
 
 

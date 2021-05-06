@@ -84,8 +84,11 @@ function bluem_mandate_shortcode_execute()
             Vermeld onderstaande informatie aan het websitebeheer:";
 
             if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
-                $msg.= "<br>Response: " .
+                $msg.= "<br>" .
                 $response->EMandateTransactionResponse->Error->ErrorMessage;
+            } elseif (get_class($response)=="Bluem\BluemPHP\ErrorBluemResponse") {
+                $msg.= "<br>" .
+                $response->Error();
             } else {
                 $msg .= "<br>Algemene fout";
             }
