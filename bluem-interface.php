@@ -93,15 +93,14 @@ function bluem_render_request_table($requests, $users_by_id=[])
                 }
             } ?>
             <?php if (isset($r->debtor_reference) && $r->debtor_reference !=="") {
-            ?>
+                ?>
             
             <span style="color:#aaa; font-size:9pt; display:block;">Klantreferentie: 
             <?php
-            echo $r->debtor_reference;
-            ?>
+            echo $r->debtor_reference; ?>
             </span>
             <?php
-        } ?>
+            } ?>
             </td>
             <td>
                 <?php bluem_render_request_status($r->status); ?>
@@ -413,7 +412,12 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0)
                 bluem_render_obj_row_recursive($valuekey, $valuevalue, $level+1);
             }
         } else {
-            var_dump($value);
+            if(is_bool($value)) {
+                echo " ".($value?"Ja":"Nee");
+            } else {
+
+                var_dump($value);
+            }
         }
     }
     echo "<br>";

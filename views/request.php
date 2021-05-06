@@ -88,8 +88,21 @@
                 <?php
                 }
             } ?>
+<?php if (count($links)>0) { 
+?>
 
+<h4>Gebeurtenissen:
+            </h4>
+            <ul>
 
+            <?php 
+var_dump($links);
+// die();
+?>
+
+            </ul>
+            <?php
+} ?>
         <?php if (count($logs)>0) { ?>
             <h4>Gebeurtenissen:
             </h4>
@@ -120,7 +133,7 @@
             } ?>
                 </li>
                 <?php
-    } ?>
+                } ?>
             </ul>
             <?php
             } ?>
@@ -148,7 +161,7 @@
     if (!is_null($pl)) {
         ?>
             <h4>
-                Extra informatie:
+                Extra details:
             </h4>
             <?php
             foreach ($pl as $plk => $plv) {
@@ -157,7 +170,18 @@
     }
             ?>
             </p>
+            <p>
+            <hr>
+                <span class="bluem-request-label">
+                Meer informatie:
+                </span>
+                <br>
 
+                <a href="http://viamijnbank.net" target="_blank" rel="noopener noreferrer">
+                    op het viamijnbank.net dashboard
+                    <span class="dashicons dashicons-external" style="text-decoration: none;"></span>
+                </a>
+            </p>
 
         </div>
 
@@ -214,7 +238,7 @@ margin:10pt 0 0 0; padding:5pt 15pt;">
             </blockquote>
             </p>
         </div><?php
-        }
+            }
         ?>
     </div>
     <?php bluem_render_footer(); ?>

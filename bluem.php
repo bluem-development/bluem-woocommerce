@@ -9,10 +9,10 @@
  * Author URI: https://bluem.nl
  * Requires at least: 5.0
  * Tested up to: 5.7.1
- * 
+ *
  * WC requires at least: 5.0.0
  * WC tested up to: 5.2.2
- * 
+ *
  * Text Domain: bluem
  * Domain Path: /lang/
  *
@@ -29,7 +29,7 @@ if (!defined('ABSPATH')) {
 }
 
 global $bluem_db_version;
-$bluem_db_version = 1.2;
+$bluem_db_version = 1.3;
 
 // get composer dependencies
 require __DIR__ . '/vendor/autoload.php';
@@ -148,14 +148,12 @@ add_action('admin_menu', 'bluem_register_menu', 9);
 function bluem_admin_requests_view()
 {
     if (isset($_GET['request_id']) && $_GET['request_id']!=="") {
-
         if (isset($_GET['admin_action']) && $_GET['admin_action']=="delete") {
             bluem_db_delete_request_by_id($_GET['request_id']);
             wp_redirect(
                 admin_url("admin.php?page=bluem_admin_requests_view")
             );
         } else {
-
             bluem_admin_requests_view_request();
         }
     } else {
@@ -180,7 +178,10 @@ function bluem_admin_requests_view_request()
     $request = (object)$request_query[0];
     $request_author = get_user_by('id', $request->user_id);
 
-    $logs = $wpdb->get_results("SELECT *  FROM  `bluem_requests_log` WHERE `request_id` = $id ORDER BY `timestamp` DESC");
+    $links = bluem_db_get_links_for_request($request->id);
+
+    $logs = bluem_db_get_logs_for_request($id);
+
     include_once 'views/request.php';
 }
 function bluem_admin_requests_view_all()
@@ -584,7 +585,7 @@ function bluem_woocommerce_settings_render_input($field)
 </select>
 <?php
     } elseif ($field['type'] == "bool") {
-?>
+        ?>
 <div class="form-check form-check-inline">
     <label class="form-check-label" for="<?php echo $key; ?>_1">
         <input class="form-check-input" type="radio"
@@ -739,21 +740,25 @@ function bluem_woocommerce_get_core_options()
 function bluem_transaction_notification_email(
     $request_id
 ) {
-
     $debug = false;
     
     $settings = get_option('bluem_woocommerce_options');
     
     $data = bluem_db_get_request_by_id($request_id);
+    $pl = json_decode($data->payload);
+    
+    if (isset($pl->sent_notification) && $pl->sent_notification=="true") {
+        return;
+    }
+
     if (is_null($data)) {
         return;
     }
     
-    if (!isset($settings['transaction_notification_email']) 
-    || (isset($settings['transaction_notification_email']) 
+    if (!isset($settings['transaction_notification_email'])
+    || (isset($settings['transaction_notification_email'])
     && $settings['transaction_notification_email'] == 1)
     ) {
-        
         if ($debug) {
             echo "Sending notification email for request. Data:";
             var_dump($data);
@@ -768,7 +773,7 @@ function bluem_transaction_notification_email(
         
         $subject = "[".get_bloginfo('name')."] ";
         $subject .= "Notificatie Bluem ".ucfirst($data->type). " verzoek › ID ".$data->transaction_id;
-        if(isset($data->status)) {
+        if (isset($data->status)) {
             $subject .=" › status: $data->status ";
         }
         
@@ -778,13 +783,12 @@ function bluem_transaction_notification_email(
         
         ob_start();
         foreach ($data as $k=>$v) {
-
-            if($k=="payload") {
+            if ($k=="payload") {
                 echo "<br><strong>Meer details</strong>:<br>  Zie admin interface<br>";
                 continue;
             }
 
-            if(is_null($v)) {
+            if (is_null($v)) {
                 continue;
             }
             
@@ -817,11 +821,18 @@ function bluem_transaction_notification_email(
             echo "<HR> ".PHP_EOL;
             var_dump($headers);
             die();
-            
         }
         $mailing = wp_mail($to, $subject, $message, $headers);
 
         if ($mailing) {
+
+            bluem_db_put_request_payload(
+                $request_id,
+                [
+                    'sent_notification' => true
+                ]
+            );
+
             bluem_db_request_log($request_id, "Sent notification mail to ".$to);
         }
         return $mailing;
@@ -1139,12 +1150,14 @@ add_action('add_meta_boxes', 'bluem_order_requests_metabox');
 function bluem_order_requests_metabox()
 {
     add_meta_box(
-        'bluem_order_requests_metabox_content', 
-        __('Bluem request(s)', 
-        'bluem'), 
-        'bluem_order_requests_metabox_content', 
-        'shop_order', 
-        'normal', 
+        'bluem_order_requests_metabox_content',
+        __(
+            'Bluem request(s)',
+            'bluem'
+        ),
+        'bluem_order_requests_metabox_content',
+        'shop_order',
+        'normal',
         'default'
     );
 }
@@ -1156,7 +1169,6 @@ function bluem_order_requests_metabox()
  */
 function bluem_order_requests_metabox_content()
 {
-
     global $post;
     $order_id = $post->ID;
     $order = wc_get_order($order_id);

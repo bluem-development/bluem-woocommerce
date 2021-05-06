@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use Bluem\BluemPHP\Integration;
+use Bluem\BluemPHP\Bluem;
 use Carbon\Carbon;
 
 add_action('parse_request', 'bluem_mandate_shortcode_execute');
@@ -48,7 +48,7 @@ function bluem_mandate_shortcode_execute()
         $bluem_config->eMandateReason = "Incasso machtiging ".$debtorReference;
 
 
-        $bluem = new Integration($bluem_config);
+        $bluem = new Bluem($bluem_config);
 
         $mandate_id_counter = get_option('bluem_woocommerce_mandate_id_counter');
 
@@ -92,7 +92,6 @@ function bluem_mandate_shortcode_execute()
             } else {
                 $msg .= "<br>Algemene fout";
             }
-
 
             bluem_woocommerce_prompt($msg);
             exit;
@@ -161,14 +160,15 @@ function bluem_mandate_mandate_shortcode_callback()
     $bluem_config = bluem_woocommerce_get_config();
     $bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_mandates_callback');
 
-    $bluem = new Integration($bluem_config);
+    $bluem = new Bluem($bluem_config);
 
-
+    // this is leading for shortcode approaches
     $validated = get_user_meta($current_user->ID, "bluem_mandates_validated", true);
+    
+    // @todo: .. then use request-based approach soon as first check, then fallback to user meta check.
+    
     $mandateID = get_user_meta($current_user->ID, "bluem_latest_mandate_id", true);
     $entranceCode = get_user_meta($current_user->ID, "bluem_latest_mandate_entrance_code", true);
-
-
 
     if (!isset($_GET['mandateID'])) {
         if ($bluem_config->thanksPageURL !== "") {
@@ -205,8 +205,8 @@ function bluem_mandate_mandate_shortcode_callback()
         bluem_db_update_request(
             $request_from_db->id,
             [
-                'status'=>$statusCode
-                ]
+            'status'=>$statusCode
+            ]
         );
         // also update locally for email notification
         $request_from_db->status = $statusCode;
@@ -219,6 +219,37 @@ function bluem_mandate_mandate_shortcode_callback()
     // Handling the response.
     if ($statusCode === "Success") {
         update_user_meta($current_user->ID, "bluem_mandates_validated", true);
+
+        if ($request_from_db->payload!=="") {
+            try {
+                $newPayload = json_decode($request_from_db->payload);
+            } catch (Throwable $th) {
+                $newPayload = new Stdclass;
+            }
+        } else {
+            $newPayload = new Stdclass;
+        }
+
+
+        if (isset($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport)) {
+
+            $newPayload->purchaseID = $response->EMandateStatusUpdate->EMandateStatus->PurchaseID."";
+            $newPayload->report = $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport;
+            
+            bluem_db_update_request(
+                $request_from_db->id,
+                [
+                    'payload'=>json_encode($newPayload)
+                    ]
+                );
+                
+        }
+
+        $request_from_db = bluem_db_get_request_by_transaction_id_and_type(
+            $mandateID,
+            "mandates"
+        );
+
         wp_redirect(home_url($bluem_config->thanksPageURL) . "?result=true");
         exit;
     } elseif ($statusCode === "Cancelled") {
@@ -258,7 +289,7 @@ function bluem_mandateform()
         'wc-api/bluem_mandates_callback'
     );
 
-    $bluem = new Integration($bluem_config);
+    $bluem = new Bluem($bluem_config);
 
     $user_allowed = apply_filters(
         'bluem_woocommerce_mandate_shortcode_allow_user',

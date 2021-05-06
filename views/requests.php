@@ -24,10 +24,10 @@
             target='_blank'>viamijnbank.net dashboard</a>.
     </p>
     <?php
-        foreach ($requests as $cat => $rs) {
-            bluem_render_requests_table_title($cat);
-            bluem_render_request_table($rs, $users_by_id);
-        }
+    foreach ($requests as $cat => $rs) {
+        bluem_render_requests_table_title($cat);
+        bluem_render_request_table($rs, $users_by_id);
+    }
     ?>
     <?php bluem_render_footer(); ?>
 </div>

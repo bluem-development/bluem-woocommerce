@@ -32,7 +32,7 @@ function bluem_db_create_requests_table()
             ) $charset_collate;";
         dbDelta($sql);
 
-        $sql2 = "CREATE TABLE IF NOT EXISTS " . "bluem_requests" . "_log (
+        $sql2 = "CREATE TABLE IF NOT EXISTS " . "bluem_requests_log (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             request_id mediumint(9) NOT NULL,
             timestamp timestamp DEFAULT NOW() NOT NULL,
@@ -41,6 +41,18 @@ function bluem_db_create_requests_table()
             PRIMARY KEY  (id)
             ) $charset_collate;";
         dbDelta($sql2);
+
+
+        $sql3 = "CREATE TABLE IF NOT EXISTS " . "bluem_requests_links (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            request_id mediumint(9) NOT NULL,
+            item_id mediumint(9) NOT NULL,
+            item_type varchar(32) NOT NULL DEFAULT 'order',
+            timestamp timestamp DEFAULT NOW() NOT NULL,
+            PRIMARY KEY  (id)
+            ) $charset_collate;";
+        dbDelta($sql3);
+
 
         update_option(
             "bluem_db_version",
@@ -81,6 +93,15 @@ function bluem_db_create_request($request_object)
 
     if ($insert_result) {
         $request_id = $wpdb->insert_id;
+
+        if (isset($request_object->order_id)
+            && !is_null($request_object->order_id)
+            && $request_object->order_id !=""
+        ) {
+            bluem_db_create_link(
+                $request_id, $request_object->order_id, "order"
+            );
+        }
         bluem_db_request_log(
             $request_id,
             "Created request"
@@ -90,6 +111,8 @@ function bluem_db_create_request($request_object)
         return -1;
     }
 }
+
+
 
 function bluem_db_request_log($request_id, $description, $log_data = [])
 {
@@ -278,6 +301,9 @@ function bluem_db_get_requests_by_keyvalues(
         $i = 0;
         $kvs = " WHERE ";
         foreach ($keyvalues as $key => $value) {
+            if (!is_string($key) || !is_string($value)) {
+                return false;
+            }
             $kvs.= "`{$key}` = '{$value}'";
             $i++;
             if ($i<count($keyvalues)) {
@@ -383,5 +409,76 @@ function bluem_db_get_most_recent_request($user_id=null, $type="mandates")
         return false;
     } catch (Throwable $th) {
         return false;
+    }
+}
+
+
+function bluem_db_put_request_payload($request_id, $data)
+{
+    $request = bluem_db_get_request_by_id($request_id);
+    if ($request->payload!=="") {
+        try {
+            $newPayload = json_decode($request->payload);
+        } catch (Throwable $th) {
+            $newPayload = new Stdclass;
+        }
+    } else {
+        $newPayload = new Stdclass;
+    }
+    foreach ($data as $k=>$v) {
+        $newPayload->$k = $v;
+    }
+
+    bluem_db_update_request(
+        $request_id,
+        [
+            'payload'=>json_encode($newPayload)
+        ]
+    );
+}
+
+
+function bluem_db_get_logs_for_request($id)
+{
+    global $wpdb;
+    date_default_timezone_set('Europe/Amsterdam');
+    $wpdb->time_zone = 'Europe/Amsterdam';
+
+    return $wpdb->get_results("SELECT *  FROM  `bluem_requests_log` WHERE `request_id` = $id ORDER BY `timestamp` DESC");
+}
+
+
+function bluem_db_get_links_for_request($id)
+{
+    global $wpdb;
+    date_default_timezone_set('Europe/Amsterdam');
+    $wpdb->time_zone = 'Europe/Amsterdam';
+    return $wpdb->get_results("SELECT *  FROM  `bluem_requests_links` WHERE `request_id` = $id ORDER BY `timestamp` DESC");
+}
+function bluem_db_create_link($request_id, $item_id, $item_type="order")
+{
+    global $wpdb;
+    date_default_timezone_set('Europe/Amsterdam');
+    $wpdb->time_zone = 'Europe/Amsterdam';
+
+    $installed_ver = (float)get_option("bluem_db_version");
+    if ($installed_ver <= 1.2) {
+        return;
+    }
+
+    $insert_result = $wpdb->insert(
+        "bluem_requests_links",
+        [
+            'request_id' => $request_id,
+            'item_id' => $item_id,
+            'item_type' => $item_type
+        ]
+    );
+
+    if ($insert_result) {
+        $link_id = $wpdb->insert_id;
+        return $link_id;
+    } else {
+        return -1;
     }
 }

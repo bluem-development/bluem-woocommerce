@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use Bluem\BluemPHP\Integration as BluemCoreIntegration;
+use Bluem\BluemPHP\Bluem as Bluem;
 use Carbon\Carbon;
 
 /*
@@ -75,7 +75,7 @@ function bluem_init_payment_gateway_class()
             }
 
             $this->bluem_config = $bluem_config;
-            $this->bluem = new BluemCoreIntegration($bluem_config);
+            $this->bluem = new Bluem($bluem_config);
 
             $this->enabled = $this->get_option('enabled');
 
@@ -468,7 +468,7 @@ function bluem_init_payment_gateway_class()
         public function payment_callback()
         {
 
-            // $this->bluem = new BluemCoreIntegration($this->bluem_config);
+            // $this->bluem = new Bluem($this->bluem_config);
 
             if (!isset($_GET['entranceCode'])) {
                 $this->renderPrompt("Fout: geen juiste entranceCode teruggekregen bij payment_callback. Neem contact op met de webshop en vermeld je contactgegevens.");
@@ -560,7 +560,6 @@ function bluem_init_payment_gateway_class()
                 exit;
             } else {
                 $order->update_status('failed', __('Betaling is gefaald: fout of onbekende status', 'wc-gateway-bluem'));
-                //$statusCode == "Failure"
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );

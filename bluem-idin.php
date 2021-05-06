@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use Bluem\BluemPHP\Integration as Integration;
+use Bluem\BluemPHP\Bluem;
 use Carbon\Carbon;
 
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
@@ -660,7 +660,7 @@ function bluem_idin_shortcode_callback()
 
         // fallback until this is corrected in bluem-php
         $bluem_config->brandID = $bluem_config->IDINBrandID;
-        $bluem = new Integration($bluem_config);
+        $bluem = new Bluem($bluem_config);
 
 
 
@@ -829,7 +829,7 @@ function bluem_idin_shortcode_callback()
                         $oldPayload = new Stdclass;
                     }
                     $oldPayload->report = $identityReport;
-
+                    
                     bluem_db_update_request(
                         $request_from_db->id,
                         [
@@ -1178,7 +1178,7 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
 
     // fallback until this is corrected in bluem-php
     $bluem_config->brandID = $bluem_config->IDINBrandID;
-    $bluem = new Integration($bluem_config);
+    $bluem = new Bluem($bluem_config);
 
     $cats = bluem_idin_get_categories();
     if (count($cats)==0) {
