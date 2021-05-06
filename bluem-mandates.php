@@ -829,7 +829,7 @@ function bluem_init_mandate_gateway_class()
                 );
             }
             if ($statusCode === "Success") {
-                if ($request_id !=="") {
+                if ($request_from_db->id !=="") {
 
                     $new_data = [];
                     if (isset($response->EMandateStatusUpdate->EMandateStatus->PurchaseID)) {
