@@ -94,6 +94,8 @@ function bluem_db_create_request($request_object)
     if ($insert_result) {
         $request_id = $wpdb->insert_id;
 
+        $request_object = (object)$request_object;
+
         if (isset($request_object->order_id)
             && !is_null($request_object->order_id)
             && $request_object->order_id !=""

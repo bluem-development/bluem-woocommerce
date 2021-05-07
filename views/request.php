@@ -15,7 +15,7 @@
         </a>
     </nav>
     <div class="bluem-request-card-body">
-        <div style="display:inline-block; vertical-align:top; width:40%;">
+        <div class='bluem-column'>
 
             <h2>
                 <?php echo ucfirst($request->type);?>
@@ -88,23 +88,61 @@
                 <?php
                 }
             } ?>
-<?php if (count($links)>0) { 
-?>
+<?php if (count($links)>0) {
+                ?>
 
-<h4>Gebeurtenissen:
+<h4>Gekoppelde orders:
             </h4>
-            <ul>
+            <table class="widefat">
 
-            <?php 
-var_dump($links);
-// die();
-?>
+<thead>
+<tr>
+<th>Datum</th>
+<th>Ordernummer</th>
+<th>Status</th>
+<th>Totaalbedrag</th>
+</tr>
 
-            </ul>
+</thead>
+<tbody>
+
             <?php
-} ?>
+            foreach ($links as $link) {
+                if ($link->item_type=="order") {
+                    $order = wc_get_order($link->item_id);
+                    $order_data = $order->get_data(); ?>
+                    <tr>
+                <td>
+                <?php echo $order->get_date_created()->date("d-m-Y H:i"); ?>
+                </td>
+                    
+                    <td>
+                    
+    <a href='<?php echo admin_url("post.php?post={$link->item_id}&action=edit"); ?>' target='_blank'>Order #<?php echo $link->item_id; ?></a> 
+                    </td>
+                    <td>
+    <?php echo ucfirst($order->get_status()); ?> 
+                    
+                    </td>
+                    <td>
+                    
+    <?php echo $order_data['total'];
+                    echo " ".$order->get_currency(); ?>
+                    </td>
+
+                    </tr>
+<?php
+                }
+                // @todo: build other item types later
+            } ?>
+
+</tbody>
+</table>
+            <?php
+            } ?>
         <?php if (count($logs)>0) { ?>
-            <h4>Gebeurtenissen:
+            <h4>
+                Gebeurtenissen:
             </h4>
             <ul>
                 <?php
@@ -126,7 +164,7 @@ var_dump($links);
             <?php if (isset($dparts[1])) { ?>&nbsp;
             <abbr title="<?php
                 echo str_replace('"', '', $dparts[1]);
-                ?>"><span class="dashicons dashicons-info-outline"></span></abbr>
+                ?>" style="cursor: help;"><span class="dashicons dashicons-info-outline"></span></abbr>
 
 
                 <?php
@@ -138,7 +176,7 @@ var_dump($links);
             <?php
             } ?>
         </div>
-        <div style="display:inline-block; vertical-align:top; width:40%; margin-left:5%">
+        <div class="bluem-column" style="margin-left:5%">
             <?php if (isset($request->transaction_url)) {
                 ?>
             <p>

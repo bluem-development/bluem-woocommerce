@@ -1,111 +1,123 @@
-/* (C) Daan Rijpkema, for
+    /* (C) Daan Rijpkema, for
 Bluem 2021
 */
-
-
-/* https://stackoverflow.com/questions/23989463/how-to-set-tbody-height-with-overflow-scroll/23989771 */
-
-.bluem-requests-table tbody {
-    display: block;
-    max-height: 500px;
-    overflow: auto;
-}
-
-.bluem-requests-table thead,
-.bluem-requests-table tbody tr {
-    display: table;
-    width: 100%;
-    table-layout: fixed;
-    /* even columns width , fix width of table too*/
-}
-
-.bluem-requests-table thead {
-    width: calc( 100% - 1em)/* scrollbar is average 1em/16px width, remove it from thead width */
-}
-
-table.bluem-requests-table {
-    /* width: 400px; */
-}
-
-.bluem-request-list {
-    border: 1px solid #aaa;
-    background: white;
-    border-radius: 4pt;
-    padding: 5pt 0 5pt 0;
-}
-
-.bluem-request-list .bluem-request-list-item {
-    padding: 5pt 0;
-    width: 100%;
-    display: block;
-    overflow: hidden;
-}
-
-.bluem-request-list .bluem-request-list-item:nth-child(n+1) {
-    border-bottom: 1px solid #aaa;
-}
-
-.bluem-request-list .bluem-request-list-item:last-child {
-    border-bottom: none
-}
-
-.bluem-request-list-item-row {
-    padding-bottom: 3pt;
-    margin-left: 12pt;
-}
-
-.bluem-request-card-body {
-    padding: 20pt;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    margin: 6px;
-    margin-top: 0;
-}
-
-.bluem-request-label {
-    color: #aaa;
-    display: inline-block;
-    margin-right: 20px;
-    width: 140px;
-}
-
-.bluem-settings-header {
-    background: #efefef;
-    width: 100%;
-    padding-bottom: 6pt;
-}
-
-.bluem-form-control {
-    width: 100%;
-}
-
-.bluem-settings {
-    padding: 20px;
-}
-
-h2.bluem-settings-h2:nth-child(n+2) {
-    padding-top: 10pt;
-}
-
-.bluem-request-list-item-floater {
-    float: right;
-    width: 30%;
-    display: block;
-}
-
-.bluem-request-list-item-row-title {
-    font-size: 14pt;
-}
-
-a.bluem-button-danger {
-    color: #fff !important;
-    border-color: #b12222 !important;
-    background: #c10e0e !important;
-}
-
-a.bluem-button-danger:hover,
-a.bluem-button-danger:active {
-    color: #fff !important;
-    border-color: #810b0b !important;
-    background: #810b0b !important;
-}
+    /* https://stackoverflow.com/questions/23989463/how-to-set-tbody-height-with-overflow-scroll/23989771 */
+    
+    .bluem-requests-table tbody {
+        display: block;
+        max-height: 500px;
+        overflow: auto;
+    }
+    
+    .bluem-requests-table thead,
+    .bluem-requests-table tbody tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        /* even columns width , fix width of table too*/
+    }
+    
+    .bluem-requests-table thead {
+        width: calc( 100% - 1em)/* scrollbar is average 1em/16px width, remove it from thead width */
+    }
+    
+    table.bluem-requests-table {
+        /* width: 400px; */
+    }
+    
+    .bluem-request-list {
+        border: 1px solid #aaa;
+        background: white;
+        border-radius: 4pt;
+        padding: 5pt 0 5pt 0;
+    }
+    
+    .bluem-request-list .bluem-request-list-item {
+        padding: 5pt 0;
+        width: 100%;
+        display: block;
+        overflow: hidden;
+    }
+    
+    .bluem-request-list .bluem-request-list-item:nth-child(n+1) {
+        border-bottom: 1px solid #aaa;
+    }
+    
+    .bluem-request-list .bluem-request-list-item:last-child {
+        border-bottom: none
+    }
+    
+    .bluem-request-list-item-row {
+        padding-bottom: 3pt;
+        margin-left: 12pt;
+    }
+    
+    .bluem-request-card-body {
+        padding: 20pt;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        margin: 6px;
+        margin-top: 0;
+    }
+    
+    .bluem-request-label {
+        color: #aaa;
+        display: inline-block;
+        margin-right: 20px;
+        width: 140px;
+    }
+    
+    .bluem-settings-header {
+        background: #efefef;
+        width: 100%;
+        padding-bottom: 6pt;
+    }
+    
+    .bluem-form-control {
+        width: 100%;
+    }
+    
+    .bluem-settings {
+        padding: 20px;
+    }
+    
+    h2.bluem-settings-h2:nth-child(n+2) {
+        padding-top: 10pt;
+    }
+    
+    .bluem-request-list-item-floater {
+        float: right;
+        width: 30%;
+        display: block;
+    }
+    
+    .bluem-request-list-item-row-title {
+        font-size: 14pt;
+    }
+    
+    a.bluem-button-danger {
+        color: #fff !important;
+        border-color: #b12222 !important;
+        background: #c10e0e !important;
+    }
+    
+    a.bluem-button-danger:hover,
+    a.bluem-button-danger:active {
+        color: #fff !important;
+        border-color: #810b0b !important;
+        background: #810b0b !important;
+    }
+    
+    .bluem-column {
+        display: inline-block;
+        vertical-align: top;
+        width: 40%;
+    }
+    /* On screens that are 600px or less, set the background color to olive */
+    
+    @media screen and (max-width: 1100px) {
+        .bluem-column {
+            width: 100%;
+            display: block;
+        }
+    }

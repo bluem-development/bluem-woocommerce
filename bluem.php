@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
  * Version: 1.2.11
@@ -235,7 +234,7 @@ function bluem_settings_page()
         <?php echo esc_html(get_admin_page_title()); ?>
     </h1>
     <nav class="nav-tab-wrapper">
-        <a href="<?php echo admin_url('options-general.php?page=bluem'); ?>" 
+        <a href="<?php echo admin_url('options-general.php?page=bluem'); ?>"
         class="nav-tab
         <?php if ($tab===null) {
         echo "nav-tab-active";
@@ -247,7 +246,7 @@ function bluem_settings_page()
 
         <?php if (bluem_module_enabled('mandates')) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_mandates');?>" 
+        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_mandates');?>"
         class="nav-tab
             <?php if ($tab==='mandates') {
         echo "nav-tab-active";
@@ -262,7 +261,7 @@ function bluem_settings_page()
 
         <?php if (bluem_module_enabled('payments')) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_payments');?>" 
+        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_payments');?>"
         class="nav-tab
             <?php if ($tab==='payments') {
         echo "nav-tab-active";
@@ -276,7 +275,7 @@ function bluem_settings_page()
 
         <?php if (bluem_module_enabled('idin')) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_idin');?>" 
+        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_idin');?>"
         class="nav-tab
             <?php if ($tab==='idin') {
         echo "nav-tab-active";
@@ -287,12 +286,12 @@ function bluem_settings_page()
         </a>
         <?php } ?>
 
-        <a href="<?php echo admin_url('admin.php?page=bluem_admin_requests_view'); ?>" 
+        <a href="<?php echo admin_url('admin.php?page=bluem_admin_requests_view'); ?>"
         class="nav-tab">
         <span class="dashicons dashicons-database-view"></span>
             Verzoeken
         </a>
-        <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" 
+        <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin"
         class="nav-tab" target="_blank">
         <span class="dashicons dashicons-editor-help"></span>
         Ondersteuning via e-mail
@@ -310,7 +309,7 @@ function bluem_settings_page()
     settings_fields('bluem_woocommerce_options');
     do_settings_sections('bluem_woocommerce'); ?>
 
-            <input name="submit" 
+            <input name="submit"
             class="button button-primary"
                 type="submit" value="<?php esc_attr_e('Save'); ?>"
             />
@@ -741,12 +740,12 @@ function bluem_transaction_notification_email(
     $request_id
 ) {
     $debug = false;
-    
+
     $settings = get_option('bluem_woocommerce_options');
-    
+
     $data = bluem_db_get_request_by_id($request_id);
     $pl = json_decode($data->payload);
-    
+
     if (isset($pl->sent_notification) && $pl->sent_notification=="true") {
         return;
     }
@@ -754,7 +753,7 @@ function bluem_transaction_notification_email(
     if (is_null($data)) {
         return;
     }
-    
+
     if (!isset($settings['transaction_notification_email'])
     || (isset($settings['transaction_notification_email'])
     && $settings['transaction_notification_email'] == 1)
@@ -763,24 +762,24 @@ function bluem_transaction_notification_email(
             echo "Sending notification email for request. Data:";
             var_dump($data);
         }
-       
+
         $author_name = "administratie van ".get_bloginfo('name');
         //get_the_author_meta('user_nicename');
 
         $to = esc_attr(
             get_option("admin_email")
         );
-        
+
         $subject = "[".get_bloginfo('name')."] ";
         $subject .= "Notificatie Bluem ".ucfirst($data->type). " verzoek › ID ".$data->transaction_id;
         if (isset($data->status)) {
             $subject .=" › status: $data->status ";
         }
-        
+
         $message = "<p>Beste {$author_name},</p>";
         $message .= "<p>Er is een nieuw Bluem ".ucfirst($data->type)." verzoek verwerkt met de volgende gegevens:</p><p>";
         // $data->payload = json_decode($data->payload);
-        
+
         ob_start();
         foreach ($data as $k=>$v) {
             if ($k=="payload") {
@@ -791,7 +790,7 @@ function bluem_transaction_notification_email(
             if (is_null($v)) {
                 continue;
             }
-            
+
             bluem_render_obj_row_recursive(
                 "<strong>".ucfirst($k)."</strong>",
                 $v
@@ -809,9 +808,9 @@ function bluem_transaction_notification_email(
         $message.="</p>";
         $message.="<p>Ga naar de site op ".home_url()." om dit verzoek in detail te bekijken.</p>";
         $message = nl2br($message);
-        
+
         $headers = array('Content-Type: text/html; charset=UTF-8');
-        
+
         if ($debug) {
             echo "<HR> ".PHP_EOL;
             var_dump($to);

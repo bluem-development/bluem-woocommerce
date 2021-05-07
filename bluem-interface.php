@@ -380,6 +380,9 @@ function bluem_render_requests_list($requests)
 
 function bluem_render_obj_row_recursive($key, $value, $level = 0)
 {
+    if ($key == "linked_orders") {
+        return;
+    }
     if (is_numeric($key)) {
         $key = "";
         $nicekey = "";
@@ -406,9 +409,9 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0)
             echo "<br>";
             foreach ($value as $valuekey => $valuevalue) {
                 if ($key == "linked_orders") {
-                    $valuevalue = "<a href='". admin_url("post.php?post={$valuevalue}&action=edit")."' target='_blank'>$valuevalue</a>";
+                    continue;
+                    // $valuevalue = "<a href='". admin_url("post.php?post={$valuevalue}&action=edit")."' target='_blank'>$valuevalue</a>";
                 }
-                
                 bluem_render_obj_row_recursive($valuekey, $valuevalue, $level+1);
             }
         } else {
