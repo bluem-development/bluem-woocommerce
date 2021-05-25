@@ -94,53 +94,49 @@
 <h4>Gekoppelde orders:
             </h4>
             <table class="widefat">
-
-<thead>
-<tr>
-<th>Datum</th>
-<th>Ordernummer</th>
-<th>Status</th>
-<th>Totaalbedrag</th>
-</tr>
-
-</thead>
-<tbody>
-
-            <?php
-            foreach ($links as $link) {
-                if ($link->item_type=="order") {
-                    $order = wc_get_order($link->item_id);
-                    $order_data = $order->get_data(); ?>
+                <thead>
                     <tr>
-                <td>
-                <?php echo $order->get_date_created()->date("d-m-Y H:i"); ?>
-                </td>
-                    
-                    <td>
-                    
-    <a href='<?php echo admin_url("post.php?post={$link->item_id}&action=edit"); ?>' target='_blank'>Order #<?php echo $link->item_id; ?></a> 
-                    </td>
-                    <td>
-    <?php echo ucfirst($order->get_status()); ?> 
-                    
-                    </td>
-                    <td>
-                    
-    <?php echo $order_data['total'];
-                    echo " ".$order->get_currency(); ?>
-                    </td>
-
+                        <th>Datum</th>
+                        <th>Ordernummer</th>
+                        <th>Status</th>
+                        <th>Totaalbedrag</th>
                     </tr>
-<?php
-                }
-                // @todo: build other item types later
-            } ?>
+                </thead>
+                <tbody>
+                <?php
+                foreach ($links as $link) {
+                    if ($link->item_type=="order") {
+                        $order = wc_get_order($link->item_id);
+                        if ($order === false) {
+                            continue;
+                        }
+                        $order_data = $order->get_data(); ?>
+                        <tr>
+                            <td>
+                            <?php echo $order->get_date_created()->date("d-m-Y H:i"); ?>
+                            </td>
 
-</tbody>
-</table>
-            <?php
-            } ?>
-        <?php if (count($logs)>0) { ?>
+                                <td>
+
+                                <a href='<?php echo admin_url("post.php?post={$link->item_id}&action=edit"); ?>' target='_blank'>Order #<?php echo $link->item_id; ?></a>
+                            </td>
+                            <td>
+                                <?php echo ucfirst($order->get_status()); ?>
+                            </td>
+                            <td>
+                                <?php echo $order_data['total'];
+                                echo " ".$order->get_currency(); ?>
+                            </td>
+                        </tr><?php
+                    }
+                    // @todo: build other item types later
+                    // @todo: build administrative functions to delete or edit links.
+                } ?>
+            </tbody>
+        </table><?php
+        }
+
+        if (count($logs)>0) { ?>
             <h4>
                 Gebeurtenissen:
             </h4>
@@ -149,31 +145,28 @@
 
                 foreach ($logs as $log) {
                     $ldate = strtotime($log->timestamp);
-                    
+
                     $d = str_replace(
                         ["<br><span style='font-family:monospace; font-size:9pt;'>", "</span>"],
                         "",
                         $log->description
                     );
                     $dparts = explode("New data: ", $d, 2); ?>
-                            <li>
-                                <span class="bluem-request-label">
-                                    <?php echo date("d-m-Y H:i", $ldate); ?>
-                                </span>
-                                <?php echo $dparts[0]; ?>
-            <?php if (isset($dparts[1])) { ?>&nbsp;
-            <abbr title="<?php
-                echo str_replace('"', '', $dparts[1]);
-                ?>" style="cursor: help;"><span class="dashicons dashicons-info-outline"></span></abbr>
-
-
-                <?php
-            } ?>
-                </li>
-                <?php
+                    <li>
+                        <span class="bluem-request-label">
+                            <?php echo date("d-m-Y H:i", $ldate); ?>
+                        </span>
+                        <?php echo $dparts[0]; ?><?php 
+                        if (isset($dparts[1])) { 
+                        ?>&nbsp;
+                            <abbr title="<?php
+                                echo str_replace('"', '', $dparts[1]);
+                                ?>" style="cursor: help;"><span class="dashicons dashicons-info-outline"></span>
+                            </abbr><?php
+                        } ?>
+                    </li><?php
                 } ?>
-            </ul>
-            <?php
+            </ul><?php
             } ?>
         </div>
         <div class="bluem-column" style="margin-left:5%">
@@ -229,10 +222,10 @@
                 Administratie:
             </span>
             <br>
-            <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$request->id."&admin_action=delete");?>" 
-                class="button bluem-button-danger" style="margin-top:5pt;">Verwijder dit verzoek direct</a> 
+            <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$request->id."&admin_action=delete");?>"
+                class="button bluem-button-danger" style="margin-top:5pt;">Verwijder dit verzoek direct</a>
                 <br>
-                
+
                 Let op: data wordt dan onherroepelijk verwijderd!
             </div>
         <?php

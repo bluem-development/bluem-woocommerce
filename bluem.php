@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.2.11
+ * Version: 1.2.12
  * Plugin URI: https://wordpress.org/plugins/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Bluem Payment Services
@@ -83,8 +83,12 @@ function bluem_woocommerce_no_woocommerce_notice()
         $bluem_options = get_option('bluem_woocommerce_options');
         if (!isset($bluem_options['suppress_woo']) || $bluem_options['suppress_woo']=="0") {
             echo '<div class="notice notice-warning is-dismissible">
-            <p>De Bluem integratie is deels afhankelijk van WooCommerce - activeer deze plug-in ook.<br>
-            Je kan deze melding en WooCommerce gerelateerde functionaliteiten ook uitzetten bij de <a href="'.admin_url('options-general.php?page=bluem').'">Instellingen</a>.</p>
+            <p>De Bluem integratie is deels afhankelijk 
+            van WooCommerce - activeer deze plug-in ook.<br>
+            Je kan deze melding en WooCommerce gerelateerde 
+            functionaliteiten ook uitzetten bij de 
+            <a href="'.admin_url('options-general.php?page=bluem').'">
+            Instellingen</a>.</p>
             </div>';
         }
     }
@@ -189,7 +193,11 @@ function bluem_admin_requests_view_all()
     date_default_timezone_set('Europe/Amsterdam');
     $wpdb->time_zone = 'Europe/Amsterdam';
 
-    $_requests = $wpdb->get_results("SELECT *  FROM `bluem_requests` ORDER BY `type` ASC, `timestamp` DESC");
+    $_requests = $wpdb->get_results(
+        "SELECT *  
+        FROM `bluem_requests` 
+        ORDER BY `type` ASC, `timestamp` DESC"
+    );
 
     $requests['identity'] = [];
     $requests['payments'] = [];
@@ -723,11 +731,16 @@ function bluem_woocommerce_get_core_options()
         'transaction_notification_email' => [
             'key' => 'transaction_notification_email',
             'title' => 'bluem_transaction_notification_email',
-            'name' => 'Ontvangen e-mail notificatie voor elke nieuwe transactie?',
-            'description' => "Geef hier aan of je automatisch een notificatie e-mail wil ontvangen met transactie details",
+            'name' => 'E-mail notificatie voor website 
+                eigenaar bij elke nieuwe transactie?',
+            'description' => "Geef hier aan of je als 
+                website-eigenaar automatisch een notificatie e-mail wil ontvangen met transactiedetails",
             'type' => 'select',
             'default' => '0',
-            'options' => ['0' => 'Geen e-mail notificatie (standaard)', '1' => 'Stuur notificatie voor elke transactie naar '.get_option('admin_email')],
+            'options' => [
+                '0' => 'Geen e-mail notificatie (standaard)', 
+                '1' => 'Stuur notificatie voor elke transactie naar '.get_option('admin_email')
+            ],
         ],
     ];
 }
@@ -1172,7 +1185,11 @@ function bluem_order_requests_metabox_content()
     $order_id = $post->ID;
     $order = wc_get_order($order_id);
 
-    $requests = bluem_db_get_requests_by_keyvalue("order_id", $order_id);
+    // $requests1 = bluem_db_get_requests_by_keyvalue("order_id", $order_id);
+    // $requests = array_merge($requests1,$requests2);
+
+    //  requests from links:
+    $requests = bluem_db_get_links_for_order($order_id);
 
     if (isset($requests) && count($requests)>0) {
         bluem_render_requests_list($requests);

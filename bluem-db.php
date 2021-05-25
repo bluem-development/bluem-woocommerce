@@ -450,13 +450,24 @@ function bluem_db_get_logs_for_request($id)
 }
 
 
+
+function bluem_db_get_links_for_order($id)
+{
+    global $wpdb;
+    date_default_timezone_set('Europe/Amsterdam');
+    $wpdb->time_zone = 'Europe/Amsterdam';
+    return $wpdb->get_results("SELECT *  FROM  `bluem_requests_links` WHERE `order_id` = {$id} ORDER BY `timestamp` DESC");
+}
+
+
 function bluem_db_get_links_for_request($id)
 {
     global $wpdb;
     date_default_timezone_set('Europe/Amsterdam');
     $wpdb->time_zone = 'Europe/Amsterdam';
-    return $wpdb->get_results("SELECT *  FROM  `bluem_requests_links` WHERE `request_id` = $id ORDER BY `timestamp` DESC");
+    return $wpdb->get_results("SELECT *  FROM  `bluem_requests_links` WHERE `request_id` = {$id} ORDER BY `timestamp` DESC");
 }
+
 function bluem_db_create_link($request_id, $item_id, $item_type="order")
 {
     global $wpdb;

@@ -1308,6 +1308,12 @@ function bluem_checkout_idin_notice()
         return;
     }
 
+    
+    if (home_url() === "https://drankstunter.nl/mijn-account/?redirect_to_checkout") {
+        if (!is_user_logged_in()) {
+            return;
+        }
+    }
 
     $options = get_option('bluem_woocommerce_options');
 
@@ -1451,6 +1457,12 @@ function bluem_checkout_check_idin_validated()
         || is_page('mijn-account')
     ) {
         return;
+    }
+    
+    if (home_url() === "https://drankstunter.nl/mijn-account/?redirect_to_checkout") {
+        if (!is_user_logged_in()) {
+            return;
+        }
     }
 
     if (!function_exists('bluem_idin_user_validated')) {
