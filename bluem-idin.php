@@ -1309,7 +1309,7 @@ function bluem_checkout_idin_notice()
     }
 
     
-    if (home_url() === "https://drankstunter.nl/mijn-account/?redirect_to_checkout") {
+    if (home_url() === "https://drankstunter.nl") {
         if (!is_user_logged_in()) {
             return;
         }
@@ -1325,16 +1325,14 @@ function bluem_checkout_idin_notice()
         echo "<h3>Identificatie</h3>";
 
         $validated = bluem_idin_user_validated();
-        $validation_message = "Identificatie is vereist alvorens de bestelling kan worden afgerond.";
+        $validation_message = "Let op: Graag eerst eenmalig identificeren.";
+        //"Identificatie is vereist alvorens de bestelling kan worden afgerond.";
         $idin_logo_html = bluem_get_idin_logo_html();
         // above 0: any form of verification is required
         if (!$validated) {
             echo bluem_idin_generate_notice($validation_message, true);
-
             return;
         }
-
-
 
         // get report from user metadata
         // $results = bluem_idin_retrieve_results();
@@ -1432,6 +1430,18 @@ function bluem_checkout_idin_notice()
 
 // add_action('woocommerce_check_cart_items', 'bluem_checkout_check_idin_validated'); // Cart and Checkout
 
+
+
+add_action( 'woocommerce_after_checkout_validation', 'bluem_validate_idin_at_checkout', 10, 2);
+ 
+function bluem_validate_idin_at_checkout( $fields, $errors )
+{
+    bluem_checkout_check_idin_validated();
+        // $errors->add( 'validation', 'Your first or last name contains a number. Really?' );
+}
+
+
+
 /**
  * Show notice!
  */
@@ -1459,7 +1469,7 @@ function bluem_checkout_check_idin_validated()
         return;
     }
     
-    if (home_url() === "https://drankstunter.nl/mijn-account/?redirect_to_checkout") {
+    if (home_url() === "https://drankstunter.nl") {
         if (!is_user_logged_in()) {
             return;
         }
@@ -1481,7 +1491,8 @@ function bluem_checkout_check_idin_validated()
     if ($scenario > 0) {
         $validated = bluem_idin_user_validated();
         $idin_logo_html = bluem_get_idin_logo_html();
-        $validation_message = "Identificatie is vereist alvorens de bestelling kan worden afgerond.";
+        $validation_message = "Let op: Graag eerst eenmalig identificeren.";
+        ///Identificatie is vereist alvorens de bestelling kan worden afgerond.
 
         // above 0: any form of verification is required
         if (!$validated) {
@@ -1792,10 +1803,10 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
 }
 
 
-add_action('woocommerce_review_order_before_payment', 'bluem_idin_before_payment_notice');
-function bluem_idin_before_payment_notice()
-{
-}
+// add_action('woocommerce_review_order_before_payment', 'bluem_idin_before_payment_notice');
+// function bluem_idin_before_payment_notice()
+// {
+// }
 
 
 
