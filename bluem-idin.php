@@ -1808,8 +1808,6 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
 // {
 // }
 
-
-
 /**
  * Generate the necessary HTML to show a notice concerning iDIN status
  *

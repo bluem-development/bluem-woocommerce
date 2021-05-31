@@ -385,46 +385,28 @@ function bluem_init_mandate_gateway_class()
             $request = bluem_db_get_most_recent_request($user_id, "mandates");
             if ($request !== false) {
 
-                // $pl = json_decode($request->payload);
-
-                // if (!is_null($pl) && $pl!==false) {
-                //     $bluem_latest_mandate_amount = $pl->amount;
-                // } else {
-                //     $ready = false;
-                // }
-                $bluem_latest_request = $request;
+                $bluem_latest_mandate_id = $request->transaction_id;
+                $bluem_latest_mandate_entrance_code = $request->entrance_code;
 
                 $retrieved_request_from_db = true;
             } else {
                 // no latest request found, also trying in user metadata (legacy)
-            }
+                $user_meta = get_user_meta($user_id);
 
+                $bluem_latest_mandate_id = null;
+                if (isset($user_meta['bluem_latest_mandate_id']) && $user_meta['bluem_latest_mandate_id'] !== "") {
+                    $bluem_latest_mandate_id = $user_meta['bluem_latest_mandate_id'][0];
+                } else {
+                    $ready = false;
+                }
 
-            $user_meta = get_user_meta($user_id);
-
-            $bluem_latest_mandate_id = null;
-            if (isset($user_meta['bluem_latest_mandate_id']) && $user_meta['bluem_latest_mandate_id'] !== "") {
-                $bluem_latest_mandate_id = $user_meta['bluem_latest_mandate_id'][0];
-            } else {
-                $ready = false;
+                $bluem_latest_mandate_entrance_code = null;
+                if (isset($user_meta['bluem_latest_mandate_entrance_code']) && $user_meta['bluem_latest_mandate_entrance_code'] !== "") {
+                    $bluem_latest_mandate_entrance_code = $user_meta['bluem_latest_mandate_entrance_code'][0];
+                } else {
+                    $ready = false;
+                }
             }
-            // $bluem_latest_mandate_amount = null;
-            // if (isset($user_meta['bluem_latest_mandate_amount']) && $user_meta['bluem_latest_mandate_amount'] !== "") {
-            //     $bluem_latest_mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
-            // } else {
-            //     $ready = false;
-            // }
-            $bluem_latest_mandate_entrance_code = null;
-            if (isset($user_meta['bluem_latest_mandate_entrance_code']) && $user_meta['bluem_latest_mandate_entrance_code'] !== "") {
-                $bluem_latest_mandate_entrance_code = $user_meta['bluem_latest_mandate_entrance_code'][0];
-            } else {
-                $ready = false;
-            }
-            // var_dump($user_meta);
-            // var_dump($bluem_latest_mandate_entrance_code);
-            // var_dump($bluem_latest_mandate_id);
-            // var_dump($ready);
-            // die();
 
             if ($ready
                 && !is_null($bluem_latest_mandate_id)
@@ -433,23 +415,19 @@ function bluem_init_mandate_gateway_class()
                 && $bluem_latest_mandate_entrance_code !== ""
             ) {
 
-                // && !is_null($bluem_latest_mandate_amount)
-                // && ($maxAmountEnabled == false || ($maxAmountEnabled
-                // && ($bluem_latest_mandate_amount == 0 ||
-                // ($bluem_latest_mandate_amount > 0
-                // && $bluem_latest_mandate_amount  >= (float)$order->get_total() * $maxAmountFactor))))
+
                 $existing_mandate_response = $this->bluem->MandateStatus(
                     $bluem_latest_mandate_id,
                     $bluem_latest_mandate_entrance_code
                 );
+
                 if ($existing_mandate_response->Status() == false) {
-                    $reason = "no bluem response for existing mandate";
-                // existing mandate response is not at all valid, continue with actual mandate process
+                    $reason = "No / invalid bluem response for existing mandate";
+                    // existing mandate response is not at all valid, continue with actual mandate process
                 } else {
 
-                    // var_dump($existing_mandate_response->EMandateStatusUpdate->EMandateStatus->Status ."");
-                    // die();
-                    if ($existing_mandate_response->EMandateStatusUpdate->EMandateStatus->Status . "" === "Success") {
+                    if ($existing_mandate_response->EMandateStatusUpdate->EMandateStatus->Status . "" === "Success"
+                    ) {
                         if ($this->validateMandate(
                             $existing_mandate_response,
                             $order,
@@ -458,16 +436,20 @@ function bluem_init_mandate_gateway_class()
                             false
                         )
                         ) {
-
-                            // successfully used previous mandate in current order, lets annotate that order with the corresponding metadata
-                            update_post_meta($order_id, 'bluem_entrancecode', $bluem_latest_mandate_entrance_code);
-                            update_post_meta($order_id, 'bluem_mandateid', $bluem_latest_mandate_id);
+                            // successfully used previous mandate in current order,
+                            // lets annotate that order with the corresponding metadata
+                            update_post_meta(
+                                $order_id, 'bluem_entrancecode', $bluem_latest_mandate_entrance_code
+                            );
+                            update_post_meta(
+                                $order_id, 'bluem_mandateid', $bluem_latest_mandate_id
+                            );
 
 
                             if ($retrieved_request_from_db) {
                                 bluem_db_request_log(
                                     $request->id,
-                                    "Utilized this request for a 
+                                    "Utilized this request for a
                                     payment for another order {$order_id}"
                                 );
 
@@ -504,7 +486,7 @@ function bluem_init_mandate_gateway_class()
                     }
                 }
             } else {
-                $reason = "not ready, no metadata";
+                $reason = "Not ready, no metadata";
             }
             return array(
                 'result' => 'fail',
@@ -534,12 +516,7 @@ function bluem_init_mandate_gateway_class()
 
 
             $settings = get_option('bluem_woocommerce_options');
-            $maxAmountEnabled = (isset($settings['maxAmountEnabled']) ? ($settings['maxAmountEnabled'] == "1") : false);
-            if ($maxAmountEnabled) {
-                $maxAmountFactor = (isset($settings['maxAmountFactor']) ? (float)($settings['maxAmountFactor']) : false);
-            } else {
-                $maxAmountFactor = 1.0;
-            }
+
 
             $check = $this->_checkExistingMandate($order);
 
@@ -553,23 +530,21 @@ function bluem_init_mandate_gateway_class()
 
             $order_id = $order->get_order_number();
             $mandate_id = $this->bluem->CreateMandateId($order_id, $user_id);
-            
+
             $request = $this->bluem->CreateMandateRequest(
                 $user_id,
                 $order_id,
                 $mandate_id
             );
+
             // allow third parties to add additional data to the request object through this additional action
             $request = apply_filters(
                 'bluem_woocommerce_enhance_mandate_request',
                 $request
             );
-            // echo "Hier";
-            // die();
-            // var_dump($request);
+
             $response = $this->bluem->PerformRequest($request);
-            // var_dump($response);
-            // die();
+
             if (self::VERBOSE) {
                 var_dump($order_id);
                 var_dump($user_id);
@@ -581,8 +556,6 @@ function bluem_init_mandate_gateway_class()
             if (is_a($response, "Bluem\BluemPHP\ErrorBluemResponse", false)) {
                 throw new Exception("An error occured in the payment method. Please contact the webshop owner with this message:  " . $response->error());
             }
-
-
 
             $attrs = $response->EMandateTransactionResponse->attributes();
 
@@ -609,7 +582,6 @@ function bluem_init_mandate_gateway_class()
                 $transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
 
                 // Logging transaction
-            
                 $raw_request_object = [
                     'entrance_code'=>$entranceCode,
                     'transaction_id'=>$mandate_id,
@@ -953,9 +925,6 @@ function bluem_init_mandate_gateway_class()
             $user_id = $order->get_user_id();
 
             $mandate_id = $response->EMandateStatusUpdate->EMandateStatus->MandateID."";
-            // echo "Validating mandate";
-            // var_dump($response);
-            // die();
 
             $settings = get_option('bluem_woocommerce_options');
             $maxAmountEnabled = (isset($settings['maxAmountEnabled']) ? ($settings['maxAmountEnabled'] == "1") : false);
@@ -964,12 +933,8 @@ function bluem_init_mandate_gateway_class()
             } else {
                 $maxAmountFactor = 1.0;
             }
-            // var_dump($maxAmountFactor);
-            // var_dump($mandate_id);
-            // die();
+
             $successful_mandate = false;
-
-
 
             $request_id = "";
             $request_from_db = false;
@@ -981,7 +946,6 @@ function bluem_init_mandate_gateway_class()
 
                 $request_id = $request_from_db->id;
             }
-
 
             if ($maxAmountEnabled) {
 
@@ -1072,8 +1036,7 @@ function bluem_init_mandate_gateway_class()
                     $successful_mandate
                 );
             }
-            // var_dump($successful_mandate);
-            // die();
+
             if ($successful_mandate) {
                 if ($update_metadata) {
                     if ($mandate_id !=="") {
@@ -1098,8 +1061,6 @@ function bluem_init_mandate_gateway_class()
                     }
                 }
 
-
-
                 if (self::VERBOSE) {
                     echo "mandaat is succesvol, order kan worden aangepast naar machtiging_goedgekeurd";
                 }
@@ -1112,7 +1073,6 @@ function bluem_init_mandate_gateway_class()
                         'wc-gateway-bluem'
                     )
                 );
-
 
                 bluem_transaction_notification_email(
                     $request_id
@@ -1135,7 +1095,6 @@ function bluem_init_mandate_gateway_class()
             }
         }
     }
-
 
     add_action('bluem_woocommerce_valid_mandate_callback', 'bluem_woocommerce_valid_mandate_callback_function', 10, 2);
 
@@ -1491,8 +1450,6 @@ if (isset($bluem_options['useMandatesDebtorWallet']) && $bluem_options['useManda
         }
         die();
     }
-
-   
 }
 
 
