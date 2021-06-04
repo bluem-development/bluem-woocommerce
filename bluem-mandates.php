@@ -529,7 +529,12 @@ function bluem_init_mandate_gateway_class()
             }
 
             $order_id = $order->get_order_number();
-            $mandate_id = $this->bluem->CreateMandateId($order_id, $user_id);
+            
+            // update: added prefixed order ID for retries of mandate requests
+            $prefixed_order_id = date("His").$order_id;
+            $mandate_id = $this->bluem->CreateMandateId(
+                $prefixed_order_id, $user_id
+            );
 
             $request = $this->bluem->CreateMandateRequest(
                 $user_id,
