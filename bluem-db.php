@@ -101,7 +101,9 @@ function bluem_db_create_request($request_object)
             && $request_object->order_id !=""
         ) {
             bluem_db_create_link(
-                $request_id, $request_object->order_id, "order"
+                $request_id,
+                $request_object->order_id,
+                "order"
             );
         }
         bluem_db_request_log(
@@ -303,7 +305,7 @@ function bluem_db_get_requests_by_keyvalues(
         $i = 0;
         $kvs = " WHERE ";
         foreach ($keyvalues as $key => $value) {
-            if (!is_string($key) || !is_string($value)) {
+            if ($key=="" || $value=="") {
                 return false;
             }
             $kvs.= "`{$key}` = '{$value}'";
@@ -325,6 +327,7 @@ function bluem_db_get_requests_by_keyvalues(
     ) {
         $query .= " LIMIT {$limit}";
     }
+
     try {
         return $wpdb->get_results(
             $query
@@ -369,6 +372,7 @@ function bluem_db_get_requests_by_user_id_and_type($user_id = null, $type="")
         'timestamp',
         'DESC'
     );
+
     return $res!==false && count($res) > 0 ? $res : [];
 }
 

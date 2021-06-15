@@ -166,6 +166,8 @@ function bluem_woocommerce_get_idin_options()
         'description' => 'Een bondige beschrijving volstaat.',
         'default' => 'Er is een fout opgetreden. De identificatie is geannuleerd.'
     ],
+
+
     'IDINPageURL' => [
         'key' => 'IDINPageURL',
         'title' => 'bluem_IDINPageURL',
@@ -246,6 +248,65 @@ function bluem_woocommerce_get_idin_options()
         'type' => 'bool',
         'default' => '1',
     ],
+
+    
+    'idin_identify_button_inner' => [
+        'key' => 'idin_identify_button_inner',
+        'title' => 'bluem_idin_identify_button_inner',
+        'name' => 'Tekst op Identificeren knop',
+        'description' => 'Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.',
+        'default' => 'Klik hier om je te identificeren'
+    ],
+
+    'idin_identity_dialog_no_verification_text' => [
+        'key' => 'idin_identity_dialog_no_verification_text',
+        'title' => 'bluem_idin_identity_dialog_no_verification_text',
+        'name' => 'Tekst in kader Identificeren (onder checkout) als er nog GEEN geldige identificatie bekend is maar deze wel vereist is',
+        'description' => 'Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.',
+        'default' => 'Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.'
+    ],
+    
+    
+    'idin_identity_dialog_no_verification_text' => [
+        'key' => 'idin_identity_dialog_no_verification_text',
+        'title' => 'bluem_idin_identity_dialog_no_verification_text',
+        'name' => 'Tekst in kader Identificeren (onder checkout) als er nog GEEN geldige identificatie bekend is maar deze wel vereist is',
+        'description' => 'Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.',
+        'default' => 'Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.'
+    ],
+    'idin_identity_topbar_no_verification_text' => [
+        'key' => 'idin_identity_topbar_no_verification_text',
+        'title' => 'bluem_idin_identity_topbar_no_verification_text',
+        'name' => 'Tekst in Pop-up boven checkout als er nog GEEN geldige identificatie bekend is maar deze wel vereist is',
+        'description' => 'Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.',
+        'default' => 'We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.'
+    ],
+
+    'idin_identity_topbar_invalid_verification_text' => [
+        'key' => 'idin_identity_topbar_invalid_verification_text',
+        'title' => 'bluem_idin_identity_topbar_invalid_verification_text',
+        'name' => 'Tekst in Pop-up boven checkout als er een ongeldige identificatie terugkomt na opvragen hiervan',
+        'description' => 'Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.',
+        'default' => "Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden."
+    ],
+
+
+    'idin_identity_dialog_thank_you_message' => [
+        'key' => 'idin_identity_dialog_thank_you_message',
+        'title' => 'bluem_idin_identity_dialog_thank_you_message',
+        'name' => 'Tekst in kader onder checkout zodra er een geldige identificatie procedure is voltooid',
+        'description' => 'Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.',
+        'default' => "Je leeftijd is geverifieerd, bedankt."
+    ],
+
+    'idin_identity_popup_thank_you_message' => [
+        'key' => 'idin_identity_popup_thank_you_message',
+        'title' => 'bluem_idin_identity_popup_thank_you_message',
+        'name' => 'Tekst in Pop-up boven checkout zodra er een geldige identificatie procedure is voltooid',
+        'description' => 'Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.',
+        'default' => "Je leeftijd is geverifieerd."
+    ],
+
     ];
 }
 
@@ -466,6 +527,55 @@ function bluem_woocommerce_settings_render_idin_add_birthdate_in_order_emails()
         bluem_woocommerce_get_idin_option('idin_add_birthdate_in_order_emails')
     );
 }
+
+function bluem_woocommerce_settings_render_idin_identify_button_inner()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_identify_button_inner')
+    );
+}
+
+
+function bluem_woocommerce_settings_render_idin_identity_dialog_no_verification_text()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_identity_dialog_no_verification_text')
+    );
+}
+
+
+function bluem_woocommerce_settings_render_idin_identity_topbar_no_verification_text()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_identity_topbar_no_verification_text')
+    );
+}
+
+
+function bluem_woocommerce_settings_render_idin_identity_topbar_invalid_verification_text()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_identity_topbar_invalid_verification_text')
+    );
+}
+
+
+function bluem_woocommerce_settings_render_idin_identity_dialog_thank_you_message()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_identity_dialog_thank_you_message')
+    );
+}
+
+
+function bluem_woocommerce_settings_render_idin_identity_popup_thank_you_message()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_identity_popup_thank_you_message')
+    );
+}
+
+
 
 
 
@@ -707,7 +817,6 @@ function bluem_idin_shortcode_callback()
                         'status'=>$statusCode
                     ]
                 );
-                
             }
 
 
@@ -923,8 +1032,11 @@ add_action('edit_user_profile', 'bluem_woocommerce_idin_show_extra_profile_field
 
 function bluem_woocommerce_idin_show_extra_profile_fields($user)
 {
-    $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID, "identity"); ?>
-          <table class="form-table">
+    // var_dump($user->ID);
+    // var_dump($bluem_requests);
+    $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID."", "identity"); ?>
+
+          <table class="form-table" style="max-height:800px; overflow-y:auto;">
           <a id="user_identity"></a>
     <?php
 
@@ -1321,6 +1433,23 @@ function bluem_checkout_idin_notice()
         $scenario = (int) $options['idin_scenario_active'];
     }
 
+
+    if (isset($options['idin_identity_dialog_no_verification_text']) && $options['idin_identity_dialog_no_verification_text']!=="") {
+        $identity_dialog_no_verification_text = $options['idin_identity_dialog_no_verification_text'];
+    } else {
+        $identity_dialog_no_verification_text = "Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.";
+    }
+
+
+    
+    if (isset($options['idin_identity_dialog_thank_you_message']) && $options['idin_identity_dialog_thank_you_message']!=="") {
+        $idin_identity_dialog_thank_you_message = $options['idin_identity_dialog_thank_you_message'];
+    } else {
+        $idin_identity_dialog_thank_you_message = "Je leeftijd is geverifieerd, bedankt.";
+    }
+
+
+
     if ($scenario > 0) {
         echo "<h3>Identificatie</h3>";
 
@@ -1366,13 +1495,15 @@ function bluem_checkout_idin_notice()
                     $age_valid = true;
                 } else {
                     // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
-                    $validation_message = "Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.";
+                    $validation_message = $identity_dialog_no_verification_text;
+                    // /"Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.";
 
                     $age_valid = false;
                 }
             } else {
                 // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
-                $validation_message = "We hebben uw leeftijd nog niet kunnen opvragen bij de identificatie.<BR>  Neem contact op met de webshop support.";
+                $validation_message = $identity_dialog_no_verification_text;
+                //"We hebben uw leeftijd nog niet kunnen opvragen bij de identificatie.<BR>  Neem contact op met de webshop support.";
 
                 $age_valid = false;
             }
@@ -1409,7 +1540,7 @@ function bluem_checkout_idin_notice()
                 echo bluem_idin_generate_notice($validation_message, true);
                 return;
             } else {
-                echo bluem_idin_generate_notice("Je leeftijd is geverifieerd, bedankt.");
+                echo bluem_idin_generate_notice($idin_identity_dialog_thank_you_message);
                 return;
             }
         }
@@ -1432,12 +1563,12 @@ function bluem_checkout_idin_notice()
 
 
 
-add_action( 'woocommerce_after_checkout_validation', 'bluem_validate_idin_at_checkout', 10, 2);
+add_action('woocommerce_after_checkout_validation', 'bluem_validate_idin_at_checkout', 10, 2);
  
-function bluem_validate_idin_at_checkout( $fields, $errors )
+function bluem_validate_idin_at_checkout($fields, $errors)
 {
     bluem_checkout_check_idin_validated();
-        // $errors->add( 'validation', 'Your first or last name contains a number. Really?' );
+    // $errors->add( 'validation', 'Your first or last name contains a number. Really?' );
 }
 
 
@@ -1478,11 +1609,39 @@ function bluem_checkout_check_idin_validated()
     if (!function_exists('bluem_idin_user_validated')) {
         return;
     }
+    
+    
+    
+    $options = get_option('bluem_woocommerce_options');
+    if (isset($options['idin_identify_button_inner']) && $options['idin_identify_button_inner']!=="") {
+        $identify_button_inner = $options['idin_identify_button_inner'];
+    } else {
+        $identify_button_inner = "Klik hier om je te identificeren";
+    }
+
+    if (isset($options['idin_identity_topbar_invalid_verification_text']) && $options['idin_identity_topbar_invalid_verification_text']!=="") {
+        $idin_identity_topbar_invalid_verification_text = $options['idin_identity_topbar_invalid_verification_text'];
+    } else {
+        $idin_identity_topbar_invalid_verification_text = "Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden.";
+    }
+    if (isset($options['idin_identity_topbar_no_verification_text']) && $options['idin_identity_topbar_no_verification_text']!=="") {
+        $idin_identity_topbar_no_verification_text = $options['idin_identity_topbar_no_verification_text'];
+    } else {
+        $idin_identity_topbar_no_verification_text = "We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.";
+    }
+    
+    
+    if (isset($options['idin_identity_popup_thank_you_message']) && $options['idin_identity_popup_thank_you_message']!=="") {
+        $idin_identity_popup_thank_you_message = $options['idin_identity_popup_thank_you_message'];
+    } else {
+        $idin_identity_popup_thank_you_message = "Je leeftijd is geverifieerd.";
+    }
+    // todo: remove these obsolete defaults
+  
+
     $identify_button_html = "<br><a href='".
         home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true')."'
-        target='_self' class='button bluem-identify-button'>Klik hier om je te identificeren</a>";
-
-    $options = get_option('bluem_woocommerce_options');
+        target='_self' class='button bluem-identify-button'>{$identify_button_inner}</a>";
 
     if (isset($options['idin_scenario_active']) && $options['idin_scenario_active']!=="") {
         $scenario = (int) $options['idin_scenario_active'];
@@ -1534,13 +1693,15 @@ function bluem_checkout_check_idin_validated()
                         $age_valid = true;
                     } else {
                         // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
-                        $validation_message = "Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden.";
+                        $validation_message = $idin_identity_topbar_invalid_verification_text;
+                        //"Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden.";
 
                         $age_valid = false;
                     }
                 } else {
                     // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
-                    $validation_message = "We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure";
+                    $validation_message = $idin_identity_topbar_no_verification_text;
+                    // "We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure";
 
                     $age_valid = false;
                 }
@@ -1578,7 +1739,7 @@ function bluem_checkout_check_idin_validated()
                     );
                 } else {
                     wc_add_notice(
-                        "Je leeftijd is geverifieerd.",
+                        $idin_identity_popup_thank_you_message,
                         'success'
                     );
                 }
@@ -1821,10 +1982,19 @@ function bluem_idin_generate_notice(String $message ="", bool $button = false, b
     plugin_dir_url(__FILE__)."assets/bluem/idin.png' class='bluem-idin-logo'
     style='position:absolute; top:15pt; left:15pt; max-height:64px; '/>";
 
+
+    $options = get_option('bluem_woocommerce_options');
+    if (isset($options['idin_identify_button_inner']) && $options['idin_identify_button_inner']!=="") {
+        $identify_button_inner = $options['idin_identify_button_inner'];
+    } else {
+        $identify_button_inner = "Klik hier om je te identificeren";
+    }
+
+
     $idin_button_html = "<a href='".
         home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true').
-        "' target='_self' class='button bluem-identify-button' style='display:inline-block'>
-            Klik hier om je te identificeren
+        "' target='_self' class='button bluem-identify-button' style='display:inline-block' title='{$identify_button_inner}'>
+            {$identify_button_inner}
         </a><br>";
 
     $html = "<div style='position:relative;".
