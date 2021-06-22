@@ -100,7 +100,7 @@ function bluem_woocommerce_get_idin_options()
             'key' => 'idin_request_name',
             'title' => 'bluem_idin_request_name',
             'name' => 'Naam opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
+            'description' => "Indien je een volledige identiteitscontrole uitvoert,
                 wil je dan de naam opvragen?",
             'type' => 'bool',
             'default' => '1',
@@ -109,7 +109,7 @@ function bluem_woocommerce_get_idin_options()
             'key' => 'idin_request_address',
             'title' => 'bluem_idin_request_address',
             'name' => 'Adres opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
+            'description' => "Indien je een volledige identiteitscontrole uitvoert,
                 wil je dan het woonadres opvragen?",
             'type' => 'bool',
             'default' => '1',
@@ -118,8 +118,8 @@ function bluem_woocommerce_get_idin_options()
             'key' => 'idin_request_birthdate',
             'title' => 'bluem_idin_request_birthdate',
             'name' => 'Geboortedatum opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
-                wil je dan de geboortedatum opvragen? Dit gegeven wordt ALTIJD opgevraagd 
+            'description' => "Indien je een volledige identiteitscontrole uitvoert,
+                wil je dan de geboortedatum opvragen? Dit gegeven wordt ALTIJD opgevraagd
                 indien je ook op de minimumleeftijd controleert",
             'type' => 'bool',
             'default' => '1',
@@ -128,7 +128,7 @@ function bluem_woocommerce_get_idin_options()
             'key' => 'idin_request_gender',
             'title' => 'bluem_idin_request_gender',
             'name' => 'Geslacht opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
+            'description' => "Indien je een volledige identiteitscontrole uitvoert,
                 wil je dan het geslacht opvragen?",
             'type' => 'bool',
             'default' => '0',
@@ -137,7 +137,7 @@ function bluem_woocommerce_get_idin_options()
             'key' => 'idin_request_telephone',
             'title' => 'bluem_idin_request_telephone',
             'name' => 'Telefoonnummer opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
+            'description' => "Indien je een volledige identiteitscontrole uitvoert,
                 wil je dan het telefoonnummer opvragen?",
             'type' => 'bool',
             'default' => '1',
@@ -146,7 +146,7 @@ function bluem_woocommerce_get_idin_options()
             'key' => 'idin_request_email',
             'title' => 'bluem_idin_request_email',
             'name' => 'E-mailadres opvragen?',
-            'description' => "Indien je een volledige identiteitscontrole uitvoert, 
+            'description' => "Indien je een volledige identiteitscontrole uitvoert,
                 wil je dan het e-mailadres opvragen?",
             'type' => 'bool',
             'default' => '1',
@@ -220,7 +220,8 @@ function bluem_woocommerce_get_idin_options()
         'key' => 'idin_add_field_in_order_emails',
         'title' => 'bluem_idin_add_field_in_order_emails',
         'name' => 'Identificatie status in emails',
-        'description' => "Moet de status van identificatie worden weergegeven in de order notificatie email naar de klant en naar jezelf?",
+        'description' => "Moet de status van identificatie worden weergegeven
+            in de order notificatie email naar de klant en naar jezelf? <strong>Let op: dit werkt op het moment alleen voor ingelogde klanten</strong>",
         'type' => 'bool',
         'default' => '1',
     ],
@@ -228,7 +229,8 @@ function bluem_woocommerce_get_idin_options()
         'key' => 'idin_add_address_in_order_emails',
         'title' => 'bluem_idin_add_address_in_order_emails',
         'name' => 'Identificatie adres in emails',
-        'description' => "Moet de adres van identificatie worden weergegeven in de order notificatie email naar de klant en naar jezelf?",
+        'description' => "Moet het adres van identificatie worden weergegeven
+            in de order notificatie email naar de klant en naar jezelf? <strong>Let op: dit werkt op het moment alleen voor ingelogde klanten</strong>",
         'type' => 'bool',
         'default' => '1',
     ],
@@ -236,7 +238,8 @@ function bluem_woocommerce_get_idin_options()
         'key' => 'idin_add_name_in_order_emails',
         'title' => 'bluem_idin_add_name_in_order_emails',
         'name' => 'Identificatie naam in emails',
-        'description' => "Moet de naam van identificatie worden weergegeven in de order notificatie email naar de klant en naar jezelf?",
+        'description' => "Moet de naam van identificatie worden weergegeven
+            in de order notificatie email naar de klant en naar jezelf? <strong>Let op: dit werkt op het moment alleen voor ingelogde klanten</strong>",
         'type' => 'bool',
         'default' => '1',
     ],
@@ -244,12 +247,13 @@ function bluem_woocommerce_get_idin_options()
         'key' => 'idin_add_birthdate_in_order_emails',
         'title' => 'bluem_idin_add_birthdate_in_order_emails',
         'name' => 'Identificatie geboortedatum in emails',
-        'description' => "Moet de geboortedatum van identificatie worden weergegeven in de order notificatie email naar de klant en naar jezelf?",
+        'description' => "Moet de geboortedatum van identificatie worden weergegeven
+            in de order notificatie email naar de klant en naar jezelf? <strong>Let op: dit werkt op het moment alleen voor ingelogde klanten</strong>",
         'type' => 'bool',
         'default' => '1',
     ],
 
-    
+
     'idin_identify_button_inner' => [
         'key' => 'idin_identify_button_inner',
         'title' => 'bluem_idin_identify_button_inner',
@@ -265,8 +269,8 @@ function bluem_woocommerce_get_idin_options()
         'description' => 'Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.',
         'default' => 'Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.'
     ],
-    
-    
+
+
     'idin_identity_dialog_no_verification_text' => [
         'key' => 'idin_identity_dialog_no_verification_text',
         'title' => 'bluem_idin_identity_dialog_no_verification_text',
@@ -307,6 +311,18 @@ function bluem_woocommerce_get_idin_options()
         'default' => "Je leeftijd is geverifieerd."
     ],
 
+    'idin_identity_more_information_popup' => [
+        'key' => 'idin_identity_more_information_popup',
+        'title' => 'bluem_idin_identity_more_information_popup',
+        'name' => 'Uitleg kader over identificeren',
+        'type'=>'textarea',
+        'description' => 'Schrijf hier een toelichting met eventuele doorklik links om klanten/gebruikers te vertellen over iDIN en het belang hiervan.',
+        'default' => '**Identificeren is per 1 juli 2021 verplicht in winkels waar producten verkocht worden met een identiteitsplicht van de klant.**
+
+De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDeal.   Het duurt hoogstens twee minuten en het resultaat wordt opgeslagen voor vervolgtransacties als je ingelogd bent als terugkerende klant.
+
+[Lees hier meer: https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/](https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/)'
+    ],
     ];
 }
 
@@ -576,6 +592,14 @@ function bluem_woocommerce_settings_render_idin_identity_popup_thank_you_message
 }
 
 
+function bluem_woocommerce_settings_render_idin_identity_more_information_popup()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_identity_more_information_popup')
+    );
+}
+
+
 
 
 
@@ -830,6 +854,8 @@ function bluem_idin_shortcode_callback()
                 $_SESSION['bluem_idin_validated'] = false;
             }
 
+
+
             switch ($statusCode) {
             case 'Success': // in case of success...
                 // ..retrieve a report that contains the information based on the request type:
@@ -839,7 +865,10 @@ function bluem_idin_shortcode_callback()
                     update_user_meta(get_current_user_id(), "bluem_idin_results", json_encode($identityReport));
                     update_user_meta(get_current_user_id(), "bluem_idin_validated", true);
                 } else {
+                    // As suggested by Joost Oostdyck | HeathenMead - juni 2021
                     $_SESSION['bluem_idin_validated'] = true;
+                    $_SESSION['bluem_idin_results'] = json_encode($identityReport);
+                    //data van de validatie ook opslaan in de sessie, anders kun je de leeftijd etc niet ophalen
                 }
 
                 // update an age check response field if that sccenario is active.
@@ -938,7 +967,7 @@ function bluem_idin_shortcode_callback()
                         $oldPayload = new Stdclass;
                     }
                     $oldPayload->report = $identityReport;
-                    
+
                     bluem_db_update_request(
                         $request_from_db->id,
                         [
@@ -1006,11 +1035,11 @@ function bluem_idin_shortcode_callback()
                 break;
             }
 
-            
+
             bluem_transaction_notification_email(
                 $request_from_db->id
             );
-            
+
             wp_redirect(
                 home_url($goto) .
                 "?result=false&status={$statusCode}"
@@ -1214,11 +1243,17 @@ function bluem_woocommerce_idin_save_extra_profile_fields($user_id)
 
 function bluem_idin_retrieve_results()
 {
-    $raw = get_user_meta(get_current_user_id(), "bluem_idin_results", true);
+    if (is_user_logged_in()) {
+        $raw = get_user_meta(get_current_user_id(), "bluem_idin_results", true);
+    } else {
+        // As suggested by Joost Oostdyck | HeathenMead - juni 2021
+        $raw = $_SESSION['bluem_idin_results'];
+    }
 
     $obj = json_decode($raw);
     return $obj;
 }
+
 function bluem_idin_user_validated()
 {
     global $current_user;
@@ -1420,7 +1455,7 @@ function bluem_checkout_idin_notice()
         return;
     }
 
-    
+
     if (home_url() === "https://drankstunter.nl") {
         if (!is_user_logged_in()) {
             return;
@@ -1441,12 +1476,33 @@ function bluem_checkout_idin_notice()
     }
 
 
-    
+
     if (isset($options['idin_identity_dialog_thank_you_message']) && $options['idin_identity_dialog_thank_you_message']!=="") {
         $idin_identity_dialog_thank_you_message = $options['idin_identity_dialog_thank_you_message'];
     } else {
         $idin_identity_dialog_thank_you_message = "Je leeftijd is geverifieerd, bedankt.";
     }
+
+    if (isset($options['idin_identity_topbar_no_verification_text']) && $options['idin_identity_topbar_no_verification_text']!=="") {
+        $idin_identity_topbar_no_verification_text = $options['idin_identity_topbar_no_verification_text'];
+    } else {
+        $idin_identity_topbar_no_verification_text = "We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.";
+    }
+
+
+    if (isset($options['idin_identity_more_information_popup']) && $options['idin_identity_more_information_popup']!=="") {
+        $idin_identity_more_information_popup = $options['idin_identity_more_information_popup'];
+    } else {
+        $idin_identity_more_information_popup = "**Identificeren is per 1 juli 2021 verplicht in winkels waar producten verkocht worden met een identiteitsplicht van de klant.**
+
+De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDeal.   Het duurt hoogstens twee minuten en het resultaat wordt opgeslagen voor vervolgtransacties als je ingelogd bent als terugkerende klant.
+
+Lees hier meer: [https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/](https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/)";
+    }
+    // todo: remove these obsolete defaults
+
+    // var_dump($_SESSION);
+    // BROODJE
 
 
 
@@ -1454,7 +1510,8 @@ function bluem_checkout_idin_notice()
         echo "<h3>Identificatie</h3>";
 
         $validated = bluem_idin_user_validated();
-        $validation_message = "Let op: Graag eerst eenmalig identificeren.";
+        $validation_message = $idin_identity_topbar_no_verification_text;
+        // $validation_message = "Let op: Graag eerst eenmalig identificeren.";
         //"Identificatie is vereist alvorens de bestelling kan worden afgerond.";
         $idin_logo_html = bluem_get_idin_logo_html();
         // above 0: any form of verification is required
@@ -1564,7 +1621,7 @@ function bluem_checkout_idin_notice()
 
 
 add_action('woocommerce_after_checkout_validation', 'bluem_validate_idin_at_checkout', 10, 2);
- 
+
 function bluem_validate_idin_at_checkout($fields, $errors)
 {
     bluem_checkout_check_idin_validated();
@@ -1592,14 +1649,14 @@ function bluem_checkout_check_idin_validated()
     } else {
         return;
     }
-    
+
     // don't show this notice on the my-account page (DrankStunter Request, 22-04-2021)
     if (is_page('my-account')
         || is_page('mijn-account')
     ) {
         return;
     }
-    
+
     if (home_url() === "https://drankstunter.nl") {
         if (!is_user_logged_in()) {
             return;
@@ -1609,9 +1666,9 @@ function bluem_checkout_check_idin_validated()
     if (!function_exists('bluem_idin_user_validated')) {
         return;
     }
-    
-    
-    
+
+
+
     $options = get_option('bluem_woocommerce_options');
     if (isset($options['idin_identify_button_inner']) && $options['idin_identify_button_inner']!=="") {
         $identify_button_inner = $options['idin_identify_button_inner'];
@@ -1629,15 +1686,15 @@ function bluem_checkout_check_idin_validated()
     } else {
         $idin_identity_topbar_no_verification_text = "We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.";
     }
-    
-    
+
+
     if (isset($options['idin_identity_popup_thank_you_message']) && $options['idin_identity_popup_thank_you_message']!=="") {
         $idin_identity_popup_thank_you_message = $options['idin_identity_popup_thank_you_message'];
     } else {
         $idin_identity_popup_thank_you_message = "Je leeftijd is geverifieerd.";
     }
     // todo: remove these obsolete defaults
-  
+
 
     $identify_button_html = "<br><a href='".
         home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true')."'
@@ -1650,7 +1707,7 @@ function bluem_checkout_check_idin_validated()
     if ($scenario > 0) {
         $validated = bluem_idin_user_validated();
         $idin_logo_html = bluem_get_idin_logo_html();
-        $validation_message = "Let op: Graag eerst eenmalig identificeren.";
+        $validation_message = $idin_identity_topbar_no_verification_text;
         ///Identificatie is vereist alvorens de bestelling kan worden afgerond.
 
         // above 0: any form of verification is required
@@ -1763,6 +1820,7 @@ function bluem_checkout_check_idin_validated()
     }
     return;
 }
+
 // @todo: simplify and merge above two functions bluem_checkout_check_idin_validated and bluem_checkout_idin_notice
 
 add_filter(
@@ -1838,8 +1896,7 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
 {
     global $current_user;
 
-    // if(!is_admin()) {
-    // }
+    // Note: only works for logged in users at the moment
 
     $options = get_option('bluem_woocommerce_options');
 
@@ -1847,18 +1904,20 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
         || (array_key_exists('idin_add_field_in_order_emails', $options)
         && $options['idin_add_field_in_order_emails'] == "1")
     ) {
-        $validation_text = "";
-        if (get_user_meta($current_user->ID, 'bluem_idin_validated', true)) {
-            $validation_text = __('ja', 'bluem');
-        // $validation_text .= " (Transactie ". get_user_meta($current_user->ID, 'bluem_idin_transaction_id', true).")";
-        } else {
-            $validation_text = __('nee', 'bluem') ;
-        }
+        if (is_user_logged_in()) {
+            $validation_text = "";
+            if (get_user_meta($current_user->ID, 'bluem_idin_validated', true)) {
+                $validation_text = __('ja', 'bluem');
+            // $validation_text .= " (Transactie ". get_user_meta($current_user->ID, 'bluem_idin_transaction_id', true).")";
+            } else {
+                $validation_text = __('nee', 'bluem') ;
+            }
 
-        $fields['bluem_idin_validated'] = [
-            'label'=>__('Identiteit geverifieerd', 'bluem'),
-            'value'=> $validation_text
-        ];
+            $fields['bluem_idin_validated'] = [
+                'label'=>__('Identiteit geverifieerd', 'bluem'),
+                'value'=> $validation_text
+            ];
+        }
     }
 
 
@@ -1869,36 +1928,38 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
         || (array_key_exists('idin_add_address_in_order_emails', $options)
         && $options['idin_add_address_in_order_emails'] == "1")
     ) {
-        if ($request !== false) {
-            $address_text = "";
-            if (isset($pl->report->AddressResponse->Street)) {
-                $address_text.= $pl->report->AddressResponse->Street." ";
-            }
-            if (isset($pl->report->AddressResponse->HouseNumber)) {
-                $address_text.= $pl->report->AddressResponse->HouseNumber." ";
-            }
-            $address_text.="<br>";
-            if (isset($pl->report->AddressResponse->PostalCode)) {
-                $address_text.= $pl->report->AddressResponse->PostalCode." ";
-            }
-            if (isset($pl->report->AddressResponse->City)) {
-                $address_text.= $pl->report->AddressResponse->City." ";
-            }
-            if (isset($pl->report->AddressResponse->CountryCode)) {
-                $address_text.= $pl->report->AddressResponse->CountryCode."";
-            }
+        if (is_user_logged_in()) {
+            if ($request !== false) {
+                $address_text = "";
+                if (isset($pl->report->AddressResponse->Street)) {
+                    $address_text.= $pl->report->AddressResponse->Street." ";
+                }
+                if (isset($pl->report->AddressResponse->HouseNumber)) {
+                    $address_text.= $pl->report->AddressResponse->HouseNumber." ";
+                }
+                $address_text.="<br>";
+                if (isset($pl->report->AddressResponse->PostalCode)) {
+                    $address_text.= $pl->report->AddressResponse->PostalCode." ";
+                }
+                if (isset($pl->report->AddressResponse->City)) {
+                    $address_text.= $pl->report->AddressResponse->City." ";
+                }
+                if (isset($pl->report->AddressResponse->CountryCode)) {
+                    $address_text.= $pl->report->AddressResponse->CountryCode."";
+                }
 
-            $fields['bluem_idin_address'] = [
+                $fields['bluem_idin_address'] = [
                 'label'=> __('Adres uit verificatie', 'bluem'),
                 'value'=> $address_text
             ];
-        // var_dump($address_text);
+            // var_dump($address_text);
             // die();
-        } else {
-            $fields['bluem_idin_address'] = [
+            } else {
+                $fields['bluem_idin_address'] = [
                 'label'=> __('Adres uit verificatie', 'bluem'),
                 'value'=> "Onbekend"
             ];
+            }
         }
     }
 
@@ -1989,6 +2050,20 @@ function bluem_idin_generate_notice(String $message ="", bool $button = false, b
     } else {
         $identify_button_inner = "Klik hier om je te identificeren";
     }
+    if (isset($options['idin_identify_button_inner']) && $options['idin_identify_button_inner']!=="") {
+        $identify_button_inner = $options['idin_identify_button_inner'];
+    } else {
+        $identify_button_inner = "Klik hier om je te identificeren";
+    }
+
+    if (isset($options['idin_identity_more_information_popup']) && $options['idin_identity_more_information_popup']!=="") {
+        $more_information_popup = $options['idin_identity_more_information_popup'];
+    } else {
+        $more_information_popup = "Toelicthing op IDIN als essentieel onderdeel van het winkelproces";
+    }
+    $Parsedown = new Parsedown();
+
+    $more_information_popup_parsed = $Parsedown->text($more_information_popup);
 
 
     $idin_button_html = "<a href='".
@@ -2021,5 +2096,77 @@ function bluem_idin_generate_notice(String $message ="", bool $button = false, b
     $html .= "
     </div>";
     $html .= "</div>";
+    $html .= '
+    <div class="bluem-idin-box">
+	<a class="bluem-idin-info-button" href="#idin_info_popup">
+        <span class="dashicons dashicons-editor-help"></span>
+        Wat is dit?
+    </a>
+
+    </div>
+    <div id="idin_info_popup" class="bluem-idin-overlay">
+	<div class="bluem-idin-popup">
+    <h4>Toelichting op vereiste identificatie</h4>
+    <a class="bluem-idin-popup-close bluem-idin-popup-close-icon" href="#">&times;</a>
+    <div class="bluem-idin-popup-content">
+    '.$more_information_popup_parsed.'
+
+    <hr>
+    <a class="bluem-idin-popup-close" href="#">Klik hier om dit kader te sluiten</a>
+    </div>
+	</div>
+</div> ';
     return $html;
 }
+
+
+
+
+
+
+ /** Add identity request if it was already created but first decoupled form a user, based on sesh
+  * https://wordpress.stackexchange.com/questions/161574/wp-create-user-hook
+
+  **/
+ add_filter('pre_user_login', function ($user) {
+     // KAASS
+     if (isset($_SESSION['bluem_idin_transaction_id'])) {
+         $tid = $_SESSION['bluem_idin_transaction_id'];
+         $req = bluem_db_get_request_by_transaction_id($tid);
+         // var_dump($req);
+
+         if (is_user_logged_in()) {
+             // $user_id = $current_user->ID;
+             $user_id = $user->ID;
+         }
+
+         if ($req->user_id == "0") {
+             bluem_db_update_request(
+                 $req->id,
+                 ['user_id'=>$user_id]
+             );
+             bluem_db_request_log($req->id, "Linked identity to user by logging in");
+         }
+     }
+
+
+
+     // ["bluem_idin_entrance_code"]=>
+     // string(26) "HIO100OIH20210622164952435"
+     // ["bluem_idin_transaction_id"]=>
+     // string(16) "144e875e5053d779"
+     // ["bluem_idin_transaction_url"]=>
+     // string(79) "https://test.viamijnbank.net/i/00020a00362f000007da140000150107d0002f0100f40260"
+     // ["bluem_idin_validated"]=>
+     // bool(true)
+     // ["bluem_idin_results"]=>
+     // string(110) "{"DateTime":"2021-06-22T16:49:59.497Z","CustomerIDResponse":"FANTASYBANK1234567890","AgeCheckResponse":"true"}"
+     // ["bluem_idin_report_agecheckresponse"]=>
+     // string(4) "true"
+     // ["bluem_idin_report_customeridresponse"]=>
+     // string(21) "FANTASYBANK1234567890"
+     // ["bluem_idin_report_last_verification_timestamp"]=>
+     // string(24) "2021-06-22T16:49:59.497Z"
+     //  var_dump( current_filter()." works fine" );
+     return $user;
+ });

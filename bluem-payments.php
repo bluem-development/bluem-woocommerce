@@ -521,7 +521,6 @@ function bluem_init_payment_gateway_class()
             }
 
 
-
             if ($statusCode === "Success") {
                 $order->update_status('processing', __('Betaling is binnengekomen', 'wc-gateway-bluem'));
 
@@ -532,7 +531,19 @@ function bluem_init_payment_gateway_class()
                 );
 
                 $this->bluem_thankyou($order->get_id());
+            } elseif ($statusCode === "Failure") {
+                $order->update_status('failed', __('Betaling is verlopen', 'wc-gateway-bluem'));
+                $order->add_order_note(__("Betalingsproces niet voltooid"));
+                bluem_transaction_notification_email(
+                    $request_from_db->id
+                );
+                $this->renderPrompt("Er ging iets mis bij het betalen, of je hebt het betaalproces niet voltooid. 
+                    <br>Probeer opnieuw te betalen vanuit je bestellingsoverzicht 
+                    of neem contact op met de webshop als het probleem zich blijft voordoen.");
+                exit;
+
             } elseif ($statusCode === "Cancelled") {
+
                 $order->update_status('cancelled', __('Betaling is geannuleerd', 'wc-gateway-bluem'));
 
                 

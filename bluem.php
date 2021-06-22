@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.2.15
+ * Version: 1.2.16
  * Plugin URI: https://wordpress.org/plugins/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Bluem Payment Services
@@ -75,6 +75,16 @@ function bluem_add_admin_style()
     wp_enqueue_style('admin-styles', plugin_dir_url(__FILE__).'/css/admin.css');
 }
 add_action('admin_enqueue_scripts', 'bluem_add_admin_style');
+
+
+function bluem_add_front_style() {
+    wp_register_style( 'bluem_woo_front_styles',  plugin_dir_url(__FILE__).'/css/front.css');
+    wp_enqueue_style( 'bluem_woo_front_styles');
+
+}
+add_action('wp_enqueue_scripts', 'bluem_add_front_style');
+
+
 
 // https://www.wpbeginner.com/wp-tutorials/how-to-add-admin-notices-in-wordpress/
 function bluem_woocommerce_no_woocommerce_notice()
@@ -622,6 +632,16 @@ function bluem_woocommerce_settings_render_input($field)
     </label>
 </div>
         <?php
+    } elseif ($field['type'] == "textarea") {
+        $attrs = [];
+         ?>
+<textarea class='bluem-form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
+    name='bluem_woocommerce_options[<?php echo $key; ?>]'
+    <?php foreach ($attrs as $akey => $aval) {
+            echo "$akey='$aval' ";
+        } ?>><?php echo(isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?></textarea>
+<?php
+
     } else {
         $attrs = [];
         if ($field['type'] == "password") {

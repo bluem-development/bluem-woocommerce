@@ -12,7 +12,8 @@
         "nesbot/carbon": "^2.31",
         "daanrijpkema/bluem-php": "2.0.2",
         "symfony/polyfill-php72": "^1.22",
-        "symfony/polyfill-mbstring": "v1.19.0"
+        "symfony/polyfill-mbstring": "v1.19.0",
+        "erusev/parsedown": "^1.7"
     },
     "replace": {
         "symfony/polyfill-php80": "*"
