@@ -23,6 +23,9 @@
     cursor: pointer;
     text-decoration: none !important;
     transition: all 0.3s ease-out;
+    display: inline-block;
+    margin-top: 5pt;
+    clear: both;
 }
 
 

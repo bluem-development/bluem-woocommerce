@@ -1254,6 +1254,9 @@ function bluem_idin_retrieve_results()
     return $obj;
 }
 
+/**
+ * Retrieves the user validation status
+ */
 function bluem_idin_user_validated()
 {
     global $current_user;
@@ -1501,11 +1504,6 @@ Lees hier meer: [https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-o
     }
     // todo: remove these obsolete defaults
 
-    // var_dump($_SESSION);
-    // BROODJE
-
-
-
     if ($scenario > 0) {
         echo "<h3>Identificatie</h3>";
 
@@ -1633,6 +1631,8 @@ function bluem_validate_idin_at_checkout($fields, $errors)
 /**
  * Show notice!
  */
+
+// @todo: this is partially redundant with bluem_checkout_idin_notice
 add_action('template_redirect', 'bluem_checkout_check_idin_validated');
 function bluem_checkout_check_idin_validated()
 {
@@ -2093,15 +2093,14 @@ function bluem_idin_generate_notice(String $message ="", bool $button = false, b
         $html .= "{$idin_button_html}";
         $html .= "</div>";
     }
-    $html .= "
-    </div>";
-    $html .= "</div>";
     $html .= '
     <div class="bluem-idin-box">
 	<a class="bluem-idin-info-button" href="#idin_info_popup">
         <span class="dashicons dashicons-editor-help"></span>
         Wat is dit?
-    </a>
+    </a>';
+    
+    $html .= '
 
     </div>
     <div id="idin_info_popup" class="bluem-idin-overlay">
@@ -2116,57 +2115,61 @@ function bluem_idin_generate_notice(String $message ="", bool $button = false, b
     </div>
 	</div>
 </div> ';
+
+    $html .= "</div>";
+    $html .= "</div>";
     return $html;
 }
 
 
+/*
+ * Add identity request if it was already created but first decoupled form a user, based on sesh
+**/
+add_action('user_register', 'bluem_link_idin_request_to_sesh', 10, 1);
+function bluem_link_idin_request_to_sesh($user_id)
+{
+    if (!isset($_SESSION['bluem_idin_transaction_id'])) {
+        return;
+    }
+
+    $tid = $_SESSION['bluem_idin_transaction_id'];
+    $req = bluem_db_get_request_by_transaction_id($tid);
+
+    // only if the current respons from the session 
+    // IS NOT YET linked to any user, i.e. user_id == 0
+    if ($req->user_id == "0") {
+
+        bluem_db_update_request(
+            $req->id,
+            ['user_id'=>$user_id]
+        );
+        bluem_db_request_log($req->id, "Linked identity to user by logging in");
+
+        $pl = json_decode($req->payload);
+        
+        // also update some user data if applicable
+        if (isset($pl->report->AgeCheckResponse)) {
+            update_user_meta(
+                $user_id,
+                'bluem_idin_report_agecheckresponse',
+                $pl->report->AgeCheckResponse
+            );
+        }
+        if (isset($pl->report->CustomerIDResponse)) {
+
+            update_user_meta(
+                $user_id,
+                'bluem_idin_report_customeridresponse',
+                $pl->report->CustomerIDResponse
+            );
+        }
 
 
+        update_user_meta(
+            $user_id,
+            'bluem_idin_validated',
+            ($req->status==="Success"?"1":"0")
+        );
 
-
- /** Add identity request if it was already created but first decoupled form a user, based on sesh
-  * https://wordpress.stackexchange.com/questions/161574/wp-create-user-hook
-
-  **/
- add_filter('pre_user_login', function ($user) {
-     // KAASS
-     if (isset($_SESSION['bluem_idin_transaction_id'])) {
-         $tid = $_SESSION['bluem_idin_transaction_id'];
-         $req = bluem_db_get_request_by_transaction_id($tid);
-         // var_dump($req);
-
-         if (is_user_logged_in()) {
-             // $user_id = $current_user->ID;
-             $user_id = $user->ID;
-         }
-
-         if ($req->user_id == "0") {
-             bluem_db_update_request(
-                 $req->id,
-                 ['user_id'=>$user_id]
-             );
-             bluem_db_request_log($req->id, "Linked identity to user by logging in");
-         }
-     }
-
-
-
-     // ["bluem_idin_entrance_code"]=>
-     // string(26) "HIO100OIH20210622164952435"
-     // ["bluem_idin_transaction_id"]=>
-     // string(16) "144e875e5053d779"
-     // ["bluem_idin_transaction_url"]=>
-     // string(79) "https://test.viamijnbank.net/i/00020a00362f000007da140000150107d0002f0100f40260"
-     // ["bluem_idin_validated"]=>
-     // bool(true)
-     // ["bluem_idin_results"]=>
-     // string(110) "{"DateTime":"2021-06-22T16:49:59.497Z","CustomerIDResponse":"FANTASYBANK1234567890","AgeCheckResponse":"true"}"
-     // ["bluem_idin_report_agecheckresponse"]=>
-     // string(4) "true"
-     // ["bluem_idin_report_customeridresponse"]=>
-     // string(21) "FANTASYBANK1234567890"
-     // ["bluem_idin_report_last_verification_timestamp"]=>
-     // string(24) "2021-06-22T16:49:59.497Z"
-     //  var_dump( current_filter()." works fine" );
-     return $user;
- });
+    }
+}

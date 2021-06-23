@@ -291,15 +291,20 @@ function bluem_render_requests_list($requests)
                     } ?>
             </div>
 
-            <div>
+            <?php if(isset($pl->report->AddressResponse)) { ?>
+                <div>
                 <span class="bluem-request-label">
-                    Adres
+                Adres
                 </span>
                 <?php foreach ($pl->report->AddressResponse as $k=>$v) {
-                        echo "{$v} ";
-                    } ?>
-
-            </div>
+                    echo "{$v} ";
+                } ?>
+                </div>
+                <?php 
+            }
+            ?>
+                
+            <?php if(isset($pl->report->BirthDateResponse))  { ?>
             <div>
                 <span class="bluem-request-label">
                     Geb.datum
@@ -308,6 +313,8 @@ function bluem_render_requests_list($requests)
 
 
             </div>
+            <?php } ?>
+            <?php if(isset($pl->report->EmailResponse))  { ?>
             <div>
                 <span class="bluem-request-label">
                     E-mail
@@ -315,6 +322,8 @@ function bluem_render_requests_list($requests)
                 <?php echo $pl->report->EmailResponse; ?>
 
             </div>
+            <?php } ?>
+            <?php if(isset($pl->report->TelephoneResponse1))  { ?>
             <div>
                 <span class="bluem-request-label">
                     Telefoonnr.
@@ -322,6 +331,9 @@ function bluem_render_requests_list($requests)
                 <?php echo $pl->report->TelephoneResponse1; ?>
 
             </div>
+
+            <?php } ?>
+
 
             <?php
                 } ?>
