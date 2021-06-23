@@ -855,6 +855,18 @@ function bluem_idin_shortcode_callback()
             }
 
 
+            // determining the right callback
+            if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart") !== false) {
+                $goto = wc_get_checkout_url();
+            } else {
+                $goto = $bluem_config->IDINPageURL;
+
+                if ($goto == false || $goto == "") {
+                    $goto = home_url();
+                } else {
+                    $goto = home_url($bluem_config->IDINPageURL);
+                }
+            }
 
             switch ($statusCode) {
             case 'Success': // in case of success...
@@ -981,17 +993,7 @@ function bluem_idin_shortcode_callback()
                     $request_from_db->id
                 );
 
-                if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart") !== false) {
-                    $goto = wc_get_checkout_url();
-                } else {
-                    $goto = $bluem_config->IDINPageURL;
-
-                    if ($goto == false || $goto == "") {
-                        $goto = home_url();
-                    } else {
-                        $goto = home_url($bluem_config->IDINPageURL);
-                    }
-                }
+             
 
                 wp_redirect($goto);
 
@@ -1298,15 +1300,16 @@ function bluem_get_IDINDescription_replaces()
 }
 function bluem_parse_IDINDescription($input)
 {
+    // input description tags
     $tags = bluem_get_IDINDescription_tags();
     $replaces = bluem_get_IDINDescription_replaces();
-
-
     $result = str_replace($tags, $replaces, $input);
-    $invalid_chars = ['[',']','{','}','!','#'];
-    // @todo Add full list of invalid chars for description based on XSD
-    $result = str_replace($invalid_chars, '', $result);
 
+    // filter based on full list of invalid chars for description based on XSD
+    // Wel toegestaan: -0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&=%"'/:;?$
+    $result = preg_replace('/[^-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€\ \(\)+,\.@&=%\"\'\/:;\?\$]/', '', $result);
+
+    // also adhere to char limit
     $result = substr($result, 0, 128);
     return $result;
 }
