@@ -796,8 +796,6 @@ function bluem_idin_shortcode_callback()
         $bluem_config->brandID = $bluem_config->IDINBrandID;
         $bluem = new Bluem($bluem_config);
 
-
-
         if (is_user_logged_in()) {
             $entranceCode = get_user_meta(get_current_user_id(), "bluem_idin_entrance_code", true);
             $transactionID = get_user_meta(get_current_user_id(), "bluem_idin_transaction_id", true);
@@ -806,28 +804,32 @@ function bluem_idin_shortcode_callback()
             if (isset($_SESSION["bluem_idin_entrance_code"]) && !is_null($_SESSION["bluem_idin_entrance_code"])) {
                 $entranceCode = $_SESSION["bluem_idin_entrance_code"];
             } else {
-                echo "Error: ".$_SESSION["bluem_idin_entrance_code"]." missing";
+                echo "Error: bluem_idin_entrance_code from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
+                // @todo make this into the prompts
                 exit;
             }
             if (isset($_SESSION["bluem_idin_transaction_id"]) && !is_null($_SESSION["bluem_idin_transaction_id"])) {
                 $transactionID = $_SESSION["bluem_idin_transaction_id"];
             } else {
-                echo "Error: ".$_SESSION["bluem_idin_transaction_id"]." missing";
+                echo "Error: bluem_idin_transaction_id from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
+                // @todo make this into the prompts
                 exit;
             }
             if (isset($_SESSION["bluem_idin_transaction_url"]) && !is_null($_SESSION["bluem_idin_transaction_url"])) {
                 $transactionURL = $_SESSION["bluem_idin_transaction_url"];
             } else {
-                echo "Error: ".$_SESSION["bluem_idin_transaction_url"]." missing";
+                echo "Error: bluem_idin_transaction_url from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
+                // @todo make this into the prompts
                 exit;
             }
         }
+
 
         $statusResponse = $bluem->IdentityStatus(
             $transactionID,
             $entranceCode
         );
-
+        
         if ($statusResponse->ReceivedResponse()) {
             $statusCode = ($statusResponse->GetStatusCode());
 
@@ -853,19 +855,19 @@ function bluem_idin_shortcode_callback()
             } else {
                 $_SESSION['bluem_idin_validated'] = false;
             }
-
+            
 
             // determining the right callback
-            if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart") !== false) {
-                $goto = wc_get_checkout_url();
-            } else {
-                $goto = $bluem_config->IDINPageURL;
+            $goto = $bluem_config->IDINPageURL;
 
-                if ($goto == false || $goto == "") {
-                    $goto = home_url();
+            if ($goto == false || $goto == "") {
+                if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart") !== false) {
+                    $goto = wc_get_checkout_url();
                 } else {
-                    $goto = home_url($bluem_config->IDINPageURL);
+                    $goto = home_url();
                 }
+            } else {
+                $goto = home_url($bluem_config->IDINPageURL);
             }
 
             switch ($statusCode) {
@@ -993,11 +995,7 @@ function bluem_idin_shortcode_callback()
                     $request_from_db->id
                 );
 
-             
-
-                wp_redirect($goto);
-
-
+                wp_safe_redirect($goto);
                 exit;
             break;
             case 'Processing':
@@ -2096,9 +2094,11 @@ function bluem_idin_generate_notice(String $message ="", bool $button = false, b
         $html .= "{$idin_button_html}";
         $html .= "</div>";
     }
+
+    $checkout_url = wc_get_checkout_url();
     $html .= '
     <div class="bluem-idin-box">
-	<a class="bluem-idin-info-button" href="#idin_info_popup">
+	<a class="bluem-idin-info-button" href="'.$checkout_url.'#idin_info_popup">
         <span class="dashicons dashicons-editor-help"></span>
         Wat is dit?
     </a>';
@@ -2109,12 +2109,12 @@ function bluem_idin_generate_notice(String $message ="", bool $button = false, b
     <div id="idin_info_popup" class="bluem-idin-overlay">
 	<div class="bluem-idin-popup">
     <h4>Toelichting op vereiste identificatie</h4>
-    <a class="bluem-idin-popup-close bluem-idin-popup-close-icon" href="#">&times;</a>
+    <a class="bluem-idin-popup-close bluem-idin-popup-close-icon" href="'.$checkout_url.'#">&times;</a>
     <div class="bluem-idin-popup-content">
     '.$more_information_popup_parsed.'
 
     <hr>
-    <a class="bluem-idin-popup-close" href="#">Klik hier om dit kader te sluiten</a>
+    <a class="bluem-idin-popup-close" href="'.$checkout_url.'#">Klik hier om dit kader te sluiten</a>
     </div>
 	</div>
 </div> ';
@@ -2138,10 +2138,9 @@ function bluem_link_idin_request_to_sesh($user_id)
     $tid = $_SESSION['bluem_idin_transaction_id'];
     $req = bluem_db_get_request_by_transaction_id($tid);
 
-    // only if the current respons from the session 
+    // only if the current respons from the session
     // IS NOT YET linked to any user, i.e. user_id == 0
     if ($req->user_id == "0") {
-
         bluem_db_update_request(
             $req->id,
             ['user_id'=>$user_id]
@@ -2159,7 +2158,6 @@ function bluem_link_idin_request_to_sesh($user_id)
             );
         }
         if (isset($pl->report->CustomerIDResponse)) {
-
             update_user_meta(
                 $user_id,
                 'bluem_idin_report_customeridresponse',
@@ -2173,6 +2171,5 @@ function bluem_link_idin_request_to_sesh($user_id)
             'bluem_idin_validated',
             ($req->status==="Success"?"1":"0")
         );
-
     }
 }
