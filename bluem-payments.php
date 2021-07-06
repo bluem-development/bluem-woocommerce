@@ -250,7 +250,8 @@ function bluem_init_payment_gateway_class()
             // temp overrides
             $request->paymentReference = str_replace('-', '', $request->paymentReference);
             $request->type_identifier = "createTransaction";
-            $request->dueDateTime = $dueDateTime->toDateTimeLocalString() . ".000Z";
+            $request->dueDateTime = $dueDateTime->format(BLUEM_LOCAL_DATE_FORMAT). ".000Z";
+            // $dueDateTime->toDateTimeString() 
             $request->debtorReturnURL = home_url("wc-api/bluem_payments_callback?entranceCode={$entranceCode}");
 
             $payload = json_encode(

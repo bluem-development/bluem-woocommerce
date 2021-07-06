@@ -1241,13 +1241,7 @@ function bluem_woocommerce_mandates_settings_section()
         $mandate_id_counter += 111000;
         update_option('bluem_woocommerce_mandate_id_counter', $mandate_id_counter);
     }
-
     echo '<p><a id="tab_mandates"></a> Hier kan je alle belangrijke gegevens instellen rondom Digitale Incassomachtigingen.</p>';
-    //  Lees de readme bij de plug-in voor meer informatie.
-    // echo "<p>Huidige mandaat ID counter: ";
-    // echo $mandate_id_counter;
-    // echo "</p>";
-    // echo "<p>Huidige Carbon tijd: " . Carbon::now()->timezone('Europe/Amsterdam')->toDateTimeString() . "</p>";
 }
 
 // ********************** Mandate specific

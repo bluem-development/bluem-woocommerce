@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.2.16
+ * Version: 1.2.17
  * Plugin URI: https://wordpress.org/plugins/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Bluem Payment Services
@@ -32,6 +32,10 @@ $bluem_db_version = 1.3;
 
 // get composer dependencies
 require __DIR__ . '/vendor/autoload.php';
+
+if (!defined("BLUEM_LOCAL_DATE_FORMAT")) {
+    define("BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s");
+}
 
 // get specific gateways and helpers
 if (bluem_module_enabled('mandates')) {
@@ -309,6 +313,11 @@ function bluem_settings_page()
         <span class="dashicons dashicons-database-view"></span>
             Verzoeken
         </a>
+        <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e" 
+        target="_blank" class="nav-tab">
+        <span class="dashicons dashicons-media-document"></span>
+        Handleiding</a>
+        
         <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin"
         class="nav-tab" target="_blank">
         <span class="dashicons dashicons-editor-help"></span>

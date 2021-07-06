@@ -241,10 +241,13 @@ function bluem_render_footer($align_right = true)
             echo 'text-align:right;';
         } ?>
     ">
-    Problemen,
-    vragen of suggesties?
+    Hulp nodig?
     <br>
-    <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" target="_blank" style="text-decoration:none;">
+    <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e" target="_blank" style="text-decoration:none;">
+        <span class="dashicons dashicons-media-document"></span>
+        Handleiding</a>
+         &middot; 
+            <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" target="_blank" style="text-decoration:none;">
         <span class="dashicons dashicons-editor-help"></span>
         Neem contact op via e-mail</a>
 
@@ -259,6 +262,7 @@ function bluem_render_requests_list($requests)
     ?>
 <div class="bluem-request-list">
     <?php foreach ($requests as $r) {
+
         $pl = json_decode($r->payload); ?>
     <div class="bluem-request-list-item">
 
@@ -279,10 +283,12 @@ function bluem_render_requests_list($requests)
         <div class="bluem-request-list-item-floater">
             <?php
                 if (!is_null($pl)) {
-                    if (isset($pl->report->CustomerIDResponse)
+                    ?>
+
+                    <div>
+                    <?php if (isset($pl->report->CustomerIDResponse)
                         && $pl->report->CustomerIDResponse."" != ""
                     ) { ?>
-            <div>
                 <span class="bluem-request-label">
                     CustomerID:
                 </span>
@@ -291,20 +297,19 @@ function bluem_render_requests_list($requests)
                     } ?>
             </div>
 
-            <?php if(isset($pl->report->AddressResponse)) { ?>
+            <?php if (isset($pl->report->AddressResponse)) { ?>
                 <div>
                 <span class="bluem-request-label">
                 Adres
                 </span>
                 <?php foreach ($pl->report->AddressResponse as $k=>$v) {
-                    echo "{$v} ";
-                } ?>
+                        echo "{$v} ";
+                    } ?>
                 </div>
-                <?php 
-            }
-            ?>
+                <?php
+            } ?>
                 
-            <?php if(isset($pl->report->BirthDateResponse))  { ?>
+            <?php if (isset($pl->report->BirthDateResponse)) { ?>
             <div>
                 <span class="bluem-request-label">
                     Geb.datum
@@ -314,7 +319,7 @@ function bluem_render_requests_list($requests)
 
             </div>
             <?php } ?>
-            <?php if(isset($pl->report->EmailResponse))  { ?>
+            <?php if (isset($pl->report->EmailResponse)) { ?>
             <div>
                 <span class="bluem-request-label">
                     E-mail
@@ -323,7 +328,7 @@ function bluem_render_requests_list($requests)
 
             </div>
             <?php } ?>
-            <?php if(isset($pl->report->TelephoneResponse1))  { ?>
+            <?php if (isset($pl->report->TelephoneResponse1)) { ?>
             <div>
                 <span class="bluem-request-label">
                     Telefoonnr.
@@ -333,8 +338,16 @@ function bluem_render_requests_list($requests)
             </div>
 
             <?php } ?>
-
-
+<?php
+            if (isset($pl->environment)) { ?>
+                <div>
+                <span class="bluem-request-label">
+                Bluem modus
+                </span>
+                <?php echo ucfirst($pl->environment); ?>
+                </div>
+                <?php
+            } ?>
             <?php
                 } ?>
         </div>
@@ -427,10 +440,9 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0)
                 bluem_render_obj_row_recursive($valuekey, $valuevalue, $level+1);
             }
         } else {
-            if(is_bool($value)) {
+            if (is_bool($value)) {
                 echo " ".($value?"Ja":"Nee");
             } else {
-
                 var_dump($value);
             }
         }

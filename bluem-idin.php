@@ -1352,6 +1352,11 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
         $callback
     );
 
+    // allow the testing admin to alter the response status themselves.
+    if ($bluem->environment === BLUEM_ENVIRONMENT_TESTING) {
+        $request->enableStatusGUI();
+    }
+
     $response = $bluem->PerformRequest($request);
 
     bluem_register_session();

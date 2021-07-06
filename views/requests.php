@@ -9,15 +9,15 @@
             <span class="dashicons dashicons-admin-settings"></span>
             Instellingen
         </a>
-
+        <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e" target="_blank"
+        class="nav-tab">
+        <span class="dashicons dashicons-media-document"></span>
+        Handleiding</a>
         <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">
             <span class="dashicons dashicons-editor-help"></span>
-            Problemen,
-            vragen of suggesties? Neem contact op via e-mail</a>
+            Neem contact op via e-mail</a>
     </nav>
     <p>
-        Hieronder staat een overzicht van alle Bluem verzoeken die gemaakt zijn sinds versie 1.2.7 van de Bluem
-        plugin.
         Klik op een verzoek voor meer gedetailleerde informatie.
     <br>
         Bekijk nog meer informatie over alle transacties in het <a href='https://viamijnbank.net/'
