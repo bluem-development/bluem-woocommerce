@@ -251,7 +251,6 @@ function bluem_init_payment_gateway_class()
             $request->paymentReference = str_replace('-', '', $request->paymentReference);
             $request->type_identifier = "createTransaction";
             $request->dueDateTime = $dueDateTime->format(BLUEM_LOCAL_DATE_FORMAT). ".000Z";
-            // $dueDateTime->toDateTimeString() 
             $request->debtorReturnURL = home_url("wc-api/bluem_payments_callback?entranceCode={$entranceCode}");
 
             $payload = json_encode(
@@ -542,9 +541,7 @@ function bluem_init_payment_gateway_class()
                     <br>Probeer opnieuw te betalen vanuit je bestellingsoverzicht 
                     of neem contact op met de webshop als het probleem zich blijft voordoen.");
                 exit;
-
             } elseif ($statusCode === "Cancelled") {
-
                 $order->update_status('cancelled', __('Betaling is geannuleerd', 'wc-gateway-bluem'));
 
                 

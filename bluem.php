@@ -80,11 +80,14 @@ function bluem_add_admin_style()
 }
 add_action('admin_enqueue_scripts', 'bluem_add_admin_style');
 
-
-function bluem_add_front_style() {
-    wp_register_style( 'bluem_woo_front_styles',  plugin_dir_url(__FILE__).'/css/front.css');
-    wp_enqueue_style( 'bluem_woo_front_styles');
-
+// Update CSS within frontend
+function bluem_add_front_style()
+{
+    wp_register_style(
+        'bluem_woo_front_styles',
+        plugin_dir_url(__FILE__) . '/css/front.css'
+    );
+    wp_enqueue_style('bluem_woo_front_styles');
 }
 add_action('wp_enqueue_scripts', 'bluem_add_front_style');
 
@@ -642,15 +645,13 @@ function bluem_woocommerce_settings_render_input($field)
 </div>
         <?php
     } elseif ($field['type'] == "textarea") {
-        $attrs = [];
-         ?>
+        $attrs = []; ?>
 <textarea class='bluem-form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
     name='bluem_woocommerce_options[<?php echo $key; ?>]'
     <?php foreach ($attrs as $akey => $aval) {
             echo "$akey='$aval' ";
         } ?>><?php echo(isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?></textarea>
 <?php
-
     } else {
         $attrs = [];
         if ($field['type'] == "password") {
@@ -767,7 +768,7 @@ function bluem_woocommerce_get_core_options()
             'type' => 'select',
             'default' => '0',
             'options' => [
-                '0' => 'Geen e-mail notificatie (standaard)', 
+                '0' => 'Geen e-mail notificatie (standaard)',
                 '1' => 'Stuur notificatie voor elke transactie naar '.get_option('admin_email')
             ],
         ],
@@ -866,7 +867,6 @@ function bluem_transaction_notification_email(
         $mailing = wp_mail($to, $subject, $message, $headers);
 
         if ($mailing) {
-
             bluem_db_put_request_payload(
                 $request_id,
                 [

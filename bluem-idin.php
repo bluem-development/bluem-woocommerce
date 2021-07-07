@@ -1958,8 +1958,6 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
                 'label'=> __('Adres uit verificatie', 'bluem'),
                 'value'=> $address_text
             ];
-            // var_dump($address_text);
-            // die();
             } else {
                 $fields['bluem_idin_address'] = [
                 'label'=> __('Adres uit verificatie', 'bluem'),

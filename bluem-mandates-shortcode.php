@@ -232,7 +232,6 @@ function bluem_mandate_mandate_shortcode_callback()
 
 
         if (isset($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport)) {
-
             $newPayload->purchaseID = $response->EMandateStatusUpdate->EMandateStatus->PurchaseID."";
             $newPayload->report = $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport;
             
@@ -241,8 +240,7 @@ function bluem_mandate_mandate_shortcode_callback()
                 [
                     'payload'=>json_encode($newPayload)
                     ]
-                );
-                
+            );
         }
 
         $request_from_db = bluem_db_get_request_by_transaction_id_and_type(

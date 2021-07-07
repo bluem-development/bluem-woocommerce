@@ -28,7 +28,7 @@ Please note the following:
 - You have to activate the specific parts of the plug-in that you want to use. All separate services are indvidiually activatable. By default, they are not activated.
 
 
-# important usage features
+# Important usage features
 
 ## adding additional data to request for mandates
 see this example as how you could do this by adding a novel filter to the id `bluem_woocommerce_enhance_mandate_request`
@@ -141,8 +141,3 @@ By default, this is disabled as it is quite context specific if the webshop is s
 
 # Support
 If you have any questions, please send an email to [info@daanrijpkema.com](mailto:info@daanrijpkema.com).
-
-
-# Notes / todo's
-
-- Perform iDIN check not in cart but at checkout; make a setting where you can choose the location (either, or both); request by DrankStunter

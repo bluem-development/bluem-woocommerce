@@ -262,7 +262,6 @@ function bluem_render_requests_list($requests)
     ?>
 <div class="bluem-request-list">
     <?php foreach ($requests as $r) {
-
         $pl = json_decode($r->payload); ?>
     <div class="bluem-request-list-item">
 

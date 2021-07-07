@@ -356,6 +356,7 @@ function bluem_init_mandate_gateway_class()
          *
          * @param String $html
          * @param boolean $include_link
+         *
          * @return void
          */
         private function renderPrompt(String $html, $include_link = true)
@@ -368,9 +369,7 @@ function bluem_init_mandate_gateway_class()
         /**
          * Check if a valid mandate already exists for this user
          *
-         * @param  $order
-         *
-         *
+         * @param  $order Order object
          */
         private function _checkExistingMandate($order)
         {
@@ -383,8 +382,8 @@ function bluem_init_mandate_gateway_class()
             $ready = true;
             $retrieved_request_from_db = false;
             $request = bluem_db_get_most_recent_request($user_id, "mandates");
-            if ($request !== false) {
 
+            if ($request !== false) {
                 $bluem_latest_mandate_id = $request->transaction_id;
                 $bluem_latest_mandate_entrance_code = $request->entrance_code;
 
@@ -414,8 +413,6 @@ function bluem_init_mandate_gateway_class()
                 && !is_null($bluem_latest_mandate_entrance_code)
                 && $bluem_latest_mandate_entrance_code !== ""
             ) {
-
-
                 $existing_mandate_response = $this->bluem->MandateStatus(
                     $bluem_latest_mandate_id,
                     $bluem_latest_mandate_entrance_code
@@ -423,9 +420,8 @@ function bluem_init_mandate_gateway_class()
 
                 if ($existing_mandate_response->Status() == false) {
                     $reason = "No / invalid bluem response for existing mandate";
-                    // existing mandate response is not at all valid, continue with actual mandate process
+                // existing mandate response is not at all valid, continue with actual mandate process
                 } else {
-
                     if ($existing_mandate_response->EMandateStatusUpdate->EMandateStatus->Status . "" === "Success"
                     ) {
                         if ($this->validateMandate(
@@ -439,10 +435,14 @@ function bluem_init_mandate_gateway_class()
                             // successfully used previous mandate in current order,
                             // lets annotate that order with the corresponding metadata
                             update_post_meta(
-                                $order_id, 'bluem_entrancecode', $bluem_latest_mandate_entrance_code
+                                $order_id,
+                                'bluem_entrancecode',
+                                $bluem_latest_mandate_entrance_code
                             );
                             update_post_meta(
-                                $order_id, 'bluem_mandateid', $bluem_latest_mandate_id
+                                $order_id,
+                                'bluem_mandateid',
+                                $bluem_latest_mandate_id
                             );
 
 
@@ -533,7 +533,8 @@ function bluem_init_mandate_gateway_class()
             // update: added prefixed order ID for retries of mandate requests
             $prefixed_order_id = date("His").$order_id;
             $mandate_id = $this->bluem->CreateMandateId(
-                $prefixed_order_id, $user_id
+                $prefixed_order_id,
+                $user_id
             );
 
             $request = $this->bluem->CreateMandateRequest(
