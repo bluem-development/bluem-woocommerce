@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cbe4d393a8a2cc1dc3d20f41d92895a4",
+    "content-hash": "47b9101a0ece3a0bdfe1349a2c824166",
     "packages": [
         {
             "name": "daanrijpkema/bluem-php",
-            "version": "2.0.10",
+            "version": "2.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DaanRijpkema/bluem-php.git",
-                "reference": "7dfed5f1a37d123266cddf507052981ad063baf3"
+                "reference": "09f541e81d06d09b2e130bb5ceb5b17d4badd3ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/7dfed5f1a37d123266cddf507052981ad063baf3",
-                "reference": "7dfed5f1a37d123266cddf507052981ad063baf3",
+                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/09f541e81d06d09b2e130bb5ceb5b17d4badd3ee",
+                "reference": "09f541e81d06d09b2e130bb5ceb5b17d4badd3ee",
                 "shasum": ""
             },
             "require": {
@@ -60,9 +60,9 @@
             ],
             "support": {
                 "issues": "https://github.com/daanrijpkema/bluem-php",
-                "source": "https://github.com/DaanRijpkema/bluem-php/tree/2.0.10"
+                "source": "https://github.com/DaanRijpkema/bluem-php/tree/2.0.11"
             },
-            "time": "2021-09-08T11:53:15+00:00"
+            "time": "2021-09-08T15:06:25+00:00"
         },
         {
             "name": "erusev/parsedown",

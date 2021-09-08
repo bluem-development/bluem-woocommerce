@@ -79,8 +79,8 @@ add_action('plugins_loaded', 'bluem_db_check');
 function bluem_db_create_request($request_object)
 {
     global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
 
     if (!bluem_db_validated_request($request_object)) {
         return -1;
@@ -121,8 +121,8 @@ function bluem_db_create_request($request_object)
 function bluem_db_request_log($request_id, $description, $log_data = [])
 {
     global $wpdb, $current_user;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
 
     $insert_result = $wpdb->insert(
         "bluem_requests_log",
@@ -138,8 +138,8 @@ function bluem_db_request_log($request_id, $description, $log_data = [])
 function bluem_db_update_request($request_id, $request_object)
 {
     global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
 
 
     if (!bluem_db_validated_request_wellformed($request_object)) {
@@ -240,8 +240,8 @@ function bluem_db_get_request_by_id($request_id)
 function bluem_db_delete_request_by_id($request_id)
 {
     global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
 
     $wpdb->show_errors();
 
@@ -295,8 +295,8 @@ function bluem_db_get_requests_by_keyvalues(
     $limit = 0
 ) {
     global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
 
     $wpdb->show_errors(); //setting the Show or Display errors option to true
     // @todo: Prepare this statement a bit more; https://developer.wordpress.org/reference/classes/wpdb/
@@ -393,8 +393,8 @@ function bluem_db_get_most_recent_request($user_id=null, $type="mandates")
     }
 
     global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
 
     $wpdb->show_errors(); //setting the Show or Display errors option to true
 
@@ -447,8 +447,8 @@ function bluem_db_put_request_payload($request_id, $data)
 function bluem_db_get_logs_for_request($id)
 {
     global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
 
     return $wpdb->get_results("SELECT *  FROM  `bluem_requests_log` WHERE `request_id` = $id ORDER BY `timestamp` DESC");
 }
@@ -458,8 +458,8 @@ function bluem_db_get_logs_for_request($id)
 function bluem_db_get_links_for_order($id)
 {
     global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
     return $wpdb->get_results("SELECT *  FROM  `bluem_requests_links` WHERE `request_id` = {$id} ORDER BY `timestamp` DESC");
 }
 
@@ -467,16 +467,16 @@ function bluem_db_get_links_for_order($id)
 function bluem_db_get_links_for_request($id)
 {
     global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
     return $wpdb->get_results("SELECT *  FROM  `bluem_requests_links` WHERE `request_id` = {$id} ORDER BY `timestamp` DESC");
 }
 
 function bluem_db_create_link($request_id, $item_id, $item_type="order")
 {
     global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
 
     $installed_ver = (float)get_option("bluem_db_version");
     if ($installed_ver <= 1.2) {

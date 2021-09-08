@@ -9,10 +9,11 @@
         "issues": "https://github.com/daanrijpkema/bluem-woocommerce"
     },
     "require": {
-        "nesbot/carbon": "^2.31",
-        "daanrijpkema/bluem-php": "^2.0.10",
+        "nesbot/carbon": "^2.53",
+        "daanrijpkema/bluem-php": "^2.0.11",
         "symfony/polyfill-php72": "^1.22",
         "symfony/polyfill-mbstring": "v1.19.0",
+        "symfony/polyfill-php80": "^1.23",
         "erusev/parsedown": "^1.7"
     },
     "replace": {

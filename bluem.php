@@ -184,8 +184,8 @@ function bluem_admin_requests_view()
 function bluem_admin_requests_view_request()
 {
     global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
 
     $id = $_GET['request_id'];
 
@@ -207,8 +207,8 @@ function bluem_admin_requests_view_request()
 function bluem_admin_requests_view_all()
 {
     global $wpdb;
-    date_default_timezone_set('Europe/Amsterdam');
-    $wpdb->time_zone = 'Europe/Amsterdam';
+    // date_default_timezone_set('Europe/Amsterdam');
+    // $wpdb->time_zone = 'Europe/Amsterdam';
 
     $_requests = $wpdb->get_results(
         "SELECT *  
@@ -1319,3 +1319,14 @@ function bluem_dialogs_renderprompt(String $html, $include_link = true)
     echo $html;
     echo bluem_dialogs_getsimplefooter($include_link);
 }
+
+
+// polyfill for PHP 7
+// https://stackoverflow.com/questions/66519169/call-to-undefined-function-str-contains-php
+if (!function_exists('str_contains')) {
+    function str_contains(string $haystack, string $needle): bool
+    {
+        return '' === $needle || false !== strpos($haystack, $needle);
+    }
+}
+// phpinfo();

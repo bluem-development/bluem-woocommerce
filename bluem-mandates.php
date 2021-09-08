@@ -493,7 +493,6 @@ function bluem_init_mandate_gateway_class()
             }
 
             $order_id = $order->get_order_number();
-            
             // update: added prefixed order ID for retries of mandate requests
             $prefixed_order_id = date("His").$order_id;
             $mandate_id = $this->bluem->CreateMandateId(
@@ -507,6 +506,8 @@ function bluem_init_mandate_gateway_class()
                 $mandate_id
             );
 
+
+
             // allow third parties to add additional data to the request object through this additional action
             $request = apply_filters(
                 'bluem_woocommerce_enhance_mandate_request',
@@ -514,7 +515,6 @@ function bluem_init_mandate_gateway_class()
             );
 
             $response = $this->bluem->PerformRequest($request);
-
             if (self::VERBOSE) {
                 var_dump($order_id);
                 var_dump($user_id);
@@ -522,13 +522,10 @@ function bluem_init_mandate_gateway_class()
                 var_dump($response);
                 die();
             }
-            
+
             if (is_a($response, "Bluem\BluemPHP\Responses\ErrorBluemResponse", false)) {
                 throw new Exception("An error occured in the payment method. Please contact the webshop owner with this message:  " . $response->error());
             }
-            
-                        var_dump($response);
-                        die();
 
             $attrs = $response->EMandateTransactionResponse->attributes();
 
