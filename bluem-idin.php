@@ -804,22 +804,43 @@ function bluem_idin_shortcode_callback()
             if (isset($_SESSION["bluem_idin_entrance_code"]) && !is_null($_SESSION["bluem_idin_entrance_code"])) {
                 $entranceCode = $_SESSION["bluem_idin_entrance_code"];
             } else {
-                echo "Error: bluem_idin_entrance_code from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
-                // @todo make this into the prompts
+                $errormessage= "Error: bluem_idin_entrance_code from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
+                bluem_error_report_email(
+                    [
+                        'service'=>'idin',
+                        'function'=>'shortcode_callback',
+                        'message'=>$errormessage
+                    ]
+                );
+                bluem_dialogs_renderprompt($errormessage);
                 exit;
             }
             if (isset($_SESSION["bluem_idin_transaction_id"]) && !is_null($_SESSION["bluem_idin_transaction_id"])) {
                 $transactionID = $_SESSION["bluem_idin_transaction_id"];
             } else {
-                echo "Error: bluem_idin_transaction_id from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
-                // @todo make this into the prompts
+                $errormessage= "Error: bluem_idin_transaction_id from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
+                bluem_error_report_email(
+                    [
+                        'service'=>'idin',
+                        'function'=>'shortcode_callback',
+                        'message'=>$errormessage
+                    ]
+                );
+                bluem_dialogs_renderprompt($errormessage);
                 exit;
             }
             if (isset($_SESSION["bluem_idin_transaction_url"]) && !is_null($_SESSION["bluem_idin_transaction_url"])) {
                 $transactionURL = $_SESSION["bluem_idin_transaction_url"];
             } else {
-                echo "Error: bluem_idin_transaction_url from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
-                // @todo make this into the prompts
+                $errormessage= "Error: bluem_idin_transaction_url from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
+                bluem_error_report_email(
+                    [
+                        'service'=>'idin',
+                        'function'=>'shortcode_callback',
+                        'message'=>$errormessage
+                    ]
+                );
+                bluem_dialogs_renderprompt($errormessage);
                 exit;
             }
         }
@@ -829,7 +850,7 @@ function bluem_idin_shortcode_callback()
             $transactionID,
             $entranceCode
         );
-        
+
         if ($statusResponse->ReceivedResponse()) {
             $statusCode = ($statusResponse->GetStatusCode());
 
@@ -855,7 +876,6 @@ function bluem_idin_shortcode_callback()
             } else {
                 $_SESSION['bluem_idin_validated'] = false;
             }
-            
 
             // determining the right callback
             $goto = $bluem_config->IDINPageURL;
@@ -1333,7 +1353,16 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
 
     $cats = bluem_idin_get_categories();
     if (count($cats)==0) {
-        exit("Geen juiste iDIN categories ingesteld");
+        $errormessage = "Geen juiste iDIN categories ingesteld";
+        bluem_error_report_email(
+            [
+                'service'=>'idin',
+                'function'=>'idin_execute',
+                'message'=>$errormessage
+            ]
+        );
+        bluem_dialogs_renderprompt($errormessage);
+        exit();
     }
 
     if (is_null($callback)) {
@@ -1427,8 +1456,14 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
             $msg .= "<br>Algemene fout";
         }
 
-
-        bluem_woocommerce_prompt($msg);
+        bluem_error_report_email(
+            [
+                'service'=>'idin',
+                'function'=>'idin_execute',
+                'message'=>$msg
+            ]
+        );
+        bluem_dialogs_renderprompt($msg);
         exit;
     }
     exit;

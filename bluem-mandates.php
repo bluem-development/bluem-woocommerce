@@ -327,44 +327,7 @@ function bluem_init_mandate_gateway_class()
         }
 
 
-        /**
-         * Retrieve header HTML for error/message prompts
-         *
-         * @return String
-         */
-        private function getSimpleHeader(): String
-        {
-            return "<!DOCTYPE html><html><body><div
-            style='font-family:Arial,sans-serif;display:block;
-            margin:40pt auto; padding:10pt 20pt; border:1px solid #eee;
-            background:#fff; max-width:500px;'>";
-        }
-        /**
-         * Retrieve footer HTML for error/message prompt. Can include a simple link back to the webshop home URL.
-         *
-         * @param Bool $include_link
-         * @return String
-         */
-        private function getSimpleFooter(Bool $include_link = true): String
-        {
-            return ($include_link ? "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug naar de webshop</a></p>" : "") .
-                "</div></body></html>";
-        }
-
-        /**
-         * Render a piece of HTML sandwiched beteween a simple header and footer, with an optionally included link back home
-         *
-         * @param String $html
-         * @param boolean $include_link
-         *
-         * @return void
-         */
-        private function renderPrompt(String $html, $include_link = true)
-        {
-            echo $this->getSimpleHeader();
-            echo $html;
-            echo $this->getSimpleFooter($include_link);
-        }
+        
 
         /**
          * Check if a valid mandate already exists for this user
@@ -420,7 +383,8 @@ function bluem_init_mandate_gateway_class()
 
                 if ($existing_mandate_response->Status() == false) {
                     $reason = "No / invalid bluem response for existing mandate";
-                // existing mandate response is not at all valid, continue with actual mandate process
+                    // existing mandate response is not at all valid, 
+                    // continue with actual mandate process
                 } else {
                     if ($existing_mandate_response->EMandateStatusUpdate->EMandateStatus->Status . "" === "Success"
                     ) {
@@ -479,7 +443,7 @@ function bluem_init_mandate_gateway_class()
                                 'redirect' => $order->get_view_order_url()
                             );
                         } else {
-                            // echo "mandaat gevonden maar niet valide";
+                            $reason = "Existing mandate found, but not valid";
                         }
                     } else {
                         $reason = "Existing mandate is not a successful mandate";
@@ -558,10 +522,13 @@ function bluem_init_mandate_gateway_class()
                 var_dump($response);
                 die();
             }
-
-            if (is_a($response, "Bluem\BluemPHP\ErrorBluemResponse", false)) {
+            
+            if (is_a($response, "Bluem\BluemPHP\Responses\ErrorBluemResponse", false)) {
                 throw new Exception("An error occured in the payment method. Please contact the webshop owner with this message:  " . $response->error());
             }
+            
+                        var_dump($response);
+                        die();
 
             $attrs = $response->EMandateTransactionResponse->attributes();
 
@@ -775,19 +742,43 @@ function bluem_init_mandate_gateway_class()
             $this->bluem = new Bluem($this->bluem_config);
 
             if (!isset($_GET['mandateID'])) {
-                $this->renderPrompt("Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.");
+                $errormessage = "Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.";
+                bluem_error_report_email(
+                    [
+                        'service'=>'mandates',
+                        'function'=>'mandates_callback',
+                        'message'=>$errormessage
+                    ]
+                );
+                bluem_dialogs_renderprompt($errormessage);
                 exit;
             }
 
             if ($_GET['mandateID']=="") {
-                $this->renderPrompt("Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.");
+                $errormessage = "Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.";
+                bluem_error_report_email(
+                    [
+                        'service'=>'mandates',
+                        'function'=>'mandates_callback',
+                        'message'=>$errormessage
+                    ]
+                );
+                bluem_dialogs_renderprompt($errormessage);
                 exit;
             }
             $mandateID = $_GET['mandateID'];
 
             $order = $this->getOrder($mandateID);
             if (is_null($order)) {
-                $this->renderPrompt("Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code {$mandateID} bij je gegevens.");
+                $errormessage = "Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code {$mandateID} bij je gegevens.";
+                bluem_error_report_email(
+                    [
+                        'service'=>'mandates',
+                        'function'=>'mandates_callback',
+                        'message'=>$errormessage
+                    ]
+                );
+                bluem_dialogs_renderprompt($errormessage);
                 exit;
             }
 
@@ -807,7 +798,15 @@ function bluem_init_mandate_gateway_class()
             $response = $this->bluem->MandateStatus($mandateID, $entranceCode);
 
             if (!$response->Status()) {
-                $this->renderPrompt("Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status");
+                $errormessage = "Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status";
+                bluem_error_report_email(
+                    [
+                        'service'=>'mandates',
+                        'function'=>'mandates_callback',
+                        'message'=>$errormessage
+                    ]
+                );
+                bluem_dialogs_renderprompt($errormessage);
                 exit;
             }
 
@@ -849,9 +848,12 @@ function bluem_init_mandate_gateway_class()
                         );
                     }
                 }
-                $this->validateMandate($response, $order, true, true, true, $mandateID, $entranceCode);
+                $this->validateMandate(
+                    $response, $order, true, true,
+                    true, $mandateID, $entranceCode
+                );
             } elseif ($statusCode ==="Pending") {
-                $this->renderPrompt(
+                bluem_dialogs_renderprompt(
                     "<p>Uw machtiging wacht op goedkeuring van
                     een andere ondertekenaar namens uw organisatie.<br>
                     Deze persoon dient in te loggen op internet bankieren
@@ -869,11 +871,11 @@ function bluem_init_mandate_gateway_class()
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
-                $this->renderPrompt("Je hebt de mandaat ondertekening geannuleerd");
+                bluem_dialogs_renderprompt("Je hebt de mandaat ondertekening geannuleerd");
                 // terug naar order pagina om het opnieuw te proberen?
                 exit;
             } elseif ($statusCode === "Open" || $statusCode == "Pending") {
-                $this->renderPrompt("De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
+                bluem_dialogs_renderprompt("De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
                 // callback pagina beschikbaar houden om het opnieuw te proberen?
                 // is simpelweg SITE/wc-api/bluem_callback?mandateID=$mandateID
                 exit;
@@ -889,7 +891,8 @@ function bluem_init_mandate_gateway_class()
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
-                $this->renderPrompt(
+
+                bluem_dialogs_renderprompt(
                     "Fout: De mandaat of het verzoek daartoe is verlopen"
                 );
                 exit;
@@ -901,14 +904,18 @@ function bluem_init_mandate_gateway_class()
                         'wc-gateway-bluem'
                     )
                 );
-
-                bluem_transaction_notification_email(
-                    $request_from_db->id
+                $errormessage =  "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}
+                    <br>Neem contact op met de webshop en vermeld deze status";
+                bluem_error_report_email(
+                    [
+                        'service'=>'mandates',
+                        'function'=>'mandates_callback',
+                        'message'=>$errormessage
+                    ]
                 );
-                //$statusCode == "Failure"
-                $this->renderPrompt(
-                    "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}
-                    <br>Neem contact op met de webshop en vermeld deze status"
+
+                bluem_dialogs_renderprompt(
+                   $errormessage
                 );
                 exit;
             }
@@ -997,7 +1004,7 @@ function bluem_init_mandate_gateway_class()
 
                             $url = $order->get_checkout_payment_url();
                             $order_total_plus_string = str_replace(".", ",", ("" . round($order_total_plus, 2)));
-                            $this->renderPrompt(
+                            bluem_dialogs_renderprompt(
                                 "<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
                             <p>De geschatte factuurwaarde van jouw bestelling is EUR {$order_total_plus_string}. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor 'onbeperkt' te kiezen.</p>" .
                                     "<p><a href='{$url}' target='_self'>Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>",

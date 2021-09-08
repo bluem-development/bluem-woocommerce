@@ -92,8 +92,14 @@ function bluem_mandate_shortcode_execute()
             } else {
                 $msg .= "<br>Algemene fout";
             }
-
-            bluem_woocommerce_prompt($msg);
+            bluem_error_report_email(
+                [
+                    'service'=>'mandates',
+                    'function'=>'shortcode_execute',
+                    'message'=>$msg
+                ]
+            );
+            bluem_dialogs_renderprompt($msg);
             exit;
         }
 
@@ -176,7 +182,15 @@ function bluem_mandate_mandate_shortcode_callback()
             // echo "<p>Er is een fout opgetreden. De incassomachtiging is geannuleerd.</p>";
             return;
         }
-        echo "Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.";
+        $errormessage = "Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.";
+        bluem_error_report_email(
+            [
+                'service'=>'mandates',
+                'function'=>'shortcode_callback',
+                'message'=>$errormessage
+            ]
+        );
+        bluem_dialogs_renderprompt($errormessage);
         exit;
     }
 
@@ -189,8 +203,16 @@ function bluem_mandate_mandate_shortcode_callback()
     $response = $bluem->MandateStatus($mandateID, $entranceCode);
 
     if (!$response->Status()) {
-        echo "Fout bij opvragen status: " . $response->Error() . "
+        $errormessage = "Fout bij opvragen status: " . $response->Error() . "
         <br>Neem contact op met de webshop en vermeld deze status";
+        bluem_error_report_email(
+            [
+                'service'=>'mandates',
+                'function'=>'shortcode_callback',
+                'message'=>$errormessage
+            ]
+        );
+        bluem_dialogs_renderprompt($errormessage);
         exit;
     }
     $statusUpdateObject = $response->EMandateStatusUpdate;
@@ -263,7 +285,13 @@ function bluem_mandate_mandate_shortcode_callback()
         wp_redirect(home_url($bluem_config->thanksPageURL) . "?result=false&reason=expired");
         exit;
     } else {
-        // "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status";
+        bluem_error_report_email(
+            [
+                'service'=>'mandates',
+                'function'=>'shortcode_callback',
+                'message'=> "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site"
+            ]
+        );
         wp_redirect(home_url($bluem_config->thanksPageURL) . "?result=false&reason=error");
         exit;
     }

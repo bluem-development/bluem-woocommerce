@@ -1,13 +1,13 @@
 <?php
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.2.18
+ * Version: 1.2.19
  * Plugin URI: https://wordpress.org/plugins/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Bluem Payment Services
  * Author URI: https://bluem.nl
  * Requires at least: 5.0
- * Tested up to: 5.7.1
+ * Tested up to: 5.8.0
  *
  * WC requires at least: 5.0.0
  * WC tested up to: 5.2.2
@@ -758,6 +758,18 @@ function bluem_woocommerce_get_core_options()
             ]
         ],
 
+        'error_reporting_email' => [
+            'key' => 'error_reporting_email',
+            'title' => 'bluem_error_reporting_email',
+            'name' => 'Rapporteer errors bij de developers via een automatische email',
+            'description' => "Help ons snel problemen oplossen en downtime minimaliseren. Geef hier aan of je als de developers van Bluem  automatisch een notificatie e-mail wil sturen met technische details (geen persoonlijke informatie). Dit staat standaard aan, behalve als je dit expliciet uitzet. ",
+            'type' => 'select',
+            'default' => '1',
+            'options' => [
+                '1' => 'Ja, stuur errors door naar de developers',
+                '0' => 'Geen error reportage via e-mail',
+            ],
+        ],
         'transaction_notification_email' => [
             'key' => 'transaction_notification_email',
             'title' => 'bluem_transaction_notification_email',
@@ -773,6 +785,89 @@ function bluem_woocommerce_get_core_options()
             ],
         ],
     ];
+}
+
+/**
+ * Error reporting email functionality
+ */
+function bluem_error_report_email($data = [])
+{
+    $debug = true;
+
+    $error_report_id = date("Ymdhis") . '_'. rand(0, 512);
+    
+    $data = (object)$data;
+    $data->error_report_id = $error_report_id;
+
+    $settings = get_option('bluem_woocommerce_options');
+
+    // $data = bluem_db_get_request_by_id($request_id);
+    // $pl = json_decode($data->payload);
+
+    if (is_null($data)) {
+        return;
+    }
+
+    if (!isset($settings['error_reporting_email'])
+    || (isset($settings['error_reporting_email'])
+    && $settings['error_reporting_email'] == 1)
+    ) {
+        if ($debug) {
+            echo "Sending error reporting email; Data:";
+            var_dump($data);
+        }
+
+        $author_name = "Administratie van ".get_bloginfo('name');
+        $author_email = esc_attr(
+            get_option("admin_email")
+        );
+
+        $to = "d.rijpkema@bluem.nl";
+
+        $subject = "[".get_bloginfo('name')."] ";
+        $subject .= "Notificatie Error in Bluem ";
+
+        $message = "<p>Error in Bluem plugin. {$author_name} <{$author_email}>,</p>";
+        $message .= "<p>Data: <br>".json_encode($data)."</p>";
+
+        ob_start();
+        foreach ($data as $k=>$v) {
+            if (is_null($v)) {
+                continue;
+            }
+
+            bluem_render_obj_row_recursive(
+                "<strong>".ucfirst($k)."</strong>",
+                $v
+            );
+        }
+        $message_p = ob_get_clean();
+        $message.=$message_p;
+        $message.="</p>";
+        $message.="<p>Ga naar de site op ".home_url()." om dit verzoek in detail te bekijken.</p>";
+        $message = nl2br($message);
+
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+
+        if ($debug) {
+            echo "<HR> ".PHP_EOL;
+            var_dump($to);
+            var_dump($subject);
+            echo "<HR> ".PHP_EOL;
+            echo($message);
+            echo "<HR> ".PHP_EOL;
+            var_dump($headers);
+            die();
+        }
+        $mailing = wp_mail($to, $subject, $message, $headers);
+
+        if ($mailing) {
+            bluem_db_request_log($error_report_id, "Sent error report mail to ".$to);
+        } else {
+            // noope
+        }
+        return $mailing;
+    }
 }
 
 
@@ -838,13 +933,6 @@ function bluem_transaction_notification_email(
                 "<strong>".ucfirst($k)."</strong>",
                 $v
             );
-            // if(is_string($v)) {
-            //     $message.="<li><strong>$k</strong>: &nbsp; $v</li>";
-            // } else {
-            //     $message.="<li><strong>$k</strong>: &nbsp;";
-            //     $message.=var_dump($v, true);
-            //     $message.="</li>";
-            // }
         }
         $message_p = ob_get_clean();
         $message.=$message_p;
@@ -877,7 +965,6 @@ function bluem_transaction_notification_email(
             bluem_db_request_log($request_id, "Sent notification mail to ".$to);
         }
         return $mailing;
-        // die();
     }
 }
 
@@ -954,6 +1041,13 @@ function bluem_woocommerce_settings_render_suppress_woo()
     );
 }
 
+function bluem_woocommerce_settings_render_error_reporting_email()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_option('error_reporting_email')
+    );
+}
+
 function bluem_woocommerce_settings_render_transaction_notification_email()
 {
     bluem_woocommerce_settings_render_input(
@@ -993,50 +1087,6 @@ function bluem_module_enabled($module)
 }
 
 
-
-
-/**
- * Retrieve header HTML for error/message prompts
- *
- * @return String
- */
-function bluem_woocommerce_simpleheader(): String
-{
-    return "<!DOCTYPE html><html><body><div
-    style='font-family:Arial,sans-serif;display:block;
-    margin:40pt auto; padding:10pt 20pt; border:1px solid #eee;
-    background:#fff; max-width:500px;'>".bluem_get_bluem_logo_html(48);
-}
-/**
- * Retrieve footer HTML for error/message prompt. Can include a simple link back to the webshop home URL.
- *
- * @param Bool $include_link
- * @return String
- */
-function bluem_woocommerce_simplefooter(Bool $include_link = true): String
-{
-    return (
-        $include_link
-        ? "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug</a></p>"
-        : ""
-    ) . "</div></body></html>";
-}
-
-/**
- * Render a piece of HTML sandwiched beteween a simple header and footer, with an optionally included link back home
- *
- * @param String $html
- * @param boolean $include_link
- * @return void
- */
-function bluem_woocommerce_prompt(String $html, $include_link = true)
-{
-    echo bluem_woocommerce_simpleheader();
-    echo $html;
-    echo bluem_woocommerce_simplefooter(
-        $include_link
-    );
-}
 
 /**
  * bluem_generic_tabler
@@ -1225,4 +1275,47 @@ function bluem_order_requests_metabox_content()
     } else {
         echo "No requests yet";
     }
+}
+
+/**
+ * Retrieve header HTML for error/message prompts
+ *
+ * @return String
+ */
+function bluem_dialogs_getsimpleheader(): String
+{
+    return "<!DOCTYPE html><html><body><div
+    style='font-family:Arial,sans-serif;display:block;
+    margin:40pt auto; padding:10pt 20pt; border:1px solid #eee;
+    background:#fff; max-width:500px;'>".
+    bluem_get_bluem_logo_html(48);
+}
+/**
+ * Retrieve footer HTML for error/message prompt. Can include a simple link back to the webshop home URL.
+ *
+ * @param Bool $include_link
+ * @return String
+ */
+function bluem_dialogs_getsimplefooter(Bool $include_link = true): String
+{
+    return (
+        $include_link ? 
+        "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug naar de webshop</a></p>" : 
+        ""
+    ) . "</div></body></html>";
+}
+
+/**
+ * Render a piece of HTML sandwiched beteween a simple header and footer, with an optionally included link back home
+ *
+ * @param String $html
+ * @param boolean $include_link
+ *
+ * @return void
+ */
+function bluem_dialogs_renderprompt(String $html, $include_link = true)
+{
+    echo bluem_dialogs_getsimpleheader();
+    echo $html;
+    echo bluem_dialogs_getsimplefooter($include_link);
 }
