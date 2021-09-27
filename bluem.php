@@ -363,13 +363,25 @@ function bluem_settings_page()
 
 function bluem_woocommerce_general_settings_section()
 {
-    echo '<p>Hier kan je alle belangrijke gegevens instellen rondom Bluem algemeen. <br>
+    // Hier kan je alle belangrijke gegevens instellen rondom Bluem algemeen. <br>
+    echo '<p>
+    <div class="notice notice-warning inline" style="padding:10px;">
     <span class="dashicons dashicons-unlock"></span>
     Let op:
     Je hebt een geactiveerde account nodig bij Bluem.
     De gegevens die je ontvangt via e-mail kan je hieronder
     en per specifiek onderdeel invullen.
+    </div>
     </p>';
+
+    echo '<p>
+    <div class="notice notice-info inline" style="padding:10px;">
+    Heb je de plugin al geinstalleerd op een andere website? 
+    Gebruik dan de Import/Export functie om dezelfde instellingen 
+    en voorkeuren in te laden.&nbsp; ';
+    echo '<a href="'.admin_url('admin.php?page=bluem_admin_importexport').'"
+     class="">Instellingen importeren of exporteren</a></div>';
+    echo '</p>';
     bluem_render_footer(false);
 }
 
@@ -1016,10 +1028,8 @@ function bluem_woocommerce_get_config()
 
 function bluem_woocommerce_modules_settings_section()
 {
-    echo '
-    <p>
-    Zet hier gemakkelijk    de de diensten aan of uit die jouw website wel of niet nodig heeft,
-    zodat je efficiënt kan werken.</p>';
+
+    echo '<p>Verhoog je efficiëntie door alleen de diensten te activeren die jouw site wel nodig heeft.</p>';
 }
 
 function bluem_woocommerce_modules_render_mandates_activation()

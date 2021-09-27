@@ -4,16 +4,8 @@
         Bluem &middot; Verzoekdetails
     </h1>
 
-    <nav class="nav-tab-wrapper">
-        <a href="<?php echo admin_url('admin.php?page=bluem_admin_requests_view'); ?>" class="nav-tab">
-            <span class="dashicons dashicons-arrow-left-alt"></span>
-            Alle verzoeken
-        </a>
-        <a href="<?php echo admin_url('options-general.php?page=bluem');?>" class="nav-tab">
-            <span class="dashicons dashicons-admin-settings"></span>
-            Algemene instellingen
-        </a>
-    </nav>
+    <?php bluem_render_nav_header();?>
+
     <div class="bluem-request-card-body">
         <div class='bluem-column'>
 

@@ -465,3 +465,36 @@ function bluem_render_requests_table_title($cat)
     }
     echo "</h4>";
 }
+
+
+function bluem_render_nav_header($active_page='') {
+
+
+
+    ?>
+<nav class="nav-tab-wrapper">
+        <a href="#"  <?php if($active_page =="requests") {
+            echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
+        } else {
+            echo 'class="nav-tab"';
+        }
+        ?>>
+            Alle verzoeken</a>
+        <a href="<?php echo admin_url('options-general.php?page=bluem');?>" class="nav-tab">
+            <span class="dashicons dashicons-admin-settings"></span>
+            Instellingen
+        </a>
+
+        <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e" target="_blank"
+        class="nav-tab">
+        <span class="dashicons dashicons-media-document"></span>
+        Handleiding</a>
+        
+        <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">
+            <span class="dashicons dashicons-editor-help"></span>
+            Neem contact op via e-mail</a>
+            
+    </nav>
+
+<?php 
+}

@@ -17,21 +17,7 @@
     <h1>
         <?php echo bluem_get_bluem_logo_html(48);?>
         Bluem &middot; Import/export instellingen</h1>
-    <nav class="nav-tab-wrapper">
-        <a href="<?php echo admin_url('admin.php?page=bluem_admin_requests_view');?>" class="nav-tab">
-            Alle verzoeken</a>
-        <a href="<?php echo admin_url('options-general.php?page=bluem');?>" class="nav-tab">
-            <span class="dashicons dashicons-admin-settings"></span>
-            Instellingen
-        </a>
-        <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e" target="_blank"
-        class="nav-tab">
-        <span class="dashicons dashicons-media-document"></span>
-        Handleiding</a>
-        <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">
-            <span class="dashicons dashicons-editor-help"></span>
-            Neem contact op via e-mail</a>
-    </nav>
+        <?php bluem_render_nav_header('importexport');?>
 
     <?php if (count($messages)>0) {
     ?>
