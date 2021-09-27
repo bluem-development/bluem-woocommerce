@@ -1285,9 +1285,14 @@ function bluem_order_requests_metabox_content()
 
     // $requests1 = bluem_db_get_requests_by_keyvalue("order_id", $order_id);
     // $requests = array_merge($requests1,$requests2);
+// var_dump($order_id);
 
     //  requests from links:
-    $requests = bluem_db_get_links_for_order($order_id);
+    $requests_links = bluem_db_get_links_for_order($order_id);
+    $requests = [];
+    foreach ($requests_links as $rql) {
+        $requests[] = bluem_db_get_request_by_id($rql->request_id);
+    }
 
     if (isset($requests) && count($requests)>0) {
         bluem_render_requests_list($requests);
