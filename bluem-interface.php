@@ -60,20 +60,13 @@ function bluem_render_request_table($requests, $users_by_id=[])
                     <?php echo $r->transaction_id; ?>
                 </span>
             </td>
-            <td>
-                <?php
-   bluem_render_request_user($r, $users_by_id); ?>
-            </td>
-            <?php $rdate = strtotime($r->timestamp); ?>
-            <?php $rdate = Carbon::parse($r->timestamp, 'Europe/Amsterdam'); ?>
+            <td><?php
+                bluem_render_request_user($r, $users_by_id); ?>
+            </td><?php $rdate = Carbon::parse($r->timestamp, 'UTC'); 
+                $rdate->setTimeZone("Europe/Amsterdam");
+            ?>
             <td title="<?php echo $rdate->format("d-m-Y H:i:s"); ?>">
-                <?php
-        if ($rdate->diffInDays(Carbon::now())>=1) {
-            echo $rdate->format("d-m-Y H:i:s");
-        } else {
-            echo $rdate->diffForHumans(Carbon::now(), null, true, 1);
-        } ?>
-
+                <?php echo $rdate->format("d-m-Y H:i:s"); ?>
             </td>
             <td>
                 <?php
@@ -473,7 +466,8 @@ function bluem_render_nav_header($active_page='') {
 
     ?>
 <nav class="nav-tab-wrapper">
-        <a href="#"  <?php if($active_page =="requests") {
+    <a href="<?php echo admin_url('options-general.php?page=bluem_admin_requests_view');?>"
+        <?php if($active_page =="requests") {
             echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
         } else {
             echo 'class="nav-tab"';
