@@ -251,6 +251,15 @@ function bluem_db_delete_request_by_id($request_id)
 }
 
 
+function bluem_db_get_request_by_debtor_reference($debtor_reference)
+{
+    $res = bluem_db_get_requests_by_keyvalue(
+        'debtor_reference',
+        $debtor_reference
+    );
+    return $res!==false && count($res)>0?$res[0]:false;
+}
+
 
 
 function bluem_db_get_request_by_transaction_id($transaction_id)
@@ -460,7 +469,7 @@ function bluem_db_get_links_for_order($id)
     global $wpdb;
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
-    return $wpdb->get_results("SELECT *  FROM  `bluem_requests_links` WHERE `request_id` = {$id} ORDER BY `timestamp` DESC");
+    return $wpdb->get_results("SELECT *  FROM  `bluem_requests_links` WHERE `item_id` = {$id} and `item_type` = 'order'ORDER BY `timestamp` DESC");
 }
 
 
