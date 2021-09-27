@@ -30,6 +30,8 @@ if (!defined('ABSPATH')) {
 global $bluem_db_version;
 $bluem_db_version = 1.3;
 
+require_once __DIR__ . '/bluem-compatibility.php';
+
 // get composer dependencies
 require __DIR__ . '/vendor/autoload.php';
 
@@ -52,9 +54,9 @@ if (bluem_module_enabled('idin')) {
 
 // database functions
 require_once __DIR__ . '/bluem-db.php';
-require_once __DIR__ . '/bluem-interface.php';
 
-// @todo: add login module later
+// interface and display functions
+require_once __DIR__ . '/bluem-interface.php';
 
 /**
  * Check if WooCommerce is active
@@ -69,6 +71,7 @@ if (in_array(
     )
 )
 ) {
+
 } else {    // NO Woo found!
     add_action('admin_notices', 'bluem_woocommerce_no_woocommerce_notice');
 }
@@ -1345,15 +1348,6 @@ function bluem_dialogs_renderprompt(String $html, $include_link = true)
 }
 
 
-// polyfill for PHP 7
-// https://stackoverflow.com/questions/66519169/call-to-undefined-function-str-contains-php
-if (!function_exists('str_contains')) {
-    function str_contains(string $haystack, string $needle): bool
-    {
-        return '' === $needle || false !== strpos($haystack, $needle);
-    }
-}
-// phpinfo();
 
 
 function bluem_admin_import_execute($data)
@@ -1413,3 +1407,4 @@ function bluem_admin_importexport()
 
     include_once 'views/importexport.php';
 }
+
