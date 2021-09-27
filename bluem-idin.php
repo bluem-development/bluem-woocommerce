@@ -393,9 +393,9 @@ function bluem_woocommerce_idin_settings_section()
     Bij succesvol uitvoeren van de identificatie via Bluem, komt men terug op de pagina die hieronder wordt aangemerkt als iDINPageURL (huidige waarde:
     <code>
     <?php
-if (isset($options['IDINPageURL'])) {
-                        echo($options['IDINPageURL']);
-                    } ?></code>).
+        if (isset($options['IDINPageURL'])) {
+            echo($options['IDINPageURL']);
+        } ?></code>).
     </p>
     <h3>
     <span class="dashicons dashicons-editor-help"></span>

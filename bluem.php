@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.2.19
+ * Version: 1.3.0
  * Plugin URI: https://wordpress.org/plugins/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Bluem Payment Services
@@ -100,10 +100,10 @@ function bluem_woocommerce_no_woocommerce_notice()
         $bluem_options = get_option('bluem_woocommerce_options');
         if (!isset($bluem_options['suppress_woo']) || $bluem_options['suppress_woo']=="0") {
             echo '<div class="notice notice-warning is-dismissible">
-            <p>De Bluem integratie is deels afhankelijk 
+            <p>De Bluem integratie is deels afhankelijk
             van WooCommerce - activeer deze plug-in ook.<br>
-            Je kan deze melding en WooCommerce gerelateerde 
-            functionaliteiten ook uitzetten bij de 
+            Je kan deze melding en WooCommerce gerelateerde
+            functionaliteiten ook uitzetten bij de
             <a href="'.admin_url('options-general.php?page=bluem').'">
             Instellingen</a>.</p>
             </div>';
@@ -143,6 +143,15 @@ function bluem_register_menu()
         "bluem_admin_requests_view",
         "bluem_admin_requests_view",
         'dashicons-money'
+    );
+
+    add_submenu_page(
+        null,
+        'Import/export gegevens',
+        'Import/export gegevens',
+        'manage_options',
+        'bluem_admin_importexport',
+        'bluem_admin_importexport',
     );
 
     // add_submenu_page
@@ -211,8 +220,8 @@ function bluem_admin_requests_view_all()
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
     $_requests = $wpdb->get_results(
-        "SELECT *  
-        FROM `bluem_requests` 
+        "SELECT *
+        FROM `bluem_requests`
         ORDER BY `type` ASC, `timestamp` DESC"
     );
 
@@ -316,11 +325,11 @@ function bluem_settings_page()
         <span class="dashicons dashicons-database-view"></span>
             Verzoeken
         </a>
-        <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e" 
+        <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e"
         target="_blank" class="nav-tab">
         <span class="dashicons dashicons-media-document"></span>
         Handleiding</a>
-        
+
         <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin"
         class="nav-tab" target="_blank">
         <span class="dashicons dashicons-editor-help"></span>
@@ -773,9 +782,9 @@ function bluem_woocommerce_get_core_options()
         'transaction_notification_email' => [
             'key' => 'transaction_notification_email',
             'title' => 'bluem_transaction_notification_email',
-            'name' => 'E-mail notificatie voor website 
+            'name' => 'E-mail notificatie voor website
                 eigenaar bij elke nieuwe transactie?',
-            'description' => "Geef hier aan of je als 
+            'description' => "Geef hier aan of je als
                 website-eigenaar automatisch een notificatie e-mail wil ontvangen met transactiedetails",
             'type' => 'select',
             'default' => '0',
@@ -792,10 +801,10 @@ function bluem_woocommerce_get_core_options()
  */
 function bluem_error_report_email($data = [])
 {
-    $debug = true;
+    $debug = false;
 
     $error_report_id = date("Ymdhis") . '_'. rand(0, 512);
-    
+
     $data = (object)$data;
     $data->error_report_id = $error_report_id;
 
@@ -1299,8 +1308,8 @@ function bluem_dialogs_getsimpleheader(): String
 function bluem_dialogs_getsimplefooter(Bool $include_link = true): String
 {
     return (
-        $include_link ? 
-        "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug naar de webshop</a></p>" : 
+        $include_link ?
+        "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug naar de webshop</a></p>" :
         ""
     ) . "</div></body></html>";
 }
@@ -1330,3 +1339,62 @@ if (!function_exists('str_contains')) {
     }
 }
 // phpinfo();
+
+
+function bluem_admin_import_execute($data)
+{
+    $cur_options = get_option('bluem_woocommerce_options');
+
+    $results = [];
+    foreach ($data as $k => $v) {
+        // echo "updated option {$k} to value &quot;{$v}&quot;<br>";
+        $cur_options[$k] = $v;
+        $results[$k] = true;
+    }
+    update_option("bluem_woocommerce_options", $cur_options);
+
+    return $results;
+}
+
+
+function bluem_admin_importexport()
+{
+    $messages = [];
+    if (isset($_POST['action']) && $_POST['action']=="import") {
+        $decoded = true;
+
+        if (isset($_POST['import']) && $_POST['import']!=="") {
+            $import_data = json_decode(
+                stripslashes(
+                    $_POST['import']
+                ),
+                true
+            );
+            if (is_null($import_data)) {
+                $messages[] = "Kon niet importeren: de input is niet geldige JSON";
+                $decoded = false;
+            }
+        }
+
+        if ($decoded) {
+            $results = bluem_admin_import_execute($import_data);
+            $sett_count = 0;
+            foreach ($results as $r) {
+                if ($r) {
+                    $sett_count++;
+                }
+            }
+            $messages[] = "Importeren is uitgevoerd: $sett_count instellingen aangepast.";
+            // exit;
+        } else {
+            // $error_msg = "Kon niet importeren;  de invoer is niet geldig.";
+            // echo $error_msg;
+            // $messages[] = $error_msg;
+        }
+    }
+
+    $options = get_option('bluem_woocommerce_options');
+    $options_json = json_encode($options);
+
+    include_once 'views/importexport.php';
+}
