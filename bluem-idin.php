@@ -323,6 +323,15 @@ De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDea
 
 [Lees hier meer: https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/](https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/)'
     ],
+
+    // 'idin_show_notice_in_checkout' => [
+    //     'key' => 'idin_show_notice_in_checkout',
+    //     'title' => 'bluem_idin_show_notice_in_checkout',
+    //     'name' => 'Wil je de identificatie melding bovenin de checkout weergeven?',
+    //     'description' => "Wil je de melding van identificatie nodig ook bovenaan de checkout als melding weergeven?",
+    //     'type' => 'bool',
+    //     'default' => '1',
+    // ],
     ];
 }
 
@@ -600,6 +609,14 @@ function bluem_woocommerce_settings_render_idin_identity_more_information_popup(
 }
 
 
+function bluem_woocommerce_settings_render_idin_show_notice_in_checkout()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_show_notice_in_checkout')
+    );
+}
+
+
 
 
 
@@ -796,6 +813,16 @@ function bluem_idin_shortcode_callback()
         $bluem_config->brandID = $bluem_config->IDINBrandID;
         $bluem = new Bluem($bluem_config);
 
+        // 27-09-2021
+        // added retrieval of request for guest users if the session is lost 
+        // based on the debtor reference we can still retrieve valuable information 
+        // about the request
+        $request_by_debtor_ref = false;//new Stdclass;
+        if (isset($_GET['debtorReference']) && $_GET['debtorReference'] !=="") {
+            $debtorReference = $_GET['debtorReference'];
+            $request_by_debtor_ref = bluem_db_get_request_by_debtor_reference($debtorReference);
+        }
+
         if (is_user_logged_in()) {
             $entranceCode = get_user_meta(get_current_user_id(), "bluem_idin_entrance_code", true);
             $transactionID = get_user_meta(get_current_user_id(), "bluem_idin_transaction_id", true);
@@ -804,54 +831,64 @@ function bluem_idin_shortcode_callback()
             if (isset($_SESSION["bluem_idin_entrance_code"]) && !is_null($_SESSION["bluem_idin_entrance_code"])) {
                 $entranceCode = $_SESSION["bluem_idin_entrance_code"];
             } else {
-                $errormessage= "Error: bluem_idin_entrance_code from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
-                bluem_error_report_email(
-                    [
-                        'service'=>'idin',
-                        'function'=>'shortcode_callback',
-                        'message'=>$errormessage
-                    ]
-                );
-                bluem_dialogs_renderprompt($errormessage);
-                exit;
+                if ($request_by_debtor_ref !== false
+                    && isset($request_by_debtor_ref->entrance_code)
+                    && $request_by_debtor_ref->entrance_code !== ""
+                ) {
+                    $entranceCode = $request_by_debtor_ref->entrance_code;
+                } else {
+                    $errormessage= "Error: bluem_idin_entrance_code from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
+                    bluem_error_report_email(
+                        [
+                            'service'=>'idin',
+                            'function'=>'shortcode_callback',
+                            'message'=>$errormessage
+                            ]
+                    );
+                    bluem_dialogs_renderprompt($errormessage);
+                    exit;
+                }
             }
             if (isset($_SESSION["bluem_idin_transaction_id"]) && !is_null($_SESSION["bluem_idin_transaction_id"])) {
                 $transactionID = $_SESSION["bluem_idin_transaction_id"];
             } else {
-                $errormessage= "Error: bluem_idin_transaction_id from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
-                bluem_error_report_email(
-                    [
-                        'service'=>'idin',
-                        'function'=>'shortcode_callback',
-                        'message'=>$errormessage
-                    ]
-                );
-                bluem_dialogs_renderprompt($errormessage);
-                exit;
-            }
-            if (isset($_SESSION["bluem_idin_transaction_url"]) && !is_null($_SESSION["bluem_idin_transaction_url"])) {
-                $transactionURL = $_SESSION["bluem_idin_transaction_url"];
-            } else {
-                $errormessage= "Error: bluem_idin_transaction_url from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
-                bluem_error_report_email(
-                    [
-                        'service'=>'idin',
-                        'function'=>'shortcode_callback',
-                        'message'=>$errormessage
-                    ]
-                );
-                bluem_dialogs_renderprompt($errormessage);
-                exit;
+                if ($request_by_debtor_ref !== false
+                    && isset($request_by_debtor_ref->transaction_id)
+                    && $request_by_debtor_ref->transaction_id !== ""
+                ) {
+                    $transactionID = $request_by_debtor_ref->transaction_id;
+                } else {
+                    $errormessage= "Error: bluem_idin_transaction_id from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
+                    bluem_error_report_email(
+                        [
+                            'service'=>'idin',
+                            'function'=>'shortcode_callback',
+                            'message'=>$errormessage
+                        ]
+                    );
+                    bluem_dialogs_renderprompt($errormessage);
+                    exit;
+                }
             }
         }
-
-
         $statusResponse = $bluem->IdentityStatus(
             $transactionID,
             $entranceCode
         );
 
-        if ($statusResponse->ReceivedResponse()) {
+        if (!$statusResponse->ReceivedResponse()) {
+            $errormessage= "Error: kon verzoek met $transactionID en entrance $entranceCode niet vinden";
+            // from session missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
+            bluem_error_report_email(
+                [
+                    'service'=>'idin',
+                    'function'=>'shortcode_callback',
+                    'message'=>$errormessage
+                ]
+            );
+            bluem_dialogs_renderprompt($errormessage);
+            exit;
+        } else {
             $statusCode = ($statusResponse->GetStatusCode());
 
 
@@ -1063,12 +1100,6 @@ function bluem_idin_shortcode_callback()
             wp_redirect(
                 home_url($goto) .
                 "?result=false&status={$statusCode}"
-            );
-        } else {
-            // no proper response received, tell the user
-            wp_redirect(
-                home_url($goto) .
-                "?result=false&status=no_response"
             );
         }
     }
@@ -1345,7 +1376,12 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
         $description =  "Identificatie " . $current_user->display_name ;
     }
 
-    $debtorReference = $current_user->ID;
+    if(is_user_logged_in()) {
+
+        $debtorReference = $current_user->ID;
+    } else {
+        $debtorReference = "guest".date("Ymdhisu");
+    }
 
     // fallback until this is corrected in bluem-php
     $bluem_config->brandID = $bluem_config->IDINBrandID;
@@ -1406,9 +1442,11 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
                 'debtor_reference'=>$debtorReference,
                 'type'=>"identity",
                 'order_id'=>null,
-                'payload'=>json_encode([
-                    'environment' => $bluem->environment
-                ])
+                'payload'=>json_encode(
+                    [
+                        'environment' => $bluem->environment
+                    ]
+                )
             ]
         );
 
@@ -1686,7 +1724,7 @@ function bluem_checkout_check_idin_validated()
 
     // only run this check in Woo
     if (is_checkout() && ! is_wc_endpoint_url()) {
-        // wc_add_notice( sprintf( __('This is my <strong>"custom message"</strong> and I can even add a button to the right… <a href="%s" class="button alt">My account</a>'), get_permalink( get_option('woocommerce_myaccount_page_id') ) ), 'notice' );
+        // wc_add_notice( sprintf ( __('This is my <strong>"custom message"</strong> and I can even add a button to the right… <a href="%s" class="button alt">My account</a>'), get_permalink( get_option('woocommerce_myaccount_page_id') ) ), 'notice' );
     } else {
         return;
     }
@@ -1734,6 +1772,11 @@ function bluem_checkout_check_idin_validated()
     } else {
         $idin_identity_popup_thank_you_message = "Je leeftijd is geverifieerd.";
     }
+    // if (isset($options['idin_show_notice_in_checkout']) && $options['idin_show_notice_in_checkout']!=="") {
+    //     $idin_show_notice_in_checkout = $options['idin_show_notice_in_checkout'];
+    // } else {
+    // }
+    $idin_show_notice_in_checkout = true;
     // todo: remove these obsolete defaults
 
 
@@ -1753,10 +1796,13 @@ function bluem_checkout_check_idin_validated()
 
         // above 0: any form of verification is required
         if (!$validated) {
-            wc_add_notice(
-                bluem_idin_generate_notice($validation_message, true, false, false),
-                'error'
-            );
+            if ($idin_show_notice_in_checkout) {
+                wc_add_notice(
+                    bluem_idin_generate_notice($validation_message, true, false, false),
+                    'error'
+                );
+            }
+            return false;
         } else {
 
             // get report from user metadata
@@ -1831,10 +1877,13 @@ function bluem_checkout_check_idin_validated()
                 //     }
                 // }
                 if (!$age_valid) {
-                    wc_add_notice(
-                        bluem_idin_generate_notice($validation_message, true, false, false),
-                        'error'
-                    );
+                    if ($idin_show_notice_in_checkout) {
+                        wc_add_notice(
+                            bluem_idin_generate_notice($validation_message, true, false, false),
+                            'error'
+                        );
+                    }
+                    return false;
                 } else {
                     wc_add_notice(
                         $idin_identity_popup_thank_you_message,
@@ -1847,10 +1896,13 @@ function bluem_checkout_check_idin_validated()
 
     // custom user-based checks:
     if (bluem_checkout_check_idin_validated_filter()==false) {
-        wc_add_notice(
-            bluem_idin_generate_notice($validation_message, true, false, false),
-            'error'
-        );
+        if ($idin_show_notice_in_checkout) {
+            wc_add_notice(
+                bluem_idin_generate_notice($validation_message, true, false, false),
+                'error'
+            );
+        }
+        return false;
         // wc_add_notice(
         //     $idin_logo_html . __(
         //         "Verifieer eerst je identiteit via de mijn account pagina",
@@ -2140,7 +2192,7 @@ function bluem_idin_generate_notice(String $message ="", bool $button = false, b
         <span class="dashicons dashicons-editor-help"></span>
         Wat is dit?
     </a>';
-    
+
     $html .= '
 
     </div>
@@ -2186,7 +2238,7 @@ function bluem_link_idin_request_to_sesh($user_id)
         bluem_db_request_log($req->id, "Linked identity to user by logging in");
 
         $pl = json_decode($req->payload);
-        
+
         // also update some user data if applicable
         if (isset($pl->report->AgeCheckResponse)) {
             update_user_meta(
