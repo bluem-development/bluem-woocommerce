@@ -796,7 +796,10 @@ function bluem_idin_shortcode_idin_execute()
 
     bluem_idin_execute(null, true, $goto);
 }
-/* ******** CALLBACK ****** */
+
+/**
+ * CALLBACK
+ **/
 add_action('parse_request', 'bluem_idin_shortcode_callback');
 /**
  * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Session, sent for a SUD to the Bluem API.
@@ -814,8 +817,8 @@ function bluem_idin_shortcode_callback()
         $bluem = new Bluem($bluem_config);
 
         // 27-09-2021
-        // added retrieval of request for guest users if the session is lost 
-        // based on the debtor reference we can still retrieve valuable information 
+        // added retrieval of request for guest users if the session is lost
+        // based on the debtor reference we can still retrieve valuable information
         // about the request
         $request_by_debtor_ref = false;//new Stdclass;
         if (isset($_GET['debtorReference']) && $_GET['debtorReference'] !=="") {
@@ -1184,13 +1187,18 @@ Respons van bank op leeftijdscontrole, indien van toepassing
 <select class="form-control" name="bluem_idin_report_agecheckresponse" id="bluem_idin_report_agecheckresponse">
 <option value="" <?php if ($ageCheckResponse == "") {
             echo "selected='selected'";
-        } ?>>Leeftijdcheck nog niet uitgevoerd</option>
-<option value="false" <?php if ($ageCheckResponse == "false") {
-            echo "selected='selected'";
-        } ?>>Leeftijd niet toereikend bevonden</option>
+}
+?>>Leeftijdcheck nog niet uitgevoerd</option>
+<option value="false" <?php 
+if ($ageCheckResponse == "false") {
+echo "selected='selected'";
+}
+?>>Leeftijd niet toereikend bevonden</option>
 <option value="true" <?php if ($ageCheckResponse == "true") {
-            echo "selected='selected'";
-        } ?>>Leeftijd toereikend bevonden</option>
+echo "selected='selected'";
+} ?>>
+Leeftijd toereikend bevonden
+</option>
 </select>
 
 <br>
@@ -1508,7 +1516,10 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
 }
 
 // https://www.businessbloomer.com/woocommerce-visual-hook-guide-checkout-page/
-// add_action( 'woocommerce_review_order_before_payment', 'bluem_checkout_check_idin_validated' );
+// add_action(
+// 'woocommerce_review_order_before_payment', 
+// 'bluem_checkout_check_idin_validated' 
+// );
 
 // CHECKOUT review message
 add_action('woocommerce_review_order_before_payment', 'bluem_checkout_idin_notice');
