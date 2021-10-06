@@ -1319,6 +1319,16 @@ function bluem_idin_retrieve_results()
 function bluem_idin_user_validated()
 {
     global $current_user;
+    
+    $ipresult_country_is_nl = bluem_ipapi_call_nlcheck();
+    
+    // override international IP's  
+    if (!$ipresult_country_is_nl) {
+        return true;
+    } 
+    // var_dump($ipresult);
+    // var_dump($ipresult_country_is_nl);
+
     if (is_user_logged_in()) {
         return get_user_meta(get_current_user_id(), "bluem_idin_validated", true) == "1";
     } else {
@@ -1384,7 +1394,7 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
         $description =  "Identificatie " . $current_user->display_name ;
     }
 
-    if(is_user_logged_in()) {
+    if (is_user_logged_in()) {
 
         $debtorReference = $current_user->ID;
     } else {
@@ -1783,13 +1793,7 @@ function bluem_checkout_check_idin_validated()
     } else {
         $idin_identity_popup_thank_you_message = "Je leeftijd is geverifieerd.";
     }
-    // if (isset($options['idin_show_notice_in_checkout']) && $options['idin_show_notice_in_checkout']!=="") {
-    //     $idin_show_notice_in_checkout = $options['idin_show_notice_in_checkout'];
-    // } else {
-    // }
     $idin_show_notice_in_checkout = true;
-    // todo: remove these obsolete defaults
-
 
     $identify_button_html = "<br><a href='".
         home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true')."'

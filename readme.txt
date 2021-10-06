@@ -5,7 +5,7 @@ Tags: Bluem,Payments,iDIN,iDEAL,Incassomachtigen,woocommerce, bluem, payment gat
 Requires at least: 5.0
 Tested up to: 5.8.0
 Requires PHP: 7.0
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,8 @@ Please deactivate and delete any previous versions of this plug-in prior to 1.1 
 
 
 == Changelog ==
+- 1.3.1: Added IP checking for country-filtering
+- 1.3.0: Stability fixes, guest identification checkout improved; added import and export function of configuration
 - 1.2.19: Improved php library; added improved error handling and email reporting and prompts
 - 1.2.15: Added customziation options to the iDIN Dialogues; bugfixing
 - 1.2.9: Fixed iDIN redirect problem; improved idin Message formatting; Added user profile Bluem transactions and added viewing of payload within transaction requests; stability fixes; layout fixes

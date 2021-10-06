@@ -3,8 +3,7 @@
         <?php echo bluem_get_bluem_logo_html(48);?>
         Bluem &middot; Verzoeken</h1>
     
-    <?php bluem_render_nav_header('requests');?>
-
+    <?php bluem_render_nav_header('requests'); ?>
 
     <p>
         Klik op een verzoek voor meer gedetailleerde informatie.
