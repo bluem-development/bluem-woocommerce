@@ -52,8 +52,6 @@ if (bluem_module_enabled('idin')) {
     include_once __DIR__ . '/bluem-idin.php';
 }
 
-require_once __DIR__ .'/bluem-ipapi.php';
-
 // database functions
 require_once __DIR__ . '/bluem-db.php';
 

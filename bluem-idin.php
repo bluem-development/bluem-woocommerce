@@ -324,6 +324,16 @@ De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDea
 [Lees hier meer: https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/](https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/)'
     ],
 
+    'idin_enable_ip_country_filtering' => [
+        'key' => 'idin_enable_ip_country_filtering',
+        'title' => 'bluem_idin_enable_ip_country_filtering',
+        'name' => 'Identificatie filteren om alleen in Nederland plaats te vinden',
+        'description' => "Indien dit gegeven op ja staat, wordt er bij afrekenen gekeken naar de locatie van de gebruiker (gebaseerd op IP) en alleen gecheckt voor iDIN gegevens voor Nederlandse IP's.",
+        'type' => 'bool',
+        'default' => '1',
+    ],
+
+
     // 'idin_show_notice_in_checkout' => [
     //     'key' => 'idin_show_notice_in_checkout',
     //     'title' => 'bluem_idin_show_notice_in_checkout',
@@ -617,6 +627,14 @@ function bluem_woocommerce_settings_render_idin_show_notice_in_checkout()
 }
 
 
+
+
+function bluem_woocommerce_settings_render_idin_enable_ip_country_filtering()
+{
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option('idin_enable_ip_country_filtering')
+    );
+}
 
 
 
@@ -1187,15 +1205,13 @@ Respons van bank op leeftijdscontrole, indien van toepassing
 <select class="form-control" name="bluem_idin_report_agecheckresponse" id="bluem_idin_report_agecheckresponse">
 <option value="" <?php if ($ageCheckResponse == "") {
             echo "selected='selected'";
-}
-?>>Leeftijdcheck nog niet uitgevoerd</option>
-<option value="false" <?php 
+        } ?>>Leeftijdcheck nog niet uitgevoerd</option>
+<option value="false" <?php
 if ($ageCheckResponse == "false") {
-echo "selected='selected'";
-}
-?>>Leeftijd niet toereikend bevonden</option>
+    echo "selected='selected'";
+} ?>>Leeftijd niet toereikend bevonden</option>
 <option value="true" <?php if ($ageCheckResponse == "true") {
-echo "selected='selected'";
+    echo "selected='selected'";
 } ?>>
 Leeftijd toereikend bevonden
 </option>
@@ -1234,11 +1250,11 @@ class="regular-text" /><br />
 
     <select class="form-control" name="bluem_idin_validated" id="bluem_idin_validated">
         <option value="0" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "0") {
-            echo "selected='selected'";
-        } ?>>Identificatie nog niet uitgevoerd</option>
+    echo "selected='selected'";
+} ?>>Identificatie nog niet uitgevoerd</option>
 <option value="1" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "1") {
-            echo "selected='selected'";
-        } ?>>Identificatie succesvol uitgevoerd</option>
+    echo "selected='selected'";
+} ?>>Identificatie succesvol uitgevoerd</option>
 </select>
 <span class="description" style="display:block;">
 Status en Resultaten van iDIN requests
@@ -1319,15 +1335,27 @@ function bluem_idin_retrieve_results()
 function bluem_idin_user_validated()
 {
     global $current_user;
+
+
     
-    $ipresult_country_is_nl = bluem_ipapi_call_nlcheck();
+    if (isset($options['idin_enable_ip_country_filtering']) && $options['idin_enable_ip_country_filtering']!=="") {
+        $idin_enable_ip_country_filtering = $options['idin_enable_ip_country_filtering'];
+    } else {
+        $idin_enable_ip_country_filtering = "Je leeftijd is geverifieerd.";
+    }
     
-    // override international IP's  
-    if (!$ipresult_country_is_nl) {
-        return true;
-    } 
-    // var_dump($ipresult);
-    // var_dump($ipresult_country_is_nl);
+    $bluem_config = bluem_woocommerce_get_config();
+    $bluem_config->brandID = $bluem_config->IDINBrandID;
+    $bluem = new Bluem($bluem_config);
+
+    if ($idin_enable_ip_country_filtering) {
+
+        // override international IP's - don't validate idin when not NL
+        if (!$bluem->VerifyIPIsNetherlands()) {
+            return true;
+        }
+    }
+
 
     if (is_user_logged_in()) {
         return get_user_meta(get_current_user_id(), "bluem_idin_validated", true) == "1";
@@ -1395,7 +1423,6 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
     }
 
     if (is_user_logged_in()) {
-
         $debtorReference = $current_user->ID;
     } else {
         $debtorReference = "guest".date("Ymdhisu");
@@ -1527,8 +1554,8 @@ function bluem_idin_execute($callback=null, $redirect=true, $redirect_page = fal
 
 // https://www.businessbloomer.com/woocommerce-visual-hook-guide-checkout-page/
 // add_action(
-// 'woocommerce_review_order_before_payment', 
-// 'bluem_checkout_check_idin_validated' 
+// 'woocommerce_review_order_before_payment',
+// 'bluem_checkout_check_idin_validated'
 // );
 
 // CHECKOUT review message
@@ -1559,11 +1586,11 @@ function bluem_checkout_idin_notice()
     }
 
 
-    if (home_url() === "https://drankstunter.nl") {
-        if (!is_user_logged_in()) {
-            return;
-        }
-    }
+    // if (home_url() === "https://drankstunter.nl") {
+    //     if (!is_user_logged_in()) {
+    //         return;
+    //     }
+    // }
 
     $options = get_option('bluem_woocommerce_options');
 
@@ -1757,11 +1784,11 @@ function bluem_checkout_check_idin_validated()
         return;
     }
 
-    if (home_url() === "https://drankstunter.nl") {
-        if (!is_user_logged_in()) {
-            return;
-        }
-    }
+    // if (home_url() === "https://drankstunter.nl") {
+    //     if (!is_user_logged_in()) {
+    //         return;
+    //     }
+    // }
 
     if (!function_exists('bluem_idin_user_validated')) {
         return;
@@ -2008,6 +2035,32 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
 
     $options = get_option('bluem_woocommerce_options');
 
+    if (is_user_logged_in()) {
+        $request = bluem_db_get_most_recent_request($current_user->ID, "identity");
+    } else {
+        $request = false;
+
+        // TODO DAAN
+        // $order_id = $order->ID;
+        // $requests_links = bluem_db_get_links_for_order($order_id);
+        // $requests = [];
+        // foreach ($requests_links as $rql) {
+        //     $requests[] = bluem_db_get_request_by_id($rql->request_id);
+        // }
+
+        // if (isset($requests) && count($requests)>0) {
+        //     $request = $requests[0];
+        // } else {
+        //     // echo "No requests yet";
+        //     $pl = false;
+        // }
+    }
+    if ($request == false) {
+        return;
+    }
+
+    $pl = json_decode($request->payload);
+
     if (!array_key_exists('idin_add_field_in_order_emails', $options)
         || (array_key_exists('idin_add_field_in_order_emails', $options)
         && $options['idin_add_field_in_order_emails'] == "1")
@@ -2018,19 +2071,15 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
                 $validation_text = __('ja', 'bluem');
             // $validation_text .= " (Transactie ". get_user_meta($current_user->ID, 'bluem_idin_transaction_id', true).")";
             } else {
-                $validation_text = __('nee', 'bluem') ;
+                $validation_text = __('ja, als gastgebruiker', 'bluem');
             }
+        }
 
-            $fields['bluem_idin_validated'] = [
+        $fields['bluem_idin_validated'] = [
                 'label'=>__('Identiteit geverifieerd', 'bluem'),
                 'value'=> $validation_text
             ];
-        }
     }
-
-
-    $request = bluem_db_get_most_recent_request($current_user->ID, "identity");
-    $pl = json_decode($request->payload);
 
     if (!array_key_exists('idin_add_address_in_order_emails', $options)
         || (array_key_exists('idin_add_address_in_order_emails', $options)
