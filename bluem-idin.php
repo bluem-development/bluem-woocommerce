@@ -1208,11 +1208,11 @@ Respons van bank op leeftijdscontrole, indien van toepassing
         } ?>>Leeftijdcheck nog niet uitgevoerd</option>
 <option value="false" <?php
 if ($ageCheckResponse == "false") {
-    echo "selected='selected'";
-} ?>>Leeftijd niet toereikend bevonden</option>
+            echo "selected='selected'";
+        } ?>>Leeftijd niet toereikend bevonden</option>
 <option value="true" <?php if ($ageCheckResponse == "true") {
-    echo "selected='selected'";
-} ?>>
+            echo "selected='selected'";
+        } ?>>
 Leeftijd toereikend bevonden
 </option>
 </select>
@@ -1250,11 +1250,11 @@ class="regular-text" /><br />
 
     <select class="form-control" name="bluem_idin_validated" id="bluem_idin_validated">
         <option value="0" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "0") {
-    echo "selected='selected'";
-} ?>>Identificatie nog niet uitgevoerd</option>
+            echo "selected='selected'";
+        } ?>>Identificatie nog niet uitgevoerd</option>
 <option value="1" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true)== "1") {
-    echo "selected='selected'";
-} ?>>Identificatie succesvol uitgevoerd</option>
+            echo "selected='selected'";
+        } ?>>Identificatie succesvol uitgevoerd</option>
 </select>
 <span class="description" style="display:block;">
 Status en Resultaten van iDIN requests
@@ -1585,13 +1585,6 @@ function bluem_checkout_idin_notice()
         return;
     }
 
-
-    // if (home_url() === "https://drankstunter.nl") {
-    //     if (!is_user_logged_in()) {
-    //         return;
-    //     }
-    // }
-
     $options = get_option('bluem_woocommerce_options');
 
     if (isset($options['idin_scenario_active']) && $options['idin_scenario_active']!=="") {
@@ -1784,17 +1777,9 @@ function bluem_checkout_check_idin_validated()
         return;
     }
 
-    // if (home_url() === "https://drankstunter.nl") {
-    //     if (!is_user_logged_in()) {
-    //         return;
-    //     }
-    // }
-
     if (!function_exists('bluem_idin_user_validated')) {
         return;
     }
-
-
 
     $options = get_option('bluem_woocommerce_options');
     if (isset($options['idin_identify_button_inner']) && $options['idin_identify_button_inner']!=="") {
@@ -1820,11 +1805,12 @@ function bluem_checkout_check_idin_validated()
     } else {
         $idin_identity_popup_thank_you_message = "Je leeftijd is geverifieerd.";
     }
-    $idin_show_notice_in_checkout = true;
 
-    $identify_button_html = "<br><a href='".
-        home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true')."'
-        target='_self' class='button bluem-identify-button'>{$identify_button_inner}</a>";
+    // @todo: implement this later to allow the notice to be hidden
+    // but the checkout still be blocked. Right now this is
+    // connected due to the design of WooCOmmerce.
+    // Further research is needed to see if this is possible.
+    $idin_show_notice_in_checkout = true;
 
     if (isset($options['idin_scenario_active']) && $options['idin_scenario_active']!=="") {
         $scenario = (int) $options['idin_scenario_active'];
@@ -1834,7 +1820,6 @@ function bluem_checkout_check_idin_validated()
         $validated = bluem_idin_user_validated();
         $idin_logo_html = bluem_get_idin_logo_html();
         $validation_message = $idin_identity_topbar_no_verification_text;
-        ///Identificatie is vereist alvorens de bestelling kan worden afgerond.
 
         // above 0: any form of verification is required
         if (!$validated) {
@@ -1861,12 +1846,8 @@ function bluem_checkout_check_idin_validated()
                         true
                     );
                 } else {
-                    // for debugging
-                    // $_SESSION['bluem_idin_report_agecheckresponse'] = "true";
-
                     $ageCheckResponse = $_SESSION['bluem_idin_report_agecheckresponse'];
                 }
-                // var_dump($_SESSION['bluem_idin_report_agecheckresponse']);
 
                 // check on age based on response of AgeCheckRequest in user meta
                 // if ($scenario == 1)
@@ -1875,49 +1856,21 @@ function bluem_checkout_check_idin_validated()
                 if (isset($ageCheckResponse) && $ageCheckResponse !="") {
                     if ($ageCheckResponse == "true") {
 
-                    // TRUE Teruggekregen van de bank
+                        // TRUE Teruggekregen van de bank
                         $age_valid = true;
                     } else {
-                        // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
+                        // error: kon birthday niet inlezen, wel ingevuld bij de bank? niet valide dus
                         $validation_message = $idin_identity_topbar_invalid_verification_text;
-                        //"Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden.";
-
                         $age_valid = false;
                     }
                 } else {
-                    // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
+                    // error: kon birthday niet inlezen, wel ingevuld bij de bank? niet valide dus.
                     $validation_message = $idin_identity_topbar_no_verification_text;
                     // "We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure";
 
                     $age_valid = false;
                 }
-                // }
 
-                // check on age based on response of BirthDateRequest in user meta
-                // if ($scenario == 3)
-                // {
-                //     $min_age = bluem_idin_get_min_age();
-
-
-                //     // echo $results->BirthDateResponse; // prints 1975-07-25
-                //     if (isset($results->BirthDateResponse) && $results->BirthDateResponse!=="") {
-
-                //         $user_age = bluem_idin_get_age_based_on_date($results->BirthDateResponse);
-                //         if ($user_age < $min_age) {
-                //             $validation_message = "Je leeftijd, $user_age, is niet toereikend. De minimumleeftijd is {$min_age} jaar.
-                //             <br>Identificeer jezelf opnieuw of neem contact op.";
-                //             $age_valid = false;
-                //         } else {
-                //             $age_valid = true;
-                //         }
-                //     } else {
-
-                //         // ERROR KON BIRTHDAY NIET INLEZEN, WEL INGEVULD BIJ DE BANK? nIET VALIDE DUS
-                //         $validation_message = "We hebben je leeftijd niet kunnen opvragen bij de identificatie.<BR>
-                //         Neem contact op met de webshop support.";
-                //         $age_valid =false;
-                //     }
-                // }
                 if (!$age_valid) {
                     if ($idin_show_notice_in_checkout) {
                         wc_add_notice(
@@ -1945,13 +1898,6 @@ function bluem_checkout_check_idin_validated()
             );
         }
         return false;
-        // wc_add_notice(
-        //     $idin_logo_html . __(
-        //         "Verifieer eerst je identiteit via de mijn account pagina",
-        //         "woocommerce"
-        //     ),
-        //     'error'
-        // );
     }
     return;
 }
@@ -1970,14 +1916,13 @@ function bluem_checkout_check_idin_validated_filter()
     // override this function if you want to add a filter to block the checkout procedure based on the iDIN validation procedure being completed.
     // if you return true, the checkout is enabled. If you return false, the checkout is blocked and a notice is shown.
 
-    // example:
-    // if (!bluem_idin_user_validated()) {
-    //   return false;
-    // }
-
+    /* for example:
+        if (!bluem_idin_user_validated_extra_function()) {
+          return false;
+        }
+    */
     return true;
 }
-
 
 function bluem_idin_get_age_based_on_date($birthday_string)
 {
@@ -1991,7 +1936,9 @@ function bluem_idin_get_verification_scenario()
 {
     $options = get_option('bluem_woocommerce_options');
     $scenario = 0;
-    if (isset($options['idin_scenario_active']) && $options['idin_scenario_active']!=="") {
+    if (isset($options['idin_scenario_active']) 
+        && $options['idin_scenario_active']!==""
+    ) {
         $scenario = (int) $options['idin_scenario_active'];
     }
     return $scenario;
@@ -2000,13 +1947,16 @@ function bluem_idin_get_verification_scenario()
 function bluem_idin_get_min_age()
 {
     $options = get_option('bluem_woocommerce_options');
-    if (isset($options['idin_check_age_minimum_age']) && $options['idin_check_age_minimum_age']!=="") {
+    if (isset($options['idin_check_age_minimum_age']) 
+        && $options['idin_check_age_minimum_age']!==""
+    ) {
         $min_age = $options['idin_check_age_minimum_age'];
     } else {
         $min_age = 18;
     }
     return $min_age;
 }
+
 class BluemIdentityCategoryList
 {
     public $_cats = [];
@@ -2023,15 +1973,14 @@ class BluemIdentityCategoryList
     }
 }
 
-
 // https://wordpress.stackexchange.com/questions/314955/add-custom-order-meta-to-order-completed-email
 add_filter('woocommerce_email_order_meta_fields', 'bluem_order_email_identity_meta_data', 10, 3);
 
+// Note: only works for logged in users at the moment
 function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
 {
     global $current_user;
 
-    // Note: only works for logged in users at the moment
 
     $options = get_option('bluem_woocommerce_options');
 
@@ -2039,6 +1988,8 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order)
         $request = bluem_db_get_most_recent_request($current_user->ID, "identity");
     } else {
         $request = false;
+
+        // for now, don't add any information to an email if we can't find the request - for example if the guest session was not securely stored in an account
 
         // TODO DAAN
         // $order_id = $order->ID;
@@ -2276,6 +2227,12 @@ function bluem_idin_generate_notice(String $message ="", bool $button = false, b
     $html .= "</div>";
     $html .= "</div>";
     return $html;
+
+    /*
+    // $identify_button_html = "<br><a href='".
+    //     home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true')."'
+    //     target='_self' class='button bluem-identify-button'>{$identify_button_inner}</a>";
+*/
 }
 
 
