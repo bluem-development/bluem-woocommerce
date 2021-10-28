@@ -1336,20 +1336,20 @@ function bluem_idin_user_validated()
 {
     global $current_user;
 
-
-    
-    if (isset($options['idin_enable_ip_country_filtering']) && $options['idin_enable_ip_country_filtering']!=="") {
+    $options = get_option('bluem_woocommerce_options');
+    if (isset($options['idin_enable_ip_country_filtering'])
+        && $options['idin_enable_ip_country_filtering'] !== ""
+    ) {
         $idin_enable_ip_country_filtering = $options['idin_enable_ip_country_filtering'];
     } else {
-        $idin_enable_ip_country_filtering = "Je leeftijd is geverifieerd.";
+        $idin_enable_ip_country_filtering = true;
     }
-    
+
     $bluem_config = bluem_woocommerce_get_config();
     $bluem_config->brandID = $bluem_config->IDINBrandID;
     $bluem = new Bluem($bluem_config);
 
     if ($idin_enable_ip_country_filtering) {
-
         // override international IP's - don't validate idin when not NL
         if (!$bluem->VerifyIPIsNetherlands()) {
             return true;
@@ -1366,6 +1366,7 @@ function bluem_idin_user_validated()
             return false;
         }
     }
+    return false;
 }
 
 function bluem_get_IDINDescription_tags()
@@ -1383,12 +1384,12 @@ function bluem_get_IDINDescription_replaces()
 {
     global $current_user;
 
-    // @todo: add fallbacks if user is not logged in
+    // with fallbacks if user is not logged in
 
     return [
-        $current_user->display_name,    //'{gebruikersnaam}',
-        $current_user->user_email,      //'{email}',
-        $current_user->ID,              // {klantnummer}
+        isset($current_user->display_name)?$current_user->display_name:"",    //'{gebruikersnaam}',
+        isset($current_user->user_email)?$current_user->user_email:"",      //'{email}',
+        isset($current_user->ID)?$current_user->ID:"",              // {klantnummer}
         date("d-m-Y"),                  //'{datum}',
         date("d-m-Y H:i")               //'{datumtijd}',
     ];
@@ -1936,7 +1937,7 @@ function bluem_idin_get_verification_scenario()
 {
     $options = get_option('bluem_woocommerce_options');
     $scenario = 0;
-    if (isset($options['idin_scenario_active']) 
+    if (isset($options['idin_scenario_active'])
         && $options['idin_scenario_active']!==""
     ) {
         $scenario = (int) $options['idin_scenario_active'];
@@ -1947,7 +1948,7 @@ function bluem_idin_get_verification_scenario()
 function bluem_idin_get_min_age()
 {
     $options = get_option('bluem_woocommerce_options');
-    if (isset($options['idin_check_age_minimum_age']) 
+    if (isset($options['idin_check_age_minimum_age'])
         && $options['idin_check_age_minimum_age']!==""
     ) {
         $min_age = $options['idin_check_age_minimum_age'];
