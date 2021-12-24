@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.3.2
+ * Version: 1.3.4
  * Plugin URI: https://wordpress.org/plugins/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Bluem Payment Services
@@ -29,6 +29,9 @@ if (!defined('ABSPATH')) {
 
 global $bluem_db_version;
 $bluem_db_version = 1.3;
+
+// @todo require certain minimum php version before installing - force this before installing or updating the plugin
+
 
 require_once __DIR__ . '/bluem-compatibility.php';
 
@@ -63,16 +66,14 @@ require_once __DIR__ . '/bluem-interface.php';
  **/
 
 
-if (in_array(
+if (!in_array(
     'woocommerce/woocommerce.php',
     apply_filters(
         'active_plugins',
         get_option('active_plugins')
     )
 )
-) {
-
-} else {    // NO Woo found!
+) {    // NO Woo found!
     add_action('admin_notices', 'bluem_woocommerce_no_woocommerce_notice');
 }
 
@@ -154,7 +155,7 @@ function bluem_register_menu()
         'Import/export gegevens',
         'manage_options',
         'bluem_admin_importexport',
-        'bluem_admin_importexport',
+        'bluem_admin_importexport'
     );
 
     // add_submenu_page
@@ -225,7 +226,7 @@ function bluem_admin_requests_view_all()
     $_requests = $wpdb->get_results(
         "SELECT *
         FROM `bluem_requests`
-        ORDER BY `type` ASC, `timestamp` DESC"
+        ORDER BY `type` , `timestamp` DESC"
     );
 
     $requests['identity'] = [];
@@ -495,11 +496,11 @@ function bluem_woocommerce_register_settings()
         $payments_settings = bluem_woocommerce_get_payments_options();
         if (is_array($payments_settings) && count($payments_settings) > 0) {
             foreach ($payments_settings as $key => $ms) {
-                $fname = "bluem_woocommerce_settings_render_" . $key;
+                $key_name = "bluem_woocommerce_settings_render_" . $key;
                 add_settings_field(
                     $key,
                     $ms['name'],
-                    "bluem_woocommerce_settings_render_" . $key,
+                    $key_name,
                     "bluem_woocommerce",
                     "bluem_woocommerce_payments_section"
                 );
@@ -519,11 +520,11 @@ function bluem_woocommerce_register_settings()
         $idin_settings = bluem_woocommerce_get_idin_options();
         if (is_array($idin_settings) && count($idin_settings) > 0) {
             foreach ($idin_settings as $key => $ms) {
-                $fname = "bluem_woocommerce_settings_render_" . $key;
+                $key_name = "bluem_woocommerce_settings_render_" . $key;
                 add_settings_field(
                     $key,
                     $ms['name'],
-                    "bluem_woocommerce_settings_render_" . $key,
+                    $key_name,
                     "bluem_woocommerce",
                     "bluem_woocommerce_idin_section"
                 );
@@ -669,7 +670,10 @@ function bluem_woocommerce_settings_render_input($field)
 </div>
         <?php
     } elseif ($field['type'] == "textarea") {
-        $attrs = []; ?>
+        $attrs = []; 
+        
+        // @todo: add attrs from input
+        ?>
 <textarea class='bluem-form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
     name='bluem_woocommerce_options[<?php echo $key; ?>]'
     <?php foreach ($attrs as $akey => $aval) {
@@ -700,7 +704,7 @@ function bluem_woocommerce_settings_render_input($field)
 <?php if (isset($field['description']) && $field['description'] !== "") {
         ?>
 
-<br><label style='color:ddd;'
+<br><label style='color:#ddd;'
     for='bluem_woocommerce_settings_<?php echo $key; ?>'><?php echo $field['description']; ?></label>
 <?php
     } ?>
@@ -829,12 +833,11 @@ function bluem_error_report_email($data = [])
     // $pl = json_decode($data->payload);
 
     if (is_null($data)) {
-        return;
+        return false;
     }
 
     if (!isset($settings['error_reporting_email'])
-    || (isset($settings['error_reporting_email'])
-    && $settings['error_reporting_email'] == 1)
+    || $settings['error_reporting_email'] == 1
     ) {
         if ($debug) {
             echo "Sending error reporting email; Data:";
@@ -851,7 +854,7 @@ function bluem_error_report_email($data = [])
         $subject = "[".get_bloginfo('name')."] ";
         $subject .= "Notificatie Error in Bluem ";
 
-        $message = "<p>Error in Bluem plugin. {$author_name} <{$author_email}>,</p>";
+        $message = "<p>Error in Bluem plugin. $author_name <$author_email>,</p>";
         $message .= "<p>Data: <br>".json_encode($data)."</p>";
 
         ob_start();
@@ -866,32 +869,44 @@ function bluem_error_report_email($data = [])
             );
         }
         $message_p = ob_get_clean();
+
         $message.=$message_p;
         $message.="</p>";
-        $message.="<p>Ga naar de site op ".home_url()." om dit verzoek in detail te bekijken.</p>";
+        $message.= bluem_email_footer();
+        
         $message = nl2br($message);
 
         $headers = array('Content-Type: text/html; charset=UTF-8');
-
         if ($debug) {
-            echo "<HR> ".PHP_EOL;
-            var_dump($to);
-            var_dump($subject);
-            echo "<HR> ".PHP_EOL;
-            echo($message);
-            echo "<HR> ".PHP_EOL;
-            var_dump($headers);
-            die();
+            bluem_email_debug($to, $subject, $message, $headers);
         }
+        
         $mailing = wp_mail($to, $subject, $message, $headers);
 
         if ($mailing) {
             bluem_db_request_log($error_report_id, "Sent error report mail to ".$to);
-        } else {
-            // noope
-        }
+        } 
+        // or no mail sent 
+        
         return $mailing;
     }
+    return false;
+}
+
+function bluem_email_footer() : string 
+{
+    return "<p>Ga naar de site op ".home_url()." om dit verzoek in detail te bekijken.</p>";
+}
+
+function bluem_email_debug($to,$subject,$message,$headers) {
+    echo "<HR> ".PHP_EOL;
+    var_dump($to);
+    var_dump($subject);
+    echo "<HR> ".PHP_EOL;
+    echo($message);
+    echo "<HR> ".PHP_EOL;
+    var_dump($headers);
+    die();
 }
 
 
@@ -909,16 +924,15 @@ function bluem_transaction_notification_email(
     $pl = json_decode($data->payload);
 
     if (isset($pl->sent_notification) && $pl->sent_notification=="true") {
-        return;
+        return false;
     }
 
     if (is_null($data)) {
-        return;
+        return false;
     }
 
     if (!isset($settings['transaction_notification_email'])
-    || (isset($settings['transaction_notification_email'])
-    && $settings['transaction_notification_email'] == 1)
+    || $settings['transaction_notification_email'] == 1
     ) {
         if ($debug) {
             echo "Sending notification email for request. Data:";
@@ -938,7 +952,7 @@ function bluem_transaction_notification_email(
             $subject .=" › status: $data->status ";
         }
 
-        $message = "<p>Beste {$author_name},</p>";
+        $message = "<p>Beste $author_name,</p>";
         $message .= "<p>Er is een nieuw Bluem ".ucfirst($data->type)." verzoek verwerkt met de volgende gegevens:</p><p>";
         // $data->payload = json_decode($data->payload);
 
@@ -959,22 +973,16 @@ function bluem_transaction_notification_email(
             );
         }
         $message_p = ob_get_clean();
-        $message.=$message_p;
-        $message.="</p>";
-        $message.="<p>Ga naar de site op ".home_url()." om dit verzoek in detail te bekijken.</p>";
+        
+        $message.= $message_p."</p>";
+        $message.= bluem_email_footer();
+        
         $message = nl2br($message);
 
         $headers = array('Content-Type: text/html; charset=UTF-8');
 
         if ($debug) {
-            echo "<HR> ".PHP_EOL;
-            var_dump($to);
-            var_dump($subject);
-            echo "<HR> ".PHP_EOL;
-            echo($message);
-            echo "<HR> ".PHP_EOL;
-            var_dump($headers);
-            die();
+            bluem_email_debug($to, $subject, $message, $headers);
         }
         $mailing = wp_mail($to, $subject, $message, $headers);
 
@@ -990,6 +998,7 @@ function bluem_transaction_notification_email(
         }
         return $mailing;
     }
+    return false;
 }
 
 
@@ -1021,7 +1030,7 @@ function bluem_woocommerce_get_config()
 
     $values = get_option('bluem_woocommerce_options');
     foreach ($bluem_options as $key => $option) {
-        $config->$key = isset($values[$key]) ? $values[$key] : (isset($option['default']) ? $option['default'] : "");
+        $config->$key = $values[$key] ?? ($option['default'] ?? "");
     }
     return $config;
 }
@@ -1031,7 +1040,6 @@ function bluem_woocommerce_get_config()
 
 function bluem_woocommerce_modules_settings_section()
 {
-
     echo '<p>Verhoog je efficiëntie door alleen de diensten te activeren die jouw site wel nodig heeft.</p>';
 }
 
@@ -1121,22 +1129,22 @@ function bluem_generic_tabler($data)
 <table class="table widefat">
     <?php
     $i = 0;
-    foreach ($data as $key => $value) {
+    foreach ($data as $row) {
         if ($i == 0) {
             ?>
             <tr><?php
-                foreach ($value as $kkey => $vvalue) { ?>
+                foreach ($row as $row_key => $row_value) { ?>
                     <th>
-                        <?php echo $kkey; ?>
+                        <?php echo $row_key; ?>
                     </th><?php
                 } ?>
             </tr><?php
         } ?>
         <tr>
             <?php
-            foreach ($value as $kkey => $vvalue) { ?>
+            foreach ($row as $row_key => $row_value) { ?>
                 <td>
-                    <?php echo $vvalue; ?>
+                    <?php echo $row_value; ?>
                 </td><?php
             } ?>
         </tr><?php
@@ -1165,15 +1173,13 @@ function bluem_setup_incomplete()
         $valid_setup = true;
         $messages = [];
         if (!array_key_exists('senderID', $options)
-        || (array_key_exists('senderID', $options)
-        && $options['senderID'] === "")
+        || $options['senderID'] === ""
         ) {
             $messages[] = "SenderID mist";
             $valid_setup = false;
         }
         if (!array_key_exists('test_accessToken', $options)
-        || (array_key_exists('test_accessToken', $options)
-        && $options['test_accessToken'] === "")
+        ||  $options['test_accessToken'] === ""
         ) {
             $messages[] = "Test accessToken mist";
             $valid_setup = false;
@@ -1183,8 +1189,7 @@ function bluem_setup_incomplete()
         && $options['environment'] == "prod"
         && (
             !array_key_exists('production_accessToken', $options)
-        || (array_key_exists('production_accessToken', $options)
-        && $options['production_accessToken'] === "")
+        || $options['production_accessToken'] === ""
         )
         ) {
             $messages[] = "Production accessToken mist";
@@ -1194,10 +1199,7 @@ function bluem_setup_incomplete()
         if (bluem_module_enabled('mandates')
         && (
             !array_key_exists('brandID', $options)
-            || (
-                array_key_exists('brandID', $options)
-                && $options['brandID'] === ""
-            )
+            || $options['brandID'] === ""
         )
                 ) {
             $messages[] = "eMandates brandID mist";
@@ -1206,8 +1208,7 @@ function bluem_setup_incomplete()
 
         if (bluem_module_enabled('idin')
             && (!array_key_exists('IDINBrandID', $options)
-            || (array_key_exists('IDINBrandID', $options)
-            && $options['IDINBrandID'] === ""))
+            || $options['IDINBrandID'] === "")
         ) {
             $messages[] = "iDIN BrandID  mist";
             $valid_setup = false;
@@ -1284,11 +1285,11 @@ function bluem_order_requests_metabox_content()
 {
     global $post;
     $order_id = $post->ID;
-    $order = wc_get_order($order_id);
+//    $order = wc_get_order($order_id);
 
     // $requests1 = bluem_db_get_requests_by_keyvalue("order_id", $order_id);
     // $requests = array_merge($requests1,$requests2);
-// var_dump($order_id);
+    // var_dump($order_id);
 
     //  requests from links:
     $requests_links = bluem_db_get_links_for_order($order_id);
@@ -1311,7 +1312,7 @@ function bluem_order_requests_metabox_content()
  */
 function bluem_dialogs_getsimpleheader(): String
 {
-    return "<!DOCTYPE html><html><body><div
+    return "<!DOCTYPE html><html lang='nl'><body><div
     style='font-family:Arial,sans-serif;display:block;
     margin:40pt auto; padding:10pt 20pt; border:1px solid #eee;
     background:#fff; max-width:500px;'>".
@@ -1340,7 +1341,7 @@ function bluem_dialogs_getsimplefooter(Bool $include_link = true): String
  *
  * @return void
  */
-function bluem_dialogs_renderprompt(String $html, $include_link = true)
+function bluem_dialogs_renderprompt(String $html, bool $include_link = true)
 {
     echo bluem_dialogs_getsimpleheader();
     echo $html;
@@ -1368,10 +1369,12 @@ function bluem_admin_import_execute($data)
 
 function bluem_admin_importexport()
 {
+    $import_data = null;
     $messages = [];
+    
     if (isset($_POST['action']) && $_POST['action']=="import") {
         $decoded = true;
-
+        
         if (isset($_POST['import']) && $_POST['import']!=="") {
             $import_data = json_decode(
                 stripslashes(
@@ -1394,12 +1397,12 @@ function bluem_admin_importexport()
                 }
             }
             $messages[] = "Importeren is uitgevoerd: $sett_count instellingen aangepast.";
-            // exit;
-        } else {
+        } 
+//        else {
             // $error_msg = "Kon niet importeren;  de invoer is niet geldig.";
             // echo $error_msg;
             // $messages[] = $error_msg;
-        }
+//        }
     }
 
     $options = get_option('bluem_woocommerce_options');
@@ -1407,4 +1410,3 @@ function bluem_admin_importexport()
 
     include_once 'views/importexport.php';
 }
-

@@ -10,3 +10,4 @@ bluem-php
 bluem-php/*
 composer.lock
 bluem.zip
+/.phpunit.result.cache

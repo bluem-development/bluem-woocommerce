@@ -23,9 +23,9 @@ If you are having trouble running the above commands, please contact us. We are 
 
 Use the **Settings** -> **Bluem** page to configure the plug-in completely.
 
-Please note the following:
+**Please note:** You have to activate the specific parts of the plug-in that you want to use. All separate services can be activated independently. 
+By default, they are not activated.
 
-- You have to activate the specific parts of the plug-in that you want to use. All separate services are indvidiually activatable. By default, they are not activated.
 
 
 # Important usage features
@@ -77,8 +77,7 @@ function nextdeli_administratie_bluem_add_customer_name_to_payment(
 }
 ```
 
-## further process  IDIN response
-
+## How to further process the IDIN response
 
 by default, idin shortcode responses are simply saved but not validated to a user database. 
 
@@ -113,18 +112,18 @@ These results can be obtained as an object by using the following PHP code in a 
 ```
 ## Blocking a checkout procedure when using iDIN shortcodes
 
-Add a filter for id `bluem_checkout_check_idin_validated_fiter` if you want to add a filter to block the checkout procedure based on the IDIN validation procedure being completed.
+Add a filter for id `bluem_checkout_check_idin_validated_filter` if you want to add a filter to block the checkout procedure based on the IDIN validation procedure being completed.
 If the injected function returns true, the checkout is enabled. If you return false, the checkout is blocked and a notice is shown.
 
 Example that would block checkout if validation is not executed:
 ```php
 add_filter(
-    'bluem_checkout_check_idin_validated_fiter', 
-    'my_plugin_check_idin_validated_fiter_function', 
+    'bluem_checkout_check_idin_validated_filter', 
+    'my_plugin_check_idin_validated_filter_function', 
     10, 
     1
 );
-function my_plugin_check_idin_validated_fiter_function()
+function my_plugin_check_idin_validated_filter_function()
 {
     if (!bluem_idin_user_validated()) {
       return false;
@@ -134,10 +133,13 @@ function my_plugin_check_idin_validated_fiter_function()
 ```
 By default, this is disabled as it is quite context specific if the webshop is strict.
 
+
 ## important notes when compiling:
 
 - delete `vendor/daanrijpkema/bluem-php/examples` to be sure as it is not necessary in production.
 
 
+
+
 # Support
-If you have any questions, please send an email to [info@daanrijpkema.com](mailto:info@daanrijpkema.com).
+If you have any questions, please email [info@daanrijpkema.com](mailto:info@daanrijpkema.com).
