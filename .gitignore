@@ -11,3 +11,5 @@ bluem-php/*
 composer.lock
 bluem.zip
 /.phpunit.result.cache
+.idea
+/copyscript.sh
