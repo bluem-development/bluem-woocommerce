@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php"
+        backupGlobals="false"
+        colors="true" convertErrorsToExceptions="true" verbose="true" stopOnFailure="false"
+        convertNoticesToExceptions="true" convertWarningsToExceptions="true">
+        <testsuites>
+                <testsuite name="Bluem\Woo\TestSuite">
+                    <directory>tests</directory>
+                </testsuite>
+        </testsuites>
+</phpunit>

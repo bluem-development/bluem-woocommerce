@@ -1,9 +1,9 @@
 {
     "name": "daanrijpkema/bluem-woocommerce",
     "license": "GPL-2.0-or-later",
-    "description": "A robust code template for creating a standards-compliant WordPress plugin.",
+    "description": "WordPress and WooCommerce plug-in for identity, payment and mandate services.",
     "keywords": [
-        "wordpress", "wp", "plugin template"
+        "bluem", "payment", "identity", "emandates", "woocommerce", "idin","iban-name-check","iban"
     ],
     "support": {
         "issues": "https://github.com/daanrijpkema/bluem-woocommerce"
@@ -15,6 +15,7 @@
         "symfony/polyfill-php72": "^1.22",
         "symfony/polyfill-mbstring": "v1.19.0",
         "symfony/polyfill-php80": "^1.23",
+        "psr/log":"1.1.4",
         "erusev/parsedown": "^1.7",
         "ext-json": "^8.0"
     },
