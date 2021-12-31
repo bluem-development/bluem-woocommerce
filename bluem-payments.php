@@ -441,7 +441,7 @@ function bluem_init_payment_gateway_class()
                         'message'=>$errormessage
                     ]
                 );
-                bluem_dialogs_renderprompt($errormessage);
+                bluem_dialogs_render_prompt($errormessage);
                 exit;
             }
             $entranceCode = sanitize_text_field($_GET['entranceCode']);
@@ -457,7 +457,7 @@ function bluem_init_payment_gateway_class()
                         'message'=>$errormessage
                     ]
                 );
-                bluem_dialogs_renderprompt($errormessage);
+                bluem_dialogs_render_prompt($errormessage);
                 exit;
             }
             $user_id = $order->get_user_id();
@@ -472,7 +472,7 @@ function bluem_init_payment_gateway_class()
                         'message'=>$errormessage
                     ]
                 );
-                bluem_dialogs_renderprompt($errormessage);
+                bluem_dialogs_render_prompt($errormessage);
                 die();
             }
 
@@ -490,7 +490,7 @@ function bluem_init_payment_gateway_class()
                         'response'=>$response
                     ]
                 );
-                bluem_dialogs_renderprompt($errormessage);
+                bluem_dialogs_render_prompt($errormessage);
                 exit;
             }
 
@@ -546,7 +546,7 @@ function bluem_init_payment_gateway_class()
                         'message'=>$errormessage
                     ]
                 );
-                bluem_dialogs_renderprompt(
+                bluem_dialogs_render_prompt(
                     $errormessage
                 );
                 exit;
@@ -557,14 +557,14 @@ function bluem_init_payment_gateway_class()
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
-                bluem_dialogs_renderprompt("Je hebt de betaling geannuleerd");
+                bluem_dialogs_render_prompt("Je hebt de betaling geannuleerd");
                 // terug naar order pagina om het opnieuw te proberen?
                 exit;
             } elseif ($statusCode === "Open" || $statusCode == "Pending") {
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
-                bluem_dialogs_renderprompt("De betaling is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
+                bluem_dialogs_render_prompt("De betaling is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
                 // callback pagina beschikbaar houden om het opnieuw te proberen?
                 // is simpelweg SITE/wc-api/bluem_callback?transactionID=$transactionID
                 exit;
@@ -574,14 +574,14 @@ function bluem_init_payment_gateway_class()
                     $request_from_db->id
                 );
                 
-                bluem_dialogs_renderprompt("Fout: De betaling of het verzoek daartoe is verlopen");
+                bluem_dialogs_render_prompt("Fout: De betaling of het verzoek daartoe is verlopen");
                 exit;
             } else {
                 $order->update_status('failed', __('Betaling is gefaald: fout of onbekende status', 'wc-gateway-bluem'));
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
-                bluem_dialogs_renderprompt("Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status");
+                bluem_dialogs_render_prompt("Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status");
                 exit;
             }
         }

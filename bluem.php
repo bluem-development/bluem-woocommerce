@@ -539,6 +539,7 @@ add_action('show_user_profile', 'bluem_woocommerce_show_general_profile_fields',
 
 function bluem_woocommerce_show_general_profile_fields()
 {
+    // @todo: create template
     ?>
     <h2>
     <?php echo bluem_get_bluem_logo_html(48); ?>
@@ -623,6 +624,8 @@ function bluem_woocommerce_settings_render_input($field)
     }
 
     if ($field['type'] == "select") {
+        
+        // @todo stop using inline html and use a template engine here, like latte
         ?>
 
 
@@ -704,7 +707,7 @@ function bluem_woocommerce_settings_render_input($field)
 <?php if (isset($field['description']) && $field['description'] !== "") {
         ?>
 
-<br><label style='color:#ddd;'
+<br><label style='color:#333;'
     for='bluem_woocommerce_settings_<?php echo $key; ?>'><?php echo $field['description']; ?></label>
 <?php
     } ?>
@@ -1107,6 +1110,10 @@ function bluem_woocommerce_modules_render_generic_activation($module)
 function bluem_module_enabled($module)
 {
     $bluem_options = get_option('bluem_woocommerce_options');
+    
+    if($bluem_options===false) {
+        return false;
+    }
     if ($bluem_options!==false
         && !isset($bluem_options["{$module}_enabled"])
         || $bluem_options["{$module}_enabled"]=="1"
@@ -1341,7 +1348,7 @@ function bluem_dialogs_getsimplefooter(Bool $include_link = true): String
  *
  * @return void
  */
-function bluem_dialogs_renderprompt(String $html, bool $include_link = true)
+function bluem_dialogs_render_prompt(String $html, bool $include_link = true)
 {
     echo bluem_dialogs_getsimpleheader();
     echo $html;
@@ -1349,15 +1356,18 @@ function bluem_dialogs_renderprompt(String $html, bool $include_link = true)
 }
 
 
-
-
+/**
+ * Perform import action
+ * @param $data
+ *
+ * @return array
+ */
 function bluem_admin_import_execute($data)
 {
     $cur_options = get_option('bluem_woocommerce_options');
 
     $results = [];
     foreach ($data as $k => $v) {
-        // echo "updated option {$k} to value &quot;{$v}&quot;<br>";
         $cur_options[$k] = $v;
         $results[$k] = true;
     }
@@ -1367,6 +1377,10 @@ function bluem_admin_import_execute($data)
 }
 
 
+/**
+ * Render the admin Import / Export page 
+ * @return void
+ */
 function bluem_admin_importexport()
 {
     $import_data = null;
@@ -1397,16 +1411,17 @@ function bluem_admin_importexport()
                 }
             }
             $messages[] = "Importeren is uitgevoerd: $sett_count instellingen aangepast.";
-        } 
-//        else {
-            // $error_msg = "Kon niet importeren;  de invoer is niet geldig.";
-            // echo $error_msg;
-            // $messages[] = $error_msg;
-//        }
+        }
     }
 
     $options = get_option('bluem_woocommerce_options');
-    $options_json = json_encode($options);
-
+    
+    $options_json = "";
+    if ($options !== false) {
+        $options_json = json_encode($options);
+    }
+    
+    // @todo: improve this by creating a renderer function and passing the renderdata
+    // @todo: then generalise this to other parts of the plugin
     include_once 'views/importexport.php';
 }

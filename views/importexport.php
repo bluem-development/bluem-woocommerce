@@ -45,7 +45,7 @@
 
     <h2>Exporteren</h2>
     <p>
-        Copy-paste de onderstaande informatie om je instellingen te xporteren.
+        Copy-paste de onderstaande informatie om je instellingen te exporteren.
     </p>
     <blockquote>
         <pre class="bluem_port_input"><?php echo $options_json;?>

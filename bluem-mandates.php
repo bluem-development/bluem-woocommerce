@@ -747,7 +747,7 @@ function bluem_init_mandate_gateway_class()
                         'message'=>$errormessage
                     ]
                 );
-                bluem_dialogs_renderprompt($errormessage);
+                bluem_dialogs_render_prompt($errormessage);
                 exit;
             }
 
@@ -760,7 +760,7 @@ function bluem_init_mandate_gateway_class()
                         'message'=>$errormessage
                     ]
                 );
-                bluem_dialogs_renderprompt($errormessage);
+                bluem_dialogs_render_prompt($errormessage);
                 exit;
             }
             $mandateID = $_GET['mandateID'];
@@ -775,7 +775,7 @@ function bluem_init_mandate_gateway_class()
                         'message'=>$errormessage
                     ]
                 );
-                bluem_dialogs_renderprompt($errormessage);
+                bluem_dialogs_render_prompt($errormessage);
                 exit;
             }
 
@@ -803,7 +803,7 @@ function bluem_init_mandate_gateway_class()
                         'message'=>$errormessage
                     ]
                 );
-                bluem_dialogs_renderprompt($errormessage);
+                bluem_dialogs_render_prompt($errormessage);
                 exit;
             }
 
@@ -850,7 +850,7 @@ function bluem_init_mandate_gateway_class()
                     true, $mandateID, $entranceCode
                 );
             } elseif ($statusCode ==="Pending") {
-                bluem_dialogs_renderprompt(
+                bluem_dialogs_render_prompt(
                     "<p>Uw machtiging wacht op goedkeuring van
                     een andere ondertekenaar namens uw organisatie.<br>
                     Deze persoon dient in te loggen op internet bankieren
@@ -868,11 +868,11 @@ function bluem_init_mandate_gateway_class()
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
-                bluem_dialogs_renderprompt("Je hebt de mandaat ondertekening geannuleerd");
+                bluem_dialogs_render_prompt("Je hebt de mandaat ondertekening geannuleerd");
                 // terug naar order pagina om het opnieuw te proberen?
                 exit;
             } elseif ($statusCode === "Open" || $statusCode == "Pending") {
-                bluem_dialogs_renderprompt("De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
+                bluem_dialogs_render_prompt("De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
                 // callback pagina beschikbaar houden om het opnieuw te proberen?
                 // is simpelweg SITE/wc-api/bluem_callback?mandateID=$mandateID
                 exit;
@@ -889,7 +889,7 @@ function bluem_init_mandate_gateway_class()
                     $request_from_db->id
                 );
 
-                bluem_dialogs_renderprompt(
+                bluem_dialogs_render_prompt(
                     "Fout: De mandaat of het verzoek daartoe is verlopen"
                 );
                 exit;
@@ -911,7 +911,7 @@ function bluem_init_mandate_gateway_class()
                     ]
                 );
 
-                bluem_dialogs_renderprompt(
+                bluem_dialogs_render_prompt(
                    $errormessage
                 );
                 exit;
@@ -1001,7 +1001,7 @@ function bluem_init_mandate_gateway_class()
 
                             $url = $order->get_checkout_payment_url();
                             $order_total_plus_string = str_replace(".", ",", ("" . round($order_total_plus, 2)));
-                            bluem_dialogs_renderprompt(
+                            bluem_dialogs_render_prompt(
                                 "<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
                             <p>De geschatte factuurwaarde van jouw bestelling is EUR {$order_total_plus_string}. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor 'onbeperkt' te kiezen.</p>" .
                                     "<p><a href='{$url}' target='_self'>Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>",

@@ -99,7 +99,7 @@ function bluem_mandate_shortcode_execute()
                     'message'=>$msg
                 ]
             );
-            bluem_dialogs_renderprompt($msg);
+            bluem_dialogs_render_prompt($msg);
             exit;
         }
 
@@ -190,7 +190,7 @@ function bluem_mandate_mandate_shortcode_callback()
                 'message'=>$errormessage
             ]
         );
-        bluem_dialogs_renderprompt($errormessage);
+        bluem_dialogs_render_prompt($errormessage);
         exit;
     }
 
@@ -212,7 +212,7 @@ function bluem_mandate_mandate_shortcode_callback()
                 'message'=>$errormessage
             ]
         );
-        bluem_dialogs_renderprompt($errormessage);
+        bluem_dialogs_render_prompt($errormessage);
         exit;
     }
     $statusUpdateObject = $response->EMandateStatusUpdate;
