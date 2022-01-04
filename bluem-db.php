@@ -251,7 +251,7 @@ function bluem_db_get_request_by_id(string $request_id)
         'id',
         $request_id
     );
-    return $res ?? false;
+    return $res[0] ?? false;
 }
 
 
