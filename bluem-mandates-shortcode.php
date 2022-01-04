@@ -147,7 +147,6 @@ function bluem_mandate_shortcode_execute()
     exit;
 }
 
-            /* ******** CALLBACK ****** */
 add_action('parse_request', 'bluem_mandate_mandate_shortcode_callback');
 /**
  * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Session, sent for a SUD to the Bluem API.
@@ -158,7 +157,6 @@ function bluem_mandate_mandate_shortcode_callback()
 {
     global $current_user;
 
-
     if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/mandate_shortcode_callback") === false) {
         return;
     }
@@ -166,15 +164,24 @@ function bluem_mandate_mandate_shortcode_callback()
     $bluem_config = bluem_woocommerce_get_config();
     $bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_mandates_callback');
 
-    $bluem = new Bluem($bluem_config);
+    try {
+        $bluem = new Bluem( $bluem_config );
+    } catch ( Exception $e ) {
+        // @todo: deal with incorrectly setup Bluem 
+    }
 
     // this is leading for shortcode approaches
     $validated = get_user_meta($current_user->ID, "bluem_mandates_validated", true);
     
     // @todo: .. then use request-based approach soon as first check, then fallback to user meta check.
-    
-    $mandateID = get_user_meta($current_user->ID, "bluem_latest_mandate_id", true);
-    $entranceCode = get_user_meta($current_user->ID, "bluem_latest_mandate_entrance_code", true);
+    if(is_user_logged_in()) {
+        
+        $mandateID = get_user_meta($current_user->ID, "bluem_latest_mandate_id", true);
+        $entranceCode = get_user_meta($current_user->ID, "bluem_latest_mandate_entrance_code", true);
+    } else {
+        $mandateID = $_SESSION['bluem_mandateId'];
+        $entranceCode = $_SESSION['bluem_entranceCode'];
+    }
 
     if (!isset($_GET['mandateID'])) {
         if ($bluem_config->thanksPageURL !== "") {
@@ -194,12 +201,24 @@ function bluem_mandate_mandate_shortcode_callback()
         exit;
     }
 
-    // $entranceCode = $_SESSION['bluem_entranceCode'];
+//     $entranceCode = $_SESSION['bluem_entranceCode'];
     if (!isset($entranceCode) || $entranceCode == "") {
-        echo "Fout: Entrancecode is niet set; kan dus geen mandaat opvragen";
-        die();
+        $errormessage= "Fout: Entrancecode is niet set; kan dus geen mandaat opvragen";
+        bluem_error_report_email(
+            [
+                'service'=>'mandates',
+                'function'=>'shortcode_callback',
+                'message'=>$errormessage
+            ]
+        );
+        bluem_dialogs_render_prompt($errormessage);
+        exit;
     }
-
+//    var_dump($_SESSION);
+//    var_dump($entranceCode);
+//    var_dump($mandateID);
+//    die();
+    
     $response = $bluem->MandateStatus($mandateID, $entranceCode);
 
     if (!$response->Status()) {
@@ -297,11 +316,10 @@ function bluem_mandate_mandate_shortcode_callback()
     }
 }
 
-
-/* ********* RENDERING THE STATIC FORM *********** */
 add_shortcode('bluem_machtigingsformulier', 'bluem_mandateform');
 
 /**
+ * Rendering the static form
  * Shortcode: `[bluem_machtigingsformulier]`
  *
  * @return void
@@ -326,24 +344,37 @@ function bluem_mandateform()
         return '';
     }
 
-    $validated = get_user_meta($current_user->ID, "bluem_mandates_validated", true);
-    $mandateID = get_user_meta($current_user->ID, "bluem_latest_mandate_id", true);
-    $validated = get_user_meta($current_user->ID, "bluem_mandates_validated", true);
-
-    if ((int)$validated!==1) {
-        echo '<form action="' . home_url('bluem-woocommerce/mandate_shortcode_execute') . '" method="post">';
-        echo '<p>Je moet nog een automatische incasso machtiging afgeven.';
-        // echo $bluem_config->debtorReferenceFieldName . ' (verplicht) <br/>';
-        echo '<input type="hidden" name="bluem_debtorReference" value="' .$current_user->ID. '"  />';
-        echo '</p>';
-        echo '<p>';
-        echo '<p><input type="submit" name="bluem-submitted"  class="bluem-woocommerce-button bluem-woocommerce-button-mandates" value="Machtiging proces starten.."></p>';
-        echo '</form>';
+    $validated = 0;
+    
+    if(is_user_logged_in()) {
+        $mandateID = get_user_meta($current_user->ID, "bluem_latest_mandate_id", true);
+        $validated = get_user_meta($current_user->ID, "bluem_mandates_validated", true);
     } else {
-        echo "Bedankt voor je machtiging met machtiging ID: {$mandateID}";
+        if(isset($_SESSION['bluem_mandateId']) && $_SESSION['bluem_mandateId']!=="") {
+            $validated = 1;
+            $mandateID = $_SESSION['bluem_mandateId'];
+        }
     }
 
-    return ob_get_clean();
+    if ($validated===1) {
+        return "Bedankt voor je machtiging met machtiging ID: <span class='bluem-mandate-id'>$mandateID</span>";
+    } else {
+        $html = '<form action="' . home_url('bluem-woocommerce/mandate_shortcode_execute') . '" method="post">';
+        $html .= '<p>Je moet nog een automatische incasso machtiging afgeven.';
+        // $html= $bluem_config->debtorReferenceFieldName . ' (verplicht) <br/>';
+        $html .= '<input type="hidden" name="bluem_debtorReference" value="' .$current_user->ID. '"  />';
+        $html .= '</p><p>
+            <input 
+            type="submit" 
+            name="bluem-submitted" 
+             class="bluem-woocommerce-button bluem-woocommerce-button-mandates" 
+             value="Machtiging proces starten..">
+             </p>';
+        $html .= '</form>';
+    return $html;
+    //ob_get_clean();
+    }
+
 }
 
 add_filter('bluem_woocommerce_mandate_shortcode_allow_user', 'bluem_woocommerce_mandate_shortcode_allow_user_function', 10, 1);

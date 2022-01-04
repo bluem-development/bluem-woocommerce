@@ -929,6 +929,11 @@ function bluem_transaction_notification_email(
     $settings = get_option('bluem_woocommerce_options');
 
     $data = bluem_db_get_request_by_id($request_id);
+    if($data === false) {
+        return false;
+    }
+    $data = (object)$data;
+
     $pl = json_decode($data->payload);
 
     if (isset($pl->sent_notification) && $pl->sent_notification=="true") {
