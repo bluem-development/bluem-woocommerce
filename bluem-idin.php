@@ -723,62 +723,72 @@ function bluem_idin_form()
     }
 
     // ob_start();
+    $html ='';
+    
+    if(is_user_logged_in()) {
+        $validated = get_user_meta(get_current_user_id(), "bluem_idin_validated", true) == "1";
+    } else {
 
-    $r ='';
-    $validated = get_user_meta(get_current_user_id(), "bluem_idin_validated", true) == "1";
+        if(isset($_SESSION['bluem_idin_validated']) && $_SESSION['bluem_idin_validated'] === true) {
+            $validated = true;
+        }
+        // @todo: handle $_SESSION['bluem_idin_report_agecheckresponse'] if necessary
+        
+    }
+    
 
     if ($validated) {
         if (isset($bluem_config->IDINSuccessMessage)) {
-            $r.= "<p>" . $bluem_config->IDINSuccessMessage . "</p>";
+            $html.= "<p>" . $bluem_config->IDINSuccessMessage . "</p>";
         } else {
-            $r.= "<p>Uw identificatieverzoek is ontvangen. Hartelijk dank.</p>";
+            $html.= "<p>Uw identificatieverzoek is ontvangen. Hartelijk dank.</p>";
         }
 
-        // $r.= "Je hebt de identificatieprocedure eerder voltooid. Bedankt<br>";
+        // $html.= "Je hebt de identificatieprocedure eerder voltooid. Bedankt<br>";
         // $results = bluem_idin_retrieve_results();
-        // $r.= "<pre>";
+        // $html.= "<pre>";
         // foreach ($results as $k => $v) {
         //     if (!is_object($v)) {
-        //         $r.= "$k: $v";
+        //         $html.= "$k: $v";
         //     } else {
         //         foreach ($v as $vk => $vv) {
-        //             $r.= "\t$vk: $vv";
-        //             $r.="<BR>";
+        //             $html.= "\t$vk: $vv";
+        //             $html.="<BR>";
         //         }
         //     }
-        //     $r.="<BR>";
+        //     $html.="<BR>";
         // }
         // // var_dump($results);
-        // $r.= "</pre>";
+        // $html.= "</pre>";
         // return;
-        return $r;
+        return $html;
     } else {
         if (isset($_GET['result']) && sanitize_text_field($_GET['result']) == "false") {
-            $r.= '<div class="">';
+            $html.= '<div class="">';
 
             if (isset($bluem_config->IDINErrorMessage)) {
-                $r.= "<p>" . $bluem_config->IDINErrorMessage . "</p>";
+                $html.= "<p>" . $bluem_config->IDINErrorMessage . "</p>";
             } else {
-                $r.= "<p>Er is een fout opgetreden. Uw verzoek is geannuleerd.</p>";
+                $html.= "<p>Er is een fout opgetreden. Uw verzoek is geannuleerd.</p>";
             }
 
             if (isset($_SESSION['BluemIDINTransactionURL']) && $_SESSION['BluemIDINTransactionURL'] !== "") {
                 $retryURL = $_SESSION['BluemIDINTransactionURL'];
-                $r.= "<p><a href='$retryURL' target='_self' alt='probeer opnieuw' class='button'>Probeer het opnieuw</a></p>";
+                $html.= "<p><a href='$retryURL' target='_self' alt='probeer opnieuw' class='button'>Probeer het opnieuw</a></p>";
             }
-            $r.= '</div>';
+            $html.= '</div>';
         } else {
-            $r.= "Je hebt de identificatieprocedure nog niet voltooid.<br>";
-            $r.= '<form action="' . home_url('bluem-woocommerce/idin_execute') . '" method="post">';
+            $html.= "Je hebt de identificatieprocedure nog niet voltooid.<br>";
+            $html.= '<form action="' . home_url('bluem-woocommerce/idin_execute') . '" method="post">';
             // @todo add custom fields
-            $r.= '<p>';
-            $r.= '<p><input type="submit" name="bluem_idin_submitted" class="bluem-woocommerce-button bluem-woocommerce-button-idin" value="Identificeren.."></p>';
-            $r.= '</form>';
+            $html.= '<p>';
+            $html.= '<p><input type="submit" name="bluem_idin_submitted" class="bluem-woocommerce-button bluem-woocommerce-button-idin" value="Identificeren.."></p>';
+            $html.= '</form>';
         }
     }
 
 
-    return $r;
+    return $html;
     //ob_get_clean();
 }
 
