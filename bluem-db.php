@@ -4,8 +4,11 @@
 register_activation_hook(__FILE__, 'bluem_db_create_requests_table');
 // no need for a deactivation hook yet.
 
-
-function bluem_db_create_requests_table()
+/**
+ * Initialize a database table for the requests.
+ * @return void
+ */
+function bluem_db_create_requests_table() : void
 {
     global $wpdb, $bluem_db_version;
     $installed_ver = (float)get_option("bluem_db_version");
@@ -135,14 +138,20 @@ function bluem_db_request_log($request_id, $description, $log_data = [])
     );
     return $insert_result;
 }
+
+/**
+ * @param $request_id
+ * @param $request_object
+ *
+ * @return bool
+ */
 function bluem_db_update_request($request_id, $request_object)
 {
     global $wpdb;
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
-
-
-    if (!bluem_db_validated_request_wellformed($request_object)) {
+    
+    if (!bluem_db_validated_request_well_formed($request_object)) {
         return false;
     }
     $update_result = $wpdb->update(
@@ -168,11 +177,10 @@ function bluem_db_update_request($request_id, $request_object)
  * check if all fields are well-formed
  *
  * @param [type] $request
- * @return void
+ * @return bool
  */
-function bluem_db_validated_request_wellformed($request)
+function bluem_db_validated_request_well_formed($request) : bool
 {
-
     // @todo: check all available fields on their format
     return true;
 }
@@ -201,14 +209,17 @@ function bluem_db_validated_request($request)
     // payload
 
     // and well formed
-    if (!bluem_db_validated_request_wellformed($request)) {
+    if (!bluem_db_validated_request_well_formed($request)) {
         return false;
     }
 
     return true;
 }
 
-
+/**
+ * Get fields within any request
+ * @return string[]
+ */
 function bluem_db_get_request_fields()
 {
     return [
@@ -226,13 +237,21 @@ function bluem_db_get_request_fields()
     ];
 }
 
-function bluem_db_get_request_by_id($request_id)
+/**
+ * Get the request for a given ID, or false if not found
+ * @param $request_id
+ *
+ * @return bool|object
+ */
+function bluem_db_get_request_by_id(string $request_id)
 {
+    // @todo change to only accept int for $request_id
+    
     $res = bluem_db_get_requests_by_keyvalue(
         'id',
         $request_id
     );
-    return $res!==false && count($res)>0?$res[0]:false;
+    return $res ?? false;
 }
 
 

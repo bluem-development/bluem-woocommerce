@@ -555,7 +555,7 @@ function bluem_woocommerce_show_general_profile_fields()
     <td>
     Ga naar de
     <a href="<?php echo home_url("wp-admin/options-general.php?page=bluem"); ?>">
-    instellingen</a> om het gedrag van elk Bluem onderdeel te wijziggen.
+    instellingen</a> om het gedrag van elk Bluem onderdeel te wijzigen.
     </td>
     </tr>
     </table>
@@ -673,12 +673,13 @@ function bluem_woocommerce_settings_render_input($field)
 </div>
         <?php
     } elseif ($field['type'] == "textarea") {
-        $attrs = []; 
-        
-        // @todo: add attrs from input
+        $attrs = [
+            'id'=>"bluem_woocommerce_settings_$key",
+            'class'=>"bluem-form-control",
+            'name'=>"bluem_woocommerce_options[$key]",
+        ];
         ?>
-<textarea class='bluem-form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
-    name='bluem_woocommerce_options[<?php echo $key; ?>]'
+<textarea  
     <?php foreach ($attrs as $akey => $aval) {
             echo "$akey='$aval' ";
         } ?>><?php echo(isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?></textarea>
@@ -716,9 +717,10 @@ function bluem_woocommerce_settings_render_input($field)
 <?php
 }
 
-
-function bluem_woocommerce_get_core_options()
-{
+/**
+ * @return array
+ */
+function bluem_woocommerce_get_core_options(): array {
     return [
         'environment' => [
             'key' => 'environment',
@@ -820,9 +822,9 @@ function bluem_woocommerce_get_core_options()
 
 /**
  * Error reporting email functionality
+ * @return bool
  */
-function bluem_error_report_email($data = [])
-{
+function bluem_error_report_email($data = []): bool {
     $debug = false;
 
     $error_report_id = date("Ymdhis") . '_'. rand(0, 512);
@@ -915,10 +917,13 @@ function bluem_email_debug($to,$subject,$message,$headers) {
 
 /**
  * This function executes a notification mail, if this is set as such in the settings.
+ * @param $request_id
+ *
+ * @return bool
  */
 function bluem_transaction_notification_email(
     $request_id
-) {
+): bool {
     $debug = false;
 
     $settings = get_option('bluem_woocommerce_options');
@@ -1005,8 +1010,7 @@ function bluem_transaction_notification_email(
 }
 
 
-function bluem_woocommerce_get_config()
-{
+function bluem_woocommerce_get_config(): Stdclass {
     $bluem_options = bluem_woocommerce_get_core_options();
 
 
@@ -1107,8 +1111,7 @@ function bluem_woocommerce_modules_render_generic_activation($module)
 }
 
 
-function bluem_module_enabled($module)
-{
+function bluem_module_enabled($module): bool {
     $bluem_options = get_option('bluem_woocommerce_options');
     
     if($bluem_options===false) {
@@ -1258,9 +1261,9 @@ function bluem_setup_incomplete()
     // wp-admin/admin.php?page=wc-settings&tab=checkout
 }
 
-
-
-// Adding Meta container admin shop_order pages
+/*
+ *  Adding Meta container admin shop_order pages
+ */
 add_action('add_meta_boxes', 'bluem_order_requests_metabox');
 
 /**
@@ -1317,7 +1320,7 @@ function bluem_order_requests_metabox_content()
  *
  * @return String
  */
-function bluem_dialogs_getsimpleheader(): String
+function bluem_dialogs_get_simple_header(): String
 {
     return "<!DOCTYPE html><html lang='nl'><body><div
     style='font-family:Arial,sans-serif;display:block;
@@ -1331,7 +1334,7 @@ function bluem_dialogs_getsimpleheader(): String
  * @param Bool $include_link
  * @return String
  */
-function bluem_dialogs_getsimplefooter(Bool $include_link = true): String
+function bluem_dialogs_get_simple_footer(Bool $include_link = true): String
 {
     return (
         $include_link ?
@@ -1350,9 +1353,9 @@ function bluem_dialogs_getsimplefooter(Bool $include_link = true): String
  */
 function bluem_dialogs_render_prompt(String $html, bool $include_link = true)
 {
-    echo bluem_dialogs_getsimpleheader();
+    echo bluem_dialogs_get_simple_header();
     echo $html;
-    echo bluem_dialogs_getsimplefooter($include_link);
+    echo bluem_dialogs_get_simple_footer($include_link);
 }
 
 
@@ -1362,8 +1365,7 @@ function bluem_dialogs_render_prompt(String $html, bool $include_link = true)
  *
  * @return array
  */
-function bluem_admin_import_execute($data)
-{
+function bluem_admin_import_execute($data): array {
     $cur_options = get_option('bluem_woocommerce_options');
 
     $results = [];

@@ -663,17 +663,17 @@ function bluem_init_mandate_gateway_class()
                     $order_price = $order->get_total();
                     $max_order_amount = (float) ($order_price * $maxAmountFactor);
                     if (self::VERBOSE) {
-                        "max_order_amount: {$max_order_amount}" . PHP_EOL;
+                        echo "max_order_amount: {$max_order_amount}" . PHP_EOL;
                     }
 
                     if ($mandate_amount >= $max_order_amount) {
                         $mandate_successful = true;
                         if (self::VERBOSE) {
-                            "mandate is enough" . PHP_EOL;
+                            echo "mandate is enough" . PHP_EOL;
                         }
                     } else {
                         if (self::VERBOSE) {
-                            "mandate is too small" . PHP_EOL;
+                            echo "mandate is too small" . PHP_EOL;
                         }
                     }
                 }
@@ -682,9 +682,10 @@ function bluem_init_mandate_gateway_class()
             }
 
             if ($webhook_status === "Success") {
-                if ($order_status === "processing") {
-                    // order is already marked as processing, nothing more is necessary
-                } elseif ($order_status === "pending") {
+//                if ($order_status === "processing") {
+//                    // order is already marked as processing, nothing more is necessary
+//                } else
+                if ($order_status === "pending") {
                     // check if maximum of order does not exceed mandate size based on user metadata
                     if ($mandate_successful) {
                         $order->update_status(
@@ -700,9 +701,11 @@ function bluem_init_mandate_gateway_class()
                 }
             } elseif ($webhook_status === "Cancelled") {
                 $order->update_status('cancelled', __('Machtiging is geannuleerd; via webhook', 'wc-gateway-bluem'));
-            } elseif ($webhook_status === "Open" || $webhook_status == "Pending") {
+            } 
+//            elseif ($webhook_status === "Open" || $webhook_status == "Pending") {
                 // if the webhook is still open or pending, nothing has to be done as of yet
-            } elseif ($webhook_status === "Expired") {
+//            } 
+            elseif ($webhook_status === "Expired") {
                 $order->update_status('failed', __('Machtiging is verlopen; via webhook', 'wc-gateway-bluem'));
             } else {
                 $order->update_status('failed', __('Machtiging is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem'));
@@ -963,7 +966,7 @@ function bluem_init_mandate_gateway_class()
                 $order_total_plus = (float) $order->get_total() * $maxAmountFactor;
 
                 if (self::VERBOSE) {
-                    if ($maxAmountResponse === 0.0) {
+                    if ($maxAmountResponse->amount === 0.0) {
                         echo "No max amount set";
                     } else {
                         echo "MAX AMOUNT SET AT {$maxAmountResponse->amount} {$maxAmountResponse->currency}";
@@ -1349,7 +1352,7 @@ if (isset($bluem_options['useMandatesDebtorWallet']) && $bluem_options['useManda
         // echo "HIER KOMT DE BANKKEUZE";
         ?>
         <div id="BICselector">
-            <label for="bluem_BICInput" style="display: block;">
+            <label for="BICInput" style="display: block;">
                 Selecteer uw bank:
             <abbr class="required" title="required">*</abbr>
             </label>
