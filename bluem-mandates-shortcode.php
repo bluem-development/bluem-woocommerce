@@ -356,7 +356,7 @@ function bluem_mandateform()
         }
     }
 
-    if ($validated===1) {
+    if ((int)$validated===1) {
         return "Bedankt voor je machtiging met machtiging ID: <span class='bluem-mandate-id'>$mandateID</span>";
     } else {
         $html = '<form action="' . home_url('bluem-woocommerce/mandate_shortcode_execute') . '" method="post">';
