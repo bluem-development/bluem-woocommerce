@@ -724,7 +724,7 @@ function bluem_idin_form()
 
     // ob_start();
     $html ='';
-    
+    $validated = false;
     if(is_user_logged_in()) {
         $validated = get_user_meta(get_current_user_id(), "bluem_idin_validated", true) == "1";
     } else {
@@ -736,7 +736,6 @@ function bluem_idin_form()
         
     }
     
-
     if ($validated) {
         if (isset($bluem_config->IDINSuccessMessage)) {
             $html.= "<p>" . $bluem_config->IDINSuccessMessage . "</p>";
@@ -2018,9 +2017,8 @@ add_filter('woocommerce_email_order_meta_fields', 'bluem_order_email_identity_me
  * @param $sent_to_admin
  * @param $order
  *
- * @return false
  */
-function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order): bool {
+function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order) {
     global $current_user;
 
 
