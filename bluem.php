@@ -1228,42 +1228,55 @@ function bluem_setup_incomplete()
             $messages[] = "iDIN BrandID  mist";
             $valid_setup = false;
         }
+        
+        // Get WooCommerce payment gateways
+        $installed_payment_methods = WC()->payment_gateways->payment_gateways();
 
-        // @todo add more checks
+        foreach( $installed_payment_methods as $method ) {
+            switch ($method->id) {
+                case 'bluem_payments':
+                    if ($method->enabled === 'no' && bluem_module_enabled('payments')) {
+                        $msg = [
+                            'Je hebt de Bluem iDEAL ingeschakeld maar de betaalmethode nog niet binnen WooCommerce geactiveerd.'
+                        ];
+                        bluem_display_module_notices($msg, 'De Bluem integratie is nog niet volledig geactiveerd', ($_GET['page'] !== 'wc-settings' ? admin_url('admin.php?page=wc-settings&tab=checkout') : ''), 'Klik hier om naar de WooCommerce configuratie te gaan.');
+                    }
+                break;
+                    
+                case 'bluem_mandates':
+                    if ($method->enabled === 'no' && bluem_module_enabled('mandates')) {
+                        $msg = [
+                            'Je hebt de Bluem mandates ingeschakeld maar de betaalmethode nog niet binnen WooCommerce geactiveerd.'
+                        ];
+                        bluem_display_module_notices($msg, 'De Bluem integratie is nog niet volledig geactiveerd', ($_GET['page'] !== 'wc-settings' ? admin_url('admin.php?page=wc-settings&tab=checkout') : ''), 'Klik hier om naar de WooCommerce configuratie te gaan.');
+                    }
+                break;
+            }
+        }
 
         if ($valid_setup) {
             return;
         }
     }
+    bluem_display_module_notices($messages, 'De Bluem integratie is nog niet volledig ingesteld', (get_admin_page_title() !== "Bluem" ? admin_url('options-general.php?page=bluem') : ''), 'Klik hier om de plugin verder in te stellen.');
+}
 
+function bluem_display_module_notices($notices, $title = '', $btn_link = '', $btn_title = '')
+{
     echo '<div class="notice notice-warning is-dismissible">
-        <p><strong>De Bluem integratie is nog niet volledig ingesteld:</strong><br>
+        <p><strong>' . $title .'</strong><br>
         ';
-    foreach ($messages as $m) {
+    foreach ($notices as $m) {
         echo "$m<br>";
     }
     echo '
         </p>';
 
-    if (get_admin_page_title() !== "Bluem") {
-        echo '
-            <p><a href="
-            '.admin_url('options-general.php?page=bluem').'
-            ">
-            Klik hier om de plugin verder in te stellen.
-            </a>
-            </p>';
+    if (!empty($btn_link)) {
+        echo '<p><a href="'.$btn_link.'">'.$btn_title.'</a></p>';
     }
 
     echo '</div>';
-
-    // @todo: add warning when Payments Bluem module is activated but the Payments WooCommerce payment gateway is not activated yet - with a link to activate it
-    // wp-admin/admin.php?page=wc-settings&tab=checkout
-    // 127.0.0.1/wp-admin/admin.php?page=wc-settings&tab=checkout&section=bluem_payments
-    // enable button on payment gateway settings is superfluous
-
-    // @todo: add warning when Mandates Bluem module is activated but the Mandates WooCommerce payment gateway is not activated yet - with a link to activate it
-    // wp-admin/admin.php?page=wc-settings&tab=checkout
 }
 
 /*
