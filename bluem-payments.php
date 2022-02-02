@@ -73,50 +73,61 @@ function bluem_init_payment_gateway_class()
             if (isset($bluem_config->paymentBrandID)) {
                 $bluem_config->brandID = $bluem_config->paymentBrandID;
             }
+            
+            $config_valid = true;
+            
+            try {
+                $this->bluem_config = $bluem_config;
+                $this->bluem = new Bluem($bluem_config);
+            } catch (\Exception $e) {
+                $this->enabled = false;
+                
+                $config_valid = false;
+            }
+            
+            if ($config_valid)
+            {
+                $this->enabled = $this->get_option('enabled');
 
-            $this->bluem_config = $bluem_config;
-            $this->bluem = new Bluem($bluem_config);
+                // This action hook saves the settings
+                add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 
-            $this->enabled = $this->get_option('enabled');
-
-            // This action hook saves the settings
-            add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-
-            // ********** CREATING plugin URLs for specific functions **********
-            // using Woo's builtin webhook possibilities. This action creates an accessible URL wc-api/bluem_payments_webhook and one for the callback as well
-            // reference: https://rudrastyh.com/woocommerce/payment-gateway-plugin.html#gateway_class
-            add_action('woocommerce_api_bluem_payments_webhook', array($this, 'payments_webhook'), 5);
+                // ********** CREATING plugin URLs for specific functions **********
+                // using Woo's builtin webhook possibilities. This action creates an accessible URL wc-api/bluem_payments_webhook and one for the callback as well
+                // reference: https://rudrastyh.com/woocommerce/payment-gateway-plugin.html#gateway_class
+                add_action('woocommerce_api_bluem_payments_webhook', array($this, 'payments_webhook'), 5);
 
 
-            add_action('woocommerce_api_bluem_payments_callback', array($this, 'payment_callback'));
+                add_action('woocommerce_api_bluem_payments_callback', array($this, 'payment_callback'));
 
-            // ********** Allow filtering Orders based on TransactionID **********
-            add_filter(
-                'woocommerce_order_data_store_cpt_get_orders_query',
-                function ($query, $query_vars) {
-                    if (!empty($query_vars['bluem_transactionid'])) {
+                // ********** Allow filtering Orders based on TransactionID **********
+                add_filter(
+                    'woocommerce_order_data_store_cpt_get_orders_query',
+                    function ($query, $query_vars) {
+                        if (!empty($query_vars['bluem_transactionid'])) {
+                            $query['meta_query'][] = array(
+                                'key' => 'bluem_transactionid',
+                                'value' => esc_attr($query_vars['bluem_transactionid']),
+                            );
+                        }
+                        return $query;
+                    },
+                    10,
+                    2
+                );
+
+
+                // ********** Allow filtering Orders based on EntranceCode **********
+                add_filter('woocommerce_order_data_store_cpt_get_orders_query', function ($query, $query_vars) {
+                    if (!empty($query_vars['bluem_entrancecode'])) {
                         $query['meta_query'][] = array(
-                            'key' => 'bluem_transactionid',
-                            'value' => esc_attr($query_vars['bluem_transactionid']),
+                            'key' => 'bluem_entrancecode',
+                            'value' => esc_attr($query_vars['bluem_entrancecode']),
                         );
                     }
                     return $query;
-                },
-                10,
-                2
-            );
-
-
-            // ********** Allow filtering Orders based on EntranceCode **********
-            add_filter('woocommerce_order_data_store_cpt_get_orders_query', function ($query, $query_vars) {
-                if (!empty($query_vars['bluem_entrancecode'])) {
-                    $query['meta_query'][] = array(
-                        'key' => 'bluem_entrancecode',
-                        'value' => esc_attr($query_vars['bluem_entrancecode']),
-                    );
-                }
-                return $query;
-            }, 9, 2);
+                }, 9, 2);
+            }
         }
 
         public function bluem_thankyou($order_id)
