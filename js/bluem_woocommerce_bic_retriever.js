@@ -1,4 +1,4 @@
-/* (C) Daan Rijpkema, for
+/* (C) Bluem Plugin Support, for
 Bluem 2021
 */
 // bluem_woocommerce_bic_retriever

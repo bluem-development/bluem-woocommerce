@@ -74,16 +74,6 @@ Shortcode: `[bluem_identificatieformulier]`
 
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
-=== IBAN name check ===
-Coming soon
-
-== Frequently asked questions == 
-Coming soon
-
-== Upgrade Notice ==
-Please deactivate and delete any previous versions of this plug-in prior to 1.1 to prevent naming conflicts to occur. Your settings will still be saved.
-
-
 == Changelog ==
 - 1.3.5: Improved stability of core services, improved speed and layout
 - 1.3.1: Added optional IP checking for country-filtering; improved stability
@@ -99,6 +89,7 @@ Please deactivate and delete any previous versions of this plug-in prior to 1.1 
 - 1.1: Update and rename based on review for WordPress plugin approval (16th of Februari 2021)
 - 1.0: Initial public release as plug-in: (3rd of February 2021): After several months of BETA, we are now ready to deliver this plug-in to the public through the WordPress plug-in archive.
 
+Note: Please deactivate and delete any previous versions of this plug-in prior to 1.1 to prevent naming conflicts to occur. Your settings will remain stored.
 == Screenshots ==
 
 1. When configured, this is how the checkout procedure will look with either eMandates or Payments activated
@@ -106,4 +97,4 @@ Please deactivate and delete any previous versions of this plug-in prior to 1.1 
 3. This is the payment gateway settings page: the two possible gateways are automatically added and configurable from within WooCommerce.
 
 == Support ==
-If you have any questions, please reach out to me via email at d.rijpkema@bluem.nl. I aim to respond within five working days.
+If you have any questions, please reach out via email at pluginsupport@bluem.nl. We aim to respond within five working days.

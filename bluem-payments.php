@@ -3,7 +3,7 @@
 // @todo: Localize all error messages to english primarily
 // @todo: finish docblocking
 
-if (!defined('ABSPATH')) {
+if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
@@ -13,10 +13,10 @@ use Carbon\Carbon;
 /*
  * This action hook registers our PHP class as a WooCommerce payment gateway
  */
-add_filter('woocommerce_payment_gateways', 'bluem_add_gateway_class_payments', 12);
-function bluem_add_gateway_class_payments($gateways)
-{
+add_filter( 'woocommerce_payment_gateways', 'bluem_add_gateway_class_payments', 12 );
+function bluem_add_gateway_class_payments( $gateways ) {
     $gateways[] = 'Bluem_Gateway_Payments'; // your class name is here
+
     return $gateways;
 }
 
@@ -24,13 +24,11 @@ function bluem_add_gateway_class_payments($gateways)
  * The gateway class itself, please note that it is inside plugins_loaded action hook
  */
 
-if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-    add_action('plugins_loaded', 'bluem_init_payment_gateway_class');
+if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+    add_action( 'plugins_loaded', 'bluem_init_payment_gateway_class' );
 }
-function bluem_init_payment_gateway_class()
-{
-    class Bluem_Gateway_Payments extends WC_Payment_Gateway
-    {
+function bluem_init_payment_gateway_class() {
+    class Bluem_Gateway_Payments extends WC_Payment_Gateway {
         /**
          * This boolean will cause more output to be generated for testing purposes. Keep it at false for the production environment or final testing
          */
@@ -39,15 +37,14 @@ function bluem_init_payment_gateway_class()
         /**
          * Class constructor
          */
-        public function __construct()
-        {
+        public function __construct() {
             // instantiate the helper class that contains many helpful things.
             // $this->core = new Bluem_Helper();
 
-            $this->id = 'bluem_payments'; // payment gateway plugin ID
-            $this->icon = ''; // URL of the icon that will be displayed on checkout page near your gateway name
-            $this->has_fields = true; // in case you need a custom credit card form
-            $this->method_title = 'Bluem betaling via iDeal';
+            $this->id                 = 'bluem_payments'; // payment gateway plugin ID
+            $this->icon               = ''; // URL of the icon that will be displayed on checkout page near your gateway name
+            $this->has_fields         = true; // in case you need a custom credit card form
+            $this->method_title       = 'Bluem betaling via iDeal';
             $this->method_description = 'Bluem iDeal Payment Gateway voor WordPress - WooCommerce '; // will be displayed on the options page
 
 
@@ -62,54 +59,57 @@ function bluem_init_payment_gateway_class()
             // Method with all the options fields
             $this->init_form_fields();
 
-            $this->title = $this->get_option('title');
-            $this->description = $this->get_option('description');
+            $this->title       = $this->get_option( 'title' );
+            $this->description = $this->get_option( 'description' );
 
 
-            $bluem_config = bluem_woocommerce_get_config();
-            $bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_payments_callback');
+            $bluem_config                        = bluem_woocommerce_get_config();
+            $bluem_config->merchantReturnURLBase = home_url( 'wc-api/bluem_payments_callback' );
 
             // specifiek brandID voor payments instellen
-            if (isset($bluem_config->paymentBrandID)) {
+            if ( isset( $bluem_config->paymentBrandID ) ) {
                 $bluem_config->brandID = $bluem_config->paymentBrandID;
             }
-            
+
             $config_valid = true;
-            
+
             try {
                 $this->bluem_config = $bluem_config;
-                $this->bluem = new Bluem($bluem_config);
-            } catch (\Exception $e) {
+                $this->bluem        = new Bluem( $bluem_config );
+            } catch ( Exception $e ) {
                 $this->enabled = false;
-                
+
                 $config_valid = false;
             }
-            
-            if ($config_valid)
-            {
-                $this->enabled = $this->get_option('enabled');
+
+            if ( $config_valid ) {
+                $this->enabled = $this->get_option( 'enabled' );
 
                 // This action hook saves the settings
-                add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+                add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array(
+                    $this,
+                    'process_admin_options'
+                ) );
 
                 // ********** CREATING plugin URLs for specific functions **********
                 // using Woo's builtin webhook possibilities. This action creates an accessible URL wc-api/bluem_payments_webhook and one for the callback as well
                 // reference: https://rudrastyh.com/woocommerce/payment-gateway-plugin.html#gateway_class
-                add_action('woocommerce_api_bluem_payments_webhook', array($this, 'payments_webhook'), 5);
+                add_action( 'woocommerce_api_bluem_payments_webhook', array( $this, 'payments_webhook' ), 5 );
 
 
-                add_action('woocommerce_api_bluem_payments_callback', array($this, 'payment_callback'));
+                add_action( 'woocommerce_api_bluem_payments_callback', array( $this, 'payment_callback' ) );
 
                 // ********** Allow filtering Orders based on TransactionID **********
                 add_filter(
                     'woocommerce_order_data_store_cpt_get_orders_query',
-                    function ($query, $query_vars) {
-                        if (!empty($query_vars['bluem_transactionid'])) {
+                    function ( $query, $query_vars ) {
+                        if ( ! empty( $query_vars['bluem_transactionid'] ) ) {
                             $query['meta_query'][] = array(
-                                'key' => 'bluem_transactionid',
-                                'value' => esc_attr($query_vars['bluem_transactionid']),
+                                'key'   => 'bluem_transactionid',
+                                'value' => esc_attr( $query_vars['bluem_transactionid'] ),
                             );
                         }
+
                         return $query;
                     },
                     10,
@@ -118,54 +118,54 @@ function bluem_init_payment_gateway_class()
 
 
                 // ********** Allow filtering Orders based on EntranceCode **********
-                add_filter('woocommerce_order_data_store_cpt_get_orders_query', function ($query, $query_vars) {
-                    if (!empty($query_vars['bluem_entrancecode'])) {
+                add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', function ( $query, $query_vars ) {
+                    if ( ! empty( $query_vars['bluem_entrancecode'] ) ) {
                         $query['meta_query'][] = array(
-                            'key' => 'bluem_entrancecode',
-                            'value' => esc_attr($query_vars['bluem_entrancecode']),
+                            'key'   => 'bluem_entrancecode',
+                            'value' => esc_attr( $query_vars['bluem_entrancecode'] ),
                         );
                     }
+
                     return $query;
-                }, 9, 2);
+                }, 9, 2 );
             }
         }
 
-        public function bluem_thankyou($order_id)
-        {
-            $order = wc_get_order($order_id);
-            $url = $order->get_view_order_url();
+        public function bluem_thankyou( $order_id ) {
+            $order = wc_get_order( $order_id );
+            $url   = $order->get_view_order_url();
 
-            $options = get_option('bluem_woocommerce_options');
-            if (isset($options['paymentCompleteRedirectType'])) {
-                if ($options['paymentCompleteRedirectType'] == "custom"
-                    && isset($options['paymentCompleteRedirectCustomURL'])
-                    && $options['paymentCompleteRedirectCustomURL']!==""
+            $options = get_option( 'bluem_woocommerce_options' );
+            if ( isset( $options['paymentCompleteRedirectType'] ) ) {
+                if ( $options['paymentCompleteRedirectType'] == "custom"
+                     && isset( $options['paymentCompleteRedirectCustomURL'] )
+                     && $options['paymentCompleteRedirectCustomURL'] !== ""
                 ) {
-                    $url = site_url($options['paymentCompleteRedirectCustomURL']);
+                    $url = site_url( $options['paymentCompleteRedirectCustomURL'] );
                 } else {
                     $url = $order->get_view_order_url();
                 }
             }
 
-            if (!$order->has_status('failed')) {
-                wp_safe_redirect($url);
+            if ( ! $order->has_status( 'failed' ) ) {
+                wp_safe_redirect( $url );
                 exit;
             }
         }
+
         /**
          * Create plugin options page in admin interface
          */
-        public function init_form_fields()
-        {
-            $this->form_fields = apply_filters('wc_offline_form_fields', [
-                'enabled' => [
+        public function init_form_fields() {
+            $this->form_fields = apply_filters( 'wc_offline_form_fields', [
+                'enabled'     => [
                     'title'       => 'Enable/Disable',
                     'label'       => 'Enable Bluem Payment Gateway',
                     'type'        => 'checkbox',
                     'description' => '',
                     'default'     => 'no'
                 ],
-                'title' => [
+                'title'       => [
                     'title'       => 'Title',
                     'type'        => 'text',
                     'description' => 'This controls the title which the user sees during checkout.',
@@ -177,7 +177,7 @@ function bluem_init_payment_gateway_class()
                     'description' => 'This controls the description which the user sees during checkout.',
                     'default'     => 'Betaal gemakkelijk, snel en veilig via iDeal',
                 ]
-            ]);
+            ] );
         }
 
 
@@ -185,31 +185,31 @@ function bluem_init_payment_gateway_class()
          * Process payment through Bluem portal
          *
          * @param String $order_id
+         *
          * @return void
          */
-        public function process_payment($order_id)
-        {
-            $order = wc_get_order($order_id);
+        public function process_payment( $order_id ) {
+            $order = wc_get_order( $order_id );
 
-            $user_id = $order->get_user_id();
-            $user_meta = get_user_meta($user_id);
+            $user_id   = $order->get_user_id();
+            $user_meta = get_user_meta( $user_id );
 
-            $order_id = $order->get_order_number();
-            $customer_id = get_post_meta($order_id, '_customer_user', true);
+            $order_id    = $order->get_order_number();
+            $customer_id = get_post_meta( $order_id, '_customer_user', true );
 
             $entranceCode = $this->bluem->CreateEntranceCode();
 
-            update_post_meta($order_id, 'bluem_entrancecode', $entranceCode);
-            if (!is_null($customer_id) &&  $customer_id!="" && $customer_id!="0") {
+            update_post_meta( $order_id, 'bluem_entrancecode', $entranceCode );
+            if ( ! is_null( $customer_id ) && $customer_id != "" && $customer_id != "0" ) {
                 $description = "Klant {$customer_id} Bestelling {$order_id}";
             } else {
                 $description = "Bestelling {$order_id}";
             }
 
             $debtorReference = "{$order_id}";
-            $amount = $order->get_total();
-            $currency = "EUR"; // get dynamically from order
-            $dueDateTime = Carbon::now()->addDay();
+            $amount          = $order->get_total();
+            $currency        = "EUR"; // get dynamically from order
+            $dueDateTime     = Carbon::now()->addDay();
 
             $request = $this->bluem->CreatePaymentRequest(
                 $description,
@@ -222,18 +222,18 @@ function bluem_init_payment_gateway_class()
 
 
             // temp overrides
-            $request->paymentReference = str_replace('-', '', $request->paymentReference);
-            $request->type_identifier = "createTransaction";
-            $request->dueDateTime = $dueDateTime->format(BLUEM_LOCAL_DATE_FORMAT). ".000Z";
-            $request->debtorReturnURL = home_url("wc-api/bluem_payments_callback?entranceCode={$entranceCode}");
+            $request->paymentReference = str_replace( '-', '', $request->paymentReference );
+            $request->type_identifier  = "createTransaction";
+            $request->dueDateTime      = $dueDateTime->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
+            $request->debtorReturnURL  = home_url( "wc-api/bluem_payments_callback?entranceCode={$entranceCode}" );
 
             $payload = json_encode(
                 [
-                    'environment' => $this->bluem->environment,
-                    'amount'=>$amount,
-                    'currency'=>$currency,
-                    'due_date'=>$request->dueDateTime,
-                    'payment_reference'=>$request->paymentReference
+                    'environment'       => $this->bluem->environment,
+                    'amount'            => $amount,
+                    'currency'          => $currency,
+                    'due_date'          => $request->dueDateTime,
+                    'payment_reference' => $request->paymentReference
                 ]
             );
 
@@ -243,46 +243,45 @@ function bluem_init_payment_gateway_class()
                 $request
             );
 
-            $response = $this->bluem->PerformRequest($request);
+            $response = $this->bluem->PerformRequest( $request );
             // Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled',
 
             // Remove cart
             global $woocommerce;
             $woocommerce->cart->empty_cart();
-            $order->update_status('pending', __('Awaiting Bluem Payment Signature', 'wc-gateway-bluem'));
+            $order->update_status( 'pending', __( 'Awaiting Bluem Payment Signature', 'wc-gateway-bluem' ) );
 
-            if (isset($response->PaymentTransactionResponse->TransactionURL)) {
-                $order->add_order_note(__("Betalingsproces geinitieerd"));
+            if ( isset( $response->PaymentTransactionResponse->TransactionURL ) ) {
+                $order->add_order_note( __( "Betalingsproces geinitieerd" ) );
 
-                $transactionID = "". $response->PaymentTransactionResponse->TransactionID;
-                update_post_meta($order_id, 'bluem_transactionid', $transactionID);
-                $paymentReference = "". $response->PaymentTransactionResponse->paymentReference;
-                update_post_meta($order_id, 'bluem_payment_reference', $paymentReference);
-                $debtorReference = "". $response->PaymentTransactionResponse->debtorReference;
-                update_post_meta($order_id, 'bluem_debtor_Reference', $debtorReference);
+                $transactionID = "" . $response->PaymentTransactionResponse->TransactionID;
+                update_post_meta( $order_id, 'bluem_transactionid', $transactionID );
+                $paymentReference = "" . $response->PaymentTransactionResponse->paymentReference;
+                update_post_meta( $order_id, 'bluem_payment_reference', $paymentReference );
+                $debtorReference = "" . $response->PaymentTransactionResponse->debtorReference;
+                update_post_meta( $order_id, 'bluem_debtor_Reference', $debtorReference );
 
                 // redirect cast to string, for AJAX response handling
-                $transactionURL = ($response->PaymentTransactionResponse->TransactionURL . "");
-
+                $transactionURL = ( $response->PaymentTransactionResponse->TransactionURL . "" );
 
 
                 bluem_db_create_request(
                     [
-                        'entrance_code' => $entranceCode,
-                        'transaction_id' => $transactionID,
-                        'transaction_url' => $transactionURL,
-                        'user_id' => get_current_user_id(),
-                        'timestamp' =>  date("Y-m-d H:i:s"),
-                        'description' => $description,
+                        'entrance_code'    => $entranceCode,
+                        'transaction_id'   => $transactionID,
+                        'transaction_url'  => $transactionURL,
+                        'user_id'          => get_current_user_id(),
+                        'timestamp'        => date( "Y-m-d H:i:s" ),
+                        'description'      => $description,
                         'debtor_reference' => $debtorReference,
-                        'type' => "payments",
-                        'order_id' => $order_id,
-                        'payload' => $payload
+                        'type'             => "payments",
+                        'order_id'         => $order_id,
+                        'payload'          => $payload
                     ]
                 );
 
                 return array(
-                    'result' => 'success',
+                    'result'   => 'success',
                     'redirect' => $transactionURL
                 );
             } else {
@@ -392,27 +391,27 @@ function bluem_init_payment_gateway_class()
                 }
             } elseif ( $webhook_status === "Cancelled" ) {
                 $order->update_status( 'cancelled', __( 'Betaling is geannuleerd; via webhook', 'wc-gateway-bluem' ) );
-            
+
 //            elseif ($webhook_status === "Open" || $webhook_status == "Pending") {
-            // if the webhook is still open or pending, nothing has to be done as of yet
-            } elseif ($webhook_status === "Expired") {
-                $order->update_status('failed', __('Betaling is verlopen; via webhook', 'wc-gateway-bluem'));
+                // if the webhook is still open or pending, nothing has to be done as of yet
+            } elseif ( $webhook_status === "Expired" ) {
+                $order->update_status( 'failed', __( 'Betaling is verlopen; via webhook', 'wc-gateway-bluem' ) );
             } else {
-                $order->update_status('failed', __('Betaling is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem'));
+                $order->update_status( 'failed', __( 'Betaling is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem' ) );
             }
             exit;
         }
 
-        public function getOrderByEntranceCode($entranceCode)
-        {
-            $orders = wc_get_orders(array(
-                'orderby'   => 'date',
-                'order'     => 'DESC',
+        public function getOrderByEntranceCode( $entranceCode ) {
+            $orders = wc_get_orders( array(
+                'orderby'            => 'date',
+                'order'              => 'DESC',
                 'bluem_entrancecode' => $entranceCode
-            ));
-            if (count($orders) == 0) {
+            ) );
+            if ( count( $orders ) == 0 ) {
                 return null;
             }
+
             return $orders[0];
         }
 
@@ -422,16 +421,16 @@ function bluem_init_payment_gateway_class()
          * @param String $transactionID
          *
          */
-        private function getOrder(String $transactionID)
-        {
-            $orders = wc_get_orders(array(
-                'orderby'   => 'date',
-                'order'     => 'DESC',
+        private function getOrder( string $transactionID ) {
+            $orders = wc_get_orders( array(
+                'orderby'             => 'date',
+                'order'               => 'DESC',
                 'bluem_transactionid' => $transactionID
-            ));
-            if (count($orders) == 0) {
+            ) );
+            if ( count( $orders ) == 0 ) {
                 return null;
             }
+
             return $orders[0];
         }
 
@@ -440,109 +439,108 @@ function bluem_init_payment_gateway_class()
          * payment_Callback function after payment process has been completed by the user
          * @return function [description]
          */
-        public function payment_callback()
-        {
+        public function payment_callback() {
 
             // $this->bluem = new Bluem($this->bluem_config);
 
-            if (!isset($_GET['entranceCode'])) {
+            if ( ! isset( $_GET['entranceCode'] ) ) {
                 $errormessage = "Fout: geen juiste entranceCode teruggekregen bij payment_callback. Neem contact op met de webshop en vermeld je contactgegevens.";
                 bluem_error_report_email(
                     [
-                        'service'=>'payments',
-                        'function'=>'payments_callback',
-                        'message'=>$errormessage
+                        'service'  => 'payments',
+                        'function' => 'payments_callback',
+                        'message'  => $errormessage
                     ]
                 );
-                bluem_dialogs_render_prompt($errormessage);
+                bluem_dialogs_render_prompt( $errormessage );
                 exit;
             }
-            $entranceCode = sanitize_text_field($_GET['entranceCode']);
+            $entranceCode = sanitize_text_field( $_GET['entranceCode'] );
 
-            $order = $this->getOrderByEntranceCode($entranceCode);
+            $order = $this->getOrderByEntranceCode( $entranceCode );
 
-            if (is_null($order)) {
+            if ( is_null( $order ) ) {
                 $errormessage = "Fout: order niet gevonden in webshop. Neem contact op met de webshop en vermeld de code {$entranceCode} bij je gegevens.";
                 bluem_error_report_email(
                     [
-                        'service'=>'payments',
-                        'function'=>'payments_callback',
-                        'message'=>$errormessage
+                        'service'  => 'payments',
+                        'function' => 'payments_callback',
+                        'message'  => $errormessage
                     ]
                 );
-                bluem_dialogs_render_prompt($errormessage);
+                bluem_dialogs_render_prompt( $errormessage );
                 exit;
             }
             $user_id = $order->get_user_id();
 
-            $transactionID = $order->get_meta('bluem_transactionid');
-            if ($transactionID=="") {
+            $transactionID = $order->get_meta( 'bluem_transactionid' );
+            if ( $transactionID == "" ) {
                 $errormessage = "No transaction ID found. Neem contact op met de webshop en vermeld de code {$entranceCode} bij je gegevens.";
                 bluem_error_report_email(
                     [
-                        'service'=>'payments',
-                        'function'=>'payments_callback',
-                        'message'=>$errormessage
+                        'service'  => 'payments',
+                        'function' => 'payments_callback',
+                        'message'  => $errormessage
                     ]
                 );
-                bluem_dialogs_render_prompt($errormessage);
+                bluem_dialogs_render_prompt( $errormessage );
                 die();
             }
 
 
-            $response = $this->bluem->PaymentStatus($transactionID, $entranceCode);
+            $response = $this->bluem->PaymentStatus( $transactionID, $entranceCode );
 
 
-            if (!$response->Status()) {
+            if ( ! $response->Status() ) {
                 $errormessage = "Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status";
                 bluem_error_report_email(
                     [
-                        'service'=>'payments',
-                        'function'=>'payments_callback',
-                        'message'=>$errormessage,
-                        'response'=>$response
+                        'service'  => 'payments',
+                        'function' => 'payments_callback',
+                        'message'  => $errormessage,
+                        'response' => $response
                     ]
                 );
-                bluem_dialogs_render_prompt($errormessage);
+                bluem_dialogs_render_prompt( $errormessage );
                 exit;
             }
 
-            if (self::VERBOSE) {
-                var_dump("mandateid: " . $transactionID);
-                var_dump("entrancecode: " . $entranceCode);
+            if ( self::VERBOSE ) {
+                var_dump( "mandateid: " . $transactionID );
+                var_dump( "entrancecode: " . $entranceCode );
                 echo "<hr>";
-                var_dump($response);
+                var_dump( $response );
                 echo "<hr>";
             }
 
             $statusUpdateObject = $response->PaymentStatusUpdate;
-            $statusCode = $statusUpdateObject->Status . "";
+            $statusCode         = $statusUpdateObject->Status . "";
 
-            $request_from_db = bluem_db_get_request_by_transaction_id($transactionID);
+            $request_from_db = bluem_db_get_request_by_transaction_id( $transactionID );
 
-            if ($statusCode !== $request_from_db->status) {
+            if ( $statusCode !== $request_from_db->status ) {
                 bluem_db_update_request(
                     $request_from_db->id,
                     [
-                        'status'=>$statusCode
-                        ]
+                        'status' => $statusCode
+                    ]
                 );
             }
 
 
-            if ($statusCode === "Success") {
-                $order->update_status('processing', __('Betaling is binnengekomen', 'wc-gateway-bluem'));
+            if ( $statusCode === "Success" ) {
+                $order->update_status( 'processing', __( 'Betaling is binnengekomen', 'wc-gateway-bluem' ) );
 
-                $order->add_order_note(__("Betalingsproces voltooid"));
+                $order->add_order_note( __( "Betalingsproces voltooid" ) );
 
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
 
-                $this->bluem_thankyou($order->get_id());
-            } elseif ($statusCode === "Failure") {
-                $order->update_status('failed', __('Betaling is verlopen', 'wc-gateway-bluem'));
-                $order->add_order_note(__("Betalingsproces niet voltooid"));
+                $this->bluem_thankyou( $order->get_id() );
+            } elseif ( $statusCode === "Failure" ) {
+                $order->update_status( 'failed', __( 'Betaling is verlopen', 'wc-gateway-bluem' ) );
+                $order->add_order_note( __( "Betalingsproces niet voltooid" ) );
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
@@ -553,169 +551,161 @@ function bluem_init_payment_gateway_class()
                 als het probleem zich blijft voordoen.";
                 bluem_error_report_email(
                     [
-                        'order_id'=>$order->get_id(),
-                        'service'=>'payments',
-                        'function'=>'payments_callback',
-                        'message'=>$errormessage
+                        'order_id' => $order->get_id(),
+                        'service'  => 'payments',
+                        'function' => 'payments_callback',
+                        'message'  => $errormessage
                     ]
                 );
                 bluem_dialogs_render_prompt(
                     $errormessage
                 );
                 exit;
-            } elseif ($statusCode === "Cancelled") {
-                $order->update_status('cancelled', __('Betaling is geannuleerd', 'wc-gateway-bluem'));
+            } elseif ( $statusCode === "Cancelled" ) {
+                $order->update_status( 'cancelled', __( 'Betaling is geannuleerd', 'wc-gateway-bluem' ) );
 
-                
+
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
-                bluem_dialogs_render_prompt("Je hebt de betaling geannuleerd");
+                bluem_dialogs_render_prompt( "Je hebt de betaling geannuleerd" );
                 // terug naar order pagina om het opnieuw te proberen?
                 exit;
-            } elseif ($statusCode === "Open" || $statusCode == "Pending") {
+            } elseif ( $statusCode === "Open" || $statusCode == "Pending" ) {
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
-                bluem_dialogs_render_prompt("De betaling is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.");
+                bluem_dialogs_render_prompt( "De betaling is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch." );
                 // callback pagina beschikbaar houden om het opnieuw te proberen?
                 // is simpelweg SITE/wc-api/bluem_callback?transactionID=$transactionID
                 exit;
-            } elseif ($statusCode === "Expired") {
-                $order->update_status('failed', __('Betaling is verlopen', 'wc-gateway-bluem'));
+            } elseif ( $statusCode === "Expired" ) {
+                $order->update_status( 'failed', __( 'Betaling is verlopen', 'wc-gateway-bluem' ) );
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
-                
-                bluem_dialogs_render_prompt("Fout: De betaling of het verzoek daartoe is verlopen");
+
+                bluem_dialogs_render_prompt( "Fout: De betaling of het verzoek daartoe is verlopen" );
                 exit;
             } else {
-                $order->update_status('failed', __('Betaling is gefaald: fout of onbekende status', 'wc-gateway-bluem'));
+                $order->update_status( 'failed', __( 'Betaling is gefaald: fout of onbekende status', 'wc-gateway-bluem' ) );
                 bluem_transaction_notification_email(
                     $request_from_db->id
                 );
-                bluem_dialogs_render_prompt("Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status");
+                bluem_dialogs_render_prompt( "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status" );
                 exit;
             }
         }
     }
 }
 
-function bluem_woocommerce_payments_settings_section()
-{
+function bluem_woocommerce_payments_settings_section() {
     echo '<p><a id="tab_payments"></a>
     Hier kan je alle belangrijke gegevens instellen rondom iDeal transacties. Lees de readme bij de plug-in voor meer informatie.</p>';
 }
 
-function bluem_woocommerce_get_payments_option($key)
-{
+function bluem_woocommerce_get_payments_option( $key ) {
     $options = bluem_woocommerce_get_payments_options();
-    if (array_key_exists($key, $options)) {
-        return $options[$key];
+    if ( array_key_exists( $key, $options ) ) {
+        return $options[ $key ];
     }
+
     return false;
 }
 
-function bluem_woocommerce_get_payments_options()
-{
+function bluem_woocommerce_get_payments_options() {
     return [
-        'paymentBrandID' => [
-            'key'=>'paymentBrandID',
-            'title' => 'bluem_paymentBrandID',
-            'name' => 'Bluem Brand ID voor Payments',
+        'paymentBrandID'                   => [
+            'key'         => 'paymentBrandID',
+            'title'       => 'bluem_paymentBrandID',
+            'name'        => 'Bluem Brand ID voor Payments',
             'description' => 'het paymentBrandID, ontvangen van Bluem specifiek voor betalingen',
-            'default' => ''
+            'default'     => ''
         ],
-        'paymentCompleteRedirectType' => [
-            'key' => 'paymentCompleteRedirectType',
-            'title' => 'bluem_paymentCompleteRedirectType',
-            'name' => 'Waarheen verwijzen na succesvolle betaling?',
+        'paymentCompleteRedirectType'      => [
+            'key'         => 'paymentCompleteRedirectType',
+            'title'       => 'bluem_paymentCompleteRedirectType',
+            'name'        => 'Waarheen verwijzen na succesvolle betaling?',
             'description' => 'Als de gebruiker heeft betaald, waar moet dan naar verwezen worden?',
-            'type' => 'select',
-            'default' => 'order_details',
-            'options' => [
+            'type'        => 'select',
+            'default'     => 'order_details',
+            'options'     => [
                 'order_details' => 'Pagina met Order gegevens (standaard)',
-                'custom' => 'Eigen URL (vul hieronder in)'
+                'custom'        => 'Eigen URL (vul hieronder in)'
             ]
         ],
         'paymentCompleteRedirectCustomURL' => [
-            'key' => 'paymentCompleteRedirectCustomURL',
-            'title' => 'bluem_paymentCompleteRedirectCustomURL',
-            'name' => 'Eigen interne URL om klant naar te verwijzen',
-            'description' => "Indien hierboven 'Eigen URL' is gekozen, vul hier dan de URL in waarnaar doorverwezen moet worden. Je kan bijv. <code>thanks</code> invullen om de klant naar <strong>".site_url("thanks"). "</strong> te verwijzen",
-            'type' => 'text',
-            'default' => ''
+            'key'         => 'paymentCompleteRedirectCustomURL',
+            'title'       => 'bluem_paymentCompleteRedirectCustomURL',
+            'name'        => 'Eigen interne URL om klant naar te verwijzen',
+            'description' => "Indien hierboven 'Eigen URL' is gekozen, vul hier dan de URL in waarnaar doorverwezen moet worden. Je kan bijv. <code>thanks</code> invullen om de klant naar <strong>" . site_url( "thanks" ) . "</strong> te verwijzen",
+            'type'        => 'text',
+            'default'     => ''
         ],
     ];
 }
 
 /* payments specific settings */
 
-function bluem_woocommerce_settings_render_paymentBrandID()
-{
+function bluem_woocommerce_settings_render_paymentBrandID() {
     bluem_woocommerce_settings_render_input(
-        bluem_woocommerce_get_payments_option('paymentBrandID')
+        bluem_woocommerce_get_payments_option( 'paymentBrandID' )
     );
 }
 
 
-function bluem_woocommerce_settings_render_paymentCompleteRedirectType()
-{
+function bluem_woocommerce_settings_render_paymentCompleteRedirectType() {
     bluem_woocommerce_settings_render_input(
-        bluem_woocommerce_get_payments_option('paymentCompleteRedirectType')
+        bluem_woocommerce_get_payments_option( 'paymentCompleteRedirectType' )
     );
 }
 
-function bluem_woocommerce_settings_render_paymentCompleteRedirectCustomURL()
-{
+function bluem_woocommerce_settings_render_paymentCompleteRedirectCustomURL() {
     bluem_woocommerce_settings_render_input(
-        bluem_woocommerce_get_payments_option('paymentCompleteRedirectCustomURL')
+        bluem_woocommerce_get_payments_option( 'paymentCompleteRedirectCustomURL' )
     );
 }
-
-
 
 
 // https://www.skyverge.com/blog/how-to-create-a-simple-woocommerce-payment-gateway/
 
 
-add_filter('bluem_woocommerce_enhance_payment_request', 'bluem_woocommerce_enhance_payment_request_function', 10, 1);
+add_filter( 'bluem_woocommerce_enhance_payment_request', 'bluem_woocommerce_enhance_payment_request_function', 10, 1 );
 
 /**
  * allow third parties to add additional data to the request object through this additional action
  *
  * @param [type] $request
+ *
  * @return void
  */
-function bluem_woocommerce_enhance_payment_request_function($request)
-{
+function bluem_woocommerce_enhance_payment_request_function( $request ) {
     // do something with the Bluem payment request, use this in third-party extensions of this system
     return $request;
 }
 
-add_action('show_user_profile', 'bluem_woocommerce_payments_show_extra_profile_fields', 2);
-add_action('edit_user_profile', 'bluem_woocommerce_payments_show_extra_profile_fields');
+add_action( 'show_user_profile', 'bluem_woocommerce_payments_show_extra_profile_fields', 2 );
+add_action( 'edit_user_profile', 'bluem_woocommerce_payments_show_extra_profile_fields' );
 
-function bluem_woocommerce_payments_show_extra_profile_fields($user)
-{
-    $bluem_requests = bluem_db_get_requests_by_user_id_and_type($user->ID, "payments"); ?>
+function bluem_woocommerce_payments_show_extra_profile_fields( $user ) {
+    $bluem_requests = bluem_db_get_requests_by_user_id_and_type( $user->ID, "payments" ); ?>
     <table class="form-table">
-    <a id="user_payments"></a>
-    <?php
-        
+        <a id="user_payments"></a>
+        <?php
+
         ?>
 
-    <?php if (isset($bluem_requests) && count($bluem_requests)>0) { ?>
-        <tr>
-    <th>
-    iDEAL Betalingen
-    </th>
-    <td>
-    <?php
-        bluem_render_requests_list($bluem_requests);?>
-    </td>
-        </tr>
-    <?php } ?>
+        <?php if ( isset( $bluem_requests ) && count( $bluem_requests ) > 0 ) { ?>
+            <tr>
+                <th>
+                    iDEAL Betalingen
+                </th>
+                <td>
+                    <?php
+                    bluem_render_requests_list( $bluem_requests ); ?>
+                </td>
+            </tr>
+        <?php } ?>
     </table>
     <?php
 }

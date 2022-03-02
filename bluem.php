@@ -23,7 +23,7 @@
 // @todo: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
 // @todo: Localize all error messages to english primarily
 // @todo: finish docblocking
-if (!defined('ABSPATH')) {
+if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
@@ -38,20 +38,20 @@ require_once __DIR__ . '/bluem-compatibility.php';
 // get composer dependencies
 require __DIR__ . '/vendor/autoload.php';
 
-if (!defined("BLUEM_LOCAL_DATE_FORMAT")) {
-    define("BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s");
+if ( ! defined( "BLUEM_LOCAL_DATE_FORMAT" ) ) {
+    define( "BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s" );
 }
 
 // get specific gateways and helpers
-if (bluem_module_enabled('mandates')) {
+if ( bluem_module_enabled( 'mandates' ) ) {
     include_once __DIR__ . '/bluem-mandates.php';
     include_once __DIR__ . '/bluem-mandates-shortcode.php';
 }
-if (bluem_module_enabled('payments')) {
+if ( bluem_module_enabled( 'payments' ) ) {
     include_once __DIR__ . '/bluem-payments.php';
 }
 
-if (bluem_module_enabled('idin')) {
+if ( bluem_module_enabled( 'idin' ) ) {
     include_once __DIR__ . '/bluem-idin.php';
 }
 
@@ -66,49 +66,47 @@ require_once __DIR__ . '/bluem-interface.php';
  **/
 
 
-if (!in_array(
+if ( ! in_array(
     'woocommerce/woocommerce.php',
     apply_filters(
         'active_plugins',
-        get_option('active_plugins')
+        get_option( 'active_plugins' )
     )
 )
 ) {    // NO Woo found!
-    add_action('admin_notices', 'bluem_woocommerce_no_woocommerce_notice');
+    add_action( 'admin_notices', 'bluem_woocommerce_no_woocommerce_notice' );
 }
 
 // Update CSS within in Admin
-function bluem_add_admin_style()
-{
-    wp_enqueue_style('admin-styles', plugin_dir_url(__FILE__).'/css/admin.css');
+function bluem_add_admin_style() {
+    wp_enqueue_style( 'admin-styles', plugin_dir_url( __FILE__ ) . '/css/admin.css' );
 }
-add_action('admin_enqueue_scripts', 'bluem_add_admin_style');
+
+add_action( 'admin_enqueue_scripts', 'bluem_add_admin_style' );
 
 // Update CSS within frontend
-function bluem_add_front_style()
-{
+function bluem_add_front_style() {
     wp_register_style(
         'bluem_woo_front_styles',
-        plugin_dir_url(__FILE__) . '/css/front.css'
+        plugin_dir_url( __FILE__ ) . '/css/front.css'
     );
-    wp_enqueue_style('bluem_woo_front_styles');
+    wp_enqueue_style( 'bluem_woo_front_styles' );
 }
-add_action('wp_enqueue_scripts', 'bluem_add_front_style');
 
+add_action( 'wp_enqueue_scripts', 'bluem_add_front_style' );
 
 
 // https://www.wpbeginner.com/wp-tutorials/how-to-add-admin-notices-in-wordpress/
-function bluem_woocommerce_no_woocommerce_notice()
-{
-    if (is_admin()) {
-        $bluem_options = get_option('bluem_woocommerce_options');
-        if (!isset($bluem_options['suppress_woo']) || $bluem_options['suppress_woo']=="0") {
+function bluem_woocommerce_no_woocommerce_notice() {
+    if ( is_admin() ) {
+        $bluem_options = get_option( 'bluem_woocommerce_options' );
+        if ( ! isset( $bluem_options['suppress_woo'] ) || $bluem_options['suppress_woo'] == "0" ) {
             echo '<div class="notice notice-warning is-dismissible">
             <p>De Bluem integratie is deels afhankelijk
             van WooCommerce - activeer deze plug-in ook.<br>
             Je kan deze melding en WooCommerce gerelateerde
             functionaliteiten ook uitzetten bij de
-            <a href="'.admin_url('options-general.php?page=bluem').'">
+            <a href="' . admin_url( 'options-general.php?page=bluem' ) . '">
             Instellingen</a>.</p>
             </div>';
         }
@@ -121,8 +119,7 @@ function bluem_woocommerce_no_woocommerce_notice()
  *
  * @return void
  */
-function bluem_woocommerce_settings_handler()
-{
+function bluem_woocommerce_settings_handler() {
     add_options_page(
         'Bluem',
         'Bluem',
@@ -131,15 +128,15 @@ function bluem_woocommerce_settings_handler()
         'bluem_settings_page'
     );
 }
-add_action('admin_menu', 'bluem_woocommerce_settings_handler');
+
+add_action( 'admin_menu', 'bluem_woocommerce_settings_handler' );
 
 /**
  * Register the necessary administrative pages in the WordPress back-end.
  *
  * @return void
  */
-function bluem_register_menu()
-{
+function bluem_register_menu() {
     add_menu_page(
         "bluem_admin_requests_view",
         "Bluem",
@@ -175,16 +172,16 @@ function bluem_register_menu()
     //     "bluem_settings_page"
     // );
 }
-add_action('admin_menu', 'bluem_register_menu', 9);
+
+add_action( 'admin_menu', 'bluem_register_menu', 9 );
 
 
-function bluem_admin_requests_view()
-{
-    if (isset($_GET['request_id']) && $_GET['request_id']!=="") {
-        if (isset($_GET['admin_action']) && $_GET['admin_action']=="delete") {
-            bluem_db_delete_request_by_id($_GET['request_id']);
+function bluem_admin_requests_view() {
+    if ( isset( $_GET['request_id'] ) && $_GET['request_id'] !== "" ) {
+        if ( isset( $_GET['admin_action'] ) && $_GET['admin_action'] == "delete" ) {
+            bluem_db_delete_request_by_id( $_GET['request_id'] );
             wp_redirect(
-                admin_url("admin.php?page=bluem_admin_requests_view")
+                admin_url( "admin.php?page=bluem_admin_requests_view" )
             );
         } else {
             bluem_admin_requests_view_request();
@@ -194,31 +191,31 @@ function bluem_admin_requests_view()
     }
 }
 
-function bluem_admin_requests_view_request()
-{
+function bluem_admin_requests_view_request() {
     global $wpdb;
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
     $id = $_GET['request_id'];
 
-    $request_query = $wpdb->get_results("SELECT * FROM `bluem_requests` WHERE `id` = $id LIMIT 1");
-    if (count($request_query)==0) {
+    $request_query = $wpdb->get_results( "SELECT * FROM `bluem_requests` WHERE `id` = $id LIMIT 1" );
+    if ( count( $request_query ) == 0 ) {
         bluem_admin_requests_view_all();
+
         return;
     }
 
-    $request = (object)$request_query[0];
-    $request_author = get_user_by('id', $request->user_id);
+    $request        = (object) $request_query[0];
+    $request_author = get_user_by( 'id', $request->user_id );
 
-    $links = bluem_db_get_links_for_request($request->id);
+    $links = bluem_db_get_links_for_request( $request->id );
 
-    $logs = bluem_db_get_logs_for_request($id);
+    $logs = bluem_db_get_logs_for_request( $id );
 
     include_once 'views/request.php';
 }
-function bluem_admin_requests_view_all()
-{
+
+function bluem_admin_requests_view_all() {
     global $wpdb;
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
@@ -235,138 +232,137 @@ function bluem_admin_requests_view_all()
 
     // @todo Allow filtering on only one type
 
-    foreach ($_requests as $_r) {
-        $requests[$_r->type][] = $_r;
+    foreach ( $_requests as $_r ) {
+        $requests[ $_r->type ][] = $_r;
     }
-    $users = get_users();
+    $users       = get_users();
     $users_by_id = [];
-    foreach ($users as $user) {
-        $users_by_id[$user->ID] = $user;
+    foreach ( $users as $user ) {
+        $users_by_id[ $user->ID ] = $user;
     }
 
     include_once 'views/requests.php';
 }
 
 // @todo Deprecate this
-function bluem_woocommerce_tab()
-{
+function bluem_woocommerce_tab() {
     $default_tab = null;
-    return isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : $default_tab;
+
+    return isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : $default_tab;
 }
+
 /**
  * Settings page display
  *
  * @return void
  */
-function bluem_settings_page()
-{
+function bluem_settings_page() {
 
     //Get the active tab from the GET param
     $tab = bluem_woocommerce_tab(); ?>
 
-<div class="wrap bluem-settings-container">
-    <div class="bluem-settings-header">
+    <div class="wrap bluem-settings-container">
+        <div class="bluem-settings-header">
 
-    <h1>
-        <?php echo bluem_get_bluem_logo_html(24); ?>
-        <?php echo esc_html(get_admin_page_title()); ?>
-    </h1>
-    <nav class="nav-tab-wrapper">
-        <a href="<?php echo admin_url('options-general.php?page=bluem'); ?>"
-        class="nav-tab
-        <?php if ($tab===null) {
-        echo "nav-tab-active";
-    } ?>
+            <h1>
+                <?php echo bluem_get_bluem_logo_html( 24 ); ?>
+                <?php echo esc_html( get_admin_page_title() ); ?>
+            </h1>
+            <nav class="nav-tab-wrapper">
+                <a href="<?php echo admin_url( 'options-general.php?page=bluem' ); ?>"
+                   class="nav-tab
+        <?php if ( $tab === null ) {
+                       echo "nav-tab-active";
+                   } ?>
         ">
-        <span class="dashicons dashicons-admin-settings"></span>
-            Algemeen
-        </a>
+                    <span class="dashicons dashicons-admin-settings"></span>
+                    Algemeen
+                </a>
 
-        <?php if (bluem_module_enabled('mandates')) { ?>
+                <?php if ( bluem_module_enabled( 'mandates' ) ) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_mandates');?>"
-        class="nav-tab
-            <?php if ($tab==='mandates') {
-        echo "nav-tab-active";
-    } ?>
+                    <a href="<?php echo admin_url( 'options-general.php?page=bluem#tab_mandates' ); ?>"
+                       class="nav-tab
+            <?php if ( $tab === 'mandates' ) {
+                           echo "nav-tab-active";
+                       } ?>
             ">
-            <span class="dashicons dashicons-money"></span>
+                        <span class="dashicons dashicons-money"></span>
 
                         Incassomachtigen
 
-        </a>
-        <?php } ?>
+                    </a>
+                <?php } ?>
 
-        <?php if (bluem_module_enabled('payments')) { ?>
+                <?php if ( bluem_module_enabled( 'payments' ) ) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_payments');?>"
-        class="nav-tab
-            <?php if ($tab==='payments') {
-        echo "nav-tab-active";
-    } ?>
+                    <a href="<?php echo admin_url( 'options-general.php?page=bluem#tab_payments' ); ?>"
+                       class="nav-tab
+            <?php if ( $tab === 'payments' ) {
+                           echo "nav-tab-active";
+                       } ?>
             ">
 
-            <span class="dashicons dashicons-money-alt"></span>
-            iDEAL
-        </a>
-        <?php } ?>
+                        <span class="dashicons dashicons-money-alt"></span>
+                        iDEAL
+                    </a>
+                <?php } ?>
 
-        <?php if (bluem_module_enabled('idin')) { ?>
+                <?php if ( bluem_module_enabled( 'idin' ) ) { ?>
 
-        <a href="<?php echo admin_url('options-general.php?page=bluem#tab_idin');?>"
-        class="nav-tab
-            <?php if ($tab==='idin') {
-        echo "nav-tab-active";
-    } ?>
+                    <a href="<?php echo admin_url( 'options-general.php?page=bluem#tab_idin' ); ?>"
+                       class="nav-tab
+            <?php if ( $tab === 'idin' ) {
+                           echo "nav-tab-active";
+                       } ?>
             ">
-            <span class="dashicons dashicons-businessperson"></span>
-            Identiteit
-        </a>
-        <?php } ?>
+                        <span class="dashicons dashicons-businessperson"></span>
+                        Identiteit
+                    </a>
+                <?php } ?>
 
-        <a href="<?php echo admin_url('admin.php?page=bluem_admin_requests_view'); ?>"
-        class="nav-tab">
-        <span class="dashicons dashicons-database-view"></span>
-            Verzoeken
-        </a>
-        <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e"
-        target="_blank" class="nav-tab">
-        <span class="dashicons dashicons-media-document"></span>
-        Handleiding</a>
+                <a href="<?php echo admin_url( 'admin.php?page=bluem_admin_requests_view' ); ?>"
+                   class="nav-tab">
+                    <span class="dashicons dashicons-database-view"></span>
+                    Verzoeken
+                </a>
+                <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e"
+                   target="_blank" class="nav-tab">
+                    <span class="dashicons dashicons-media-document"></span>
+                    Handleiding</a>
 
-        <a href="mailto:d.rijpkema@bluem.nl?subject=Bluem+Wordpress+Plugin"
-        class="nav-tab" target="_blank">
-        <span class="dashicons dashicons-editor-help"></span>
-        Ondersteuning via e-mail
-        </a>
-    </nav>
+                <a href="mailto:pluginsupport@bluem.nl?subject=Bluem+Wordpress+Plugin"
+                   class="nav-tab" target="_blank">
+                    <span class="dashicons dashicons-editor-help"></span>
+                    E-mail Plugin support
+                </a>
+            </nav>
 
 
-    </div>
-    <div class="bluem-settings">
+        </div>
+        <div class="bluem-settings">
 
-        <form action="options.php" method="post">
+            <form action="options.php" method="post">
+                <?php
+                settings_fields( 'bluem_woocommerce_modules_options' );
+                do_settings_sections( 'bluem_woocommerce_modules' );
+                settings_fields( 'bluem_woocommerce_options' );
+                do_settings_sections( 'bluem_woocommerce' ); ?>
+
+                <input name="submit"
+                       class="button button-primary"
+                       type="submit" value="<?php esc_attr_e( 'Save' ); ?>"
+                />
+            </form>
             <?php
-            settings_fields('bluem_woocommerce_modules_options');
-    do_settings_sections('bluem_woocommerce_modules');
-    settings_fields('bluem_woocommerce_options');
-    do_settings_sections('bluem_woocommerce'); ?>
-
-            <input name="submit"
-            class="button button-primary"
-                type="submit" value="<?php esc_attr_e('Save'); ?>"
-            />
-        </form>
-        <?php
-        bluem_render_footer(false); ?>
+            bluem_render_footer( false ); ?>
+        </div>
     </div>
-</div>
-<?php
+    <?php
 }
 
 
-function bluem_woocommerce_general_settings_section()
-{
+function bluem_woocommerce_general_settings_section() {
     // Hier kan je alle belangrijke gegevens instellen rondom Bluem algemeen. <br>
     echo '<p>
     <div class="notice notice-warning inline" style="padding:10px;">
@@ -383,15 +379,14 @@ function bluem_woocommerce_general_settings_section()
     Heb je de plugin al geinstalleerd op een andere website? 
     Gebruik dan de Import/Export functie om dezelfde instellingen 
     en voorkeuren in te laden.&nbsp; ';
-    echo '<a href="'.admin_url('admin.php?page=bluem_admin_importexport').'"
+    echo '<a href="' . admin_url( 'admin.php?page=bluem_admin_importexport' ) . '"
      class="">Instellingen importeren of exporteren</a></div>';
     echo '</p>';
-    bluem_render_footer(false);
+    bluem_render_footer( false );
 }
 
 
-function bluem_woocommerce_register_settings()
-{
+function bluem_woocommerce_register_settings() {
     $tab = bluem_woocommerce_tab();
 
     register_setting(
@@ -400,7 +395,7 @@ function bluem_woocommerce_register_settings()
         'bluem_woocommerce_options_validate'
     );
 
-    if (is_null($tab)) {
+    if ( is_null( $tab ) ) {
         register_setting(
             'bluem_woocommerce_options',
             'bluem_woocommerce_modules_options',
@@ -408,27 +403,27 @@ function bluem_woocommerce_register_settings()
         );
         add_settings_section(
             'bluem_woocommerce_modules_section',
-            _('Beheer onderdelen van deze plug-in'),
+            _( 'Beheer onderdelen van deze plug-in' ),
             'bluem_woocommerce_modules_settings_section',
             'bluem_woocommerce'
         );
         add_settings_field(
             "mandates_enabled",
-            _("Mandates actief"),
+            _( "Mandates actief" ),
             "bluem_woocommerce_modules_render_mandates_activation",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
         );
         add_settings_field(
             "payments_enabled",
-            _("ePayments actief"),
+            _( "ePayments actief" ),
             "bluem_woocommerce_modules_render_payments_activation",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
         );
         add_settings_field(
             "idin_enabled",
-            _("iDIN actief"),
+            _( "iDIN actief" ),
             "bluem_woocommerce_modules_render_idin_activation",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
@@ -437,7 +432,7 @@ function bluem_woocommerce_register_settings()
 
         add_settings_field(
             "suppress_warning",
-            _("In admin omgeving waarschuwen als plugin nog niet goed is ingesteld"),
+            _( "In admin omgeving waarschuwen als plugin nog niet goed is ingesteld" ),
             "bluem_woocommerce_modules_render_suppress_warning",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
@@ -450,7 +445,7 @@ function bluem_woocommerce_register_settings()
             'bluem_woocommerce'
         );
         $general_settings = bluem_woocommerce_get_core_options();
-        foreach ($general_settings as $key => $ms) {
+        foreach ( $general_settings as $key => $ms ) {
             add_settings_field(
                 $key,
                 $ms['name'],
@@ -462,7 +457,7 @@ function bluem_woocommerce_register_settings()
     }
 
 
-    if (bluem_module_enabled('mandates')) {
+    if ( bluem_module_enabled( 'mandates' ) ) {
         add_settings_section(
             'bluem_woocommerce_mandates_section',
             'Digitale Incassomachtiging instellingen',
@@ -471,8 +466,8 @@ function bluem_woocommerce_register_settings()
         );
 
         $mandates_settings = bluem_woocommerce_get_mandates_options();
-        if (is_array($mandates_settings) && count($mandates_settings) > 0) {
-            foreach ($mandates_settings as $key => $ms) {
+        if ( is_array( $mandates_settings ) && count( $mandates_settings ) > 0 ) {
+            foreach ( $mandates_settings as $key => $ms ) {
                 add_settings_field(
                     $key,
                     $ms['name'],
@@ -484,7 +479,7 @@ function bluem_woocommerce_register_settings()
         }
     }
 
-    if (bluem_module_enabled('payments')) {
+    if ( bluem_module_enabled( 'payments' ) ) {
         add_settings_section(
             'bluem_woocommerce_payments_section',
             'iDeal payments instellingen',
@@ -494,8 +489,8 @@ function bluem_woocommerce_register_settings()
 
 
         $payments_settings = bluem_woocommerce_get_payments_options();
-        if (is_array($payments_settings) && count($payments_settings) > 0) {
-            foreach ($payments_settings as $key => $ms) {
+        if ( is_array( $payments_settings ) && count( $payments_settings ) > 0 ) {
+            foreach ( $payments_settings as $key => $ms ) {
                 $key_name = "bluem_woocommerce_settings_render_" . $key;
                 add_settings_field(
                     $key,
@@ -508,7 +503,7 @@ function bluem_woocommerce_register_settings()
         }
     }
 
-    if (bluem_module_enabled('idin')) {
+    if ( bluem_module_enabled( 'idin' ) ) {
         add_settings_section(
             'bluem_woocommerce_idin_section',
             'iDIN instellingen',
@@ -518,8 +513,8 @@ function bluem_woocommerce_register_settings()
 
 
         $idin_settings = bluem_woocommerce_get_idin_options();
-        if (is_array($idin_settings) && count($idin_settings) > 0) {
-            foreach ($idin_settings as $key => $ms) {
+        if ( is_array( $idin_settings ) && count( $idin_settings ) > 0 ) {
+            foreach ( $idin_settings as $key => $ms ) {
                 $key_name = "bluem_woocommerce_settings_render_" . $key;
                 add_settings_field(
                     $key,
@@ -532,189 +527,186 @@ function bluem_woocommerce_register_settings()
         }
     }
 }
-add_action('admin_init', 'bluem_woocommerce_register_settings');
+
+add_action( 'admin_init', 'bluem_woocommerce_register_settings' );
 
 
-add_action('show_user_profile', 'bluem_woocommerce_show_general_profile_fields', 1);
+add_action( 'show_user_profile', 'bluem_woocommerce_show_general_profile_fields', 1 );
 
-function bluem_woocommerce_show_general_profile_fields()
-{
+function bluem_woocommerce_show_general_profile_fields() {
     // @todo: create template
     ?>
     <h2>
-    <?php echo bluem_get_bluem_logo_html(48); ?>
-    <!-- Identiteit verificatie via Bluem -->
-    Bluem onderdelen
+        <?php echo bluem_get_bluem_logo_html( 48 ); ?>
+        <!-- Identiteit verificatie via Bluem -->
+        Bluem onderdelen
     </h2>
     <table class="form-table">
 
-    <tr>
-    <th>
-    Configureren?
-    </th>
-    <td>
-    Ga naar de
-    <a href="<?php echo home_url("wp-admin/options-general.php?page=bluem"); ?>">
-    instellingen</a> om het gedrag van elk Bluem onderdeel te wijzigen.
-    </td>
-    </tr>
+        <tr>
+            <th>
+                Configureren?
+            </th>
+            <td>
+                Ga naar de
+                <a href="<?php echo home_url( "wp-admin/options-general.php?page=bluem" ); ?>">
+                    instellingen</a> om het gedrag van elk Bluem onderdeel te wijzigen.
+            </td>
+        </tr>
     </table>
- <?php
+    <?php
 }
 
 
 // Settings functions
 
-function bluem_woocommerce_get_option($key)
-{
+function bluem_woocommerce_get_option( $key ) {
     $options = bluem_woocommerce_get_core_options();
 
-    if (array_key_exists($key, $options)) {
-        return $options[$key];
+    if ( array_key_exists( $key, $options ) ) {
+        return $options[ $key ];
     }
+
     return false;
 }
 
 
-
-function bluem_woocommerce_settings_render_environment()
-{
+function bluem_woocommerce_settings_render_environment() {
     bluem_woocommerce_settings_render_input(
-        bluem_woocommerce_get_option('environment')
-    );
-}
-function bluem_woocommerce_settings_render_senderID()
-{
-    bluem_woocommerce_settings_render_input(
-        bluem_woocommerce_get_option('senderID')
+        bluem_woocommerce_get_option( 'environment' )
     );
 }
 
-function bluem_woocommerce_settings_render_test_accessToken()
-{
+function bluem_woocommerce_settings_render_senderID() {
     bluem_woocommerce_settings_render_input(
-        bluem_woocommerce_get_option('test_accessToken')
+        bluem_woocommerce_get_option( 'senderID' )
     );
 }
-function bluem_woocommerce_settings_render_production_accessToken()
-{
+
+function bluem_woocommerce_settings_render_test_accessToken() {
     bluem_woocommerce_settings_render_input(
-        bluem_woocommerce_get_option('production_accessToken')
+        bluem_woocommerce_get_option( 'test_accessToken' )
     );
 }
-function bluem_woocommerce_settings_render_expectedReturnStatus()
-{
+
+function bluem_woocommerce_settings_render_production_accessToken() {
     bluem_woocommerce_settings_render_input(
-        bluem_woocommerce_get_option('expectedReturnStatus')
+        bluem_woocommerce_get_option( 'production_accessToken' )
+    );
+}
+
+function bluem_woocommerce_settings_render_expectedReturnStatus() {
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_option( 'expectedReturnStatus' )
     );
 }
 
 
-function bluem_woocommerce_settings_render_input($field)
-{
-    if ($field === false) {
+function bluem_woocommerce_settings_render_input( $field ) {
+    if ( $field === false ) {
         return;
     }
-    $values = get_option('bluem_woocommerce_options');
-    $key = $field['key'];
+    $values = get_option( 'bluem_woocommerce_options' );
+    $key    = $field['key'];
 
     // fallback
-    if (!isset($field['type'])) {
+    if ( ! isset( $field['type'] ) ) {
         $field['type'] = "text";
     }
 
-    if ($field['type'] == "select") {
-        
+    if ( $field['type'] == "select" ) {
+
         // @todo stop using inline html and use a template engine here, like latte
         ?>
 
 
-<select class='form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
-    name='bluem_woocommerce_options[<?php echo $key; ?>]'>
-    <?php
-            foreach ($field['options'] as $option_value => $option_name) {
+        <select class='form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
+                name='bluem_woocommerce_options[<?php echo $key; ?>]'>
+            <?php
+            foreach ( $field['options'] as $option_value => $option_name ) {
                 ?>
-    <option value="<?php echo $option_value; ?>" <?php if (isset($values[$key]) && $values[$key] !== "" && $option_value == $values[$key]) {
+                <option
+                    value="<?php echo $option_value; ?>" <?php if ( isset( $values[ $key ] ) && $values[ $key ] !== "" && $option_value == $values[ $key ] ) {
                     echo "selected='selected'";
                 } ?>><?php echo $option_name; ?></option>
-    <?php
+                <?php
             } ?>
-</select>
-<?php
-    } elseif ($field['type'] == "bool") {
-        ?>
-<div class="form-check form-check-inline">
-    <label class="form-check-label" for="<?php echo $key; ?>_1">
-        <input class="form-check-input" type="radio"
-        name="bluem_woocommerce_options[<?php echo $key; ?>]"
-        id="<?php echo $key; ?>_1" value="1"
-        <?php if (isset($values[$key]) && $values[$key]=="1") {
-            echo "checked";
-        } elseif ($field['default'] =="1") {
-            echo "checked";
-        } ?>
-        >
-         Ja
-    </label>
-</div>
-<div class="form-check form-check-inline">
-    <label class="form-check-label" for="<?php echo $key; ?>_0">
-        <input class="form-check-input" type="radio"
-        name="bluem_woocommerce_options[<?php echo $key; ?>]"
-        id="<?php echo $key; ?>_0" value="0"
-        <?php if (isset($values[$key]) && $values[$key]=="0") {
-            echo "checked";
-        } elseif ($field['default'] =="0") {
-            echo "checked";
-        } ?>
-        >
-         Nee
-    </label>
-</div>
+        </select>
         <?php
-    } elseif ($field['type'] == "textarea") {
+    } elseif ( $field['type'] == "bool" ) {
+        ?>
+        <div class="form-check form-check-inline">
+            <label class="form-check-label" for="<?php echo $key; ?>_1">
+                <input class="form-check-input" type="radio"
+                       name="bluem_woocommerce_options[<?php echo $key; ?>]"
+                       id="<?php echo $key; ?>_1" value="1"
+                    <?php if ( isset( $values[ $key ] ) && $values[ $key ] == "1" ) {
+                        echo "checked";
+                    } elseif ( $field['default'] == "1" ) {
+                        echo "checked";
+                    } ?>
+                >
+                Ja
+            </label>
+        </div>
+        <div class="form-check form-check-inline">
+            <label class="form-check-label" for="<?php echo $key; ?>_0">
+                <input class="form-check-input" type="radio"
+                       name="bluem_woocommerce_options[<?php echo $key; ?>]"
+                       id="<?php echo $key; ?>_0" value="0"
+                    <?php if ( isset( $values[ $key ] ) && $values[ $key ] == "0" ) {
+                        echo "checked";
+                    } elseif ( $field['default'] == "0" ) {
+                        echo "checked";
+                    } ?>
+                >
+                Nee
+            </label>
+        </div>
+        <?php
+    } elseif ( $field['type'] == "textarea" ) {
         $attrs = [
-            'id'=>"bluem_woocommerce_settings_$key",
-            'class'=>"bluem-form-control",
-            'name'=>"bluem_woocommerce_options[$key]",
+            'id'    => "bluem_woocommerce_settings_$key",
+            'class' => "bluem-form-control",
+            'name'  => "bluem_woocommerce_options[$key]",
         ];
         ?>
-<textarea  
-    <?php foreach ($attrs as $akey => $aval) {
-            echo "$akey='$aval' ";
-        } ?>><?php echo(isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?></textarea>
-<?php
+        <textarea  
+    <?php foreach ( $attrs as $akey => $aval ) {
+        echo "$akey='$aval' ";
+    } ?>><?php echo( isset( $values[ $key ] ) ? esc_attr( $values[ $key ] ) : $field['default'] ); ?></textarea>
+        <?php
     } else {
         $attrs = [];
-        if ($field['type'] == "password") {
+        if ( $field['type'] == "password" ) {
             $attrs['type'] = "password";
-        } elseif ($field['type'] == "number") {
+        } elseif ( $field['type'] == "number" ) {
             $attrs['type'] = "number";
-            if (isset($field['attrs'])) {
-                $attrs = array_merge($attrs, $field['attrs']);
+            if ( isset( $field['attrs'] ) ) {
+                $attrs = array_merge( $attrs, $field['attrs'] );
             }
         } else {
             $attrs['type'] = "text";
         } ?>
-<input class='bluem-form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
-    name='bluem_woocommerce_options[<?php echo $key; ?>]'
-    value='<?php echo(isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?>'
-    <?php foreach ($attrs as $akey => $aval) {
-            echo "$akey='$aval' ";
-        } ?> />
-<?php
+        <input class='bluem-form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
+               name='bluem_woocommerce_options[<?php echo $key; ?>]'
+               value='<?php echo( isset( $values[ $key ] ) ? esc_attr( $values[ $key ] ) : $field['default'] ); ?>'
+            <?php foreach ( $attrs as $akey => $aval ) {
+                echo "$akey='$aval' ";
+            } ?> />
+        <?php
     } ?>
 
-<?php if (isset($field['description']) && $field['description'] !== "") {
+    <?php if ( isset( $field['description'] ) && $field['description'] !== "" ) {
         ?>
 
-<br><label style='color:#333;'
-    for='bluem_woocommerce_settings_<?php echo $key; ?>'><?php echo $field['description']; ?></label>
-<?php
+        <br><label style='color:#333;'
+                   for='bluem_woocommerce_settings_<?php echo $key; ?>'><?php echo $field['description']; ?></label>
+        <?php
     } ?>
 
 
-<?php
+    <?php
 }
 
 /**
@@ -723,98 +715,98 @@ function bluem_woocommerce_settings_render_input($field)
 function bluem_woocommerce_get_core_options(): array {
     return [
         'environment' => [
-            'key' => 'environment',
-            'title' => 'bluem_environment',
-            'name' => 'Kies de actieve modus',
+            'key'         => 'environment',
+            'title'       => 'bluem_environment',
+            'name'        => 'Kies de actieve modus',
             'description' => 'Vul hier welke modus je wilt gebruiken: prod, test of acc in voor productie (live), test of acceptance omgeving.',
-            'type' => 'select',
-            'default' => 'test',
-            'options' =>
-            [
-                'test' => 'Test',
-                'prod' => "Productie (live)",
-            ]
+            'type'        => 'select',
+            'default'     => 'test',
+            'options'     =>
+                [
+                    'test' => 'Test',
+                    'prod' => "Productie (live)",
+                ]
             // acceptance eventueel later toevoegen
         ],
-        'senderID' => [
-            'key' => 'senderID',
-            'title' => 'bluem_senderID',
-            'name' => 'Bluem Sender ID',
+        'senderID'    => [
+            'key'         => 'senderID',
+            'title'       => 'bluem_senderID',
+            'name'        => 'Bluem Sender ID',
             'description' => 'Het sender ID, uitgegeven door Bluem. Begint met een S, gevolgd door een getal.',
-            'default' => ""
+            'default'     => ""
         ],
 
-        'test_accessToken' => [
-            'key' => 'test_accessToken',
-            'title' => 'bluem_test_accessToken',
-            'type' => 'password',
-            'name' => 'Access Token voor Testen',
+        'test_accessToken'       => [
+            'key'         => 'test_accessToken',
+            'title'       => 'bluem_test_accessToken',
+            'type'        => 'password',
+            'name'        => 'Access Token voor Testen',
             'description' => 'Het access token om met Bluem te kunnen communiceren, voor de test omgeving',
-            'default' => ''
+            'default'     => ''
         ],
         'production_accessToken' => [
-            'key' => 'production_accessToken',
-            'title' => 'bluem_production_accessToken',
-            'type' => 'password',
-            'name' => 'Access Token voor Productie',
+            'key'         => 'production_accessToken',
+            'title'       => 'bluem_production_accessToken',
+            'type'        => 'password',
+            'name'        => 'Access Token voor Productie',
             'description' => 'Het access token om met Bluem te kunnen communiceren, voor de productie omgeving',
-            'default' => ''
+            'default'     => ''
         ],
-        'expectedReturnStatus' => [
-            'key' => 'expectedReturnStatus',
-            'title' => 'bluem_expectedReturnStatus',
-            'name' => 'Test modus verwachte return status',
+        'expectedReturnStatus'   => [
+            'key'         => 'expectedReturnStatus',
+            'title'       => 'bluem_expectedReturnStatus',
+            'name'        => 'Test modus verwachte return status',
             'description' => 'Welke status wil je terug krijgen voor een TEST transaction of status request? Mogelijke waarden: none, success, cancelled, expired, failure, open, pending',
-            'default' => 'success',
-            'type' => 'select',
-            'options' => [
-                'success' => 'success',
+            'default'     => 'success',
+            'type'        => 'select',
+            'options'     => [
+                'success'   => 'success',
                 'cancelled' => 'cancelled',
-                'expired' => 'expired',
-                'failure' => 'failure',
-                'open' => 'open',
-                'pending' => 'pending',
-                'none' => 'none'
+                'expired'   => 'expired',
+                'failure'   => 'failure',
+                'open'      => 'open',
+                'pending'   => 'pending',
+                'none'      => 'none'
             ]
         ],
-        'suppress_woo' => [
-            'key' => 'suppress_woo',
-            'title' => 'bluem_suppress_woo',
-            'name' => 'WooCommerce gebruiken?',
+        'suppress_woo'           => [
+            'key'         => 'suppress_woo',
+            'title'       => 'bluem_suppress_woo',
+            'name'        => 'WooCommerce gebruiken?',
             'description' => 'Zet dit op "WooCommerce niet gebruiken" als je deze plug-in wilt gebruiken op deze site zonder WooCommerce functionaliteiten.',
-            'type' => 'select',
-            'default' => '0',
-            'options' =>
-            [
-                '0' => "WooCommerce wel gebruiken",
-                '1' => 'WooCommerce NIET gebruiken'
-            ]
+            'type'        => 'select',
+            'default'     => '0',
+            'options'     =>
+                [
+                    '0' => "WooCommerce wel gebruiken",
+                    '1' => 'WooCommerce NIET gebruiken'
+                ]
         ],
 
-        'error_reporting_email' => [
-            'key' => 'error_reporting_email',
-            'title' => 'bluem_error_reporting_email',
-            'name' => 'Rapporteer errors bij de developers via een automatische email',
+        'error_reporting_email'          => [
+            'key'         => 'error_reporting_email',
+            'title'       => 'bluem_error_reporting_email',
+            'name'        => 'Rapporteer errors bij de developers via een automatische email',
             'description' => "Help ons snel problemen oplossen en downtime minimaliseren. Geef hier aan of je als de developers van Bluem  automatisch een notificatie e-mail wil sturen met technische details (geen persoonlijke informatie). Dit staat standaard aan, behalve als je dit expliciet uitzet. ",
-            'type' => 'select',
-            'default' => '1',
-            'options' => [
+            'type'        => 'select',
+            'default'     => '1',
+            'options'     => [
                 '1' => 'Ja, stuur errors door naar de developers',
                 '0' => 'Geen error reportage via e-mail',
             ],
         ],
         'transaction_notification_email' => [
-            'key' => 'transaction_notification_email',
-            'title' => 'bluem_transaction_notification_email',
-            'name' => 'E-mail notificatie voor website
+            'key'         => 'transaction_notification_email',
+            'title'       => 'bluem_transaction_notification_email',
+            'name'        => 'E-mail notificatie voor website
                 eigenaar bij elke nieuwe transactie?',
             'description' => "Geef hier aan of je als
                 website-eigenaar automatisch een notificatie e-mail wil ontvangen met transactiedetails",
-            'type' => 'select',
-            'default' => '0',
-            'options' => [
+            'type'        => 'select',
+            'default'     => '0',
+            'options'     => [
                 '0' => 'Geen e-mail notificatie (standaard)',
-                '1' => 'Stuur notificatie voor elke transactie naar '.get_option('admin_email')
+                '1' => 'Stuur notificatie voor elke transactie naar ' . get_option( 'admin_email' )
             ],
         ],
     ];
@@ -824,99 +816,101 @@ function bluem_woocommerce_get_core_options(): array {
  * Error reporting email functionality
  * @return bool
  */
-function bluem_error_report_email($data = []): bool {
+function bluem_error_report_email( $data = [] ): bool {
     $debug = false;
 
-    $error_report_id = date("Ymdhis") . '_'. rand(0, 512);
+    $error_report_id = date( "Ymdhis" ) . '_' . rand( 0, 512 );
 
-    $data = (object)$data;
+    $data                  = (object) $data;
     $data->error_report_id = $error_report_id;
 
-    $settings = get_option('bluem_woocommerce_options');
+    $settings = get_option( 'bluem_woocommerce_options' );
 
     // $data = bluem_db_get_request_by_id($request_id);
     // $pl = json_decode($data->payload);
 
-    if (is_null($data)) {
+    if ( is_null( $data ) ) {
         return false;
     }
 
-    if (!isset($settings['error_reporting_email'])
-    || $settings['error_reporting_email'] == 1
+    if ( ! isset( $settings['error_reporting_email'] )
+         || $settings['error_reporting_email'] == 1
     ) {
-        if ($debug) {
+        if ( $debug ) {
             echo "Sending error reporting email; Data:";
-            var_dump($data);
+            var_dump( $data );
         }
 
-        $author_name = "Administratie van ".get_bloginfo('name');
+        $author_name  = "Administratie van " . get_bloginfo( 'name' );
         $author_email = esc_attr(
-            get_option("admin_email")
+            get_option( "admin_email" )
         );
 
-        $to = "d.rijpkema@bluem.nl";
+        $to = "pluginsupport@bluem.nl";
 
-        $subject = "[".get_bloginfo('name')."] ";
+        $subject = "[" . get_bloginfo( 'name' ) . "] ";
         $subject .= "Notificatie Error in Bluem ";
 
         $message = "<p>Error in Bluem plugin. $author_name <$author_email>,</p>";
-        $message .= "<p>Data: <br>".json_encode($data)."</p>";
+        $message .= "<p>Data: <br>" . json_encode( $data ) . "</p>";
 
         ob_start();
-        foreach ($data as $k=>$v) {
-            if (is_null($v)) {
+        foreach ( $data as $k => $v ) {
+            if ( is_null( $v ) ) {
                 continue;
             }
 
             bluem_render_obj_row_recursive(
-                "<strong>".ucfirst($k)."</strong>",
+                "<strong>" . ucfirst( $k ) . "</strong>",
                 $v
             );
         }
         $message_p = ob_get_clean();
 
-        $message.=$message_p;
-        $message.="</p>";
-        $message.= bluem_email_footer();
-        
-        $message = nl2br($message);
+        $message .= $message_p;
+        $message .= "</p>";
+        $message .= bluem_email_footer();
 
-        $headers = array('Content-Type: text/html; charset=UTF-8');
-        if ($debug) {
-            bluem_email_debug($to, $subject, $message, $headers);
+        $message = nl2br( $message );
+
+        $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+        if ( $debug ) {
+            bluem_email_debug( $to, $subject, $message, $headers );
         }
-        
-        $mailing = wp_mail($to, $subject, $message, $headers);
 
-        if ($mailing) {
-            bluem_db_request_log($error_report_id, "Sent error report mail to ".$to);
-        } 
+        $mailing = wp_mail( $to, $subject, $message, $headers );
+
+        if ( $mailing ) {
+            bluem_db_request_log( $error_report_id, "Sent error report mail to " . $to );
+        }
+
         // or no mail sent 
-        
+
         return $mailing;
     }
+
     return false;
 }
 
-function bluem_email_footer() : string 
-{
-    return "<p>Ga naar de site op ".home_url()." om dit verzoek in detail te bekijken.</p>";
+function bluem_email_footer(): string {
+    return "<p>Ga naar de site op " . home_url() . " om dit verzoek in detail te bekijken.</p>";
 }
 
-function bluem_email_debug($to,$subject,$message,$headers) {
-    echo "<HR> ".PHP_EOL;
-    var_dump($to);
-    var_dump($subject);
-    echo "<HR> ".PHP_EOL;
-    echo($message);
-    echo "<HR> ".PHP_EOL;
-    var_dump($headers);
+function bluem_email_debug( $to, $subject, $message, $headers ) {
+    echo "<HR> " . PHP_EOL;
+    var_dump( $to );
+    var_dump( $subject );
+    echo "<HR> " . PHP_EOL;
+    echo( $message );
+    echo "<HR> " . PHP_EOL;
+    var_dump( $headers );
     die();
 }
 
 
 /**
  * This function executes a notification mail, if this is set as such in the settings.
+ *
  * @param $request_id
  *
  * @return bool
@@ -926,80 +920,80 @@ function bluem_transaction_notification_email(
 ): bool {
     $debug = false;
 
-    $settings = get_option('bluem_woocommerce_options');
+    $settings = get_option( 'bluem_woocommerce_options' );
 
-    $data = bluem_db_get_request_by_id($request_id);
-    if($data === false) {
+    $data = bluem_db_get_request_by_id( $request_id );
+    if ( $data === false ) {
         return false;
     }
-    $data = (object)$data;
+    $data = (object) $data;
 
-    $pl = json_decode($data->payload);
+    $pl = json_decode( $data->payload );
 
-    if (isset($pl->sent_notification) && $pl->sent_notification=="true") {
-        return false;
-    }
-
-    if (is_null($data)) {
+    if ( isset( $pl->sent_notification ) && $pl->sent_notification == "true" ) {
         return false;
     }
 
-    if (!isset($settings['transaction_notification_email'])
-    || $settings['transaction_notification_email'] == 1
+    if ( is_null( $data ) ) {
+        return false;
+    }
+
+    if ( ! isset( $settings['transaction_notification_email'] )
+         || $settings['transaction_notification_email'] == 1
     ) {
-        if ($debug) {
+        if ( $debug ) {
             echo "Sending notification email for request. Data:";
-            var_dump($data);
+            var_dump( $data );
         }
 
-        $author_name = "administratie van ".get_bloginfo('name');
+        $author_name = "administratie van " . get_bloginfo( 'name' );
         //get_the_author_meta('user_nicename');
 
         $to = esc_attr(
-            get_option("admin_email")
+            get_option( "admin_email" )
         );
 
-        $subject = "[".get_bloginfo('name')."] ";
-        $subject .= "Notificatie Bluem ".ucfirst($data->type). " verzoek › ID ".$data->transaction_id;
-        if (isset($data->status)) {
-            $subject .=" › status: $data->status ";
+        $subject = "[" . get_bloginfo( 'name' ) . "] ";
+        $subject .= "Notificatie Bluem " . ucfirst( $data->type ) . " verzoek › ID " . $data->transaction_id;
+        if ( isset( $data->status ) ) {
+            $subject .= " › status: $data->status ";
         }
 
         $message = "<p>Beste $author_name,</p>";
-        $message .= "<p>Er is een nieuw Bluem ".ucfirst($data->type)." verzoek verwerkt met de volgende gegevens:</p><p>";
+        $message .= "<p>Er is een nieuw Bluem " . ucfirst( $data->type ) . " verzoek verwerkt met de volgende gegevens:</p><p>";
         // $data->payload = json_decode($data->payload);
 
         ob_start();
-        foreach ($data as $k=>$v) {
-            if ($k=="payload") {
+        foreach ( $data as $k => $v ) {
+            if ( $k == "payload" ) {
                 echo "<br><strong>Meer details</strong>:<br>  Zie admin interface<br>";
                 continue;
             }
 
-            if (is_null($v)) {
+            if ( is_null( $v ) ) {
                 continue;
             }
 
             bluem_render_obj_row_recursive(
-                "<strong>".ucfirst($k)."</strong>",
+                "<strong>" . ucfirst( $k ) . "</strong>",
                 $v
             );
         }
         $message_p = ob_get_clean();
-        
-        $message.= $message_p."</p>";
-        $message.= bluem_email_footer();
-        
-        $message = nl2br($message);
 
-        $headers = array('Content-Type: text/html; charset=UTF-8');
+        $message .= $message_p . "</p>";
+        $message .= bluem_email_footer();
 
-        if ($debug) {
-            bluem_email_debug($to, $subject, $message, $headers);
+        $message = nl2br( $message );
+
+        $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+        if ( $debug ) {
+            bluem_email_debug( $to, $subject, $message, $headers );
         }
-        $mailing = wp_mail($to, $subject, $message, $headers);
+        $mailing = wp_mail( $to, $subject, $message, $headers );
 
-        if ($mailing) {
+        if ( $mailing ) {
             bluem_db_put_request_payload(
                 $request_id,
                 [
@@ -1007,10 +1001,12 @@ function bluem_transaction_notification_email(
                 ]
             );
 
-            bluem_db_request_log($request_id, "Sent notification mail to ".$to);
+            bluem_db_request_log( $request_id, "Sent notification mail to " . $to );
         }
+
         return $mailing;
     }
+
     return false;
 }
 
@@ -1019,19 +1015,19 @@ function bluem_woocommerce_get_config(): Stdclass {
     $bluem_options = bluem_woocommerce_get_core_options();
 
 
-    if (function_exists('bluem_woocommerce_get_mandates_options')) {
+    if ( function_exists( 'bluem_woocommerce_get_mandates_options' ) ) {
         $bluem_options = array_merge(
             $bluem_options,
             bluem_woocommerce_get_mandates_options()
         );
     }
-    if (function_exists('bluem_woocommerce_get_idin_options')) {
+    if ( function_exists( 'bluem_woocommerce_get_idin_options' ) ) {
         $bluem_options = array_merge(
             $bluem_options,
             bluem_woocommerce_get_idin_options()
         );
     }
-    if (function_exists('bluem_woocommerce_get_payments_options')) {
+    if ( function_exists( 'bluem_woocommerce_get_payments_options' ) ) {
         $bluem_options = array_merge(
             $bluem_options,
             bluem_woocommerce_get_payments_options()
@@ -1040,97 +1036,87 @@ function bluem_woocommerce_get_config(): Stdclass {
 
     $config = new Stdclass();
 
-    $values = get_option('bluem_woocommerce_options');
-    foreach ($bluem_options as $key => $option) {
-        $config->$key = $values[$key] ?? ($option['default'] ?? "");
+    $values = get_option( 'bluem_woocommerce_options' );
+    foreach ( $bluem_options as $key => $option ) {
+        $config->$key = $values[ $key ] ?? ( $option['default'] ?? "" );
     }
+
     return $config;
 }
 
 
-
-
-function bluem_woocommerce_modules_settings_section()
-{
+function bluem_woocommerce_modules_settings_section() {
     echo '<p>Verhoog je efficiëntie door alleen de diensten te activeren die jouw site wel nodig heeft.</p>';
 }
 
-function bluem_woocommerce_modules_render_mandates_activation()
-{
-    bluem_woocommerce_modules_render_generic_activation("mandates");
+function bluem_woocommerce_modules_render_mandates_activation() {
+    bluem_woocommerce_modules_render_generic_activation( "mandates" );
 }
 
-function bluem_woocommerce_modules_render_payments_activation()
-{
-    bluem_woocommerce_modules_render_generic_activation("payments");
+function bluem_woocommerce_modules_render_payments_activation() {
+    bluem_woocommerce_modules_render_generic_activation( "payments" );
 }
 
-function bluem_woocommerce_modules_render_idin_activation()
-{
-    bluem_woocommerce_modules_render_generic_activation("idin");
+function bluem_woocommerce_modules_render_idin_activation() {
+    bluem_woocommerce_modules_render_generic_activation( "idin" );
 }
 
-function bluem_woocommerce_modules_render_suppress_warning()
-{
-    bluem_woocommerce_modules_render_generic_activation("suppress_warning");
+function bluem_woocommerce_modules_render_suppress_warning() {
+    bluem_woocommerce_modules_render_generic_activation( "suppress_warning" );
 }
 
 
-function bluem_woocommerce_settings_render_suppress_woo()
-{
+function bluem_woocommerce_settings_render_suppress_woo() {
     bluem_woocommerce_settings_render_input(
-        bluem_woocommerce_get_option('suppress_woo')
+        bluem_woocommerce_get_option( 'suppress_woo' )
     );
 }
 
-function bluem_woocommerce_settings_render_error_reporting_email()
-{
+function bluem_woocommerce_settings_render_error_reporting_email() {
     bluem_woocommerce_settings_render_input(
-        bluem_woocommerce_get_option('error_reporting_email')
+        bluem_woocommerce_get_option( 'error_reporting_email' )
     );
 }
 
-function bluem_woocommerce_settings_render_transaction_notification_email()
-{
+function bluem_woocommerce_settings_render_transaction_notification_email() {
     bluem_woocommerce_settings_render_input(
-        bluem_woocommerce_get_option('transaction_notification_email')
+        bluem_woocommerce_get_option( 'transaction_notification_email' )
     );
 }
 
 
-function bluem_woocommerce_modules_render_generic_activation($module)
-{
+function bluem_woocommerce_modules_render_generic_activation( $module ) {
     $field = [
-        'key'=> "{$module}_enabled",
-        'default'=> "",
-        'description'=> "",
-        'options'=> [
-            ''=>'(Maak een selectie)',
-            '1'=>'Actief',
-            '0'=>'Gedeactiveerd'
+        'key'         => "{$module}_enabled",
+        'default'     => "",
+        'description' => "",
+        'options'     => [
+            ''  => '(Maak een selectie)',
+            '1' => 'Actief',
+            '0' => 'Gedeactiveerd'
         ],
-        'type'=> "select"
+        'type'        => "select"
     ];
 
-    bluem_woocommerce_settings_render_input($field);
+    bluem_woocommerce_settings_render_input( $field );
 }
 
 
-function bluem_module_enabled($module): bool {
-    $bluem_options = get_option('bluem_woocommerce_options');
-    
-    if($bluem_options===false) {
+function bluem_module_enabled( $module ): bool {
+    $bluem_options = get_option( 'bluem_woocommerce_options' );
+
+    if ( $bluem_options === false ) {
         return false;
     }
-    if ($bluem_options!==false
-        && !isset($bluem_options["{$module}_enabled"])
-        || $bluem_options["{$module}_enabled"]=="1"
+    if ( $bluem_options !== false
+         && ! isset( $bluem_options["{$module}_enabled"] )
+         || $bluem_options["{$module}_enabled"] == "1"
     ) {
         return true;
     }
+
     return false;
 }
-
 
 
 /**
@@ -1138,142 +1124,139 @@ function bluem_module_enabled($module): bool {
  *
  * @return void
  */
-function bluem_generic_tabler($data)
-{
+function bluem_generic_tabler( $data ) {
     ?>
-<table class="table widefat">
+    <table class="table widefat">
     <?php
     $i = 0;
-    foreach ($data as $row) {
-        if ($i == 0) {
+    foreach ( $data as $row ) {
+        if ( $i == 0 ) {
             ?>
             <tr><?php
-                foreach ($row as $row_key => $row_value) { ?>
-                    <th>
-                        <?php echo $row_key; ?>
-                    </th><?php
-                } ?>
+            foreach ( $row as $row_key => $row_value ) { ?>
+                <th>
+                <?php echo $row_key; ?>
+                </th><?php
+            } ?>
             </tr><?php
         } ?>
         <tr>
-            <?php
-            foreach ($row as $row_key => $row_value) { ?>
-                <td>
-                    <?php echo $row_value; ?>
-                </td><?php
-            } ?>
+        <?php
+        foreach ( $row as $row_key => $row_value ) { ?>
+            <td>
+            <?php echo $row_value; ?>
+            </td><?php
+        } ?>
         </tr><?php
-        $i++;
+        $i ++;
     } ?>
-</table><?php
+    </table><?php
 }
 
 // Reference: https://www.wpbeginner.com/wp-tutorials/how-to-add-admin-notices-in-wordpress/
-add_action('admin_notices', 'bluem_setup_incomplete');
-function bluem_setup_incomplete()
-{
-    if (!is_admin()) {
+add_action( 'admin_notices', 'bluem_setup_incomplete' );
+function bluem_setup_incomplete() {
+    if ( ! is_admin() ) {
         return;
     }
 
-    $options = get_option('bluem_woocommerce_options');
+    $options = get_option( 'bluem_woocommerce_options' );
 
-    if ($options !== false && !bluem_module_enabled('suppress_warning')) {
+    if ( $options !== false && ! bluem_module_enabled( 'suppress_warning' ) ) {
         return;
     }
 
-    if ($options == false) {
+    if ( $options == false ) {
         $messages[] = "Account gegevens missen";
     } else {
         $valid_setup = true;
-        $messages = [];
-        if (!array_key_exists('senderID', $options)
-        || $options['senderID'] === ""
+        $messages    = [];
+        if ( ! array_key_exists( 'senderID', $options )
+             || $options['senderID'] === ""
         ) {
-            $messages[] = "SenderID mist";
+            $messages[]  = "SenderID mist";
             $valid_setup = false;
         }
-        if (!array_key_exists('test_accessToken', $options)
-        ||  $options['test_accessToken'] === ""
+        if ( ! array_key_exists( 'test_accessToken', $options )
+             || $options['test_accessToken'] === ""
         ) {
-            $messages[] = "Test accessToken mist";
+            $messages[]  = "Test accessToken mist";
             $valid_setup = false;
         }
 
-        if (isset($options['environment'])
-        && $options['environment'] == "prod"
-        && (
-            !array_key_exists('production_accessToken', $options)
-        || $options['production_accessToken'] === ""
-        )
+        if ( isset( $options['environment'] )
+             && $options['environment'] == "prod"
+             && (
+                 ! array_key_exists( 'production_accessToken', $options )
+                 || $options['production_accessToken'] === ""
+             )
         ) {
-            $messages[] = "Production accessToken mist";
+            $messages[]  = "Production accessToken mist";
             $valid_setup = false;
         }
 
-        if (bluem_module_enabled('mandates')
-        && (
-            !array_key_exists('brandID', $options)
-            || $options['brandID'] === ""
-        )
-                ) {
-            $messages[] = "eMandates brandID mist";
+        if ( bluem_module_enabled( 'mandates' )
+             && (
+                 ! array_key_exists( 'brandID', $options )
+                 || $options['brandID'] === ""
+             )
+        ) {
+            $messages[]  = "eMandates brandID mist";
             $valid_setup = false;
         }
 
-        if (bluem_module_enabled('idin')
-            && (!array_key_exists('IDINBrandID', $options)
-            || $options['IDINBrandID'] === "")
+        if ( bluem_module_enabled( 'idin' )
+             && ( ! array_key_exists( 'IDINBrandID', $options )
+                  || $options['IDINBrandID'] === "" )
         ) {
-            $messages[] = "iDIN BrandID  mist";
+            $messages[]  = "iDIN BrandID  mist";
             $valid_setup = false;
         }
-        
+
         // Get WooCommerce payment gateways
         $installed_payment_methods = WC()->payment_gateways->payment_gateways();
 
-        foreach( $installed_payment_methods as $method ) {
-            switch ($method->id) {
+        foreach ( $installed_payment_methods as $method ) {
+            switch ( $method->id ) {
                 case 'bluem_payments':
-                    if ($method->enabled === 'no' && bluem_module_enabled('payments')) {
+                    if ( $method->enabled === 'no' && bluem_module_enabled( 'payments' ) ) {
                         $msg = [
                             'Je hebt de Bluem iDEAL ingeschakeld maar de betaalmethode nog niet binnen WooCommerce geactiveerd.'
                         ];
-                        bluem_display_module_notices($msg, 'De Bluem integratie is nog niet volledig geactiveerd', ($_GET['page'] !== 'wc-settings' ? admin_url('admin.php?page=wc-settings&tab=checkout') : ''), 'Klik hier om naar de WooCommerce configuratie te gaan.');
+                        bluem_display_module_notices( $msg, 'De Bluem integratie is nog niet volledig geactiveerd', ( $_GET['page'] !== 'wc-settings' ? admin_url( 'admin.php?page=wc-settings&tab=checkout' ) : '' ), 'Klik hier om naar de WooCommerce configuratie te gaan.' );
                     }
-                break;
-                    
+                    break;
+
                 case 'bluem_mandates':
-                    if ($method->enabled === 'no' && bluem_module_enabled('mandates')) {
+                    if ( $method->enabled === 'no' && bluem_module_enabled( 'mandates' ) ) {
                         $msg = [
                             'Je hebt de Bluem mandates ingeschakeld maar de betaalmethode nog niet binnen WooCommerce geactiveerd.'
                         ];
-                        bluem_display_module_notices($msg, 'De Bluem integratie is nog niet volledig geactiveerd', ($_GET['page'] !== 'wc-settings' ? admin_url('admin.php?page=wc-settings&tab=checkout') : ''), 'Klik hier om naar de WooCommerce configuratie te gaan.');
+                        bluem_display_module_notices( $msg, 'De Bluem integratie is nog niet volledig geactiveerd', ( $_GET['page'] !== 'wc-settings' ? admin_url( 'admin.php?page=wc-settings&tab=checkout' ) : '' ), 'Klik hier om naar de WooCommerce configuratie te gaan.' );
                     }
-                break;
+                    break;
             }
         }
 
-        if ($valid_setup) {
+        if ( $valid_setup ) {
             return;
         }
     }
-    bluem_display_module_notices($messages, 'De Bluem integratie is nog niet volledig ingesteld', (get_admin_page_title() !== "Bluem" ? admin_url('options-general.php?page=bluem') : ''), 'Klik hier om de plugin verder in te stellen.');
+    bluem_display_module_notices( $messages, 'De Bluem integratie is nog niet volledig ingesteld', ( get_admin_page_title() !== "Bluem" ? admin_url( 'options-general.php?page=bluem' ) : '' ), 'Klik hier om de plugin verder in te stellen.' );
 }
 
-function bluem_display_module_notices($notices, $title = '', $btn_link = '', $btn_title = '')
-{
+function bluem_display_module_notices( $notices, $title = '', $btn_link = '', $btn_title = '' ) {
     echo '<div class="notice notice-warning is-dismissible">
-        <p><strong>' . $title .'</strong><br>
+        <p><strong>' . $title . '</strong><br>
         ';
-    foreach ($notices as $m) {
+    foreach ( $notices as $m ) {
         echo "$m<br>";
     }
     echo '
         </p>';
 
-    if (!empty($btn_link)) {
-        echo '<p><a href="'.$btn_link.'">'.$btn_title.'</a></p>';
+    if ( ! empty( $btn_link ) ) {
+        echo '<p><a href="' . $btn_link . '">' . $btn_title . '</a></p>';
     }
 
     echo '</div>';
@@ -1282,15 +1265,14 @@ function bluem_display_module_notices($notices, $title = '', $btn_link = '', $bt
 /*
  *  Adding Meta container admin shop_order pages
  */
-add_action('add_meta_boxes', 'bluem_order_requests_metabox');
+add_action( 'add_meta_boxes', 'bluem_order_requests_metabox' );
 
 /**
  * bluem_order_requests_metabox
  *
  * @return void
  */
-function bluem_order_requests_metabox()
-{
+function bluem_order_requests_metabox() {
     add_meta_box(
         'bluem_order_requests_metabox_content',
         __(
@@ -1309,8 +1291,7 @@ function bluem_order_requests_metabox()
  *
  * @return void
  */
-function bluem_order_requests_metabox_content()
-{
+function bluem_order_requests_metabox_content() {
     global $post;
     $order_id = $post->ID;
 //    $order = wc_get_order($order_id);
@@ -1320,14 +1301,14 @@ function bluem_order_requests_metabox_content()
     // var_dump($order_id);
 
     //  requests from links:
-    $requests_links = bluem_db_get_links_for_order($order_id);
-    $requests = [];
-    foreach ($requests_links as $rql) {
-        $requests[] = bluem_db_get_request_by_id($rql->request_id);
+    $requests_links = bluem_db_get_links_for_order( $order_id );
+    $requests       = [];
+    foreach ( $requests_links as $rql ) {
+        $requests[] = bluem_db_get_request_by_id( $rql->request_id );
     }
 
-    if (isset($requests) && count($requests)>0) {
-        bluem_render_requests_list($requests);
+    if ( isset( $requests ) && count( $requests ) > 0 ) {
+        bluem_render_requests_list( $requests );
     } else {
         echo "No requests yet";
     }
@@ -1338,27 +1319,27 @@ function bluem_order_requests_metabox_content()
  *
  * @return String
  */
-function bluem_dialogs_get_simple_header(): String
-{
+function bluem_dialogs_get_simple_header(): string {
     return "<!DOCTYPE html><html lang='nl'><body><div
     style='font-family:Arial,sans-serif;display:block;
     margin:40pt auto; padding:10pt 20pt; border:1px solid #eee;
-    background:#fff; max-width:500px;'>".
-    bluem_get_bluem_logo_html(48);
+    background:#fff; max-width:500px;'>" .
+           bluem_get_bluem_logo_html( 48 );
 }
+
 /**
  * Retrieve footer HTML for error/message prompt. Can include a simple link back to the webshop home URL.
  *
  * @param Bool $include_link
+ *
  * @return String
  */
-function bluem_dialogs_get_simple_footer(Bool $include_link = true): String
-{
+function bluem_dialogs_get_simple_footer( bool $include_link = true ): string {
     return (
-        $include_link ?
-        "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug naar de webshop</a></p>" :
-        ""
-    ) . "</div></body></html>";
+           $include_link ?
+               "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug naar de webshop</a></p>" :
+               ""
+           ) . "</div></body></html>";
 }
 
 /**
@@ -1369,78 +1350,77 @@ function bluem_dialogs_get_simple_footer(Bool $include_link = true): String
  *
  * @return void
  */
-function bluem_dialogs_render_prompt(String $html, bool $include_link = true)
-{
+function bluem_dialogs_render_prompt( string $html, bool $include_link = true ) {
     echo bluem_dialogs_get_simple_header();
     echo $html;
-    echo bluem_dialogs_get_simple_footer($include_link);
+    echo bluem_dialogs_get_simple_footer( $include_link );
 }
 
 
 /**
  * Perform import action
+ *
  * @param $data
  *
  * @return array
  */
-function bluem_admin_import_execute($data): array {
-    $cur_options = get_option('bluem_woocommerce_options');
+function bluem_admin_import_execute( $data ): array {
+    $cur_options = get_option( 'bluem_woocommerce_options' );
 
     $results = [];
-    foreach ($data as $k => $v) {
-        $cur_options[$k] = $v;
-        $results[$k] = true;
+    foreach ( $data as $k => $v ) {
+        $cur_options[ $k ] = $v;
+        $results[ $k ]     = true;
     }
-    update_option("bluem_woocommerce_options", $cur_options);
+    update_option( "bluem_woocommerce_options", $cur_options );
 
     return $results;
 }
 
 
 /**
- * Render the admin Import / Export page 
+ * Render the admin Import / Export page
  * @return void
  */
-function bluem_admin_importexport()
-{
+function bluem_admin_importexport() {
     $import_data = null;
-    $messages = [];
-    
-    if (isset($_POST['action']) && $_POST['action']=="import") {
+    $messages    = [];
+
+    if ( isset( $_POST['action'] ) && $_POST['action'] == "import" ) {
         $decoded = true;
-        
-        if (isset($_POST['import']) && $_POST['import']!=="") {
+
+        if ( isset( $_POST['import'] ) && $_POST['import'] !== "" ) {
             $import_data = json_decode(
                 stripslashes(
                     $_POST['import']
                 ),
                 true
             );
-            if (is_null($import_data)) {
+            if ( is_null( $import_data ) ) {
                 $messages[] = "Kon niet importeren: de input is niet geldige JSON";
-                $decoded = false;
+                $decoded    = false;
             }
         }
 
-        if ($decoded) {
-            $results = bluem_admin_import_execute($import_data);
+        if ( $decoded ) {
+            $results    = bluem_admin_import_execute( $import_data );
             $sett_count = 0;
-            foreach ($results as $r) {
-                if ($r) {
-                    $sett_count++;
+            foreach ( $results as $r ) {
+                if ( $r ) {
+                    $sett_count ++;
                 }
             }
             $messages[] = "Importeren is uitgevoerd: $sett_count instellingen aangepast.";
         }
     }
 
-    $options = get_option('bluem_woocommerce_options');
-    
+    $options = get_option( 'bluem_woocommerce_options' );
+
     $options_json = "";
-    if ($options !== false) {
-        $options_json = json_encode($options);
+    if ( $options !== false ) {
+        $options_json = json_encode( $options );
     }
-    
+
     // @todo: improve this by creating a renderer function and passing the renderdata
     // @todo: then generalise this to other parts of the plugin
     include_once 'views/importexport.php';
