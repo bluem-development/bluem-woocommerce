@@ -13,3 +13,5 @@ bluem.zip
 /.phpunit.result.cache
 .idea
 /copyscript.sh
+_notes
+._*
