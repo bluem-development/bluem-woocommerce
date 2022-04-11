@@ -103,7 +103,7 @@
                         $order_data = $order->get_data(); ?>
                         <tr>
                             <td>
-                                <?php echo \Carbon\Carbon::parse($order->get_date_created())->timezone('Europe/Amsterdam')->format('d-m-Y H:i:s'); ?>
+                                <?php echo \Carbon\Carbon::parse($order->get_date_created())->timezone('Europe/Amsterdam')->format('d-m-Y H:i'); ?>
                             </td>
                             <td>
                                 <a href='<?php echo admin_url("post.php?post={$link->item_id}&action=edit"); ?>' target='_blank'>Order #<?php echo $link->item_id; ?></a>
