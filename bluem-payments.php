@@ -133,7 +133,8 @@ function bluem_init_payment_gateway_class() {
 
         public function bluem_thankyou( $order_id ) {
             $order = wc_get_order( $order_id );
-            $url   = $order->get_view_order_url();
+            
+            $url = $order->get_checkout_order_received_url();
 
             $options = get_option( 'bluem_woocommerce_options' );
             if ( isset( $options['paymentCompleteRedirectType'] ) ) {
@@ -143,7 +144,7 @@ function bluem_init_payment_gateway_class() {
                 ) {
                     $url = site_url( $options['paymentCompleteRedirectCustomURL'] );
                 } else {
-                    $url = $order->get_view_order_url();
+                    $url = $order->get_checkout_order_received_url();
                 }
             }
 
