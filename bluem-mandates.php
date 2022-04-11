@@ -323,7 +323,6 @@ function bluem_init_mandate_gateway_class() {
             ] );
         }
 
-
         /**
          * Check if a valid mandate already exists for this user
          *
