@@ -7,8 +7,7 @@
     <?php bluem_render_nav_header();?>
 
     <div class="bluem-request-card-body">
-        <div class='bluem-column'>
-
+        <div class='bluem-column' style="width: 50%;">
             <h2>
                 <?php echo ucfirst($request->type);?>
                 Verzoek
@@ -49,8 +48,7 @@
                     Datum:
                 </span>
 
-                <?php $rdate = strtotime($request->timestamp); ?>
-                <?php echo date("d-m-Y H:i:s", $rdate); ?>
+                <?php echo \Carbon\Carbon::parse($request->timestamp)->timezone('Europe/Amsterdam')->format('d-m-Y H:i:s'); ?>
             </p>
 
             <p>
@@ -105,11 +103,9 @@
                         $order_data = $order->get_data(); ?>
                         <tr>
                             <td>
-                            <?php echo $order->get_date_created()->date("d-m-Y H:i"); ?>
+                                <?php echo \Carbon\Carbon::parse($order->get_date_created())->timezone('Europe/Amsterdam')->format('d-m-Y H:i:s'); ?>
                             </td>
-
-                                <td>
-
+                            <td>
                                 <a href='<?php echo admin_url("post.php?post={$link->item_id}&action=edit"); ?>' target='_blank'>Order #<?php echo $link->item_id; ?></a>
                             </td>
                             <td>
@@ -136,8 +132,6 @@
                 <?php
 
                 foreach ($logs as $log) {
-                    $ldate = strtotime($log->timestamp);
-
                     $d = str_replace(
                         ["<br><span style='font-family:monospace; font-size:9pt;'>", "</span>"],
                         "",
@@ -146,7 +140,7 @@
                     $dparts = explode("New data: ", $d, 2); ?>
                     <li>
                         <span class="bluem-request-label">
-                            <?php echo date("d-m-Y H:i", $ldate); ?>
+                            <?php echo \Carbon\Carbon::parse($log->timestamp)->timezone('Europe/Amsterdam')->format('d-m-Y H:i:s'); ?>
                         </span>
                         <?php echo $dparts[0]; ?><?php 
                         if (isset($dparts[1])) { 
@@ -161,7 +155,7 @@
             </ul><?php
             } ?>
         </div>
-        <div class="bluem-column" style="margin-left:5%">
+        <div class="bluem-column" style="width: 40%; margin-left:5%">
             <?php if (isset($request->transaction_url)) {
                 ?>
             <p>
@@ -171,7 +165,7 @@
                 </span>
                 <br>
                 <a href="<?php echo $request->transaction_url; ?>" target="_blank" rel="noopener noreferrer">
-                    <?php echo $request->transaction_url; ?>
+                    Transactie bekijken
                     <span class="dashicons dashicons-external" style="text-decoration: none;"></span>
                 </a>
             </p>
