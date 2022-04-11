@@ -139,8 +139,7 @@ function bluem_init_payment_gateway_class() {
             $options = get_option( 'bluem_woocommerce_options' );
             if ( isset( $options['paymentCompleteRedirectType'] ) ) {
                 if ( $options['paymentCompleteRedirectType'] == "custom"
-                     && isset( $options['paymentCompleteRedirectCustomURL'] )
-                     && $options['paymentCompleteRedirectCustomURL'] !== ""
+                     && !empty( $options['paymentCompleteRedirectCustomURL'] )
                 ) {
                     $url = site_url( $options['paymentCompleteRedirectCustomURL'] );
                 } else {
@@ -178,9 +177,8 @@ function bluem_init_payment_gateway_class() {
                     'description' => 'This controls the description which the user sees during checkout.',
                     'default'     => 'Betaal gemakkelijk, snel en veilig via iDeal',
                 ]
-            ] );
+            ]);
         }
-
 
         /**
          * Process payment through Bluem portal
@@ -192,10 +190,10 @@ function bluem_init_payment_gateway_class() {
         public function process_payment( $order_id ) {
             $order = wc_get_order( $order_id );
 
-            $user_id   = $order->get_user_id();
+            $user_id = $order->get_user_id();
             $user_meta = get_user_meta( $user_id );
 
-            $order_id    = $order->get_order_number();
+            $order_id = $order->get_order_number();
             $customer_id = get_post_meta( $order_id, '_customer_user', true );
 
             $entranceCode = $this->bluem->CreateEntranceCode();
@@ -220,7 +218,6 @@ function bluem_init_payment_gateway_class() {
                 $currency,
                 $entranceCode
             );
-
 
             // temp overrides
             $request->paymentReference = str_replace( '-', '', $request->paymentReference );
@@ -250,6 +247,7 @@ function bluem_init_payment_gateway_class() {
             // Remove cart
             global $woocommerce;
             $woocommerce->cart->empty_cart();
+            
             $order->update_status( 'pending', __( 'Awaiting Bluem Payment Signature', 'wc-gateway-bluem' ) );
 
             if ( isset( $response->PaymentTransactionResponse->TransactionURL ) ) {
@@ -264,7 +262,6 @@ function bluem_init_payment_gateway_class() {
 
                 // redirect cast to string, for AJAX response handling
                 $transactionURL = ( $response->PaymentTransactionResponse->TransactionURL . "" );
-
 
                 bluem_db_create_request(
                     [
