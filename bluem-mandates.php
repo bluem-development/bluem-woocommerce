@@ -217,10 +217,11 @@ function bluem_init_mandate_gateway_class() {
 
             // Load the settings.
             $this->init_settings();
+            
             // Method with all the options fields
             $this->init_form_fields();
 
-            $this->title       = $this->get_option( 'title' );
+            $this->title = $this->get_option( 'title' );
             $this->description = $this->get_option( 'description' );
 
             // ********** CREATING Bluem Configuration **********
@@ -228,13 +229,13 @@ function bluem_init_mandate_gateway_class() {
 
             if ( isset( $this->bluem_config->localInstrumentCode ) && $this->bluem_config->localInstrumentCode == "B2B" ) {
                 $this->method_title = 'Bluem Zakelijke Incassomachtiging (eMandate)';
+            } else {
+                $this->method_title = 'Bluem Particuliere Incassomachtiging (eMandate)';
             }
-            // @todo: add else: method_title for CORE incasso's
 
             $this->bluem_config->merchantReturnURLBase = home_url(
                 'wc-api/bluem_mandates_callback'
             );
-
 
             $this->enabled = $this->get_option( 'enabled' );
 
@@ -282,7 +283,8 @@ function bluem_init_mandate_gateway_class() {
          */
         public function bluem_thankyou( $order_id ) {
             $order = wc_get_order( $order_id );
-            $url   = $order->get_view_order_url();
+            
+            $url = $order->get_checkout_order_received_url();
 
             if ( ! $order->has_status( 'failed' ) ) {
                 wp_safe_redirect( $url );
@@ -329,36 +331,45 @@ function bluem_init_mandate_gateway_class() {
          */
         private function _checkExistingMandate( $order ) {
             global $current_user;
+            
             $order_id = $order->get_id();
 
             $user_id = $current_user->ID;
-
-            $reason                    = "";
-            $ready                     = true;
+            
             $retrieved_request_from_db = false;
-            $request                   = bluem_db_get_most_recent_request( $user_id, "mandates" );
+            
+            $reason = "";
+            
+            $ready = false;
+            
+            if (!empty($user_id))
+            {
+                $request = bluem_db_get_most_recent_request( $user_id, "mandates" );
 
-            if ( $request !== false ) {
-                $bluem_latest_mandate_id            = $request->transaction_id;
-                $bluem_latest_mandate_entrance_code = $request->entrance_code;
-
-                $retrieved_request_from_db = true;
-            } else {
-                // no latest request found, also trying in user metadata (legacy)
-                $user_meta = get_user_meta( $user_id );
-
-                $bluem_latest_mandate_id = null;
-                if ( isset( $user_meta['bluem_latest_mandate_id'] ) && $user_meta['bluem_latest_mandate_id'] !== "" ) {
-                    $bluem_latest_mandate_id = $user_meta['bluem_latest_mandate_id'][0];
+                if ( $request !== false ) {
+                    $bluem_latest_mandate_entrance_code = $request->entrance_code;
+                    $bluem_latest_mandate_id = $request->transaction_id;
+                    
+                    $retrieved_request_from_db = true;
+                    
+                    $ready = true;
                 } else {
-                    $ready = false;
-                }
+                    // no latest request found, also trying in user metadata (legacy)
+                    $user_meta = get_user_meta( $user_id );
 
-                $bluem_latest_mandate_entrance_code = null;
-                if ( isset( $user_meta['bluem_latest_mandate_entrance_code'] ) && $user_meta['bluem_latest_mandate_entrance_code'] !== "" ) {
-                    $bluem_latest_mandate_entrance_code = $user_meta['bluem_latest_mandate_entrance_code'][0];
-                } else {
-                    $ready = false;
+                    $bluem_latest_mandate_id = null;
+                    if ( !empty( $user_meta['bluem_latest_mandate_id'] ) ) {
+                        $bluem_latest_mandate_id = $user_meta['bluem_latest_mandate_id'][0];
+                        
+                        $ready = true;
+                    }
+
+                    $bluem_latest_mandate_entrance_code = null;
+                    if ( !empty( $user_meta['bluem_latest_mandate_entrance_code'] ) ) {
+                        $bluem_latest_mandate_entrance_code = $user_meta['bluem_latest_mandate_entrance_code'][0];
+                        
+                        $ready = true;
+                    }
                 }
             }
 
@@ -401,14 +412,12 @@ function bluem_init_mandate_gateway_class() {
                                 $bluem_latest_mandate_id
                             );
 
-
                             if ( $retrieved_request_from_db ) {
                                 bluem_db_request_log(
                                     $request->id,
                                     "Utilized this request for a
                                     payment for another order {$order_id}"
                                 );
-
 
                                 bluem_db_create_link(
                                     $request->id,
@@ -432,7 +441,7 @@ function bluem_init_mandate_gateway_class() {
 
                             return array(
                                 'result'   => 'success',
-                                'redirect' => $order->get_view_order_url()
+                                'redirect' => $order->get_checkout_order_received_url()
                             );
                         } else {
                             $reason = "Existing mandate found, but not valid";
@@ -464,23 +473,21 @@ function bluem_init_mandate_gateway_class() {
             $verbose = false;
 
             $this->bluem = new Bluem( $this->bluem_config );
-            $order       = wc_get_order( $order_id );
+            $order = wc_get_order( $order_id );
 
             // $user_id = $order->get_user_id();
             // $user_id = get_post_meta($order_id, '_customer_user', true);
             // improved retrieval of user id:
             $user_id = $current_user->ID;
 
-
             $settings = get_option( 'bluem_woocommerce_options' );
-
 
             $check = $this->_checkExistingMandate( $order );
 
             if ( isset( $check['result'] ) && $check['result'] === "success" ) {
                 return array(
                     'result'   => 'success',
-                    'redirect' => $order->get_view_order_url()
+                    'redirect' => $order->get_checkout_order_received_url()
                 );
                 // @todo Possibly allow different redirect after fast checkout with existing, valid, mandate.
             }
