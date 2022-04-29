@@ -136,10 +136,10 @@ By default, this is disabled as it is quite context specific if the webshop is s
 
 ## important notes when compiling:
 
-- delete `vendor/daanrijpkema/bluem-php/examples` to be sure as it is not necessary in production.
+- delete `vendor/bluem-development/bluem-php/examples` to be sure as it is not necessary in production.
 
 
 
 
 # Support
-If you have any questions, please email [info@daanrijpkema.com](mailto:info@daanrijpkema.com).
+If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsupport@bluem.nl).
