@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Bluem\BluemPHP\Bluem;
 
 add_action( 'parse_request', 'bluem_mandate_shortcode_execute' );
+
 /**
  * This function is called POST from the form rendered on a page or post
  *
@@ -23,9 +24,11 @@ function bluem_mandate_shortcode_execute() {
     }
 
     global $current_user;
-    // if the submit button is clicked, send the email
-    if ( isset( $_POST['bluem-submitted'] ) ) {
+    
+    if ( isset( $_POST['bluem-submitted'] ) )
+    {
         $debtorReference = "";
+        
         if ( isset( $_POST["bluem_debtorReference"] ) ) {
             $debtorReference = sanitize_text_field( $_POST["bluem_debtorReference"] );
         } else {
@@ -35,16 +38,16 @@ function bluem_mandate_shortcode_execute() {
                 $debtorReference = "";
             }
         }
-        $bluem_config                        = bluem_woocommerce_get_config();
+        
+        $bluem_config = bluem_woocommerce_get_config();
+        
         $bluem_config->merchantReturnURLBase = home_url(
             "bluem-woocommerce/mandate_shortcode_callback"
         );
 
         $preferences = get_option( 'bluem_woocommerce_options' );
 
-
         $bluem_config->eMandateReason = "Incasso machtiging " . $debtorReference;
-
 
         $bluem = new Bluem( $bluem_config );
 
@@ -53,9 +56,10 @@ function bluem_mandate_shortcode_execute() {
         if ( ! isset( $mandate_id_counter ) ) {
             $mandate_id_counter = $preferences['mandate_id_counter'];
         }
+        
         $mandate_id = $mandate_id_counter + 1;
+        
         update_option( 'bluem_woocommerce_mandate_id_counter', $mandate_id );
-
 
         $request = $bluem->CreateMandateRequest(
             $debtorReference,
@@ -64,7 +68,7 @@ function bluem_mandate_shortcode_execute() {
         );
 
         // Save the necessary data to later request more information and refer to this transaction
-        $_SESSION['bluem_mandateId']    = $request->mandateID;
+        $_SESSION['bluem_mandateId'] = $request->mandateID;
         $_SESSION['bluem_entranceCode'] = $request->entranceCode;
 
         update_user_meta(
@@ -75,7 +79,6 @@ function bluem_mandate_shortcode_execute() {
 
         // Actually perform the request.
         $response = $bluem->PerformRequest( $request );
-
 
         if ( ! isset( $response->EMandateTransactionResponse->TransactionURL ) ) {
             $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
@@ -101,8 +104,10 @@ function bluem_mandate_shortcode_execute() {
             exit;
         }
 
-        $mandate_id                  = $response->EMandateTransactionResponse->MandateID . "";
+        $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
+        
         $_SESSION['bluem_mandateId'] = $mandate_id;
+        
         update_user_meta(
             $current_user->ID,
             "bluem_latest_mandate_id",
@@ -110,7 +115,8 @@ function bluem_mandate_shortcode_execute() {
         );
 
         // redirect cast to string, necessary for AJAX response handling
-        $transactionURL                         = ( $response->EMandateTransactionResponse->TransactionURL . "" );
+        $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
+        
         $_SESSION['bluem_recentTransactionURL'] = $transactionURL;
 
         $db_creation_result = bluem_db_create_request(
@@ -134,12 +140,13 @@ function bluem_mandate_shortcode_execute() {
             ]
         );
 
-
         if ( ob_get_length() !== false && ob_get_length() > 0 ) {
             ob_clean();
         }
+        
         ob_start();
         wp_redirect( $transactionURL );
+        
         exit;
     }
     exit;
@@ -322,11 +329,12 @@ add_shortcode( 'bluem_machtigingsformulier', 'bluem_mandateform' );
  *
  * @return void
  */
-function bluem_mandateform() {
-
+function bluem_mandateform()
+{
     global $current_user;
 
-    $bluem_config                        = bluem_woocommerce_get_config();
+    $bluem_config = bluem_woocommerce_get_config();
+    
     $bluem_config->merchantReturnURLBase = home_url(
         'wc-api/bluem_mandates_callback'
     );
