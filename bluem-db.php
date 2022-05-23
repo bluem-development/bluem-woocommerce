@@ -1,6 +1,5 @@
 <?php
 
-
 register_activation_hook( __FILE__, 'bluem_db_create_requests_table' );
 // no need for a deactivation hook yet.
 
@@ -10,6 +9,7 @@ register_activation_hook( __FILE__, 'bluem_db_create_requests_table' );
  */
 function bluem_db_create_requests_table(): void {
     global $wpdb, $bluem_db_version;
+    
     $installed_ver = (float) get_option( "bluem_db_version" );
 
     if ( $installed_ver < $bluem_db_version ) {
@@ -63,9 +63,9 @@ function bluem_db_create_requests_table(): void {
     }
 }
 
-
 function bluem_db_check() {
     global $bluem_db_version;
+    
     if ( (float) get_site_option( 'bluem_db_version' ) !== (float) $bluem_db_version ) {
         bluem_db_create_requests_table();
     }
@@ -73,11 +73,10 @@ function bluem_db_check() {
 
 add_action( 'plugins_loaded', 'bluem_db_check' );
 
-
 // request specific functions
-
 function bluem_db_create_request( $request_object ) {
     global $wpdb;
+    
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -116,9 +115,9 @@ function bluem_db_create_request( $request_object ) {
     }
 }
 
-
 function bluem_db_request_log( $request_id, $description, $log_data = [] ) {
     global $wpdb, $current_user;
+    
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -143,6 +142,7 @@ function bluem_db_request_log( $request_id, $description, $log_data = [] ) {
  */
 function bluem_db_update_request( $request_id, $request_object ) {
     global $wpdb;
+    
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -189,7 +189,6 @@ function bluem_db_validated_request_well_formed( $request ): bool {
  * @return void
  */
 function bluem_db_validated_request( $request ) {
-
     // check if present
     // entrance_code
     // transaction_id
@@ -250,9 +249,9 @@ function bluem_db_get_request_by_id( string $request_id ) {
     return $res[0] ?? false;
 }
 
-
 function bluem_db_delete_request_by_id( $request_id ) {
     global $wpdb;
+    
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -264,7 +263,6 @@ function bluem_db_delete_request_by_id( $request_id ) {
     return $query && $query2;
 }
 
-
 function bluem_db_get_request_by_debtor_reference( $debtor_reference ) {
     $res = bluem_db_get_requests_by_keyvalue(
         'debtor_reference',
@@ -273,7 +271,6 @@ function bluem_db_get_request_by_debtor_reference( $debtor_reference ) {
 
     return $res !== false && count( $res ) > 0 ? $res[0] : false;
 }
-
 
 function bluem_db_get_request_by_transaction_id( $transaction_id ) {
     $res = bluem_db_get_requests_by_keyvalue(
@@ -317,6 +314,7 @@ function bluem_db_get_requests_by_keyvalues(
     $limit = 0
 ) {
     global $wpdb;
+    
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -324,15 +322,15 @@ function bluem_db_get_requests_by_keyvalues(
     // @todo: Prepare this statement a bit more; https://developer.wordpress.org/reference/classes/wpdb/
 
     if ( count( $keyvalues ) > 0 ) {
-        $i   = 0;
         $kvs = " WHERE ";
-        foreach ( $keyvalues as $key => $value ) {
-            if ( $key == "" || $value == "" ) {
-                return false;
+        
+        $i = 0; foreach ($keyvalues as $key => $value) {
+            if ( empty($key) || $value === "" ) {
+                continue;
             }
             $kvs .= "`{$key}` = '{$value}'";
             $i ++;
-            if ( $i < count( $keyvalues ) ) {
+            if ($i < count($keyvalues)) {
                 $kvs .= " AND ";
             }
         }
@@ -349,7 +347,7 @@ function bluem_db_get_requests_by_keyvalues(
     ) {
         $query .= " LIMIT {$limit}";
     }
-
+    
     try {
         return $wpdb->get_results(
             $query
@@ -358,7 +356,6 @@ function bluem_db_get_requests_by_keyvalues(
         return false;
     }
 }
-
 
 function bluem_db_get_requests_by_user_id( $user_id = null ) {
     global $current_user;
@@ -374,7 +371,6 @@ function bluem_db_get_requests_by_user_id( $user_id = null ) {
 
     return $res !== false && count( $res ) > 0 ? $res : [];
 }
-
 
 function bluem_db_get_requests_by_user_id_and_type( $user_id = null, $type = "" ) {
     global $current_user;
@@ -413,6 +409,7 @@ function bluem_db_get_most_recent_request( $user_id = null, $type = "mandates" )
     }
 
     global $wpdb;
+    
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -442,6 +439,7 @@ function bluem_db_get_most_recent_request( $user_id = null, $type = "mandates" )
 
 function bluem_db_put_request_payload( $request_id, $data ) {
     $request = bluem_db_get_request_by_id( $request_id );
+    
     if ( $request->payload !== "" ) {
         try {
             $newPayload = json_decode( $request->payload );
@@ -466,30 +464,34 @@ function bluem_db_put_request_payload( $request_id, $data ) {
 
 function bluem_db_get_logs_for_request( $id ) {
     global $wpdb;
+    
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
     return $wpdb->get_results( "SELECT *  FROM  `bluem_requests_log` WHERE `request_id` = $id ORDER BY `timestamp` DESC" );
 }
 
-
 function bluem_db_get_links_for_order( $id ) {
     global $wpdb;
+    
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
+    
     return $wpdb->get_results( "SELECT *  FROM  `bluem_requests_links` WHERE `item_id` = {$id} and `item_type` = 'order'ORDER BY `timestamp` DESC" );
 }
 
-
 function bluem_db_get_links_for_request( $id ) {
     global $wpdb;
+    
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
+    
     return $wpdb->get_results( "SELECT *  FROM  `bluem_requests_links` WHERE `request_id` = {$id} ORDER BY `timestamp` DESC" );
 }
 
 function bluem_db_create_link( $request_id, $item_id, $item_type = "order" ) {
     global $wpdb;
+    
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
