@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2fe661c54073851253e1ce1270fa58bd",
+    "content-hash": "3349051e9b31c2acfdd420ede99dac26",
     "packages": [
         {
-            "name": "daanrijpkema/bluem-php",
-            "version": "2.1.3",
+            "name": "bluem-development/bluem-php",
+            "version": "2.1.3.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/DaanRijpkema/bluem-php.git",
-                "reference": "d6a714287b30b660349a515165b3b3ee321f8b11"
+                "url": "https://github.com/bluem-development/bluem-php.git",
+                "reference": "81ebd73dcb5bba7650df7ce62f6fbf0127d2e94a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DaanRijpkema/bluem-php/zipball/d6a714287b30b660349a515165b3b3ee321f8b11",
-                "reference": "d6a714287b30b660349a515165b3b3ee321f8b11",
+                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/81ebd73dcb5bba7650df7ce62f6fbf0127d2e94a",
+                "reference": "81ebd73dcb5bba7650df7ce62f6fbf0127d2e94a",
                 "shasum": ""
             },
             "require": {
@@ -47,14 +47,14 @@
             ],
             "authors": [
                 {
-                    "name": "Daan Rijpkema",
-                    "email": "d.rijpkema@bluem.nl",
-                    "homepage": "https://daanrijpkema.com/",
+                    "name": "Bluem Plugin Support",
+                    "email": "pluginsupport@bluem.nl",
+                    "homepage": "https://bluem.nl/",
                     "role": "Developer"
                 }
             ],
             "description": "Bluem PHP interface",
-            "homepage": "https://daanrijpkema.github.io/bluem-php/",
+            "homepage": "https://bluem-development.github.io/bluem-php/",
             "keywords": [
                 "IDIN",
                 "bluem",
@@ -65,10 +65,10 @@
                 "wrapper"
             ],
             "support": {
-                "issues": "https://github.com/daanrijpkema/bluem-php",
-                "source": "https://github.com/DaanRijpkema/bluem-php/tree/2.1.3"
+                "issues": "https://github.com/bluem-development/bluem-php",
+                "source": "https://github.com/bluem-development/bluem-php/tree/2.1.3.1"
             },
-            "time": "2022-01-10T15:50:04+00:00"
+            "time": "2022-05-23T18:42:49+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -4475,5 +4475,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.1.0"
 }
