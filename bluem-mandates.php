@@ -135,8 +135,8 @@ function bluem_woocommerce_get_mandates_options() {
         'thanksPageURL'            => [
             'key'         => 'thanksPageURL',
             'title'       => 'bluem_thanksPageURL',
-            'name'        => 'Slug van bedankpagina',
-            'description' => "Indien je de Machtigingen shortcode gebruikt: Op welke pagina wordt de shortcode geplaatst? Dit is een slug, dus als je <code>thanks</code> invult, wordt de gehele URL: " . site_url( "thanks" ) . ".",
+            'name'        => 'Slug van de resultaat pagina',
+            'description' => "Indien je de Machtigingen shortcode gebruikt: Op welke pagina wordt de shortcode geplaatst? Dit is een slug, dus als je <code>thanks</code> invult, wordt de gehele URL: " . site_url( "thanks" ) . ". We geven de querystrings <code>result</code> en indien van toepassing <code>reason</code> mee waarmee je de status kan opvangen.",
             'type'        => 'text',
             'default'     => ''
         ],
