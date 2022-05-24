@@ -7,7 +7,7 @@
  * Author: Bluem Payment Services
  * Author URI: https://bluem.nl
  * Requires at least: 5.0
- * Tested up to: 5.9.1
+ * Tested up to: 5.9.3
  *
  * WC requires at least: 5.0.0
  * WC tested up to: 5.2.2
