@@ -45,6 +45,7 @@ if ( ! defined( "BLUEM_LOCAL_DATE_FORMAT" ) ) {
 // get specific gateways and helpers
 if ( bluem_module_enabled( 'mandates' ) ) {
     include_once __DIR__ . '/bluem-mandates.php';
+    include_once __DIR__ . '/bluem-mandates-instant.php';
     include_once __DIR__ . '/bluem-mandates-shortcode.php';
 }
 if ( bluem_module_enabled( 'payments' ) ) {
@@ -205,7 +206,7 @@ function bluem_admin_requests_view_request() {
         return;
     }
 
-    $request        = (object) $request_query[0];
+    $request = (object) $request_query[0];
     $request_author = get_user_by( 'id', $request->user_id );
 
     $links = bluem_db_get_links_for_request( $request->id );
@@ -235,8 +236,11 @@ function bluem_admin_requests_view_all() {
     foreach ( $_requests as $_r ) {
         $requests[ $_r->type ][] = $_r;
     }
-    $users       = get_users();
+    
     $users_by_id = [];
+    
+    $users = get_users();
+    
     foreach ( $users as $user ) {
         $users_by_id[ $user->ID ] = $user;
     }
