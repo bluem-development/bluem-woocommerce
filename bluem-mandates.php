@@ -34,14 +34,14 @@ function bluem_woocommerce_get_mandates_options() {
             'key'         => 'brandID',
             'title'       => 'bluem_brandID',
             'name'        => 'Bluem Brand ID',
-            'description' => 'Wat is je Bluem eMandates BrandID? Gegeven door Bluem',
+            'description' => 'Wat is je Bluem eMandates BrandID? Je hebt deze ontvangen door Bluem.',
             'default'     => ''
         ],
         'merchantID'    => [
             'key'         => 'merchantID',
             'title'       => 'bluem_merchantID',
             'name'        => 'Incassant merchantID (benodigd voor machtigingen op Productie)',
-            'description' => 'Het merchantID, te vinden op het contract dat je hebt met de bank voor ontvangen van incasso machtigingen. <strong>Dit is essentieel: zonder dit gegeven zal een klant geen machtiging kunnen afsluiten op productie</strong>',
+            'description' => 'Het merchantID, te vinden op het contract dat je hebt met de bank voor ontvangen van incasso machtigingen. <strong>Dit is essentieel: zonder dit gegeven zal een klant geen machtiging kunnen afsluiten op productie</strong>.',
             'default'     => ''
         ],
         'merchantSubId' => [
@@ -49,7 +49,7 @@ function bluem_woocommerce_get_mandates_options() {
             'title'       => 'bluem_merchantSubId',
             'name'        => 'Bluem Merchant Sub ID',
             'default'     => '0',
-            'description' => 'Hier hoef je waarschijnlijk niks aan te veranderen',
+            'description' => 'Hier hoef je waarschijnlijk niks aan te veranderen.',
             'type'        => 'select',
             'options'     => [ '0' => '0' ]
         ],
@@ -67,7 +67,7 @@ function bluem_woocommerce_get_mandates_options() {
             'key'         => 'eMandateReason',
             'title'       => 'bluem_eMandateReason',
             'name'        => 'Reden voor Machtiging',
-            'description' => 'Een bondige beschrijving van incasso weergegeven bij afgifte',
+            'description' => 'Een bondige beschrijving van incasso weergegeven bij afgifte.',
             'default'     => 'Incasso machtiging'
         ],
         'localInstrumentCode' => [
@@ -91,7 +91,6 @@ function bluem_woocommerce_get_mandates_options() {
             'options'     => [ 'Issuing' => 'Issuing (standaard)' ]
         ],
 
-        // SequenceType = RCUR (altijd)
         'sequenceType'        => [
             'key'         => 'sequenceType',
             'title'       => 'bluem_sequenceType',
@@ -99,7 +98,7 @@ function bluem_woocommerce_get_mandates_options() {
             'description' => '',
             'type'        => 'select',
             'default'     => 'RCUR',
-            'options'     => [ 'RCUR' => 'Recurring machtiging' ]
+            'options'     => [ 'RCUR' => 'Doorlopende machtiging (recurring)', 'OOFF' => 'Eenmalige machtiging (one-time)' ]
         ],
 
         'successMessage' => [
@@ -128,16 +127,24 @@ function bluem_woocommerce_get_mandates_options() {
         'debtorReferenceFieldName' => [
             'key'         => 'debtorReferenceFieldName',
             'title'       => 'bluem_debtorReferenceFieldName',
-            'name'        => 'Shortcode label voor klantreferentie bij invulformulier',
-            'description' => "Welk label moet bij het invulveld in het formulier komen te staan? Dit kan bijvoorbeeld 'volledige naam' of 'klantnummer' zijn.",
+            'name'        => 'Label voor klantreferentie bij invulformulier shortcode',
+            'description' => "Indien je de Machtigingen shortcode gebruikt: Welk label moet bij het invulveld in het formulier komen te staan? Dit kan bijvoorbeeld 'volledige naam' of 'klantnummer' zijn. <strong>Laat dit veld leeg om alleen een knop weer te geven</strong>.",
             'type'        => 'text',
             'default'     => ''
         ],
         'thanksPageURL'            => [
             'key'         => 'thanksPageURL',
             'title'       => 'bluem_thanksPageURL',
-            'name'        => 'URL van bedankpagina',
-            'description' => "Indien je de Machtigingen shortcode gebruikt: Op welke pagina wordt de shortcode geplaatst? Dit is een slug, dus als je <code>thanks</code> invult, wordt de gehele URL: " . site_url( "thanks" ),
+            'name'        => 'Slug van bedankpagina',
+            'description' => "Indien je de Machtigingen shortcode gebruikt: Op welke pagina wordt de shortcode geplaatst? Dit is een slug, dus als je <code>thanks</code> invult, wordt de gehele URL: " . site_url( "thanks" ) . ".",
+            'type'        => 'text',
+            'default'     => ''
+        ],
+        'instantMandatesResponseURI'            => [
+            'key'         => 'instantMandatesResponseURI',
+            'title'       => 'bluem_instantMandatesResponseURI',
+            'name'        => 'URI voor InstantMandates',
+            'description' => "Indien je InstantMandates gebruikt: De <code>response</code> URI na een request. Dit kan een externe URL of een Deep Link zijn. We geven de querystrings <code>result</code> en indien van toepassing <code>reason</code> mee waarmee je de status kan opvangen.",
             'type'        => 'text',
             'default'     => ''
         ],
@@ -145,7 +152,7 @@ function bluem_woocommerce_get_mandates_options() {
             'key'         => 'mandate_id_counter',
             'title'       => 'bluem_mandate_id_counter',
             'name'        => 'Begingetal mandaat ID\'s',
-            'description' => "Op welk getal wil je mandaat op idt moment nummeren? Dit getal wordt vervolgens automatisch opgehoogd.",
+            'description' => "Op welk getal wil je mandaat op dit moment nummeren? Dit getal wordt vervolgens automatisch opgehoogd.",
             'type'        => 'text',
             'default'     => '1'
         ],
@@ -1166,7 +1173,7 @@ function bluem_init_mandate_gateway_class() {
                 <?php
             } ?>
             <tr>
-                <th><label for="bluem_mandates_validated">Machtiging via shortcode valide?</label></th>
+                <th><label for="bluem_mandates_validated">Machtiging via shortcode / InstantMandates valide?</label></th>
                 <td>
                     <?php
                     $curValidatedVal = (int) esc_attr(
@@ -1188,7 +1195,7 @@ function bluem_init_mandate_gateway_class() {
                             Nee
                         </option>
                     </select><br/>
-                    <span class="description">Is een machtiging via shortcode doorgekomen? indien van toepassing kan je dit hier overschrijven</span>
+                    <span class="description">Is een machtiging via shortcode of InstantMandates doorgekomen? Indien van toepassing kan je dit hier overschrijven</span>
                 </td>
             </tr>
         </table>
@@ -1298,6 +1305,10 @@ function bluem_woocommerce_settings_render_debtorReferenceFieldName() {
 
 function bluem_woocommerce_settings_render_thanksPageURL() {
     bluem_woocommerce_settings_render_input( bluem_woocommerce_get_mandates_option( 'thanksPageURL' ) );
+}
+
+function bluem_woocommerce_settings_render_instantMandatesResponseURI() {
+    bluem_woocommerce_settings_render_input( bluem_woocommerce_get_mandates_option( 'instantMandatesResponseURI' ) );
 }
 
 function bluem_woocommerce_settings_render_mandate_id_counter() {
