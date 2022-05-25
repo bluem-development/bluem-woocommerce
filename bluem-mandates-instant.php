@@ -43,6 +43,13 @@ function bluem_mandates_instant_request()
             );
 
             $preferences = get_option( 'bluem_woocommerce_options' );
+            
+            // Convert UTF-8 to ISO
+            if (!empty($bluem_config->eMandateReason)) {
+                $bluem_config->eMandateReason = utf8_decode($bluem_config->eMandateReason);
+            } else {
+                $bluem_config->eMandateReason = "Incasso machtiging " . $debtorReference;
+            }
 
             $bluem = new Bluem( $bluem_config );
 

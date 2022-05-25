@@ -477,8 +477,16 @@ function bluem_init_mandate_gateway_class() {
             global $current_user;
 
             $verbose = false;
+            
+            // Convert UTF-8 to ISO
+            if (!empty($this->bluem_config->eMandateReason)) {
+                $this->bluem_config->eMandateReason = utf8_decode($this->bluem_config->eMandateReason);
+            } else {
+                $this->bluem_config->eMandateReason = "Incasso machtiging";
+            }
 
             $this->bluem = new Bluem( $this->bluem_config );
+            
             $order = wc_get_order( $order_id );
 
             // $user_id = $order->get_user_id();
