@@ -3,9 +3,9 @@ Contributors: bluempaymentservices
 Donate link: https://daanrijpkema.github.io
 Tags: Bluem,Payments,iDIN,iDEAL,Incassomachtigen,woocommerce, bluem, payment gateway, payments, ideal, paypal, mandates, identity, idin, age verification, iban-name check 
 Requires at least: 5.0
-Tested up to: 5.9.1
+Tested up to: 5.9.3
 Requires PHP: 7.0
-Stable tag: 1.3.6
+Stable tag: 1.3.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
