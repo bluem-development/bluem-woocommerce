@@ -31,8 +31,6 @@ global $bluem_db_version;
 $bluem_db_version = 1.3;
 
 // @todo require certain minimum php version before installing - force this before installing or updating the plugin
-
-
 require_once __DIR__ . '/bluem-compatibility.php';
 
 // get composer dependencies
@@ -67,7 +65,12 @@ require_once __DIR__ . '/bluem-interface.php';
  */
 if ( ! function_exists( 'is_woocommerce_activated' ) ) {
     function is_woocommerce_activated() {
-        if ( class_exists( 'woocommerce' ) ) { return true; } else { return false; }
+        $active_plugins = get_option( 'active_plugins' );
+
+        if ( in_array('woocommerce/woocommerce.php', $active_plugins) ) {
+            return true;
+        }
+        return false;
     }
 }
 
