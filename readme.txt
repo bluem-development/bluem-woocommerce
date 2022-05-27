@@ -3,9 +3,9 @@ Contributors: bluempaymentservices
 Donate link: https://daanrijpkema.github.io
 Tags: Bluem,Payments,iDIN,iDEAL,Incassomachtigen,woocommerce, bluem, payment gateway, payments, ideal, paypal, mandates, identity, idin, age verification, iban-name check 
 Requires at least: 5.0
-Tested up to: 5.9.3
+Tested up to: 6.0
 Requires PHP: 7.0
-Stable tag: 1.3.7
+Stable tag: 1.3.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,7 +75,8 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
-- 1.3.7: Stability fixes. Instant eMandates for specific use-cases
+- 1.3.8: Stability fixes and improvements.
+- 1.3.7: Stability fixes. Instant eMandates for specific use-cases.
 - 1.3.6: Improved redirects after transaction, eMandates for guests and requests view page in admin
 - 1.3.5: Improved stability of core services, improved speed and layout
 - 1.3.1: Added optional IP checking for country-filtering; improved stability
