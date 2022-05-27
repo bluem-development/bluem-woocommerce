@@ -75,11 +75,33 @@ if ( ! function_exists( 'is_woocommerce_activated' ) ) {
 }
 
 /**
+ * Check if Permalinks is enabled
+ */
+if ( ! function_exists( 'is_permalinks_enabled' ) ) {
+    function is_permalinks_enabled() {
+        $structure = get_option('permalink_structure');
+
+        if (!empty($structure)) {
+            return true;
+        }
+        return false;
+    }
+}
+
+/**
  * Check if WooCommerce is active
  **/
 if ( ! is_woocommerce_activated() ) {
     // No WooCommerce module found!
     add_action( 'admin_notices', 'bluem_woocommerce_no_woocommerce_notice' );
+}
+
+/**
+ * Check if Permalinks is enabled
+ **/
+if ( ! is_permalinks_enabled() ) {
+    // No WooCommerce module found!
+    add_action( 'admin_notices', 'bluem_woocommerce_no_permalinks_notice' );
 }
 
 // Update CSS within in Admin
@@ -110,6 +132,15 @@ function bluem_woocommerce_no_woocommerce_notice() {
             Je kan deze melding en WooCommerce gerelateerde functionaliteiten ook uitzetten bij de <a href="' . admin_url( 'options-general.php?page=bluem' ) . '">Instellingen</a>.</p>
             </div>';
         }
+    }
+}
+
+function bluem_woocommerce_no_permalinks_notice() {
+    if ( is_admin() ) {
+        echo '<div class="notice notice-warning is-dismissible">
+        <p><span class="dashicons dashicons-warning"></span> De Bluem integratie is vanwege de routing afhankelijk van de WordPress Permalink instelling.<br>
+        Selecteer een optie BEHALVE \'Eenvoudig\' bij de Permalink <a href="' . admin_url( 'options-permalink.php' ) . '">instellingen</a>.</p>
+        </div>';
     }
 }
 
