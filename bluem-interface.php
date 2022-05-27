@@ -16,7 +16,7 @@ function bluem_get_bluem_logo_html( $height = 64 ) {
     return '<img src="' .
            plugin_dir_url( __FILE__ ) . 'assets/bluem/logo.png' .
            '" class="bluem-bluem-logo" style="' .
-           "float:left; max-height:{$height}px; margin:10pt;  margin-bottom:0; " .
+           "max-height:{$height}px; margin:10pt;  margin-bottom:0; " .
            '"/>';
 }
 
@@ -88,7 +88,7 @@ function bluem_render_request_table( $requests, $users_by_id = [] ) {
                         <?php if ( isset( $r->debtor_reference ) && $r->debtor_reference !== "" ) {
                             ?>
 
-                            <span style="color:#aaa; font-size:9pt; display:block;">Klantreferentie: 
+                            <span style="color:#aaa; font-size:9pt; display:block;">Klantreferentie:
             <?php
             echo $r->debtor_reference; ?>
             </span>
@@ -127,7 +127,7 @@ function bluem_render_request_status( $status ) {
         case 'success':
         {
             echo "<span style='color:#2e9801'>
-                    
+
                 <span class='dashicons dashicons-yes-alt'></span>
                         Succesvol afgerond
                     </span>";
@@ -138,7 +138,7 @@ function bluem_render_request_status( $status ) {
         case 'cancelled':
         {
             echo "<span style='color:#bd1818'>
-                    
+
                         <span class='dashicons dashicons-dismiss'></span>
                         Geannuleerd</span>";
             break;
@@ -146,7 +146,7 @@ function bluem_render_request_status( $status ) {
         case 'expired':
         {
             echo "<span style='color:#bd1818'>
-                    
+
                         <span class='dashicons dashicons-dismiss'></span>
                         Verlopen</span>";
             break;
@@ -155,7 +155,7 @@ function bluem_render_request_status( $status ) {
         case 'new':
         {
             echo "<span style='color:#6a4285'>
-                    
+
                         <span class='dashicons dashicons-editor-help'></span>
                         Openstaand</span>";
             break;
@@ -163,7 +163,7 @@ function bluem_render_request_status( $status ) {
         case 'pending':
         {
             echo "<span style='color:#6a4285' title='mogelijk moet dit verzoek nog worden ondertekend door een tweede ondertekenaar'>
-                    
+
                         <span class='dashicons dashicons-editor-help'></span>
                         in afwachting van verwerking</span>";
             break;
@@ -171,7 +171,7 @@ function bluem_render_request_status( $status ) {
         case 'processing':
         {
             echo "<span style='color:#6a4285'>
-                    
+
                         <span class='dashicons dashicons-marker'></span>
                         In verwerking</span>";
             break;
@@ -181,7 +181,7 @@ function bluem_render_request_status( $status ) {
         {
 
             echo "<span style='color:#ac1111'>
-                    
+
                             <span class='dashicons dashicons-dismiss'></span>
                             Ontoereikend</span>";
             break;
@@ -190,7 +190,7 @@ function bluem_render_request_status( $status ) {
         {
 
             echo "<span style='color:#ac1111'>
-                    
+
                     <span class='dashicons dashicons-dismiss'></span>
                     Gefaald</span>";
             break;
@@ -406,14 +406,14 @@ function bluem_render_obj_row_recursive( $key, $value, $level = 0 ) {
     if ( is_string( $value ) ) {
         if ( $nicekey !== "" ) {
             echo "<span class='bluem-request-label'>
-                {$nicekey}: 
+                {$nicekey}:
                 </span> ";
         }
         echo "{$value}";
     } else {
         if ( $nicekey !== "" ) {
             echo "<span class='bluem-request-label'>
-        {$nicekey}: 
+        {$nicekey}:
         </span>";
         }
         if ( is_iterable( $value ) || is_object( $value ) ) {
