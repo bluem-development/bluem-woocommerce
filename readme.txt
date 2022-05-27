@@ -75,6 +75,7 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
+- 1.3.7: Stability fixes. Instant eMandates for specific use-cases
 - 1.3.6: Improved redirects after transaction, eMandates for guests and requests view page in admin
 - 1.3.5: Improved stability of core services, improved speed and layout
 - 1.3.1: Added optional IP checking for country-filtering; improved stability
