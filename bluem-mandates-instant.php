@@ -279,7 +279,7 @@ function bluem_mandates_instant_callback()
             wp_redirect( $bluem_config->instantMandatesResponseURI . "?result=true" );
             exit;
         }
-        $errormessage = "Fout: de ondertekening is geslaagd maar er is geen reponse URI opgegeven. Neem contact op met de website om dit technisch probleem aan te geven.";
+        $errormessage = "Fout: de ondertekening is geslaagd maar er is geen response URI opgegeven. Neem contact op met de website om dit technisch probleem aan te geven.";
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
