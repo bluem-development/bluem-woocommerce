@@ -79,7 +79,7 @@ function bluem_render_request_table( $requests, $users_by_id = [] ) {
                                 ?>
                             <a href="<?php echo admin_url( "post.php?post={$r->order_id}&action=edit" ); ?>"
                                target="_blank">
-                                Bestelling <?php echo $r->order_id ?> (<?php echo wc_price( $order->get_total() ); ?>)
+                                Bestelling <?php echo $order->get_order_number() ?> (<?php echo wc_price( $order->get_total() ); ?>)
                                 </a><?php
                             } else {
                                 echo "&nbsp;";

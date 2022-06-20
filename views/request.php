@@ -72,7 +72,7 @@
                         Bestelling:
                     </span>
                     <a href="<?php echo admin_url("post.php?post={$request->order_id}&action=edit"); ?>" target="_blank">
-                        <?php echo $request->order_id ?> (<?php echo wc_price($order->get_total()); ?>)
+                        #<?php echo $order->get_order_number(); ?> (<?php echo wc_price($order->get_total()); ?>)
                     </a>
                 </p>
                 <?php
@@ -106,7 +106,7 @@
                                 <?php echo \Carbon\Carbon::parse($order->get_date_created())->timezone('Europe/Amsterdam')->format('d-m-Y H:i'); ?>
                             </td>
                             <td>
-                                <a href='<?php echo admin_url("post.php?post={$link->item_id}&action=edit"); ?>' target='_blank'>Order #<?php echo $link->item_id; ?></a>
+                                <a href='<?php echo admin_url("post.php?post={$link->item_id}&action=edit"); ?>' target='_blank'>Order #<?php echo $order->get_order_number(); ?></a>
                             </td>
                             <td>
                                 <?php echo ucfirst($order->get_status()); ?>
