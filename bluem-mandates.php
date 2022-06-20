@@ -506,7 +506,7 @@ function bluem_init_mandate_gateway_class() {
                 // @todo Possibly allow different redirect after fast checkout with existing, valid, mandate.
             }
 
-            $order_id = $order->get_order_number();
+			$order_id = $order->get_id();
             // update: added prefixed order ID for retries of mandate requests
             $prefixed_order_id = date( "His" ) . $order_id;
             $mandate_id        = $this->bluem->CreateMandateId(

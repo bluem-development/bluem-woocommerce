@@ -193,7 +193,7 @@ function bluem_init_payment_gateway_class() {
             $user_id = $order->get_user_id();
             $user_meta = get_user_meta( $user_id );
 
-            $order_id = $order->get_order_number();
+            $order_id = $order->get_id();
             $customer_id = get_post_meta( $order_id, '_customer_user', true );
 
             $entranceCode = $this->bluem->CreateEntranceCode();
