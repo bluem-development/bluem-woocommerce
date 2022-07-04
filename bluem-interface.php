@@ -239,7 +239,7 @@ function bluem_render_footer( $align_right = true ) {
         <a href="mailto:pluginsupport@bluem.nl?subject=Bluem+Wordpress+Plugin" target="_blank"
            style="text-decoration:none;">
             <span class="dashicons dashicons-editor-help"></span>
-            E-mail Plugin Support</a>
+            E-mail support</a>
 
     </p>
     <?php
@@ -409,7 +409,33 @@ function bluem_render_obj_row_recursive( $key, $value, $level = 0 ) {
                 {$nicekey}:
                 </span> ";
         }
-        echo "{$value}";
+
+        if ($nicekey === 'Contactform7') {
+            $contactform_details = json_decode($value);
+
+            if (!empty($contactform_details))
+            {
+                $form_details = '';
+
+                if (!empty($contactform_details->id)) {
+                    $form_details = '<table style="display: inline-block; vertical-align: inherit;"><thead><tr><th style="text-align: left;">Naam</th><th style="text-align: left;">Waarde</th></tr></thead><tbody><tr><td>Formulier:</td><td>' . $contactform_details->id . '</td></tr>';
+                }
+
+                if (!empty($contactform_details->payload)) {
+                    foreach ($contactform_details->payload as $key => $value) {
+                        $form_details .= '<tr><td>' . $key . '</td><td>' . $value . '</td></tr>';
+                    }
+                }
+
+                if (!empty($form_details)) {
+                    echo $form_details . '</tbody></table>';
+                } else {
+                    echo "{$value}";
+                }
+            }
+        } else {
+            echo "{$value}";
+        }
     } else {
         if ( $nicekey !== "" ) {
             echo "<span class='bluem-request-label'>
@@ -448,6 +474,9 @@ function bluem_render_requests_table_title( $cat ) {
     } elseif ( $cat == "identity" ) {
         echo '<span class="dashicons dashicons-businessperson"></span>&nbsp; ';
         echo "Identiteit";
+    } elseif ( $cat == "integrations" ) {
+        echo '<span class="dashicons dashicons-businessperson"></span>&nbsp; ';
+        echo "Integraties";
     }
     echo "</h4>";
 }
@@ -479,7 +508,7 @@ function bluem_render_nav_header( $active_page = '' ) {
 
         <a href="mailto:pluginsupport@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">
             <span class="dashicons dashicons-editor-help"></span>
-            E-mail Plugin support</a>
+            E-mail support</a>
 
     </nav>
 

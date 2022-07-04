@@ -60,6 +60,9 @@ require_once __DIR__ . '/bluem-db.php';
 // interface and display functions
 require_once __DIR__ . '/bluem-interface.php';
 
+// integrations with external plugins
+require_once __DIR__ . '/bluem-integrations.php';
+
 /**
  * Check if WooCommerce is activated
  */
@@ -68,6 +71,20 @@ if ( ! function_exists( 'is_woocommerce_activated' ) ) {
         $active_plugins = get_option( 'active_plugins' );
 
         if ( in_array('woocommerce/woocommerce.php', $active_plugins) ) {
+            return true;
+        }
+        return false;
+    }
+}
+
+/**
+ * Check if Contact Form 7 is activated
+ */
+if ( ! function_exists( 'is_contactform7_activated' ) ) {
+    function is_contactform7_activated() {
+        $active_plugins = get_option( 'active_plugins' );
+
+        if ( in_array('contact-form-7/wp-contact-form-7.php', $active_plugins) ) {
             return true;
         }
         return false;
@@ -354,6 +371,16 @@ function bluem_settings_page() {
                     </a>
                 <?php } ?>
 
+                <a href="<?php echo admin_url( 'options-general.php?page=bluem#tab_integrations' ); ?>"
+                   class="nav-tab
+        <?php if ( $tab === 'integrations' ) {
+                       echo "nav-tab-active";
+                   } ?>
+        ">
+                    <span class="dashicons dashicons-admin-plugins"></span>
+                    Integraties
+                </a>
+
                 <a href="<?php echo admin_url( 'admin.php?page=bluem_admin_requests_view' ); ?>"
                    class="nav-tab">
                     <span class="dashicons dashicons-database-view"></span>
@@ -367,7 +394,7 @@ function bluem_settings_page() {
                 <a href="mailto:pluginsupport@bluem.nl?subject=Bluem+Wordpress+Plugin"
                    class="nav-tab" target="_blank">
                     <span class="dashicons dashicons-editor-help"></span>
-                    E-mail Plugin support
+                    E-mail support
                 </a>
             </nav>
 
@@ -549,6 +576,27 @@ function bluem_woocommerce_register_settings() {
                     "bluem_woocommerce_idin_section"
                 );
             }
+        }
+    }
+
+    add_settings_section(
+        'bluem_woocommerce_integrations_section',
+        'Integratie instellingen',
+        'bluem_woocommerce_integrations_settings_section',
+        'bluem_woocommerce'
+    );
+
+    $integrations_settings = bluem_woocommerce_get_integrations_options();
+    if ( is_array( $integrations_settings ) && count( $integrations_settings ) > 0 ) {
+        foreach ( $integrations_settings as $key => $ms ) {
+            $key_name = "bluem_woocommerce_settings_render_" . $key;
+            add_settings_field(
+                $key,
+                $ms['name'],
+                $key_name,
+                "bluem_woocommerce",
+                "bluem_woocommerce_integrations_section"
+            );
         }
     }
 }
@@ -1045,6 +1093,11 @@ function bluem_woocommerce_get_config(): Stdclass {
             bluem_woocommerce_get_payments_options()
         );
     }
+
+    $bluem_options = array_merge(
+        $bluem_options,
+        bluem_woocommerce_get_integrations_options()
+    );
 
     $config = new Stdclass();
 
