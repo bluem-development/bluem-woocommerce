@@ -1,11 +1,11 @@
 === Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout ===
 Contributors: bluempaymentservices
 Donate link: https://daanrijpkema.github.io
-Tags: Bluem,Payments,iDIN,iDEAL,Incassomachtigen,woocommerce, bluem, payment gateway, payments, ideal, paypal, mandates, identity, idin, age verification, iban-name check 
+Tags: Bluem,Payments,iDIN,iDEAL,Incassomachtigen,woocommerce, bluem, payment gateway, payments, ideal, paypal, mandates, identity, idin, age verification, iban-name check
 Requires at least: 5.0
 Tested up to: 6.0
 Requires PHP: 7.0
-Stable tag: 1.3.9
+Stable tag: 1.3.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,7 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
+- 1.3.10: Contact Form 7 eMandates integration.
 - 1.3.9: Stability fixes and improvements.
 - 1.3.8: Stability fixes and improvements.
 - 1.3.7: Stability fixes. Instant eMandates for specific use-cases.
