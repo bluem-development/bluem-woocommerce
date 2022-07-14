@@ -28,5 +28,10 @@
         "phpunit/phpunit": "^9.5",
         "yoast/phpunit-polyfills": "^1.0",
         "vimeo/psalm": "^4.16"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": false
+        }
     }
 }

@@ -5,7 +5,7 @@ Tags: Bluem,Payments,iDIN,iDEAL,Incassomachtigen,woocommerce, bluem, payment gat
 Requires at least: 5.0
 Tested up to: 6.0
 Requires PHP: 7.0
-Stable tag: 1.3.10
+Stable tag: 1.3.13
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,8 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
+- 1.3.13: Dependency PHP problem fixed.
+- 1.3.12: Stability fixes.
 - 1.3.10: Contact Form 7 eMandates integration.
 - 1.3.9: Stability fixes and improvements.
 - 1.3.8: Stability fixes and improvements.
