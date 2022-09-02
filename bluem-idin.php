@@ -1330,12 +1330,12 @@ function bluem_idin_retrieve_results() {
 }
 
 /**
- * Retrieves the user validation status
+ * Check if validation is needed
  */
-function bluem_idin_user_validated() {
-    global $current_user;
+function bluem_idin_validation_needed() {
+	global $current_user;
 
-    $options = get_option( 'bluem_woocommerce_options' );
+	$options = get_option( 'bluem_woocommerce_options' );
     if ( isset( $options['idin_enable_ip_country_filtering'] )
          && $options['idin_enable_ip_country_filtering'] !== ""
     ) {
@@ -1344,8 +1344,44 @@ function bluem_idin_user_validated() {
         $idin_enable_ip_country_filtering = true;
     }
 
-    $bluem_config          = bluem_woocommerce_get_config();
+	$bluem_config = bluem_woocommerce_get_config();
     $bluem_config->brandID = $bluem_config->IDINBrandID;
+
+	try {
+        $bluem = new Bluem( $bluem_config );
+    } catch ( Exception $e ) {
+        // @todo: deal with non-configured bluem, or assert that is has been configured on a higher level
+    }
+
+	// Check if IP filtering is enabled
+	if ( $idin_enable_ip_country_filtering ) {
+		// override international IP's - don't validate idin when not NL
+        if ( ! $bluem->VerifyIPIsNetherlands() ) {
+			return false;
+        }
+    }
+	return true;
+}
+
+/**
+ * Retrieves the user validation status
+ */
+function bluem_idin_user_validated() {
+    global $current_user;
+
+    $options = get_option( 'bluem_woocommerce_options' );
+
+    if ( isset( $options['idin_enable_ip_country_filtering'] )
+         && $options['idin_enable_ip_country_filtering'] !== ""
+    ) {
+        $idin_enable_ip_country_filtering = $options['idin_enable_ip_country_filtering'];
+    } else {
+        $idin_enable_ip_country_filtering = true;
+    }
+
+    $bluem_config = bluem_woocommerce_get_config();
+    $bluem_config->brandID = $bluem_config->IDINBrandID;
+
     try {
         $bluem = new Bluem( $bluem_config );
     } catch ( Exception $e ) {
@@ -1586,19 +1622,19 @@ function bluem_checkout_idin_notice() {
         return;
     }
 
+    $validation_needed = bluem_idin_validation_needed();
+
     $options = get_option( 'bluem_woocommerce_options' );
 
     if ( isset( $options['idin_scenario_active'] ) && $options['idin_scenario_active'] !== "" ) {
         $scenario = (int) $options['idin_scenario_active'];
     }
 
-
     if ( isset( $options['idin_identity_dialog_no_verification_text'] ) && $options['idin_identity_dialog_no_verification_text'] !== "" ) {
         $identity_dialog_no_verification_text = $options['idin_identity_dialog_no_verification_text'];
     } else {
         $identity_dialog_no_verification_text = "Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.";
     }
-
 
     if ( isset( $options['idin_identity_dialog_thank_you_message'] ) && $options['idin_identity_dialog_thank_you_message'] !== "" ) {
         $idin_identity_dialog_thank_you_message = $options['idin_identity_dialog_thank_you_message'];
@@ -1612,7 +1648,6 @@ function bluem_checkout_idin_notice() {
         $idin_identity_topbar_no_verification_text = "We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.";
     }
 
-
     if ( isset( $options['idin_identity_more_information_popup'] ) && $options['idin_identity_more_information_popup'] !== "" ) {
         $idin_identity_more_information_popup = $options['idin_identity_more_information_popup'];
     } else {
@@ -1624,7 +1659,7 @@ Lees hier meer: [https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-o
     }
     // todo: remove these obsolete defaults
 
-    if ( $scenario > 0 ) {
+    if ( $validation_needed && $scenario > 0 ) {
         echo "<h3>Identificatie</h3>";
 
         $validated          = bluem_idin_user_validated();
@@ -1783,7 +1818,10 @@ function bluem_checkout_check_idin_validated() {
         return true;
     }
 
+    $validation_needed = bluem_idin_validation_needed();
+
     $options = get_option( 'bluem_woocommerce_options' );
+
     if ( isset( $options['idin_identify_button_inner'] ) && $options['idin_identify_button_inner'] !== "" ) {
         $identify_button_inner = $options['idin_identify_button_inner'];
     } else {
@@ -1801,7 +1839,6 @@ function bluem_checkout_check_idin_validated() {
         $idin_identity_topbar_no_verification_text = "We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.";
     }
 
-
     if ( isset( $options['idin_identity_popup_thank_you_message'] ) && $options['idin_identity_popup_thank_you_message'] !== "" ) {
         $idin_identity_popup_thank_you_message = $options['idin_identity_popup_thank_you_message'];
     } else {
@@ -1818,7 +1855,7 @@ function bluem_checkout_check_idin_validated() {
         $scenario = (int) $options['idin_scenario_active'];
     }
 
-    if ( $scenario > 0 ) {
+    if ( $validation_needed && $scenario > 0 ) {
         $validated          = bluem_idin_user_validated();
         $idin_logo_html     = bluem_get_idin_logo_html();
         $validation_message = $idin_identity_topbar_no_verification_text;
@@ -1894,7 +1931,7 @@ function bluem_checkout_check_idin_validated() {
     }
 
     // custom user-based checks:
-    if ( bluem_checkout_check_idin_validated_filter() == false ) {
+    if ( $validation_needed && bluem_checkout_check_idin_validated_filter() == false ) {
         if ( $idin_show_notice_in_checkout ) {
             wc_add_notice(
                 bluem_idin_generate_notice( $validation_message, true, false, false ),
@@ -1935,7 +1972,6 @@ function bluem_idin_get_age_based_on_date( $birthday_string ) {
 
     return (int) floor( ( $now_seconds - $birthdate_seconds ) / 60 / 60 / 24 / 365 );
 }
-
 
 function bluem_idin_get_verification_scenario() {
     $options  = get_option( 'bluem_woocommerce_options' );
@@ -1982,7 +2018,7 @@ function bluem_idin_get_min_age() {
 // https://wordpress.stackexchange.com/questions/314955/add-custom-order-meta-to-order-completed-email
 add_filter( 'woocommerce_email_order_meta_fields', 'bluem_order_email_identity_meta_data', 10, 3 );
 
-// 
+//
 /**
  * Add identity-related metadata fields to an order confirmation email
  * Note: only works for logged-in users now.
@@ -2082,7 +2118,6 @@ function bluem_order_email_identity_meta_data( $fields, $sent_to_admin, $order )
             }
         }
     }
-
 
     if ( ! array_key_exists( 'idin_add_name_in_order_emails', $options )
          || ( array_key_exists( 'idin_add_name_in_order_emails', $options )
