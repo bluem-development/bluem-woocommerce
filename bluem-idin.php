@@ -1369,32 +1369,6 @@ function bluem_idin_validation_needed() {
 function bluem_idin_user_validated() {
     global $current_user;
 
-    $options = get_option( 'bluem_woocommerce_options' );
-
-    if ( isset( $options['idin_enable_ip_country_filtering'] )
-         && $options['idin_enable_ip_country_filtering'] !== ""
-    ) {
-        $idin_enable_ip_country_filtering = $options['idin_enable_ip_country_filtering'];
-    } else {
-        $idin_enable_ip_country_filtering = true;
-    }
-
-    $bluem_config = bluem_woocommerce_get_config();
-    $bluem_config->brandID = $bluem_config->IDINBrandID;
-
-    try {
-        $bluem = new Bluem( $bluem_config );
-    } catch ( Exception $e ) {
-        // @todo: deal with non-configured bluem, or assert that is has been configured on a higher level
-    }
-
-    if ( $idin_enable_ip_country_filtering ) {
-        // override international IP's - don't validate idin when not NL
-        if ( ! $bluem->VerifyIPIsNetherlands() ) {
-            return true;
-        }
-    }
-
     if ( is_user_logged_in() ) {
         return get_user_meta( get_current_user_id(), "bluem_idin_validated", true ) == "1";
     }
@@ -1402,9 +1376,7 @@ function bluem_idin_user_validated() {
     if ( isset( $_SESSION['bluem_idin_validated'] ) && $_SESSION['bluem_idin_validated'] === true ) {
         return true;
     }
-
     return false;
-
 }
 
 function bluem_get_IDINDescription_tags() {
