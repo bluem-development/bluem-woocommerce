@@ -1732,7 +1732,7 @@ Lees hier meer: [https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-o
 
     // <p>Identificatie is vereist alvorens je deze bestelling kan plaatsen</p>";
 
-    if ( bluem_checkout_check_idin_validated_filter() == false ) {
+    if ( $validation_needed && bluem_checkout_check_idin_validated_filter() == false ) {
         echo bluem_idin_generate_notice( "Verifieer eerst je identiteit.", true );
         // echo __(
         //     "Verifieer eerst je identiteit via de mijn account pagina",
