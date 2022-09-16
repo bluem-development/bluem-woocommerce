@@ -30,6 +30,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $bluem_db_version;
 $bluem_db_version = 1.3;
 
+const BLUEM_WOOCOMMERCE_MANUAL_URL = "https://codexology.notion.site/Bluem-voor-WordPress-en-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e";
+
 // @todo require certain minimum php version before installing - force this before installing or updating the plugin
 require_once __DIR__ . '/bluem-compatibility.php';
 
@@ -48,6 +50,7 @@ if ( bluem_module_enabled( 'mandates' ) ) {
 }
 if ( bluem_module_enabled( 'payments' ) ) {
     include_once __DIR__ . '/bluem-payments.php';
+    
 }
 
 if ( bluem_module_enabled( 'idin' ) ) {
@@ -536,7 +539,7 @@ function bluem_woocommerce_register_settings() {
     if ( bluem_module_enabled( 'payments' ) ) {
         add_settings_section(
             'bluem_woocommerce_payments_section',
-            'iDeal payments instellingen',
+            'iDEAL payments instellingen',
             'bluem_woocommerce_payments_settings_section',
             'bluem_woocommerce'
         );
@@ -1488,4 +1491,9 @@ function bluem_admin_importexport() {
     // @todo: improve this by creating a renderer function and passing the renderdata
     // @todo: then generalise this to other parts of the plugin
     include_once 'views/importexport.php';
+}
+
+
+function bluem_woocommerce_is_woocommerce_active(): bool {
+    return in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
 }

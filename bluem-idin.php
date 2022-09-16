@@ -316,7 +316,7 @@ function bluem_woocommerce_get_idin_options() {
             'description' => 'Schrijf hier een toelichting met eventuele doorklik links om klanten/gebruikers te vertellen over iDIN en het belang hiervan.',
             'default'     => '**Identificeren is per 1 juli 2021 verplicht in winkels waar producten verkocht worden met een identiteitsplicht van de klant.**
 
-De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDeal.   Het duurt hoogstens twee minuten en het resultaat wordt opgeslagen voor vervolgtransacties als je ingelogd bent als terugkerende klant.
+De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDEAL.   Het duurt hoogstens twee minuten en het resultaat wordt opgeslagen voor vervolgtransacties als je ingelogd bent als terugkerende klant.
 
 [Lees hier meer: https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/](https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/)'
         ],
@@ -1625,7 +1625,7 @@ function bluem_checkout_idin_notice() {
     } else {
         $idin_identity_more_information_popup = "**Identificeren is per 1 juli 2021 verplicht in winkels waar producten verkocht worden met een identiteitsplicht van de klant.**
 
-De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDeal.   Het duurt hoogstens twee minuten en het resultaat wordt opgeslagen voor vervolgtransacties als je ingelogd bent als terugkerende klant.
+De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDEAL.   Het duurt hoogstens twee minuten en het resultaat wordt opgeslagen voor vervolgtransacties als je ingelogd bent als terugkerende klant.
 
 Lees hier meer: [https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/](https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/)";
     }
