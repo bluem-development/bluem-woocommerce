@@ -5,16 +5,22 @@ use Bluem\BluemPHP\Bluem;
 
 abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem_Payment_Gateway_Interface {
 
-    protected const PAYMENT_STATUS_SUCCESS = "Success";
-    protected const PAYMENT_STATUS_FAILURE = "Failure";
+    const PAYMENT_STATUS_SUCCESS = "Success";
+    const PAYMENT_STATUS_FAILURE = "Failure";
     
     /**
      * This boolean will cause more output to be generated for testing purposes. Keep it at false for the production environment or final testing
      */
-    protected const VERBOSE = false;
-    
-    protected Stdclass $bluem_config;
-    protected Bluem $bluem;
+    const VERBOSE = false;
+
+    /**
+     * @var Stdclass
+     */
+    protected $bluem_config;
+    /**
+     * @var Bluem
+     */
+    protected $bluem;
     
     public function __construct($id, $method_title, $method_description, $callbackURL, $icon='') {
 
@@ -61,13 +67,14 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
             ) );
 
             // ********** CREATING plugin URLs for specific functions **********
-            // using Woo's builtin webhook possibilities. This action creates an accessible URL wc-api/bluem_payments_webhook and one for the callback as well
+            // using WooCommerce's builtin webhook possibilities. This action creates an accessible URL wc-api/bluem_payments_webhook and one for the callback as well
             // reference: https://rudrastyh.com/woocommerce/payment-gateway-plugin.html#gateway_class
-            add_action( 'woocommerce_api_'.$this->id.'_webhook', array( $this, 'payments_webhook' ), 5 );
-
-
-            add_action( 'woocommerce_api_'.$this->id.'_callback', array( $this, 'payment_callback' ) );
-
+            
+            // add_action( 'woocommerce_api_'.$this->id.'_webhook', array( $this, $this->id.'_webhook' ), 5 );
+            // add_action( 'woocommerce_api_'.$this->id.'_callback', array( $this, $this->id.'_callback' ) );
+            // @todo: should be implemented on a specific payment gateway instead of here, as the webhook & callback actions can differ.
+            // The functions can be implemented generically (on bank_based level) but the action should be registered concretely
+            
             // ********** Allow filtering Orders based on TransactionID **********
             add_filter(
                 'woocommerce_order_data_store_cpt_get_orders_query',
@@ -127,9 +134,8 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
             ]
         ] );
     }
-
-
-    protected function thank_you_page( string $order_id ): void {
+    
+    protected function thank_you_page( string $order_id ) {
         $order = wc_get_order( $order_id );
 
         $url = $order->get_checkout_order_received_url();
@@ -153,7 +159,6 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
     
     
     /**
-     * @param $bluem_config
      *
      * @return bool
      */
@@ -172,6 +177,5 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
     }
 
     public function process_payment( $order_id ) {
-        
     }
 }

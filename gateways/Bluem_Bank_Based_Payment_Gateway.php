@@ -3,9 +3,13 @@
 use Carbon\Carbon;
 
 include_once __DIR__ . '/Bluem_Payment_Gateway.php';
+
 abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 {
-    protected ?string $bankSpecificBrandID = null;
+    /**
+     * @var ?string
+     */
+    protected $bankSpecificBrandID;
     
     public function __construct($id, $title, $description, $callback = null) {
         if($callback === null) {
@@ -14,6 +18,14 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         parent::__construct(
             $id, $title, $description, $callback
         );
+
+        // ********** CREATING plugin URLs for specific functions **********
+        // adding specific functions for Bank based plugins.
+        // The functions webhook and callback NEED TO BE defined in this class though,
+        // as they are equal per bank based payment gateway
+        add_action( 'woocommerce_api_'.$this->id.'_webhook', array( $this, 'bluem_bank_payments_webhook' ), 5 );
+        add_action( 'woocommerce_api_'.$this->id.'_callback', array( $this, 'bluem_bank_payments_callback' ) );
+
     }
     
     /**
@@ -42,32 +54,36 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $entranceCode = $this->bluem->CreateEntranceCode();
     
         update_post_meta( $order_id, 'bluem_entrancecode', $entranceCode );
-        if ( ! is_null( $customer_id ) && $customer_id != "" && $customer_id != "0" ) {
-            $description = "Klant {$customer_id} Bestelling {$order_id}";
+        if ( ! is_null( $customer_id ) && $customer_id !== "" && (int)$customer_id !== 0 ) {
+            $description = "Klant $customer_id Bestelling $order_id";
         } else {
-            $description = "Bestelling {$order_id}";
+            $description = "Bestelling $order_id";
         }
     
         $debtorReference = $order_id;
         $amount          = $order->get_total();
         $currency        = "EUR"; // get dynamically from order
         $dueDateTime     = Carbon::now()->addDay();
-    
-        $request = $this->bluem->CreatePaymentRequest(
-            $description,
-            $debtorReference,
-            $amount,
-            $dueDateTime,
-            $currency,
-            $entranceCode
-        );
-        
-    
+
+        try {
+            $request = $this->bluem->CreatePaymentRequest(
+                $description,
+                $debtorReference,
+                $amount,
+                $dueDateTime,
+                $currency,
+                $entranceCode
+            );
+        } catch ( Exception $e ) {
+            // @todo: handle exception
+        }
+
+
         // temp overrides
         $request->paymentReference = str_replace( '-', '', $request->paymentReference );
         $request->type_identifier  = "createTransaction";
         $request->dueDateTime      = $dueDateTime->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
-        $request->debtorReturnURL  = home_url( "wc-api/bluem_payments_callback?entranceCode={$entranceCode}" );
+        $request->debtorReturnURL  = home_url( sprintf( "wc-api/bluem_payments_callback?entranceCode=%s", $entranceCode ) );
     
         $payload = json_encode( [
             'environment'       => $this->bluem->environment,
@@ -76,7 +92,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             'currency'          => $currency,
             'due_date'          => $request->dueDateTime,
             'payment_reference' => $request->paymentReference
-        ], JSON_THROW_ON_ERROR );
+        ] );
 
 
         if($bankSpecificBrandID !== null) {
@@ -88,8 +104,12 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             'bluem_woocommerce_enhance_payment_request',
             $request
         );
-    
-        $response = $this->bluem->PerformRequest( $request );
+
+        try {
+            $response = $this->bluem->PerformRequest( $request );
+        } catch ( Exception $e ) {
+            // @todo: handle exception
+        }
         // Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled',
     
         // Remove cart
@@ -99,7 +119,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $order->update_status( 'pending', __( 'Awaiting Bluem Payment Signature', 'wc-gateway-bluem' ) );
     
         if ( isset( $response->PaymentTransactionResponse->TransactionURL ) ) {
-            $order->add_order_note( __( "Betalingsproces geinitieerd" ) );
+            $order->add_order_note( __( "Betalingsproces geïnitieerd" ) );
     
             $transactionID = "" . $response->PaymentTransactionResponse->TransactionID;
             update_post_meta( $order_id, 'bluem_transactionid', $transactionID );
@@ -130,11 +150,11 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                 'result'   => 'success',
                 'redirect' => $transactionURL
             );
-        } else {
-            return array(
-                'result' => 'failure'
-            );
         }
+
+        return array(
+            'result' => 'failure'
+        );
     }
 
     /**
@@ -142,7 +162,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      *
      * @return void
      */
-    public function payments_webhook() {
+    public function bluem_bank_payments_webhook() {
         if ( $_GET['env'] && is_string( $_GET['env'] )
              && in_array(
                  sanitize_text_field( $_GET['env'] ),
@@ -154,10 +174,12 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             $env = "test";
         }
 
-        $statusUpdateObject = $this->bluem->Webhook();
-        echo "Completed webhook";
-        var_dump( $statusUpdateObject );
-        die();
+        try {
+            $this->bluem->Webhook();
+        } catch ( Exception $e ) {
+            // @todo: handle exception
+        }
+
         // @todo: continue webhook specifics
         // @todo: remove obsolete mandate references, this code below is to be deleted
 
@@ -174,14 +196,14 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $order_status = $order->get_status();
 
         if ( self::VERBOSE ) {
-            echo "order_status: {$order_status}" . PHP_EOL;
-            echo "webhook_status: {$webhook_status}" . PHP_EOL;
+            echo "order_status: $order_status" . PHP_EOL;
+            echo "webhook_status: $webhook_status" . PHP_EOL;
         }
 
         $user_id   = $user_id = $order->get_user_id();
         $user_meta = get_user_meta( $user_id );
 
-        // Todo: if maxamount comes back from webhook (it should) then it can be accessed here
+        // Todo: if max amount comes back from webhook (it should) then it can be accessed here
         // if (isset($user_meta['bluem_latest_mandate_amount'][0])) {
         // 	$mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
         // } else {
@@ -191,7 +213,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         if ( isset( $statusUpdateObject->PaymentStatus->AcceptanceReport->MaxAmount ) ) {
             $mandate_amount = (float) ( $statusUpdateObject->PaymentStatus->AcceptanceReport->MaxAmount . "" );
         } else {
-            $mandate_amount = (float) 0.0;    // mandate amount is not set, so it is unlimited
+            $mandate_amount = 0.0;    // mandate amount is not set, so it is unlimited
         }
         if ( self::VERBOSE ) {
             var_dump( $mandate_amount );
@@ -200,16 +222,16 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         }
 
         if ( self::VERBOSE ) {
-            echo "mandate_amount: {$mandate_amount}" . PHP_EOL;
+            echo "mandate_amount: $mandate_amount" . PHP_EOL;
         }
 
         $mandate_successful = false;
 
         if ( $mandate_amount !== 0.0 ) {
             $order_price      = $order->get_total();
-            $max_order_amount = (float) ( $order_price * 1.1 );
+            $max_order_amount = ( $order_price * 1.1 );
             if ( self::VERBOSE ) {
-                echo "max_order_amount: {$max_order_amount}" . PHP_EOL;
+                echo "max_order_amount: $max_order_amount" . PHP_EOL;
             }
 
             if ( $mandate_amount >= $max_order_amount ) {
@@ -217,28 +239,23 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                 if ( self::VERBOSE ) {
                     echo "payment is enough" . PHP_EOL;
                 }
-            } else {
-                if ( self::VERBOSE ) {
-                    echo "payment is too small" . PHP_EOL;
-                }
+            } else if ( self::VERBOSE ) {
+                echo "payment is too small" . PHP_EOL;
             }
         }
         if ( $webhook_status === "Success" ) {
 //                if ($order_status === "processing") {
             // order is already marked as processing, nothing more is necessary
 //                } else
-            if ( $order_status === "pending" ) {
-                // check if maximum of order does not exceed mandate size based on user metadata
-                if ( $mandate_successful ) {
-                    $order->update_status( 'processing', __( 'Betaling is gelukt en goedgekeurd; via webhook', 'wc-gateway-bluem' ) );
-                }
-                // iff order is within size, update to processing
+            // check if maximum of order does not exceed mandate size based on user metadata
+            if ( ( $order_status === "pending" ) && $mandate_successful ) {
+                $order->update_status( 'processing', __( 'Betaling is gelukt en goedgekeurd; via webhook', 'wc-gateway-bluem' ) );
             }
         } elseif ( $webhook_status === "Cancelled" ) {
             $order->update_status( 'cancelled', __( 'Betaling is geannuleerd; via webhook', 'wc-gateway-bluem' ) );
 
 //            elseif ($webhook_status === "Open" || $webhook_status == "Pending") {
-            // if the webhook is still open or pending, nothing has to be done as of yet
+            // if the webhook is still open or pending, nothing has to be done yet
         } elseif ( $webhook_status === "Expired" ) {
             $order->update_status( 'failed', __( 'Betaling is verlopen; via webhook', 'wc-gateway-bluem' ) );
         } else {
@@ -283,10 +300,10 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
     /**
      * payment_Callback function after payment process has been completed by the user
-     * @return function [description]
+     * @return void
      * @throws Exception
      */
-    public function payment_callback() {
+    public function bluem_bank_payments_callback() {
 
         // $this->bluem = new Bluem($this->bluem_config);
 
@@ -307,7 +324,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $order = $this->getOrderByEntranceCode( $entranceCode );
 
         if ( is_null( $order ) ) {
-            $errormessage = "Fout: order niet gevonden in webshop. Neem contact op met de webshop en vermeld de code {$entranceCode} bij je gegevens.";
+            $errormessage = "Fout: order niet gevonden in webshop. 
+            Neem contact op met de webshop en vermeld de code $entranceCode bij je gegevens.";
             bluem_error_report_email(
                 [
                     'service'  => 'payments',
@@ -322,7 +340,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         $transactionID = $order->get_meta( 'bluem_transactionid' );
         if ( $transactionID == "" ) {
-            $errormessage = "No transaction ID found. Neem contact op met de webshop en vermeld de code {$entranceCode} bij je gegevens.";
+            $errormessage = "No transaction ID found. Neem contact op met de webshop en vermeld de code $entranceCode bij je gegevens.";
             bluem_error_report_email(
                 [
                     'service'  => 'payments',
@@ -439,8 +457,9 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             bluem_transaction_notification_email(
                 $request_from_db->id
             );
-            bluem_dialogs_render_prompt( "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status" );
+            bluem_dialogs_render_prompt( "Fout: Onbekende of foutieve status teruggekregen: $statusCode<br>Neem contact op met de webshop en vermeld deze status" );
             exit;
         }
+        exit;
     }
 }
