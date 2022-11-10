@@ -23,7 +23,7 @@ function bluem_get_bluem_logo_html( $height = 64 ) {
 
 function bluem_render_request_table( $requests, $users_by_id = [] ) {
     if ( count( $requests ) == 0 ) {
-        echo "<p>" . __( "Nog geen verzoeken", 'bluem' ) . "</p>";
+        echo "<p>" . __( "Nog geen transacties", 'bluem' ) . "</p>";
 
         return;
     } ?>
@@ -50,7 +50,7 @@ function bluem_render_request_table( $requests, $users_by_id = [] ) {
 
 
                     <td>
-                        <a href="<?php echo admin_url( "admin.php?page=bluem_admin_requests_view&request_id=" . $r->id ); ?>"
+                        <a href="<?php echo admin_url( "admin.php?page=bluem-transactions&request_id=" . $r->id ); ?>"
                            target="_self">
                             <?php echo $r->description; ?>
                         </a>
@@ -61,9 +61,7 @@ function bluem_render_request_table( $requests, $users_by_id = [] ) {
                     </td>
                     <td><?php
                         bluem_render_request_user( $r, $users_by_id ); ?>
-                    </td><?php $rdate = Carbon::parse( $r->timestamp, 'UTC' );
-                    $rdate->setTimeZone( "Europe/Amsterdam" );
-                    ?>
+                    </td><?php $rdate = Carbon::parse( $r->timestamp, 'UTC' )->setTimeZone( "Europe/Amsterdam" ); ?>
                     <td title="<?php echo $rdate->format( "d-m-Y H:i:s" ); ?>">
                         <?php echo $rdate->format( "d-m-Y H:i:s" ); ?>
                     </td>
@@ -342,7 +340,7 @@ function bluem_render_requests_list( $requests ) {
                 } ?>
 
                 <div class="bluem-request-list-item-row bluem-request-list-item-row-title">
-                    <a href="<?php echo admin_url( "admin.php?page=bluem_admin_requests_view&request_id=" . $r->id ); ?>"
+                    <a href="<?php echo admin_url( "admin.php?page=bluem-transactions&request_id=" . $r->id ); ?>"
                        target="_self">
                         <?php echo $r->description; ?>
                     </a>
@@ -464,13 +462,19 @@ function bluem_render_obj_row_recursive( $key, $value, $level = 0 ) {
 
 
 function bluem_render_requests_table_title( $cat ) {
-    echo "<h4>";
+    echo "<h2>";
     if ( $cat == "mandates" ) {
         echo '<span class="dashicons dashicons-money"></span>&nbsp; ';
         echo "Digitaal Incassomachtigen";
     } elseif ( $cat == "payments" ) {
         echo '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
         echo "iDEAL betalingen";
+    } elseif ( $cat == "payments_cards" ) {
+        echo '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
+        echo "Creditcard betalingen";
+    } elseif ( $cat == "payments_paypal" ) {
+        echo '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
+        echo "PayPal betalingen";
     } elseif ( $cat == "identity" ) {
         echo '<span class="dashicons dashicons-businessperson"></span>&nbsp; ';
         echo "Identiteit";
@@ -478,7 +482,7 @@ function bluem_render_requests_table_title( $cat ) {
         echo '<span class="dashicons dashicons-businessperson"></span>&nbsp; ';
         echo "Integraties";
     }
-    echo "</h4>";
+    echo "</h2>";
 }
 
 
@@ -487,29 +491,56 @@ function bluem_render_nav_header( $active_page = '' ) {
 
     ?>
     <nav class="nav-tab-wrapper">
-        <a href="<?php echo admin_url( 'options-general.php?page=bluem_admin_requests_view' ); ?>"
-            <?php if ( $active_page == "requests" ) {
+        <a href="<?php echo admin_url( 'admin.php?page=bluem-admin' ); ?>"
+            <?php if ( $active_page == "home" ) {
                 echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
             } else {
                 echo 'class="nav-tab"';
             }
             ?>>
-            Alle verzoeken</a>
-        <a href="<?php echo admin_url( 'options-general.php?page=bluem' ); ?>" class="nav-tab">
+            <span class="dashicons dashicons-admin-home"></span>
+            Home
+        </a>
+        <a href="<?php echo admin_url( 'admin.php?page=bluem-transactions' ); ?>"
+            <?php if ( $active_page == "transactions" ) {
+                echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
+            } else {
+                echo 'class="nav-tab"';
+            }
+            ?>>
+            <span class="dashicons dashicons-money"></span>
+            Transacties
+        </a>
+        <a href="<?php echo admin_url( 'admin.php?page=bluem-settings' ); ?>"
+            <?php if ( $active_page == "settings" ) {
+                echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
+            } else {
+                echo 'class="nav-tab"';
+            }
+            ?>>
             <span class="dashicons dashicons-admin-settings"></span>
             Instellingen
         </a>
-
+        <a href="<?php echo admin_url( 'admin.php?page=bluem-importexport' ); ?>"
+            <?php if ( $active_page == "importexport" ) {
+                echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
+            } else {
+                echo 'class="nav-tab"';
+            }
+            ?>>
+            <span class="dashicons dashicons-database"></span>
+            Import / export
+        </a>
         <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e"
            target="_blank"
            class="nav-tab">
             <span class="dashicons dashicons-media-document"></span>
-            Handleiding</a>
-
+            Handleiding
+        </a>
         <a href="mailto:pluginsupport@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">
             <span class="dashicons dashicons-editor-help"></span>
-            E-mail support</a>
-
+            E-mail support
+        </a>
     </nav>
 
     <?php

@@ -37,10 +37,10 @@ function bluem_init_payment_gateway_class() {
 
 function bluem_woocommerce_payments_settings_section() {
     echo '<p><a id="tab_payments"></a>
-<strong>Let op: naast het instellen van de onderstaande functies moet je ook de betaalmethoden activeren bij de 
-<a href="'. (home_url().'wp-admin/admin.php?page=wc-settings&tab=checkout') .'" target="_blank">WooCommerce instellingen voor Betalingen</a> 
+<strong>Let op: naast het instellen van de onderstaande functies moet je ook de betaalmethoden activeren bij de
+<a href="'. (home_url().'wp-admin/admin.php?page=wc-settings&tab=checkout') .'" target="_blank">WooCommerce instellingen voor Betalingen</a>.
 </strong><br>
-    Je kan hier belangrijke gegevens instellen rondom iDEAL-transacties om gemakkelijk betalingen te ontvangen.</p>
+    Je kan hier belangrijke gegevens instellen rondom ePayments-transacties om gemakkelijk betalingen te ontvangen.</p>
     <p>Lees <a href="'.BLUEM_WOOCOMMERCE_MANUAL_URL.'" target="_blank">de handleiding</a> voor meer informatie.</p>';
 }
 
@@ -58,22 +58,22 @@ function bluem_woocommerce_get_payments_options() {
         'paymentsIDEALBrandID'                   => [
             'key'         => 'paymentsIDEALBrandID',
             'title'       => 'bluem_paymentsIDEALBrandID',
-            'name'        => 'Bluem Brand ID voor iDEAL Payments',
-            'description' => 'Het BrandID, ontvangen van Bluem specifiek voor betalingen via iDEAL Payments',
+            'name'        => 'BrandID voor iDEAL',
+            'description' => 'Het Bluem BrandID voor betalingen via iDEAL Payments',
             'default'     => ''
         ],
         'paymentsCreditcardBrandID'                   => [
             'key'         => 'paymentsCreditcardBrandID',
             'title'       => 'bluem_paymentsCreditcardBrandID',
-            'name'        => 'Bluem Brand ID voor CreditCard Payments',
-            'description' => 'Het BrandID, ontvangen van Bluem specifiek voor betalingen via CreditCard Payments',
+            'name'        => 'BrandID voor CreditCard',
+            'description' => 'Het Bluem BrandID voor betalingen via CreditCard Payments',
             'default'     => ''
         ],
         'paymentsPayPalBrandID'                   => [
             'key'         => 'paymentsPayPalBrandID',
             'title'       => 'bluem_paymentsPayPalBrandID',
-            'name'        => 'Bluem Brand ID voor PayPal Payments',
-            'description' => 'Het BrandID, ontvangen van Bluem specifiek voor betalingen via PayPal Payments',
+            'name'        => 'BrandID voor PayPal',
+            'description' => 'Het Bluem BrandID voor betalingen via PayPal Payments',
             'default'     => ''
         ],
         'paymentCompleteRedirectType'      => [
@@ -167,7 +167,7 @@ function bluem_woocommerce_payments_show_extra_profile_fields( $user ) {
         <?php if ( isset( $bluem_requests ) && count( $bluem_requests ) > 0 ) { ?>
             <tr>
                 <th>
-                    iDEAL Betalingen
+                    ePayments transacties
                 </th>
                 <td>
                     <?php

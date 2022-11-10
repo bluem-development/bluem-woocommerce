@@ -50,7 +50,6 @@ if ( bluem_module_enabled( 'mandates' ) ) {
 }
 if ( bluem_module_enabled( 'payments' ) ) {
     include_once __DIR__ . '/bluem-payments.php';
-    
 }
 
 if ( bluem_module_enabled( 'idin' ) ) {
@@ -189,59 +188,64 @@ add_action( 'admin_menu', 'bluem_woocommerce_settings_handler' );
  */
 function bluem_register_menu() {
     add_menu_page(
-        "bluem_admin_requests_view",
+        "Bluem",
         "Bluem",
         "manage_options",
-        "bluem_admin_requests_view",
-        "bluem_admin_requests_view",
-        'dashicons-money'
+        "bluem-admin",
+        "bluem_home",
+        plugins_url('bluem/assets/bluem/logo.svg') //'dashicons-money'
     );
 
     add_submenu_page(
-        null,
-        'Import/export gegevens',
-        'Import/export gegevens',
+        'bluem-admin',
+        'Transacties',
+        'Transacties',
         'manage_options',
-        'bluem_admin_importexport',
-        'bluem_admin_importexport'
+        'bluem-transactions',
+        'bluem_requests_view'
     );
 
-    // add_submenu_page
-    //     "bluem",
-    //     "Instellingen",
-    //     "Instellingen",
-    //     "manage_options",
-    //     "bluem_settings_page",
-    //     "bluem_settings_page"
-    // );
-    // add_submenu_page(
-    //     "bluem",
-    //     "Instellingen",
-    //     "Instellingen",
-    //     "manage_options",
-    //     "bluem_settings_page",
-    //     "bluem_settings_page"
-    // );
+    add_submenu_page(
+        'bluem-admin',
+        'Instellingen',
+        'Instellingen',
+        'manage_options',
+        'bluem-settings',
+        'bluem_settings_page'
+    );
+
+    add_submenu_page(
+        'bluem-admin',
+        'Import / export',
+        'Import / export',
+        'manage_options',
+        'bluem-importexport',
+        'bluem_admin_importexport'
+    );
 }
 
 add_action( 'admin_menu', 'bluem_register_menu', 9 );
 
-function bluem_admin_requests_view() {
+function bluem_home() {
+    include_once 'views/home.php';
+}
+
+function bluem_requests_view() {
     if ( isset( $_GET['request_id'] ) && $_GET['request_id'] !== "" ) {
         if ( isset( $_GET['admin_action'] ) && $_GET['admin_action'] == "delete" ) {
             bluem_db_delete_request_by_id( $_GET['request_id'] );
             wp_redirect(
-                admin_url( "admin.php?page=bluem_admin_requests_view" )
+                admin_url( "admin.php?page=bluem-transactions" )
             );
         } else {
-            bluem_admin_requests_view_request();
+            bluem_requests_view_request();
         }
     } else {
-        bluem_admin_requests_view_all();
+        bluem_requests_view_all();
     }
 }
 
-function bluem_admin_requests_view_request() {
+function bluem_requests_view_request() {
     global $wpdb;
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
@@ -250,7 +254,7 @@ function bluem_admin_requests_view_request() {
 
     $request_query = $wpdb->get_results( "SELECT * FROM `bluem_requests` WHERE `id` = $id LIMIT 1" );
     if ( count( $request_query ) == 0 ) {
-        bluem_admin_requests_view_all();
+        bluem_requests_view_all();
 
         return;
     }
@@ -265,7 +269,7 @@ function bluem_admin_requests_view_request() {
     include_once 'views/request.php';
 }
 
-function bluem_admin_requests_view_all() {
+function bluem_requests_view_all() {
     global $wpdb;
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
@@ -278,6 +282,8 @@ function bluem_admin_requests_view_all() {
 
     $requests['identity'] = [];
     $requests['payments'] = [];
+    $requests['payments_cards'] = [];
+    $requests['payments_paypal'] = [];
     $requests['mandates'] = [];
 
     // @todo Allow filtering on only one type
@@ -314,119 +320,97 @@ function bluem_settings_page() {
     //Get the active tab from the GET param
     $tab = bluem_woocommerce_tab(); ?>
 
-    <div class="wrap bluem-settings-container">
-        <div class="bluem-settings-header">
+    <div class="wrap">
+        <h1>
+            <?php echo bluem_get_bluem_logo_html( 48 ); ?>
+            <?php echo esc_html( get_admin_page_title() ); ?>
+        </h1>
 
-            <h1>
-                <?php echo bluem_get_bluem_logo_html( 24 ); ?>
-                <?php echo esc_html( get_admin_page_title() ); ?>
-            </h1>
-            <nav class="nav-tab-wrapper">
-                <a href="<?php echo admin_url( 'options-general.php?page=bluem' ); ?>"
+        <?php bluem_render_nav_header('settings');?>
+
+        <nav class="nav-tab-wrapper">
+            <a href="<?php echo $_SERVER['REQUEST_URI']; ?>#tab_general"
+               class="nav-tab
+    <?php if ( $tab === null ) {
+                   echo "nav-tab-active";
+               } ?>
+    ">
+                <span class="dashicons dashicons-admin-settings"></span>
+                Algemeen
+            </a>
+
+            <?php if ( bluem_module_enabled( 'mandates' ) ) { ?>
+
+                <a href="<?php echo $_SERVER['REQUEST_URI'] . '#tab_mandates'; ?>"
                    class="nav-tab
-        <?php if ( $tab === null ) {
+        <?php if ( $tab === 'mandates' ) {
                        echo "nav-tab-active";
                    } ?>
         ">
-                    <span class="dashicons dashicons-admin-settings"></span>
-                    Algemeen
+                    <span class="dashicons dashicons-money"></span>
+
+                    Incassomachtigen
+
                 </a>
+            <?php } ?>
 
-                <?php if ( bluem_module_enabled( 'mandates' ) ) { ?>
+            <?php if ( bluem_module_enabled( 'payments' ) ) { ?>
 
-                    <a href="<?php echo admin_url( 'options-general.php?page=bluem#tab_mandates' ); ?>"
-                       class="nav-tab
-            <?php if ( $tab === 'mandates' ) {
-                           echo "nav-tab-active";
-                       } ?>
-            ">
-                        <span class="dashicons dashicons-money"></span>
-
-                        Incassomachtigen
-
-                    </a>
-                <?php } ?>
-
-                <?php if ( bluem_module_enabled( 'payments' ) ) { ?>
-
-                    <a href="<?php echo admin_url( 'options-general.php?page=bluem#tab_payments' ); ?>"
-                       class="nav-tab
-            <?php if ( $tab === 'payments' ) {
-                           echo "nav-tab-active";
-                       } ?>
-            ">
-
-                        <span class="dashicons dashicons-money-alt"></span>
-                        iDEAL
-                    </a>
-                <?php } ?>
-
-                <?php if ( bluem_module_enabled( 'idin' ) ) { ?>
-
-                    <a href="<?php echo admin_url( 'options-general.php?page=bluem#tab_idin' ); ?>"
-                       class="nav-tab
-            <?php if ( $tab === 'idin' ) {
-                           echo "nav-tab-active";
-                       } ?>
-            ">
-                        <span class="dashicons dashicons-businessperson"></span>
-                        Identiteit
-                    </a>
-                <?php } ?>
-
-                <a href="<?php echo admin_url( 'options-general.php?page=bluem#tab_integrations' ); ?>"
+                <a href="<?php echo $_SERVER['REQUEST_URI'] . '#tab_payments'; ?>"
                    class="nav-tab
-        <?php if ( $tab === 'integrations' ) {
+        <?php if ( $tab === 'payments' ) {
                        echo "nav-tab-active";
                    } ?>
         ">
-                    <span class="dashicons dashicons-admin-plugins"></span>
-                    Integraties
+
+                    <span class="dashicons dashicons-money-alt"></span>
+                    ePayments
                 </a>
+            <?php } ?>
 
-                <a href="<?php echo admin_url( 'admin.php?page=bluem_admin_requests_view' ); ?>"
-                   class="nav-tab">
-                    <span class="dashicons dashicons-database-view"></span>
-                    Verzoeken
+            <?php if ( bluem_module_enabled( 'idin' ) ) { ?>
+
+                <a href="<?php echo $_SERVER['REQUEST_URI'] . '#tab_idin'; ?>"
+                   class="nav-tab
+        <?php if ( $tab === 'idin' ) {
+                       echo "nav-tab-active";
+                   } ?>
+        ">
+                    <span class="dashicons dashicons-businessperson"></span>
+                    Identiteit
                 </a>
-                <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e"
-                   target="_blank" class="nav-tab">
-                    <span class="dashicons dashicons-media-document"></span>
-                    Handleiding</a>
+            <?php } ?>
 
-                <a href="mailto:pluginsupport@bluem.nl?subject=Bluem+Wordpress+Plugin"
-                   class="nav-tab" target="_blank">
-                    <span class="dashicons dashicons-editor-help"></span>
-                    E-mail support
-                </a>
-            </nav>
-
-
-        </div>
-        <div class="bluem-settings">
-
-            <form action="options.php" method="post">
-                <?php
-                settings_fields( 'bluem_woocommerce_modules_options' );
-                do_settings_sections( 'bluem_woocommerce_modules' );
-                settings_fields( 'bluem_woocommerce_options' );
-                do_settings_sections( 'bluem_woocommerce' ); ?>
-
-                <input name="submit"
-                       class="button button-primary"
-                       type="submit" value="<?php esc_attr_e( 'Save' ); ?>"
-                />
-            </form>
+            <a href="<?php echo $_SERVER['REQUEST_URI'] . '#tab_integrations'; ?>"
+               class="nav-tab
+    <?php if ( $tab === 'integrations' ) {
+                   echo "nav-tab-active";
+               } ?>
+    ">
+                <span class="dashicons dashicons-admin-plugins"></span>
+                Integraties
+            </a>
+        </nav>
+        <form action="options.php" method="post">
             <?php
-            bluem_render_footer( false ); ?>
-        </div>
+            settings_fields( 'bluem_woocommerce_modules_options' );
+            do_settings_sections( 'bluem_woocommerce_modules' );
+            settings_fields( 'bluem_woocommerce_options' );
+            do_settings_sections( 'bluem_woocommerce' ); ?>
+
+            <input name="submit"
+                   class="button button-primary"
+                   type="submit" value="<?php esc_attr_e( 'Save' ); ?>"
+            />
+        </form>
+        <?php bluem_render_footer( false ); ?>
     </div>
     <?php
 }
 
 function bluem_woocommerce_general_settings_section() {
     // Hier kan je alle belangrijke gegevens instellen rondom Bluem algemeen. <br>
-    echo '<p>
+    echo '<p><a id="tab_general"></a>
     <div class="notice notice-warning inline" style="padding:10px;">
     <span class="dashicons dashicons-unlock"></span>
     Let op:
@@ -438,13 +422,12 @@ function bluem_woocommerce_general_settings_section() {
 
     echo '<p>
     <div class="notice notice-info inline" style="padding:10px;">
-    Heb je de plugin al geinstalleerd op een andere website?
-    Gebruik dan de Import/Export functie om dezelfde instellingen
-    en voorkeuren in te laden.&nbsp; ';
-    echo '<a href="' . admin_url( 'admin.php?page=bluem_admin_importexport' ) . '"
-     class="">Instellingen importeren of exporteren</a></div>';
+    Heb je de plugin al geinstalleerd op een andere website?<br />
+    Gebruik dan de import / export functie om dezelfde instellingen
+    en voorkeuren in te laden.<br />';
+    echo 'Ga naar <a href="' . admin_url( 'admin.php?page=bluem-importexport' ) . '"
+     class="">instellingen importeren of exporteren</a>.</div>';
     echo '</p>';
-    bluem_render_footer( false );
 }
 
 function bluem_woocommerce_register_settings() {
@@ -498,7 +481,7 @@ function bluem_woocommerce_register_settings() {
         );
         add_settings_section(
             'bluem_woocommerce_general_section',
-            'Algemene instellingen',
+            '<span class="dashicons dashicons-admin-settings"></span> Algemene instellingen',
             'bluem_woocommerce_general_settings_section',
             'bluem_woocommerce'
         );
@@ -517,7 +500,7 @@ function bluem_woocommerce_register_settings() {
     if ( bluem_module_enabled( 'mandates' ) ) {
         add_settings_section(
             'bluem_woocommerce_mandates_section',
-            'Digitale Incassomachtiging instellingen',
+            '<span class="dashicons dashicons-money"></span> Digitale Incassomachtiging instellingen',
             'bluem_woocommerce_mandates_settings_section',
             'bluem_woocommerce'
         );
@@ -539,7 +522,7 @@ function bluem_woocommerce_register_settings() {
     if ( bluem_module_enabled( 'payments' ) ) {
         add_settings_section(
             'bluem_woocommerce_payments_section',
-            'iDEAL payments instellingen',
+            '<span class="dashicons dashicons-money-alt"></span> ePayments payments instellingen',
             'bluem_woocommerce_payments_settings_section',
             'bluem_woocommerce'
         );
@@ -562,7 +545,7 @@ function bluem_woocommerce_register_settings() {
     if ( bluem_module_enabled( 'idin' ) ) {
         add_settings_section(
             'bluem_woocommerce_idin_section',
-            'iDIN instellingen',
+            '<span class="dashicons dashicons-admin-users"></span> iDIN instellingen',
             'bluem_woocommerce_idin_settings_section',
             'bluem_woocommerce'
         );
@@ -584,7 +567,7 @@ function bluem_woocommerce_register_settings() {
 
     add_settings_section(
         'bluem_woocommerce_integrations_section',
-        'Integratie instellingen',
+        '<span class="dashicons dashicons-admin-plugins"></span> Integratie instellingen',
         'bluem_woocommerce_integrations_settings_section',
         'bluem_woocommerce'
     );
@@ -822,7 +805,7 @@ function bluem_woocommerce_get_core_options(): array {
         'expectedReturnStatus'   => [
             'key'         => 'expectedReturnStatus',
             'title'       => 'bluem_expectedReturnStatus',
-            'name'        => 'Test modus verwachte return status',
+            'name'        => 'Test modus return status',
             'description' => 'Welke status wil je terug krijgen voor een TEST transaction of status request? Mogelijke waarden: none, success, cancelled, expired, failure, open, pending',
             'default'     => 'success',
             'type'        => 'select',
@@ -1113,7 +1096,7 @@ function bluem_woocommerce_get_config(): Stdclass {
 }
 
 function bluem_woocommerce_modules_settings_section() {
-    echo '<p>Verhoog de efficiëntie door alleen de diensten te activeren die voor jouw website van toepassing zijn.</p>';
+    echo '<p>Tip: Verhoog de efficiëntie door alleen de diensten te activeren die voor jouw website van toepassing zijn.</p>';
 }
 
 function bluem_woocommerce_modules_render_mandates_activation() {
