@@ -10,10 +10,11 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      * @var ?string
      */
     protected $bankSpecificBrandID;
-    
-    public function __construct($id, $title, $description, $callback = null) {
-        if($callback === null) {
-            $callback = home_url( 'wc-api/bluem_payments_callback' );
+
+    public function __construct($id, $title, $description, $callback = null)
+    {
+        if ( empty( $callback ) ) {
+            $callback = home_url( 'wc-api/' . $this->id . '_callback' );
         }
         parent::__construct(
             $id, $title, $description, $callback
@@ -23,15 +24,14 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         // adding specific functions for Bank based plugins.
         // The functions webhook and callback NEED TO BE defined in this class though,
         // as they are equal per bank based payment gateway
-        add_action( 'woocommerce_api_'.$this->id.'_webhook', array( $this, 'bluem_bank_payments_webhook' ), 5 );
-        add_action( 'woocommerce_api_'.$this->id.'_callback', array( $this, 'bluem_bank_payments_callback' ) );
-
+        add_action('woocommerce_api_' . $this->id . '_callback', array( $this, 'bluem_bank_payments_callback' ));
+        add_action('woocommerce_api_' . $this->id . '_webhook', array( $this, 'bluem_bank_payments_webhook' ));
     }
-    
+
     /**
      * Configuring a specific brandID for payments
      */
-    protected function methodSpecificConfigurationMixin( $config ) 
+    protected function methodSpecificConfigurationMixin( $config )
     {
         if ( isset( $config->paymentBrandID ) ) {
             $config->brandID = $config->paymentBrandID;
@@ -41,25 +41,25 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         return $config;
     }
 
-    public function process_payment($order_id) {
-    
+    public function process_payment($order_id)
+    {
         $order = wc_get_order( $order_id );
-    
+
         $user_id   = $order->get_user_id();
         $user_meta = get_user_meta( $user_id );
-    
+
         $order_id    = $order->get_id();
         $customer_id = get_post_meta( $order_id, '_customer_user', true );
-    
+
         $entranceCode = $this->bluem->CreateEntranceCode();
-    
+
         update_post_meta( $order_id, 'bluem_entrancecode', $entranceCode );
         if ( ! is_null( $customer_id ) && $customer_id !== "" && (int)$customer_id !== 0 ) {
             $description = "Klant $customer_id Bestelling $order_id";
         } else {
             $description = "Bestelling $order_id";
         }
-    
+
         $debtorReference = $order_id;
         $amount          = $order->get_total();
         $currency        = "EUR"; // get dynamically from order
@@ -83,8 +83,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $request->paymentReference = str_replace( '-', '', $request->paymentReference );
         $request->type_identifier  = "createTransaction";
         $request->dueDateTime      = $dueDateTime->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
-        $request->debtorReturnURL  = home_url( sprintf( "wc-api/bluem_payments_callback?entranceCode=%s", $entranceCode ) );
-    
+        $request->debtorReturnURL  = home_url( sprintf( 'wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode ) );
+
         $payload = json_encode( [
             'environment'       => $this->bluem->environment,
             'amount'            => $amount,
@@ -98,7 +98,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         if($bankSpecificBrandID !== null) {
             $request->setBrandId($bankSpecificBrandID);
         }
-        
+
         // allow third parties to add additional data to the request object through this additional action
         $request = apply_filters(
             'bluem_woocommerce_enhance_payment_request',
@@ -111,26 +111,26 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             // @todo: handle exception
         }
         // Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled',
-    
+
         // Remove cart
         global $woocommerce;
         $woocommerce->cart->empty_cart();
-    
+
         $order->update_status( 'pending', __( 'Awaiting Bluem Payment Signature', 'wc-gateway-bluem' ) );
-    
+
         if ( isset( $response->PaymentTransactionResponse->TransactionURL ) ) {
             $order->add_order_note( __( "Betalingsproces geïnitieerd" ) );
-    
+
             $transactionID = "" . $response->PaymentTransactionResponse->TransactionID;
             update_post_meta( $order_id, 'bluem_transactionid', $transactionID );
             $paymentReference = "" . $response->PaymentTransactionResponse->paymentReference;
             update_post_meta( $order_id, 'bluem_payment_reference', $paymentReference );
             $debtorReference = "" . $response->PaymentTransactionResponse->debtorReference;
             update_post_meta( $order_id, 'bluem_debtor_Reference', $debtorReference );
-    
+
             // redirect cast to string, for AJAX response handling
             $transactionURL = ( $response->PaymentTransactionResponse->TransactionURL . "" );
-    
+
             bluem_db_create_request(
                 [
                     'entrance_code'    => $entranceCode,
@@ -145,7 +145,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                     'payload'          => $payload
                 ]
             );
-    
+
             return array(
                 'result'   => 'success',
                 'redirect' => $transactionURL
@@ -162,7 +162,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      *
      * @return void
      */
-    public function bluem_bank_payments_webhook() {
+    public function bluem_bank_payments_webhook()
+    {
         if ( $_GET['env'] && is_string( $_GET['env'] )
              && in_array(
                  sanitize_text_field( $_GET['env'] ),
@@ -264,7 +265,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         exit;
     }
 
-    public function getOrderByEntranceCode( $entranceCode ) {
+    public function getOrderByEntranceCode( $entranceCode )
+    {
         $orders = wc_get_orders( array(
             'orderby'            => 'date',
             'order'              => 'DESC',
@@ -284,7 +286,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      *
      * @return mixed|null
      */
-    private function getOrder( string $transactionID ) {
+    private function getOrder( string $transactionID )
+    {
         $orders = wc_get_orders( array(
             'orderby'             => 'date',
             'order'               => 'DESC',
@@ -297,16 +300,13 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         return $orders[0];
     }
 
-
     /**
      * payment_Callback function after payment process has been completed by the user
      * @return void
      * @throws Exception
      */
-    public function bluem_bank_payments_callback() {
-
-        // $this->bluem = new Bluem($this->bluem_config);
-
+    public function bluem_bank_payments_callback()
+    {
         if ( ! isset( $_GET['entranceCode'] ) ) {
             $errormessage = "Fout: geen juiste entranceCode teruggekregen bij payment_callback. Neem contact op met de webshop en vermeld je contactgegevens.";
             bluem_error_report_email(
@@ -319,12 +319,13 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             bluem_dialogs_render_prompt( $errormessage );
             exit;
         }
+
         $entranceCode = sanitize_text_field( $_GET['entranceCode'] );
 
         $order = $this->getOrderByEntranceCode( $entranceCode );
 
         if ( is_null( $order ) ) {
-            $errormessage = "Fout: order niet gevonden in webshop. 
+            $errormessage = "Fout: order niet gevonden in webshop.
             Neem contact op met de webshop en vermeld de code $entranceCode bij je gegevens.";
             bluem_error_report_email(
                 [
@@ -352,9 +353,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             die();
         }
 
-
         $response = $this->bluem->PaymentStatus( $transactionID, $entranceCode );
-
 
         if ( ! $response->Status() ) {
             $errormessage = "Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status";
@@ -392,7 +391,6 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             );
         }
 
-
         if ( $statusCode === self::PAYMENT_STATUS_SUCCESS ) {
             $order->update_status( 'processing', __( 'Betaling is binnengekomen', 'wc-gateway-bluem' ) );
 
@@ -409,10 +407,10 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             bluem_transaction_notification_email(
                 $request_from_db->id
             );
-            $errormessage = "Er ging iets mis bij het betalen, 
-                of je hebt het betaalproces niet voltooid. 
-                <br>Probeer opnieuw te betalen vanuit je bestellingsoverzicht 
-                of neem contact op met de webshop 
+            $errormessage = "Er ging iets mis bij het betalen,
+                of je hebt het betaalproces niet voltooid.
+                <br>Probeer opnieuw te betalen vanuit je bestellingsoverzicht
+                of neem contact op met de webshop
                 als het probleem zich blijft voordoen.";
             bluem_error_report_email(
                 [

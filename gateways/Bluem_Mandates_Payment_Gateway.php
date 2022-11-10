@@ -5,32 +5,27 @@ use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 
 include_once __DIR__ . '/Bluem_Payment_Gateway.php';
 
-class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway {
-
+class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
+{
 	/**
 	 * Class constructor
 	 */
-	public function __construct() {
-        
-        $methodDescription = 'eMandate Payment Gateway voor WordPress - WooCommerce.
-             Alle instellingen zijn in te stellen onder <a href="' .
-                             admin_url( 'options-general.php?page=bluem' ) . '">
-             Instellingen &rarr; Bluem</a>';
-        
+	public function __construct()
+	{
+        $methodDescription = 'eMandate Payment Gateway voor WordPress - WooCommerce.';
+
         parent::__construct(
             'bluem_mandates',
             'Bluem Digitaal Incassomachtiging (eMandate)',
             $methodDescription,
-            home_url('wc-api/bluem_mandates_callback')
+			home_url( 'wc-api/bluem_mandates_callback' )
         );
-        
 
 		if ( isset( $this->bluem_config->localInstrumentCode ) && $this->bluem_config->localInstrumentCode == "B2B" ) {
 			$this->method_title = 'Bluem Zakelijke Incassomachtiging (eMandate)';
 		} else {
 			$this->method_title = 'Bluem Particuliere Incassomachtiging (eMandate)';
 		}
-
 
 		// This action hook saves the settings
 		add_action(
@@ -46,7 +41,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway {
 		);
 		add_action(
 			'woocommerce_api_bluem_mandates_callback',
-			array( $this, 'mandates_callback' )
+			array( $this, 'bluem_mandates_callback' )
 		);
 
 		// ********** Allow filtering Orders based on MandateID **********
@@ -181,9 +176,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway {
 
             if ( ! $existing_mandate_response->Status() ) {
 				$reason = "No / invalid bluem response for existing mandate";
-				// existing mandate response is not at all valid, 
+				// existing mandate response is not at all valid,
 				// continue with actual mandate process
-			} else if ( 
+			} else if (
                 $existing_mandate_response->EMandateStatusUpdate->EMandateStatus->Status . "" === "Success"
             ) {
                 if ( $this->validateMandate(
@@ -249,7 +244,7 @@ $reason = "Existing mandate found, but not valid";
 
 		return array(
 			'result'  => 'fail',
-			'message' => $reason 
+			'message' => $reason
 		);
 	}
 
@@ -260,7 +255,8 @@ $reason = "Existing mandate found, but not valid";
 	 *
 	 * @return void
 	 */
-	public function process_payment( $order_id ) {
+	public function process_payment( $order_id )
+	{
 		global $current_user;
 
 		$verbose = false;
@@ -275,7 +271,7 @@ $reason = "Existing mandate found, but not valid";
         try {
             $this->bluem = new Bluem( $this->bluem_config );
         } catch ( Exception $e ) {
-            
+
             // @todo: deal with this
         }
 
@@ -328,7 +324,7 @@ $reason = "Existing mandate found, but not valid";
         } catch ( Exception $e ) {
             // @todo: handle exception
         }
-        
+
         if ( self::VERBOSE ) {
 			var_dump( $order_id );
 			var_dump( $user_id );
@@ -409,7 +405,8 @@ $reason = "Existing mandate found, but not valid";
 	 *
 	 * @return void
 	 */
-	public function bluem_mandates_webhook() {
+	public function bluem_mandates_webhook()
+	{
 		// @todo: update this
 
         try {
@@ -469,9 +466,9 @@ $reason = "Existing mandate found, but not valid";
 
 
 		if ( $maxAmountEnabled ) {
-            
-            $maxAmountFactor =  isset( $settings['maxAmountFactor'] ) 
-                ? (float) ( $settings['maxAmountFactor'] ) 
+
+            $maxAmountFactor =  isset( $settings['maxAmountFactor'] )
+                ? (float) ( $settings['maxAmountFactor'] )
                 : 1.0 ;
 
 			$mandate_successful = false;
@@ -515,7 +512,7 @@ $reason = "Existing mandate found, but not valid";
 		}
 //            elseif ($webhook_status === "Open" || $webhook_status == "Pending") {
 		// if the webhook is still open or pending, nothing has to be done yet
-//            } 
+//            }
 		elseif ( $webhook_status === "Expired" ) {
 			$order->update_status( 'failed', __( 'Machtiging is verlopen; via webhook', 'wc-gateway-bluem' ) );
 		} else {
@@ -531,7 +528,8 @@ $reason = "Existing mandate found, but not valid";
      *
      * @return mixed|null
      */
-	private function getOrder( string $mandateID ) {
+	private function getOrder( string $mandateID )
+	{
 		$orders = wc_get_orders( array(
 			'orderby'         => 'date',
 			'order'           => 'DESC',
@@ -544,13 +542,13 @@ $reason = "Existing mandate found, but not valid";
 		return $orders[0];
 	}
 
-
 	/**
 	 * mandates_Callback function after Mandate process has been completed by the user
 	 * @return void
 	 */
-	public function bluem_mandates_callback() {
-//		$this->bluem = new Bluem( $this->bluem_config );
+	public function bluem_mandates_callback()
+	{
+		// $this->bluem = new Bluem( $this->bluem_config );
         // dont recreate it here, it should already exist in the gateway!
 
 		if ( ! isset( $_GET['mandateID'] ) ) {
@@ -759,7 +757,8 @@ $reason = "Existing mandate found, but not valid";
 	 *
 	 * @return bool
      */
-	private function validateMandate( $response, $order, $block_processing = false, $update_metadata = true, $redirect = true, $mandate_id = null, $entrance_code = null ) {
+	private function validateMandate( $response, $order, $block_processing = false, $update_metadata = true, $redirect = true, $mandate_id = null, $entrance_code = null )
+	{
 		$maxAmountResponse = $this->bluem->GetMaximumAmountFromTransactionResponse( $response );
 		$user_id           = $order->get_user_id();
 
@@ -927,8 +926,8 @@ The user is prompted to create a new mandate to fulfill this order."
 					die();
 				}
 				$this->bluem_thankyou( $order->get_id() );
-			} 
-            
+			}
+
             return true;
 		}
         return false;
