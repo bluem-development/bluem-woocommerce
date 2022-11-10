@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if ( ! session_id() ) {
+if ( empty(session_id()) ) {
     session_start();
 }
 

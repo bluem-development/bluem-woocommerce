@@ -19,7 +19,7 @@ use Bluem\BluemPHP\Helpers\BluemIdentityCategoryList;
  * @return void
  */
 function bluem_register_session() {
-    if ( ! session_id() ) {
+    if ( empty(session_id()) ) {
         session_start();
     }
 }

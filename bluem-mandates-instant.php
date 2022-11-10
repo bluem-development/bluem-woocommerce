@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if ( ! session_id() ) {
+if ( empty(session_id()) ) {
     session_start();
 }
 
@@ -21,20 +21,20 @@ function bluem_mandates_instant_request()
     if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/mandate_instant_request") === false) {
         return;
     }
-    
+
     $bluem_config = bluem_woocommerce_get_config();
-    
+
     $debtorReference = !empty($_GET['debtorreference']) ? $_GET['debtorreference'] : '';
-        
+
     if (!empty($debtorReference))
     {
         $debtorReference = sanitize_text_field( $debtorReference );
-        
+
         $db_results = bluem_db_get_requests_by_keyvalues([
             'debtor_reference' => $debtorReference,
             'status' => 'Success',
         ]);
-        
+
         // Check the sequence type or previous success results
         if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0)
         {
@@ -43,7 +43,7 @@ function bluem_mandates_instant_request()
             );
 
             $preferences = get_option( 'bluem_woocommerce_options' );
-            
+
             // Convert UTF-8 to ISO
             if (!empty($bluem_config->eMandateReason)) {
                 $bluem_config->eMandateReason = utf8_decode($bluem_config->eMandateReason);
@@ -68,15 +68,15 @@ function bluem_mandates_instant_request()
                 $debtorReference,
                 $mandate_id
             );
-            
+
             // Save the necessary data to later request more information and refer to this transaction
             $_SESSION['bluem_mandateId'] = $request->mandateID;
             $_SESSION['bluem_entranceCode'] = $request->entranceCode;
-            
+
             // Actually perform the request.
             try {
                 $response = $bluem->PerformRequest( $request );
-            
+
                 if ( ! isset( $response->EMandateTransactionResponse->TransactionURL ) ) {
                     $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
                     Vermeld onderstaande informatie aan het websitebeheer:";
@@ -165,11 +165,11 @@ function bluem_mandates_instant_callback()
     }
 
     $bluem_config = bluem_woocommerce_get_config();
-    
+
     try {
         $bluem = new Bluem( $bluem_config );
     } catch ( Exception $e ) {
-        // @todo: deal with incorrectly setup Bluem 
+        // @todo: deal with incorrectly setup Bluem
     }
 
     $mandateID = $_SESSION['bluem_mandateId'];
@@ -205,7 +205,7 @@ function bluem_mandates_instant_callback()
         bluem_dialogs_render_prompt( $errormessage );
         exit;
     }
-    
+
     $response = $bluem->MandateStatus( $mandateID, $entranceCode );
 
     if (!$response->Status()) {
@@ -243,7 +243,7 @@ function bluem_mandates_instant_callback()
     bluem_transaction_notification_email(
         $request_from_db->id
     );
-    
+
     // Handling the response.
     if ($statusCode === "Success")
     {
@@ -273,7 +273,7 @@ function bluem_mandates_instant_callback()
             $mandateID,
             "mandates"
         );
-        
+
         // "De ondertekening is geslaagd";
         if (!empty($bluem_config->instantMandatesResponseURI)) {
             wp_redirect( $bluem_config->instantMandatesResponseURI . "?result=true" );
