@@ -1,0 +1,36 @@
+name: CI
+
+on: [push]
+
+jobs:
+    build-test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Make .envfile
+              uses: SpicyPizza/create-envfile@v1.3
+              with:
+                  envkey_BLUEM_SENDER_ID: ${{ secrets.TEST_SENDER_ID }}
+                  envkey_BLUEM_ENV: "test"
+                  envkey_BLUEM_TEST_ACCESS_TOKEN: ${{ secrets.TEST_ACCESS_TOKEN }}
+                  envkey_BLUEM_MERCHANTID: "0020000387"
+                  envkey_BLUEM_THANKSPAGE: "thanks"
+                  envkey_BLUEM_BRANDID: "ExampleMandate"
+                  envkey_BLUEM_BRANDID_PAYMENTS: "ExamplePayment"
+                  envkey_BLUEM_BRANDID_IDENTITY: "ExampleIdentity"
+                  envkey_BLUEM_BRANDID_MANDATES: "ExampleMandate"
+                  envkey_BLUEM_MERCHANTRETURNURLBASE: "https://bluem.nl"
+                  file_name: .env
+                  fail_on_empty: false
+
+            - uses: actions/checkout@v2
+
+            - uses: php-actions/composer@v5
+
+            - name: PHPUnit Tests
+              uses: php-actions/phpunit@v2
+              with:
+                  php_version: 7.4
+                  bootstrap: vendor/autoload.php
+                  configuration: ./.github/workflows/phpunit.xml
+            - run: echo "🍏 This job's status is ${{ job.status }}."
