@@ -21,7 +21,7 @@ If you are having trouble running the above commands, please contact us. We are 
 
 # Configuration
 
-Use the **Settings** -> **Bluem** page to configure the plug-in completely.
+Use the **Bluem** -> **Settings** page to configure the plug-in completely.
 
 **Please note:** You have to activate the specific parts of the plug-in that you want to use. All separate services can be activated independently. 
 By default, they are not activated.
