@@ -142,8 +142,8 @@
                         <span class="bluem-request-label">
                             <?php echo \Carbon\Carbon::parse($log->timestamp)->timezone('Europe/Amsterdam')->format('d-m-Y H:i:s'); ?>
                         </span>
-                        <?php echo $dparts[0]; ?><?php 
-                        if (isset($dparts[1])) { 
+                        <?php echo $dparts[0]; ?><?php
+                        if (isset($dparts[1])) {
                         ?>&nbsp;
                             <abbr title="<?php
                                 echo str_replace('"', '', $dparts[1]);
@@ -208,8 +208,8 @@
                 Administratie:
             </span>
             <br>
-            <a href="<?php echo admin_url("admin.php?page=bluem_admin_requests_view&request_id=".$request->id."&admin_action=delete");?>"
-                class="button bluem-button-danger" style="margin-top:5pt;">Verwijder dit verzoek direct</a>
+            <a href="<?php echo admin_url("admin.php?page=bluem-transactions&request_id=".$request->id."&admin_action=delete");?>"
+                class="button bluem-button-danger" onclick="return confirm('Weet je zeker dat je deze transactie wilt verwijderen?');" style="margin-top:5pt;">Verwijder dit verzoek direct</a>
                 <br>
 
                 Let op: data wordt dan onherroepelijk verwijderd!
