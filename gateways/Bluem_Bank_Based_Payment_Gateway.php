@@ -12,6 +12,11 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
     protected $bankSpecificBrandID;
 
     /**
+     * @var ?string
+     */
+    protected $paymentIdentifier;
+
+    /**
      * Constructor.
      */
     public function __construct($id, $title, $description, $callback = null, $icon = '')
@@ -23,6 +28,11 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             $id, $title, $description, $callback, $icon
         );
 
+        /**
+         * Set payment identifier.
+        */
+        $this->setPaymentIdentifier($this->id);
+
         // ********** CREATING plugin URLs for specific functions **********
         // adding specific functions for Bank based plugins.
         // The functions webhook and callback NEED TO BE defined in this class though,
@@ -32,11 +42,38 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
     }
 
     /**
+     * Get bank specific brandID.
+     */
+    protected function getBankSpecificBrandID()
+    {
+        return $this->bankSpecificBrandID;
+    }
+
+    /**
+     * Get payment identifier.
+     */
+    protected function getPaymentIdentifier()
+    {
+        $identifier = str_replace('bluem_', '', $this->paymentIdentifier);
+        $identifier = str_replace('payments_', '', $identifier);
+
+        return $identifier;
+    }
+
+    /**
      * Define bank specific brandID.
      */
     protected function setBankSpecificBrandID($brandID)
     {
         $this->bankSpecificBrandID = $brandID;
+    }
+
+    /**
+     * Define payment identifier.
+     */
+    protected function setPaymentIdentifier($identifier)
+    {
+        $this->paymentIdentifier = $identifier;
     }
 
     /**
@@ -97,6 +134,10 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             // @todo: handle exception
         }
 
+        if ( !empty( $this->bankSpecificBrandID ) ) {
+            $request->setBrandId($this->getBankSpecificBrandID());
+        }
+
         // temp overrides
         $request->paymentReference = str_replace( '-', '', $request->paymentReference );
         $request->type_identifier  = "createTransaction";
@@ -106,15 +147,11 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $payload = json_encode( [
             'environment'       => $this->bluem->environment,
             'amount'            => $amount,
-            'method'            => $brandIDOverride,
+            'method'            => $this->bankSpecificBrandID,
             'currency'          => $currency,
             'due_date'          => $request->dueDateTime,
             'payment_reference' => $request->paymentReference
         ] );
-
-        if ( !empty( $this->bankSpecificBrandID ) ) {
-            $request->setBrandId($this->bankSpecificBrandID);
-        }
 
         // allow third parties to add additional data to the request object through this additional action
         $request = apply_filters(
@@ -153,9 +190,9 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                     'timestamp'        => date( "Y-m-d H:i:s" ),
                     'description'      => $description,
                     'debtor_reference' => $debtorReference,
-                    'type'             => "payments",
+                    'type'             => $this->getPaymentIdentifier(),
                     'order_id'         => $order_id,
-                    'payload'          => $payload
+                    'payload'          => $payload,
                 ]
             );
 
