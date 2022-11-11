@@ -11,13 +11,16 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      */
     protected $bankSpecificBrandID;
 
-    public function __construct($id, $title, $description, $callback = null)
+    /**
+     * Constructor.
+     */
+    public function __construct($id, $title, $description, $callback = null, $icon = '')
     {
         if ( empty( $callback ) ) {
             $callback = home_url( 'wc-api/' . $this->id . '_callback' );
         }
         parent::__construct(
-            $id, $title, $description, $callback
+            $id, $title, $description, $callback, $icon
         );
 
         // ********** CREATING plugin URLs for specific functions **********
@@ -29,11 +32,22 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
     }
 
     /**
+     * Define bank specific brandID.
+     */
+    protected function setBankSpecificBrandID($brandID)
+    {
+        $this->bankSpecificBrandID = $brandID;
+    }
+
+    /**
      * Configuring a specific brandID for payments
      */
     protected function methodSpecificConfigurationMixin( $config )
     {
-        if ( isset( $config->paymentBrandID ) ) {
+        if ( !empty($config->bankSpecificBrandID) ) {
+            $config->brandID = $config->bankSpecificBrandID;
+        }
+        if ( !empty( $config->paymentBrandID ) ) {
             $config->brandID = $config->paymentBrandID;
             // @todo: do this within the Bluem object in a smart way so we don't have to mix in
         }
@@ -41,6 +55,9 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         return $config;
     }
 
+    /**
+     * Process payment.
+     */
     public function process_payment($order_id)
     {
         $order = wc_get_order( $order_id );
@@ -72,12 +89,13 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                 $amount,
                 $dueDateTime,
                 $currency,
-                $entranceCode
+                $entranceCode,
+                home_url( sprintf( 'wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode ) ),
+                str_replace( '-', '', $request->paymentReference )
             );
         } catch ( Exception $e ) {
             // @todo: handle exception
         }
-
 
         // temp overrides
         $request->paymentReference = str_replace( '-', '', $request->paymentReference );
@@ -94,9 +112,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             'payment_reference' => $request->paymentReference
         ] );
 
-
-        if($bankSpecificBrandID !== null) {
-            $request->setBrandId($bankSpecificBrandID);
+        if ( !empty( $this->bankSpecificBrandID ) ) {
+            $request->setBrandId($this->bankSpecificBrandID);
         }
 
         // allow third parties to add additional data to the request object through this additional action
@@ -111,10 +128,6 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             // @todo: handle exception
         }
         // Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled',
-
-        // Remove cart
-        global $woocommerce;
-        $woocommerce->cart->empty_cart();
 
         $order->update_status( 'pending', __( 'Awaiting Bluem Payment Signature', 'wc-gateway-bluem' ) );
 
@@ -399,6 +412,10 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             bluem_transaction_notification_email(
                 $request_from_db->id
             );
+
+            // Remove cart
+            global $woocommerce;
+            $woocommerce->cart->empty_cart();
 
             $this->thank_you_page( $order->get_id() );
         } elseif ( $statusCode === self::PAYMENT_STATUS_FAILURE ) {

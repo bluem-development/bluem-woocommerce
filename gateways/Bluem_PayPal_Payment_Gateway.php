@@ -13,9 +13,10 @@ class Bluem_PayPal_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
         );
 
         $options = get_option( 'bluem_woocommerce_options' );
-        if ( isset( $options['paymentsPayPalBrandID'] ) ) {
-            $this->bankSpecificBrandID = $options['paymentsPayPalBrandID'] ??
-                                         ($options['paymentBrandID'] ?? ''); // legacy brandID support
+        if ( !empty( $options['paymentsPayPalBrandID'] ) ) {
+            $this->setBankSpecificBrandID($options['paymentsPayPalBrandID']);
+        } elseif ( !empty( $options['paymentBrandID'] ) ) {
+            $this->setBankSpecificBrandID($options['paymentBrandID']); // legacy brandID support
         }
     }
 }
