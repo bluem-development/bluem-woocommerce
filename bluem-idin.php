@@ -779,7 +779,7 @@ function bluem_idin_shortcode_idin_execute() {
     }
 
     $goto = false;
-    if ( array_key_exists( 'redirect_to_checkout', $_GET )
+    if ( !empty( $_GET['redirect_to_checkout'] )
          && sanitize_text_field( $_GET['redirect_to_checkout'] ) == "true"
     ) {
         // v1.2.6: added cart url instead of static cart as this is front-end language dependent
@@ -897,7 +897,6 @@ function bluem_idin_shortcode_callback() {
     } else {
         $statusCode = ( $statusResponse->GetStatusCode() );
 
-
         $request_from_db = bluem_db_get_request_by_transaction_id( $transactionID );
 
         if ( $request_from_db->status !== $statusCode ) {
@@ -909,7 +908,6 @@ function bluem_idin_shortcode_callback() {
             );
         }
 
-
         if ( is_user_logged_in() ) {
             update_user_meta(
                 get_current_user_id(),
@@ -920,17 +918,17 @@ function bluem_idin_shortcode_callback() {
             $_SESSION['bluem_idin_validated'] = false;
         }
 
-        // determining the right callback
+        /**
+         * Determining the right callback.
+         */
         $goto = $bluem_config->IDINPageURL;
 
-        if ( $goto == false || $goto == "" ) {
-            if ( str_contains( $_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart" ) ) {
-                $goto = wc_get_checkout_url();
-            } else {
-                $goto = home_url();
-            }
-        } else {
+        if ( str_contains( $_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart" ) ) {
+            $goto = wc_get_checkout_url();
+        } elseif ( !empty($goto) ) {
             $goto = home_url( $bluem_config->IDINPageURL );
+        } else {
+            $goto = home_url();
         }
 
         switch ( $statusCode ) {
@@ -1097,7 +1095,6 @@ function bluem_idin_shortcode_callback() {
                 break;
         }
 
-
         bluem_transaction_notification_email(
             $request_from_db->id
         );
@@ -1108,7 +1105,6 @@ function bluem_idin_shortcode_callback() {
         );
     }
 }
-
 
 add_action( 'show_user_profile', 'bluem_woocommerce_idin_show_extra_profile_fields', 2 );
 add_action( 'edit_user_profile', 'bluem_woocommerce_idin_show_extra_profile_fields' );
