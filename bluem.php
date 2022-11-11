@@ -179,7 +179,7 @@ function bluem_woocommerce_settings_handler() {
     );
 }
 
-add_action( 'admin_menu', 'bluem_woocommerce_settings_handler' );
+//add_action( 'admin_menu', 'bluem_woocommerce_settings_handler' );
 
 /**
  * Register the necessary administrative pages in the WordPress back-end.
