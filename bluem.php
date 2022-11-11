@@ -148,7 +148,7 @@ function bluem_woocommerce_no_woocommerce_notice() {
         if ( ! isset( $bluem_options['suppress_woo'] ) || $bluem_options['suppress_woo'] == "0" ) {
             echo '<div class="notice notice-warning is-dismissible">
             <p><span class="dashicons dashicons-warning"></span> De Bluem integratie is grotendeels afhankelijk van WooCommerce - installeer en/of activeer deze plug-in.<br>
-            Je kan deze melding en WooCommerce gerelateerde functionaliteiten ook uitzetten bij de <a href="' . admin_url( 'options-general.php?page=bluem' ) . '">Instellingen</a>.</p>
+            Je kan deze melding en WooCommerce gerelateerde functionaliteiten ook uitzetten bij de <a href="' . admin_url( 'admin.php?page=bluem-settings' ) . '">instellingen</a>.</p>
             </div>';
         }
     }
@@ -607,7 +607,7 @@ function bluem_woocommerce_show_general_profile_fields() {
             </th>
             <td>
                 Ga naar de
-                <a href="<?php echo home_url( "wp-admin/options-general.php?page=bluem" ); ?>">
+                <a href="<?php echo home_url( "wp-admin/admin.php?page=bluem-settings" ); ?>">
                     instellingen</a> om het gedrag van elk Bluem onderdeel te wijzigen.
             </td>
         </tr>
@@ -1294,7 +1294,7 @@ function bluem_setup_incomplete() {
             return;
         }
     }
-    bluem_display_module_notices( $messages, 'De Bluem integratie is nog niet volledig ingesteld', ( get_admin_page_title() !== "Bluem" ? admin_url( 'options-general.php?page=bluem' ) : '' ), 'Klik hier om de plugin verder in te stellen.' );
+    bluem_display_module_notices( $messages, 'De Bluem integratie is nog niet volledig ingesteld', ( get_admin_page_title() !== "Bluem" ? admin_url( 'admin.php?page=bluem-settings' ) : '' ), 'Klik hier om de plugin verder in te stellen.' );
 }
 
 function bluem_display_module_notices( $notices, $title = '', $btn_link = '', $btn_title = '' ) {
