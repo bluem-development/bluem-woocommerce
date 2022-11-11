@@ -466,13 +466,13 @@ function bluem_render_requests_table_title( $cat ) {
     if ( $cat == "mandates" ) {
         echo '<span class="dashicons dashicons-money"></span>&nbsp; ';
         echo "Digitaal Incassomachtigen";
-    } elseif ( $cat == "payments" ) {
+    } elseif ( $cat == "ideal" ) {
         echo '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
         echo "iDEAL betalingen";
-    } elseif ( $cat == "payments_cards" ) {
+    } elseif ( $cat == "creditcard" ) {
         echo '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
         echo "Creditcard betalingen";
-    } elseif ( $cat == "payments_paypal" ) {
+    } elseif ( $cat == "paypal" ) {
         echo '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
         echo "PayPal betalingen";
     } elseif ( $cat == "identity" ) {

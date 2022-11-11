@@ -281,15 +281,15 @@ function bluem_requests_view_all() {
     );
 
     $requests['identity'] = [];
-    $requests['payments'] = [];
-    $requests['payments_cards'] = [];
-    $requests['payments_paypal'] = [];
+    $requests['ideal'] = [];
+    $requests['creditcard'] = [];
+    $requests['paypal'] = [];
     $requests['mandates'] = [];
 
     // @todo Allow filtering on only one type
 
     foreach ( $_requests as $_r ) {
-        $requests[ $_r->type ][] = $_r;
+        $requests[ ($_r->type == 'payments' ? 'ideal' : $_r->type) ][] = $_r;
     }
 
     $users_by_id = [];
