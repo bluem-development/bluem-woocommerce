@@ -1,7 +1,7 @@
 <div class="wrap">
     <h1>
         <?php echo bluem_get_bluem_logo_html(48);?>
-        Bluem &middot; Verzoekdetails
+        Bluem &middot; Transactiedetails
     </h1>
 
     <?php bluem_render_nav_header();?>
@@ -10,7 +10,7 @@
         <div class='bluem-column' style="width: 50%;">
             <h2>
                 <?php echo ucfirst($request->type);?>
-                Verzoek
+                Transactie
             </h2>
             <p>
                 <span class="bluem-request-label">
@@ -209,7 +209,7 @@
             </span>
             <br>
             <a href="<?php echo admin_url("admin.php?page=bluem-transactions&request_id=".$request->id."&admin_action=delete");?>"
-                class="button bluem-button-danger" onclick="return confirm('Weet je zeker dat je deze transactie wilt verwijderen?');" style="margin-top:5pt;">Verwijder dit verzoek direct</a>
+                class="button bluem-button-danger" onclick="return confirm('Weet je zeker dat je de transactie wilt verwijderen?');" style="margin-top:5pt;">Verwijder dit verzoek direct</a>
                 <br>
 
                 Let op: data wordt dan onherroepelijk verwijderd!
