@@ -193,7 +193,7 @@ function bluem_register_menu() {
         "manage_options",
         "bluem-admin",
         "bluem_home",
-        plugins_url('bluem/assets/bluem/logo.svg') //'dashicons-money'
+        plugins_url('bluem/assets/bluem/icon.png') //'dashicons-money'
     );
 
     add_submenu_page(
