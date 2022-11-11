@@ -1252,6 +1252,16 @@ function bluem_setup_incomplete() {
             $valid_setup = false;
         }
 
+        if ( bluem_module_enabled( 'mandates' )
+             && (
+                 ! array_key_exists( 'merchantID', $options )
+                 || $options['merchantID'] === ""
+             )
+        ) {
+            $messages[]  = "eMandates merchantID ontbreekt";
+            $valid_setup = false;
+        }
+
         if ( bluem_module_enabled( 'idin' )
              && ( ! array_key_exists( 'IDINBrandID', $options )
                   || $options['IDINBrandID'] === "" )
