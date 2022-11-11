@@ -16,8 +16,7 @@
         background-image: url('<?php echo plugin_dir_url( '' ); ?>/bluem/assets/bluem/logo-hero.png');
         background-size: contain;
         background-repeat: no-repeat;
-        height: 250px;
-        width: 100%;
+        content: '';
     }
 
 </style>
