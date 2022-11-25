@@ -1416,7 +1416,9 @@ function bluem_parse_IDINDescription( $input ) {
 
 function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page = false ) {
     global $current_user;
+    
     $bluem_config = bluem_woocommerce_get_config();
+    
     if ( isset( $bluem_config->IDINDescription ) ) {
         $description = bluem_parse_IDINDescription( $bluem_config->IDINDescription );
     } else {
@@ -1431,9 +1433,11 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
 
     // fallback until this is corrected in bluem-php
     $bluem_config->brandID = $bluem_config->IDINBrandID;
-    $bluem                 = new Bluem( $bluem_config );
+    
+    $bluem = new Bluem( $bluem_config );
 
     $cats = bluem_idin_get_categories();
+    
     if ( count( $cats ) == 0 ) {
         $errormessage = "Geen juiste iDIN categories ingesteld";
         bluem_error_report_email(
@@ -1460,8 +1464,8 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
         $cats,
         $description,
         $debtorReference,
-        "",
-        $callback
+        "", // Entrance code
+        $callback // Return URL
     );
 
     // allow the testing admin to alter the response status themselves.
@@ -1474,74 +1478,95 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
 //    echo ($request->XmlString());
 //    die();
 
-    $response = $bluem->PerformRequest( $request );
+    try {
+        $response = $bluem->PerformRequest( $request );
 
-    bluem_register_session();
+        bluem_register_session();
 
-    if ( $response->ReceivedResponse() ) {
-        $entranceCode   = $response->GetEntranceCode();
-        $transactionID  = $response->GetTransactionID();
-        $transactionURL = $response->GetTransactionURL();
+        if ( $response->ReceivedResponse() ) {
+            $entranceCode   = $response->GetEntranceCode();
+            $transactionID  = $response->GetTransactionID();
+            $transactionURL = $response->GetTransactionURL();
 
-        bluem_db_create_request(
-            [
-                'entrance_code'    => $entranceCode,
-                'transaction_id'   => $transactionID,
-                'transaction_url'  => $transactionURL,
-                'user_id'          => is_user_logged_in() ? $current_user->ID : 0,
-                'timestamp'        => date( "Y-m-d H:i:s" ),
-                'description'      => $description,
-                'debtor_reference' => $debtorReference,
-                'type'             => "identity",
-                'order_id'         => null,
-                'payload'          => json_encode(
-                    [
-                        'environment' => $bluem->environment
-                    ]
-                )
-            ]
-        );
-
-
-        // save this in our user metadata store
-        if ( is_user_logged_in() ) {
-            update_user_meta(
-                get_current_user_id(),
-                "bluem_idin_entrance_code",
-                $entranceCode
+            bluem_db_create_request(
+                [
+                    'entrance_code'    => $entranceCode,
+                    'transaction_id'   => $transactionID,
+                    'transaction_url'  => $transactionURL,
+                    'user_id'          => is_user_logged_in() ? $current_user->ID : 0,
+                    'timestamp'        => date( "Y-m-d H:i:s" ),
+                    'description'      => $description,
+                    'debtor_reference' => $debtorReference,
+                    'type'             => "identity",
+                    'order_id'         => null,
+                    'payload'          => json_encode(
+                        [
+                            'environment' => $bluem->environment
+                        ]
+                    )
+                ]
             );
-            update_user_meta(
-                get_current_user_id(),
-                "bluem_idin_transaction_id",
-                $transactionID
-            );
-            update_user_meta(
-                get_current_user_id(),
-                "bluem_idin_transaction_url",
-                $transactionURL
-            );
-        } else {
-            $_SESSION["bluem_idin_entrance_code"]   = $entranceCode;
-            $_SESSION["bluem_idin_transaction_id"]  = $transactionID;
-            $_SESSION["bluem_idin_transaction_url"] = $transactionURL;
-        }
 
-        if ( $redirect ) {
-            if ( ob_get_length() !== false && ob_get_length() > 0 ) {
-                ob_clean();
+            // save this in our user metadata store
+            if ( is_user_logged_in() ) {
+                update_user_meta(
+                    get_current_user_id(),
+                    "bluem_idin_entrance_code",
+                    $entranceCode
+                );
+                update_user_meta(
+                    get_current_user_id(),
+                    "bluem_idin_transaction_id",
+                    $transactionID
+                );
+                update_user_meta(
+                    get_current_user_id(),
+                    "bluem_idin_transaction_url",
+                    $transactionURL
+                );
+            } else {
+                $_SESSION["bluem_idin_entrance_code"]   = $entranceCode;
+                $_SESSION["bluem_idin_transaction_id"]  = $transactionID;
+                $_SESSION["bluem_idin_transaction_url"] = $transactionURL;
             }
-            ob_start();
-            wp_redirect( $transactionURL );
-            exit;
+
+            if ( $redirect ) {
+                if ( ob_get_length() !== false && ob_get_length() > 0 ) {
+                    ob_clean();
+                }
+                ob_start();
+                wp_redirect( $transactionURL );
+                exit;
+            } else {
+                return [ 'result' => true, 'url' => $transactionURL ];
+            }
         } else {
-            return [ 'result' => true, 'url' => $transactionURL ];
+            $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
+            Vermeld onderstaande informatie aan het websitebeheer:";
+            
+            if ( $response->Error() !== "" ) {
+                $msg .= "<br>Response: " .
+                        $response->Error();
+            } else {
+                $msg .= "<br>Algemene fout";
+            }
+
+            bluem_error_report_email(
+                [
+                    'service'  => 'idin',
+                    'function' => 'idin_execute',
+                    'message'  => $msg
+                ]
+            );
+            bluem_dialogs_render_prompt( $msg );
+            exit;
         }
-    } else {
+    } catch (\Exception $e) {
         $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
         Vermeld onderstaande informatie aan het websitebeheer:";
-        if ( $response->Error() !== "" ) {
-            $msg .= "<br>Response: " .
-                    $response->Error();
+        
+        if ( !empty($e->getMessage()) ) {
+            $msg .= "<br>Response: " . $e->getMessage();
         } else {
             $msg .= "<br>Algemene fout";
         }
@@ -1550,7 +1575,7 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
             [
                 'service'  => 'idin',
                 'function' => 'idin_execute',
-                'message'  => $msg
+                'message'  => $e->getMessage()
             ]
         );
         bluem_dialogs_render_prompt( $msg );
