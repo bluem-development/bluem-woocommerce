@@ -18,6 +18,8 @@ function bluem_add_gateway_class_payments( $gateways ) {
     $gateways[] = Bluem_iDEAL_Payment_Gateway::class; // your class name is here
     $gateways[] = Bluem_PayPal_Payment_Gateway::class;
     $gateways[] = Bluem_Creditcard_Payment_Gateway::class;
+    $gateways[] = Bluem_Sofort_Payment_Gateway::class;
+    $gateways[] = Bluem_CarteBancaire_Payment_Gateway::class;
     return $gateways;
 }
 
@@ -33,6 +35,8 @@ function bluem_init_payment_gateway_class() {
     include_once __DIR__ . '/gateways/Bluem_iDEAL_Payment_Gateway.php';
     include_once __DIR__ . '/gateways/Bluem_PayPal_Payment_Gateway.php';
     include_once __DIR__ . '/gateways/Bluem_Creditcard_Payment_Gateway.php';
+    include_once __DIR__ . '/gateways/Bluem_Sofort_Payment_Gateway.php';
+    include_once __DIR__ . '/gateways/Bluem_CarteBancaire_Payment_Gateway.php';
 }
 
 function bluem_woocommerce_payments_settings_section() {
@@ -74,6 +78,20 @@ function bluem_woocommerce_get_payments_options() {
             'title'       => 'bluem_paymentsPayPalBrandID',
             'name'        => 'BrandID voor PayPal',
             'description' => 'Het Bluem BrandID voor betalingen via PayPal Payments',
+            'default'     => ''
+        ],
+        'paymentsSofortBrandID'                   => [
+            'key'         => 'paymentsSofortBrandID',
+            'title'       => 'bluem_paymentsSofortBrandID',
+            'name'        => 'BrandID voor SOFORT',
+            'description' => 'Het Bluem BrandID voor betalingen via SOFORT Payments',
+            'default'     => ''
+        ],
+        'paymentsCarteBancaireBrandID'                   => [
+            'key'         => 'paymentsCarteBancaireBrandID',
+            'title'       => 'bluem_paymentsCarteBancaireBrandID',
+            'name'        => 'BrandID voor Carte Bancaire',
+            'description' => 'Het Bluem BrandID voor betalingen via Carte Bancaire Payments',
             'default'     => ''
         ],
         'paymentCompleteRedirectType'      => [
@@ -121,7 +139,16 @@ function bluem_woocommerce_settings_render_paymentsPayPalBrandID() {
         bluem_woocommerce_get_payments_option( 'paymentsPayPalBrandID' )
     );
 }
-
+function bluem_woocommerce_settings_render_paymentsSofortBrandID() {
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_payments_option( 'paymentsSofortBrandID' )
+    );
+}
+function bluem_woocommerce_settings_render_paymentsCarteBancaireBrandID() {
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_payments_option( 'paymentsCarteBancaireBrandID' )
+    );
+}
 
 function bluem_woocommerce_settings_render_paymentCompleteRedirectType() {
     bluem_woocommerce_settings_render_input(
