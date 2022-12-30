@@ -1469,7 +1469,7 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
     );
 
     // allow the testing admin to alter the response status themselves.
-    if ( $bluem->environment === BLUEM_ENVIRONMENT_TESTING ) {
+    if ( $bluem_config->environment === BLUEM_ENVIRONMENT_TESTING ) {
         $request->enableStatusGUI();
     }
 
@@ -1501,7 +1501,7 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
                     'order_id'         => null,
                     'payload'          => json_encode(
                         [
-                            'environment' => $bluem->environment
+                            'environment' => $bluem_config->environment
                         ]
                     )
                 ]
