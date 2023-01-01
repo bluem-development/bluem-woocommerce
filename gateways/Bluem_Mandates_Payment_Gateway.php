@@ -374,7 +374,7 @@ $reason = "Existing mandate found, but not valid";
 				'order_id'         => $order_id,
 				'payload'          => json_encode(
 					[
-						'environment'           => $this->bluem->environment,
+						'environment'           => $this->bluem_config->environment,
 						'order_amount'          => $order->get_total(),
 						'created_mandate_id'    => $mandate_id,
 						'local_instrument_code' => $this->bluem_config->localInstrumentCode,

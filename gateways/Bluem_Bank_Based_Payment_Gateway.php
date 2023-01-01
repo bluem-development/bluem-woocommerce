@@ -145,7 +145,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $request->debtorReturnURL  = home_url( sprintf( 'wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode ) );
 
         $payload = json_encode( [
-            'environment'       => $this->bluem->environment,
+            'environment'       => $this->bluem_config->environment,
             'amount'            => $amount,
             'method'            => $this->bankSpecificBrandID,
             'currency'          => $currency,

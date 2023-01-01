@@ -26,9 +26,9 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
     public function __construct($id, $method_title, $method_description, $callbackURL, $icon='')
     {
         // must be lowercase and with underscores for spaces
-        $this->id                 = $id;
-        $this->icon               = $icon;
-        $this->method_title       = $method_title;
+        $this->id = $id;
+        $this->icon = $icon;
+        $this->method_title = $method_title;
         $this->method_description_content = $method_description;
         $this->method_description = $method_description;
 
@@ -43,11 +43,11 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
         // Method with all the options fields
         $this->init_form_fields();
 
-        $this->title       = $this->get_option( 'title' ) ?? $this->method_title;
+        $this->title = $this->get_option( 'title' ) ?? $this->method_title;
         $this->description = $this->get_option( 'description' ) ?? $this->method_description_content;
 
 
-        $this->bluem_config                        = bluem_woocommerce_get_config();
+        $this->bluem_config = bluem_woocommerce_get_config();
         $this->bluem_config->merchantReturnURLBase = $callbackURL;
 
         $this->bluem_config = $this->methodSpecificConfigurationMixin($this->bluem_config);
