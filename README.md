@@ -3,11 +3,14 @@ The stable, production-ready version of the plug-in is available from the WordPr
 
 Use this repository to get insight and possibly contribute to the development of this plug-in.
 
+# Requirements
+This plug-in requires PHP >= 7.4 | PHP >= 8.0, which is the standard WordPress recommendation (https://wordpress.org/about/requirements/).
+
 # Installation
 <!-- If you want to install this plug-in, the easiest way is to use the WordPress plug-in directly from the WordPress plug-in directory here: -->
 
 ## Deploy from this source code repository
-If you want to use this repository, follow the following steps to compile 
+If you want to use this repository, follow the following steps to compile
 
 1. Download the contents of this repository as a ZIP file, or clone it to your computer
 2. Install [Composer](https://getcomposer.org) on your local machine
@@ -20,18 +23,15 @@ If possible, please run the installation procedure on a testing environment firs
 If you are having trouble running the above commands, please contact us. We are glad to help or to provide a compiled version of the above See the Support section for instructions on how to do this.
 
 # Configuration
-
 Use the **Bluem** -> **Settings** page to configure the plug-in completely.
 
 **Please note:** You have to activate the specific parts of the plug-in that you want to use. All separate services can be activated independently. 
 By default, they are not activated.
 
-
-
 # Important usage features
 
-## adding additional data to request for mandates
-see this example as how you could do this by adding a novel filter to the id `bluem_woocommerce_enhance_mandate_request`
+## Adding additional data to request for mandates
+See this example as how you could do this by adding a novel filter to the id `bluem_woocommerce_enhance_mandate_request`:
 
 ```php
 add_filter('bluem_woocommerce_enhance_mandate_request', 'nextdeli_administratie_bluem_add_customer_name_to_mandate', 10, 1);
@@ -54,9 +54,9 @@ function nextdeli_administratie_bluem_add_customer_name_to_mandate(
 }
 ```
 
-## adding additional data to request for payments
+## Adding additional data to request for payments
+See this example as how you could do this by adding a novel filter to the id `bluem_woocommerce_enhance_payment_request`:
 
-see this example as how you could do this by adding a novel filter to the id `bluem_woocommerce_enhance_payment_request`
 ```php
 add_filter('bluem_woocommerce_enhance_payment_request', 'nextdeli_administratie_bluem_add_customer_name_to_payment', 10, 1);
 /**
@@ -78,9 +78,7 @@ function nextdeli_administratie_bluem_add_customer_name_to_payment(
 ```
 
 ## How to further process the IDIN response
-
-by default, idin shortcode responses are simply saved but not validated to a user database. 
-
+By default, idin shortcode responses are simply saved but not validated to a user database. 
 
 The identification is also stored as-is, so there is no check on whether a name or other piece of information exactly matches. You still have to do that yourself, via a filter or a piece of code that you can work with like this. This is because the validation is expected to be very domain and customer specific.
 
@@ -111,11 +109,11 @@ These results can be obtained as an object by using the following PHP code in a 
         }
 ```
 ## Blocking a checkout procedure when using iDIN shortcodes
-
 Add a filter for id `bluem_checkout_check_idin_validated_filter` if you want to add a filter to block the checkout procedure based on the IDIN validation procedure being completed.
 If the injected function returns true, the checkout is enabled. If you return false, the checkout is blocked and a notice is shown.
 
 Example that would block checkout if validation is not executed:
+
 ```php
 add_filter(
     'bluem_checkout_check_idin_validated_filter', 
@@ -131,15 +129,11 @@ function my_plugin_check_idin_validated_filter_function()
     return true;
 }
 ```
+
 By default, this is disabled as it is quite context specific if the webshop is strict.
 
-
-## important notes when compiling:
-
+## Important notes when compiling:
 - delete `vendor/bluem-development/bluem-php/examples` to be sure as it is not necessary in production.
-
-
-
 
 # Support
 If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsupport@bluem.nl).
