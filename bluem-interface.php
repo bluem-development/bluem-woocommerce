@@ -475,6 +475,12 @@ function bluem_render_requests_table_title( $cat ) {
     } elseif ( $cat == "paypal" ) {
         echo '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
         echo "PayPal betalingen";
+    } elseif ( $cat == "cartebancaire" ) {
+        echo '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
+        echo "Carte Bancaire betalingen";
+    } elseif ( $cat == "sofort" ) {
+        echo '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
+        echo "SOFORT betalingen";
     } elseif ( $cat == "identity" ) {
         echo '<span class="dashicons dashicons-businessperson"></span>&nbsp; ';
         echo "Identiteit";
