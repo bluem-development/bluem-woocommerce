@@ -30,10 +30,10 @@ Installing this plugin can be done by using the following steps:
 1. Download the plugin
 1. Upload the ZIP file through the 'Plugins > Add New > Upload' screen in your WordPress dashboard
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Activate the preferred modules from the 'Settings > Bluem' page.
+1. Activate the preferred modules from the 'Bluem > Settings' page.
 
 == Usage ==
-**Be sure to enable the desired modules from the Settings > Bluem page!**
+**Be sure to enable the desired modules from the Bluem > Settings page!**
 
 Ensure that the required information is filled in within the settings page. The Access Token for testing, the SenderID and the brandID have to be set properly. These details are given by your Bluem account manager.
 
