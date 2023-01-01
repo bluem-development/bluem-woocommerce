@@ -1,6 +1,6 @@
 <?php
 
-namespace Bluem\Tests\Phpunit\Tests;
+namespace Unit;
 
 use PHPUnit\Framework\TestCase;
 
@@ -9,7 +9,7 @@ define('BLUEM_WOO_BASE_PATH', dirname(__FILE__)."\..\..\\");
 /**
  * Abstract base class for all BluemPHP unit tests.
  */
-class BluemWooFirstTest extends TestCase
+class BluemTest extends TestCase
 {
     public function testCanTest()
     {
