@@ -250,7 +250,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                             'payload'          => json_encode(
                                 [
                                     'created_via' => 'contactform7',
-                                    'environment' => $bluem->environment,
+                                    'environment' => $bluem->getConfig('environment'),
                                     'created_mandate_id' => $mandate_id,
                                     'contactform7' => json_encode(
                                         [
@@ -415,7 +415,7 @@ function bluem_woocommerce_integration_wpcf7_submit() {
                             'payload'          => json_encode(
                                 [
                                     'created_via' => 'contactform7',
-                                    'environment' => $bluem->environment,
+                                    'environment' => $bluem->getConfig('environment'),
                                     'created_mandate_id' => $mandate_id,
                                     'contactform7' => json_encode(
                                         [

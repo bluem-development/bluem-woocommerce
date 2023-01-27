@@ -264,7 +264,7 @@ function bluem_mandate_shortcode_execute()
                 'payload'          => json_encode(
                     [
                         'created_via'        => 'shortcode',
-                        'environment'        => $bluem->environment,
+                        'environment'        => $bluem->getConfig('environment'),
                         'created_mandate_id' => $mandate_id,
                     ]
                 )

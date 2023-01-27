@@ -124,7 +124,7 @@ function bluem_mandates_instant_request()
                         'payload'          => json_encode(
                             [
                                 'created_via'        => 'instant_request',
-                                'environment'        => $bluem->environment,
+                                'environment'        => $bluem->getConfig('environment'),
                                 'created_mandate_id' => $mandate_id,
                             ]
                         )
