@@ -135,5 +135,25 @@ By default, this is disabled as it is quite context specific if the webshop is s
 ## Important notes when compiling:
 - delete `vendor/bluem-development/bluem-php/examples` to be sure as it is not necessary in production.
 
+# Integrations
+Besides of the integration with WooCommerce, we also have integrations with the popular ContactForm 7 and Gravity Forms. Below you'll find the instructions to active the integration. The integration(s) has to be enabled in the Bluem Settings page first before they will work.
+
+## ContactForm 7
+To activate our ContactForm 7 integration, in the form settings, go to the tab additional settings. Enter the following codesnippets to active the flow:
+```php
+bluem_mandate=true
+bluem_mandate_reason="Mandate reason"
+bluem_mandate_type="RCUR"
+bluem_is_ajax=true
+```
+
+## Gravity Forms
+To activate our Gravity Forms integration, you have to add some hidden fields to activate the flow.
+```
+bluem_mandate=true
+bluem_mandate_reason="Lidmaatschap"
+bluem_mandate_type="RCUR"
+bluem_is_ajax=true
+
 # Support
 If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsupport@bluem.nl).
