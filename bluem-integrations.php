@@ -320,7 +320,15 @@ function bluem_woocommerce_integration_wpcf7_submit() {
 
     $is_bluem_mandate = $contact_form->is_true( 'bluem_mandate' );
 
+    $bluem_mandate_approve = $contact_form->pref( 'bluem_mandate_approve' );
+    
     $bluem_mandate_reason = $contact_form->pref( 'bluem_mandate_reason' );
+    
+    /**
+     * TODO: Add to request.
+     * Overwrite Bluem config variable.
+     */
+    $bluem_mandate_type = $contact_form->pref( 'bluem_mandate_type' );
 
     $is_bluem_ajax = $contact_form->is_true( 'bluem_is_ajax' );
 
@@ -481,8 +489,11 @@ function bluem_woocommerce_integration_gform_callback( $entry, $form ) {
     
     // Get custom parameters for this form
     $bluem_mandate = rgar( get_form_meta( $form['id'], 'bluem_mandate' ), 0 );
+    $bluem_mandate_approve = rgar( get_form_meta( $form['id'], 'bluem_mandate_approve' ), 0 );
     $bluem_mandate_reason = rgar( get_form_meta( $form['id'], 'bluem_mandate_reason' ), 0 );
     $bluem_mandate_type = rgar( get_form_meta( $form['id'], 'bluem_mandate_type' ), 0 );
+    
+    $bluem_is_ajax = rgar( get_form_meta( $form['id'], 'bluem_is_ajax' ), 0 );
     
     // Check for conditions based on custom parameters
     if ( $bluem_mandate === 'true' ) {
