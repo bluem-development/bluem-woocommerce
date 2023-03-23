@@ -154,6 +154,7 @@ bluem_mandate=true
 bluem_mandate_reason="Lidmaatschap"
 bluem_mandate_type="RCUR"
 bluem_is_ajax=true
+```
 
 # Support
 If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsupport@bluem.nl).
