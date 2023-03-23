@@ -146,6 +146,8 @@ To activate our ContactForm 7 integration, in the form settings, go to the tab a
 ```php
 bluem_mandate=true
 bluem_mandate_reason="Mandate reason"
+bluem_mandate_success="Bedankt voor het afgeven van de machtiging"
+bluem_mandate_failure="De machtiging is mislukt. Probeer het opnieuw."
 bluem_mandate_type="RCUR"
 bluem_is_ajax=true
 ```
@@ -155,10 +157,19 @@ To activate our Gravity Forms integration, you have to add some hidden fields to
 ```
 bluem_mandate=true
 bluem_mandate_reason="Lidmaatschap"
+bluem_mandate_success="Bedankt voor het afgeven van de machtiging"
+bluem_mandate_failure="De machtiging is mislukt. Probeer het opnieuw."
 bluem_mandate_type="RCUR"
 bluem_is_ajax=true
 ```
 Also, add a checkbox with the name 'bluem_mandate_approve' (under 'Advanced' section, after enabling dynamic entries) and a label with the value 'true'. This will give the permission to perform the mandate request.
+
+Also, if you want to store the IBAN number or accountholder, you have to name the fields with the following names:
+```php
+bluem_mandate_accountname = Name of the accountholder
+bluem_mandate_iban = IBAN of the account
+```
+Our plug-in will store the above data in the fields with the corresponding names.
 
 # Support
 If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsupport@bluem.nl).
