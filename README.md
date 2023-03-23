@@ -151,13 +151,14 @@ bluem_is_ajax=true
 ```
 
 ## Gravity Forms
-To activate our Gravity Forms integration, you have to add some hidden fields to activate the flow.
+To activate our Gravity Forms integration, you have to add some hidden fields to the form to activate the flow.
 ```
 bluem_mandate=true
 bluem_mandate_reason="Lidmaatschap"
 bluem_mandate_type="RCUR"
 bluem_is_ajax=true
 ```
+Also, add a checkbox with the name 'bluem_mandate_approve' (under 'Advanced' section, after enabling dynamic entries) and a label with the value 'true'. This will give the permission to perform the mandate request.
 
 # Support
 If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsupport@bluem.nl).
