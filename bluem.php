@@ -94,6 +94,20 @@ if ( ! function_exists( 'is_contactform7_activated' ) ) {
 }
 
 /**
+ * Check if Gravity Forms is activated
+ */
+if ( ! function_exists( 'is_gravityforms_activated' ) ) {
+    function is_gravityforms_activated() {
+        $active_plugins = get_option( 'active_plugins' );
+
+        if ( in_array('gravityforms', $active_plugins) ) {
+            return true;
+        }
+        return false;
+    }
+}
+
+/**
  * Check if Permalinks is enabled
  */
 if ( ! function_exists( 'is_permalinks_enabled' ) ) {
