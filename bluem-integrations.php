@@ -25,6 +25,18 @@ function bluem_woocommerce_get_integration_option( $key ) {
 
 function bluem_woocommerce_get_integrations_options() {
     return [
+        'gformActive' => [
+            'key'         => 'gformActive',
+            'title'       => 'bluem_gformActive',
+            'name'        => 'Gravity Forms',
+            'description' => 'Activeer de Gravity Forms integratie',
+            'type'        => 'select',
+            'default'     => 'N',
+            'options'     => [
+                'N' => 'Niet actief',
+                'Y' => "Actief",
+            ]
+        ],
         'wpcf7Active' => [
             'key'         => 'wpcf7Active',
             'title'       => 'bluem_wpcf7Active',
@@ -446,6 +458,44 @@ function bluem_woocommerce_integration_wpcf7_submit() {
             }
         }
     }
+}
+
+/**
+ * Gravity Forms integration.
+ * Hook for submissions.
+ */
+add_action( 'gform_after_submission', 'bluem_woocommerce_integration_gform_callback', 10, 2 );
+
+function bluem_woocommerce_integration_gform_callback( $entry, $form ) {
+    $bluem_config = bluem_woocommerce_get_config();
+
+    if ($bluem_config->gformActive !== 'Y') {
+        return;
+    }
+    
+    // Get custom parameters for this form
+    $bluem_mandate = rgar( get_form_meta( $form['id'], 'bluem_mandate' ), 0 );
+    $bluem_mandate_reason = rgar( get_form_meta( $form['id'], 'bluem_mandate_reason' ), 0 );
+    $bluem_mandate_type = rgar( get_form_meta( $form['id'], 'bluem_mandate_type' ), 0 );
+    
+    // Check for conditions based on custom parameters
+    if ( $bluem_mandate === 'true' ) {
+        wp_redirect( "google.nl" );
+    }
+}
+
+/**
+ * Gravity Forms integration.
+ * Hook for adding meta data to requests.
+ */
+add_filter( 'gform_form_post_meta', 'bluem_woocommerce_integration_gform_meta', 10, 2 );
+
+function bluem_woocommerce_integration_gform_meta( $form_meta, $form_id ) {
+    // Add custom parameters to form meta
+    $form_meta['custom_param_1'] = 'value1';
+    $form_meta['custom_param_2'] = 'value2';
+    
+    return $form_meta;
 }
 
 add_action( 'parse_request', 'bluem_woocommerce_integration_wpcf7_callback' );
