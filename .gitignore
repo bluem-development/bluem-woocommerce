@@ -14,4 +14,7 @@ bluem.zip
 .idea
 /copyscript.sh
 _notes
+docker/wordpress
+docker/plugins/
+docker/db_data
 ._*
