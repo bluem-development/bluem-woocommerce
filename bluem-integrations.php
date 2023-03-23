@@ -59,6 +59,12 @@ function bluem_woocommerce_get_integrations_options() {
     ];
 }
 
+function bluem_woocommerce_settings_render_gformActive() {
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_integration_option( 'gformActive' )
+    );
+}
+
 function bluem_woocommerce_settings_render_wpcf7Active() {
     bluem_woocommerce_settings_render_input(
         bluem_woocommerce_get_integration_option( 'wpcf7Active' )
