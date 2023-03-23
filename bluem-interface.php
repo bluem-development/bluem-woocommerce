@@ -431,6 +431,31 @@ function bluem_render_obj_row_recursive( $key, $value, $level = 0 ) {
                     echo "{$value}";
                 }
             }
+        } elseif ($nicekey === 'Details') {
+            $additional_details = json_decode($value);
+
+            if (!empty($additional_details))
+            {
+                $form_details = '';
+
+                if (!empty($additional_details->id) || !empty($additional_details->payload)) {
+                    $form_details = '<table style="display: inline-block; vertical-align: inherit;"><thead><tr><th style="text-align: left;">Naam</th><th style="text-align: left;">Waarde</th></tr></thead><tbody>';
+                }
+
+                if (!empty($additional_details->payload)) {
+                    $additional_details_payload = json_decode($additional_details->payload);
+                    foreach ($additional_details_payload as $key => $value) {
+                        $form_details .= '<tr><td>' . $key . '</td><td>' . $value . '</td></tr>';
+                    }
+                    $form_details .= '<tr><td colspan="2"><a href="admin.php?page=gf_entries&view=entry&id=' . $additional_details_payload->form_id . '&lid=' . $additional_details_payload->entry_id . '&order=ASC&filter&paged=1&pos=0&field_id&operator">Bekijk formulier</a></td></tr>';
+                }
+
+                if (!empty($form_details)) {
+                    echo $form_details . '</tbody></table>';
+                } else {
+                    echo "{$value}";
+                }
+            }
         } else {
             echo "{$value}";
         }
