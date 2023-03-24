@@ -1210,7 +1210,7 @@ function bluem_woocommerce_integration_gform_results_shortcode()
          * Get the entry instance.
          */
         $entry = GFAPI::get_entry( $entry_id );
-
+        
         // Define form
         $form_id = $entry['form_id'];
 
@@ -1264,6 +1264,8 @@ function bluem_woocommerce_integration_gform_results_shortcode()
                 $result = GFAPI::update_entry_field( $entry_id, $value['field_id'], $newValue );
             }
         }
+
+        
 
         /**
          * Update Gravity Forms details.
