@@ -37,6 +37,13 @@ function bluem_woocommerce_get_integrations_options() {
                 'Y' => "Actief",
             ]
         ],
+        'gformResultpage' => [
+            'key'         => 'gformResultpage',
+            'title'       => 'bluem_gformResultpage',
+            'name'        => 'Slug resultaatpagina',
+            'description' => 'De slug van de resultaatpagina',
+            'default'     => ''
+        ],
         'wpcf7Active' => [
             'key'         => 'wpcf7Active',
             'title'       => 'bluem_wpcf7Active',
@@ -65,6 +72,12 @@ function bluem_woocommerce_settings_render_gformActive() {
     );
 }
 
+function bluem_woocommerce_settings_render_gformResultpage() {
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_integration_option( 'gformResultpage' )
+    );
+}
+
 function bluem_woocommerce_settings_render_wpcf7Active() {
     bluem_woocommerce_settings_render_input(
         bluem_woocommerce_get_integration_option( 'wpcf7Active' )
@@ -79,8 +92,8 @@ function bluem_woocommerce_settings_render_wpcf7Resultpage() {
 
 /**
  * ContactForm 7 integration.
+ * Javascript code in footer.
  */
-
 add_action('wp_footer', 'bluem_woocommerce_integration_wpcf7_javascript');
 
 function bluem_woocommerce_integration_wpcf7_javascript() {
@@ -134,6 +147,10 @@ function bluem_woocommerce_integration_wpcf7_javascript() {
     </script>';
 }
 
+/**
+ * ContactForm 7 integration.
+ * AJAX Form submissions.
+ */
 add_action( 'parse_request', 'bluem_woocommerce_integration_wpcf7_ajax' );
 
 function bluem_woocommerce_integration_wpcf7_ajax()
@@ -903,10 +920,8 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
                         'bluem_record_id' => $db_creation_result,
                     ];
 
-                    var_dump($entry);
+                    // Update the entry
                     $result = GFAPI::update_entry( $entry );
-                    var_dump($result);
-                    die;
 
                     if ( is_wp_error( $result ) ) {
                         // Handle error
@@ -932,22 +947,6 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
             }
         }
     }
-}
-
-/**
- * Gravity Forms integration.
- * Filter to add custom meta data to requests.
- */
-add_filter( 'gform_form_meta', 'bluem_woocommerce_integration_gform_add_meta', 10, 2 );
-
-function bluem_woocommerce_integration_gform_add_meta( $form_meta, $form_id ) {
-    // Add custom parameters to the form meta data
-    $form_meta['custom_params'] = array(
-        'my_param' => 'some_value',
-        'my_other_param' => 'some_other_value'
-    );
-
-    return $form_meta;
 }
 
 /**
@@ -983,8 +982,8 @@ function bluem_woocommerce_integration_gform_callback()
     $entranceCode = $_SESSION['bluem_entranceCode'];
 
     if (empty($mandateID)) {
-        if (!empty($bluem_config->wpcf7Resultpage)) {
-            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&result=false&reason=error" );
+        if (!empty($bluem_config->gformResultpage)) {
+            wp_redirect( home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&result=false&reason=error" );
             exit;
         }
         $errormessage = "Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.";
@@ -1081,8 +1080,8 @@ function bluem_woocommerce_integration_gform_callback()
         );
 
         // "De ondertekening is geslaagd";
-        if (!empty($bluem_config->wpcf7Resultpage)) {
-            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=true" );
+        if (!empty($bluem_config->gformResultpage)) {
+            wp_redirect( home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=true" );
             exit;
         }
         $errormessage = "Fout: de ondertekening is geslaagd maar er is geen response URI opgegeven. Neem contact op met de website om dit technisch probleem aan te geven.";
@@ -1099,8 +1098,8 @@ function bluem_woocommerce_integration_gform_callback()
     elseif ($statusCode === "Cancelled")
     {
         // "Je hebt de mandaat ondertekening geannuleerd";
-        if (!empty($bluem_config->wpcf7Resultpage)) {
-            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=cancelled" );
+        if (!empty($bluem_config->gformResultpage)) {
+            wp_redirect( home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=cancelled" );
             exit;
         }
         $errormessage = "Fout: de transactie is geannuleerd. Probeer het opnieuw.";
@@ -1110,8 +1109,8 @@ function bluem_woocommerce_integration_gform_callback()
     elseif ($statusCode === "Open" || $statusCode == "Pending")
     {
         // "De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch."
-        if (!empty($bluem_config->wpcf7Resultpage)) {
-            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=open" );
+        if (!empty($bluem_config->gformResultpage)) {
+            wp_redirect( home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=open" );
             exit;
         }
         $errormessage = "Fout: de transactie staat nog open. Dit kan even duren. Vernieuw deze pagina regelmatig voor de status.";
@@ -1121,8 +1120,8 @@ function bluem_woocommerce_integration_gform_callback()
     elseif ($statusCode === "Expired")
     {
         // "Fout: De mandaat of het verzoek daartoe is verlopen";
-        if (!empty($bluem_config->wpcf7Resultpage)) {
-            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=expired" );
+        if (!empty($bluem_config->gformResultpage)) {
+            wp_redirect( home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=expired" );
             exit;
         }
         $errormessage = "Fout: de transactie is verlopen. Probeer het opnieuw.";
@@ -1138,8 +1137,8 @@ function bluem_woocommerce_integration_gform_callback()
                 'message'  => "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site"
             ]
         );
-        if (!empty($bluem_config->wpcf7Resultpage)) {
-            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=error" );
+        if (!empty($bluem_config->gformResultpage)) {
+            wp_redirect( home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=error" );
             exit;
         }
         $errormessage = "Fout: er is een onbekende fout opgetreden. Probeer het opnieuw.";
@@ -1189,8 +1188,6 @@ function bluem_woocommerce_integration_gform_results_shortcode()
             {
                 $details = json_decode($payload->details);
 
-                var_dump($details); die;
-
                 if (!empty($details->payload))
                 {
                     $details_payload = json_decode($details->payload);
@@ -1223,6 +1220,7 @@ function bluem_woocommerce_integration_gform_results_shortcode()
         /**
          * Define form data.
          */
+        $edit_data = [];
         $form_data = [];
 
         // Get the fields
@@ -1231,13 +1229,39 @@ function bluem_woocommerce_integration_gform_results_shortcode()
         // Loop through fields
         foreach ( $fields as $field ) {
             $field_id = $field['id'];
+            $field_name = $field['inputName'];
             $field_label = $field['label'];
             $field_value = rgar( $entry, $field_id );
 
-            if (!empty($field_id)) {
-                $form_data[$field_id] = $field_value;
-            } elseif (!empty($field_value)) {
+            if (!empty($field_name))
+            {
+                $edit_data[] = [
+                    'field_id' => $field_id,
+                    'field_name' => $field_name,
+                    'field_label' => $field_label,
+                    'field_value' => $field_value,
+                ];
+            }
+
+            if (!empty($field_label)) {
                 $form_data[$field_label] = $field_value;
+            } elseif (!empty($field_id)) {
+                $form_data[$field_id] = $field_value;
+            }
+        }
+
+        // Loop through data
+        foreach ($edit_data as $key => $value) {
+            $newValue = '';
+
+            if ($value['field_name'] === 'bluem_mandate_accountname') {
+                $newValue = $payload->report->DebtorAccountName;
+            } elseif ($value['field_name'] === 'bluem_mandate_iban') {
+                $newValue = $payload->report->DebtorIBAN;
+            }
+
+            if (!empty($newValue)) {
+                $result = GFAPI::update_entry_field( $entry_id, $value['field_id'], $newValue );
             }
         }
 
@@ -1250,9 +1274,6 @@ function bluem_woocommerce_integration_gform_results_shortcode()
             'bluem_record_id' => $request_id,
             'status' => $status,
         ];
-
-        $entry['bluem_mandate_accountname'] = '';
-        $entry['bluem_mandate_iban'] = '';
 
         // Update the entry
         $result = GFAPI::update_entry( $entry );
