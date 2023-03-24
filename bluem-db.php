@@ -292,6 +292,17 @@ function bluem_db_get_request_by_transaction_id_and_type( $transaction_id, $type
     return $res !== false && count( $res ) > 0 ? $res[0] : false;
 }
 
+function bluem_db_get_request_by_transaction_id_and_entrance_code( $transaction_id, $entrance_code, $type = '' ) {
+    $res = bluem_db_get_requests_by_keyvalues(
+        [
+            'transaction_id' => $transaction_id,
+            'entrance_code' => $entrance_code,
+        ]
+    );
+
+    return $res !== false && count( $res ) > 0 ? $res[0] : false;
+}
+
 function bluem_db_get_requests_by_keyvalue(
     $key,
     $value,
