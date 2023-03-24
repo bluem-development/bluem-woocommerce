@@ -302,7 +302,10 @@ function bluem_woocommerce_integration_wpcf7_ajax()
     die;
 }
 
-// wpcf7_submit available since ContacForm7 4.1.2, testes with 4.4
+/**
+ * ContactForm 7 integration.
+ * Form submissions.
+ */
 add_action("wpcf7_submit", "bluem_woocommerce_integration_wpcf7_submit");
 
 function bluem_woocommerce_integration_wpcf7_submit() {
@@ -409,7 +412,7 @@ function bluem_woocommerce_integration_wpcf7_submit() {
                         bluem_error_report_email(
                             [
                                 'service'  => 'mandates',
-                                'function' => 'shortcode_execute',
+                                'function' => 'wpcf7_execute',
                                 'message'  => $msg
                             ]
                         );
@@ -475,53 +478,11 @@ function bluem_woocommerce_integration_wpcf7_submit() {
 }
 
 /**
- * Gravity Forms integration.
- * Hook for submissions.
+ * ContactForm 7 integration.
+ * Callback for requests.
  */
-add_action( 'gform_after_submission', 'bluem_woocommerce_integration_gform_callback', 10, 2 );
-
-function bluem_woocommerce_integration_gform_callback( $entry, $form ) {
-    $bluem_config = bluem_woocommerce_get_config();
-
-    if ($bluem_config->gformActive !== 'Y') {
-        return;
-    }
-    
-    // Get custom parameters for this form
-    $bluem_mandate = rgar( get_form_meta( $form['id'], 'bluem_mandate' ), 0 );
-    $bluem_mandate_approve = rgar( get_form_meta( $form['id'], 'bluem_mandate_approve' ), 0 );
-    $bluem_mandate_reason = rgar( get_form_meta( $form['id'], 'bluem_mandate_reason' ), 0 );
-    $bluem_mandate_type = rgar( get_form_meta( $form['id'], 'bluem_mandate_type' ), 0 );
-    
-    $bluem_is_ajax = rgar( get_form_meta( $form['id'], 'bluem_is_ajax' ), 0 );
-    
-    // Check for conditions based on custom parameters
-    if ( $bluem_mandate === 'true' ) {
-        wp_redirect( "google.nl" );
-    }
-}
-
-/**
- * Gravity Forms integration.
- * Hook for adding meta data to requests.
- */
-add_filter( 'gform_form_post_meta', 'bluem_woocommerce_integration_gform_meta', 10, 2 );
-
-function bluem_woocommerce_integration_gform_meta( $form_meta, $form_id ) {
-    // Add custom parameters to form meta
-    $form_meta['custom_param_1'] = 'value1';
-    $form_meta['custom_param_2'] = 'value2';
-    
-    return $form_meta;
-}
-
 add_action( 'parse_request', 'bluem_woocommerce_integration_wpcf7_callback' );
 
-/**
- * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Session, sent for a SUD to the Bluem API.
- *
- * @return void
- */
 function bluem_woocommerce_integration_wpcf7_callback()
 {
     $bluem_config = bluem_woocommerce_get_config();
@@ -555,7 +516,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
-                'function' => 'shortcode_callback',
+                'function' => 'wpcf7_callback',
                 'message'  => $errormessage
             ]
         );
@@ -568,7 +529,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
-                'function' => 'shortcode_callback',
+                'function' => 'wpcf7_callback',
                 'message'  => $errormessage
             ]
         );
@@ -584,7 +545,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
-                'function' => 'shortcode_callback',
+                'function' => 'wpcf7_callback',
                 'message'  => $errormessage
             ]
         );
@@ -653,7 +614,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
-                'function' => 'instant_callback',
+                'function' => 'wpcf7_callback',
                 'message'  => $errormessage
             ]
         );
@@ -698,7 +659,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
-                'function' => 'shortcode_callback',
+                'function' => 'wpcf7_callback',
                 'message'  => "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site"
             ]
         );
@@ -713,9 +674,14 @@ function bluem_woocommerce_integration_wpcf7_callback()
     exit;
 }
 
-add_shortcode( 'bluem_resultaatpagina', 'bluem_woocommerce_integration_resultpage' );
+/**
+ * ContactForm 7 integration.
+ * Shortcode to display results.
+ */
+add_shortcode( 'bluem_resultaatpagina', 'bluem_woocommerce_integration_wpcf7_results_shortcode' );
+add_shortcode( 'bluem_wpcf7_results', 'bluem_woocommerce_integration_wpcf7_results_shortcode' );
 
-function bluem_woocommerce_integration_resultpage()
+function bluem_woocommerce_integration_wpcf7_results_shortcode()
 {
     $bluem_config = bluem_woocommerce_get_config();
 
@@ -735,4 +701,573 @@ function bluem_woocommerce_integration_resultpage()
         }
     }
     return '<p>' . $contact_form->pref( 'bluem_mandate_failure' ) . '</p>';
+}
+
+/**
+ * Gravity Forms integration.
+ * Hook for submissions.
+ */
+add_action( 'gform_after_submission', 'bluem_woocommerce_integration_gform_submit', 10, 2 );
+
+function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
+    $bluem_config = bluem_woocommerce_get_config();
+
+    if ($bluem_config->gformActive !== 'Y') {
+        return;
+    }
+
+    /**
+     * Define form data.
+     */
+    $form_data = [];
+
+    // Loop through fields
+    foreach ( $form['fields'] as $field ) {
+        $inputs = $field->get_entry_inputs();
+        if ( is_array( $inputs ) ) {
+            foreach ( $inputs as $input ) {
+                $value = rgar( $entry, (string) $input['id'] );
+            }
+        } else {
+            $value = rgar( $entry, (string) $field->id );
+
+            if (empty($value)) {
+                $value = $field->defaultValue;
+            }
+        }
+
+        if (!empty($field->inputName) && !empty($value)) {
+            $form_data[$field->inputName] = $value;
+        } elseif (!empty($field->label) && !empty($value)) {
+            $form_data[$field->label] = $value;
+        }
+    }
+    
+    // Get custom parameters for this form
+    $bluem_mandate = $form_data['bluem_mandate'];
+    $bluem_mandate_approve = $form_data['bluem_mandate_approve'];
+    $bluem_mandate_success = $form_data['bluem_mandate_success'];
+    $bluem_mandate_failure = $form_data['bluem_mandate_failure'];
+    $bluem_mandate_reason = $form_data['bluem_mandate_reason'];
+    $bluem_mandate_type = $form_data['bluem_mandate_type'];
+    
+    $bluem_is_ajax = $form_data['bluem_is_ajax'];
+
+    /**
+     * Define payload for Bluem.
+     */
+    $payload = [
+        'source_url' => $entry['source_url'],
+        'form_id' => $entry['form_id'],
+        'entry_id' => $entry['id'],
+        'ip' => $entry['ip'],
+    ];
+
+    /**
+     * Do mandate request.
+     */
+    if ($bluem_mandate === 'true')
+    {
+        $debtorReference = bin2hex(random_bytes(15));
+
+        if (!empty($debtorReference))
+        {
+            $debtorReference = sanitize_text_field( $debtorReference );
+
+            $db_results = bluem_db_get_requests_by_keyvalues([
+                'debtor_reference' => $debtorReference,
+                'status' => 'Success',
+            ]);
+
+            // Check the sequence type or previous success results
+            if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0)
+            {
+                $bluem_config->merchantReturnURLBase = home_url(
+                    "bluem-woocommerce/bluem-integrations/gform_callback"
+                );
+
+                $preferences = get_option( 'bluem_woocommerce_options' );
+
+                // Convert UTF-8 to ISO
+                if (!empty($bluem_mandate_reason)) {
+                    $bluem_config->eMandateReason = $bluem_mandate_reason . ' (' . $debtorReference . ')';
+                } elseif (!empty($bluem_config->eMandateReason)) {
+                    $bluem_config->eMandateReason = utf8_decode($bluem_config->eMandateReason);
+                } else {
+                    $bluem_config->eMandateReason = "Incasso machtiging " . $debtorReference;
+                }
+
+                $bluem = new Bluem( $bluem_config );
+
+                $mandate_id_counter = get_option( 'bluem_woocommerce_mandate_id_counter' );
+
+                if ( ! isset( $mandate_id_counter ) ) {
+                    $mandate_id_counter = $preferences['mandate_id_counter'];
+                }
+
+                $mandate_id = $mandate_id_counter + 1;
+
+                update_option( 'bluem_woocommerce_mandate_id_counter', $mandate_id );
+
+                $request = $bluem->CreateMandateRequest(
+                    $debtorReference,
+                    $debtorReference,
+                    $mandate_id
+                );
+
+                // Save the necessary data to later request more information and refer to this transaction
+                $_SESSION['bluem_gform_entryId'] = $payload['entry_id'];
+                $_SESSION['bluem_gform_formId'] = $payload['form_id'];
+                $_SESSION['bluem_mandateId'] = $request->mandateID;
+                $_SESSION['bluem_entranceCode'] = $request->entranceCode;
+
+                // Actually perform the request.
+                try {
+                    $response = $bluem->PerformRequest( $request );
+
+                    if ( ! isset( $response->EMandateTransactionResponse->TransactionURL ) ) {
+                        $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
+                        Vermeld onderstaande informatie aan het websitebeheer:";
+
+                        if ( isset( $response->EMandateTransactionResponse->Error->ErrorMessage ) ) {
+                            $msg .= "<br>" .
+                                    $response->EMandateTransactionResponse->Error->ErrorMessage;
+                        } elseif ( get_class( $response ) == "Bluem\BluemPHP\ErrorBluemResponse" ) {
+                            $msg .= "<br>" .
+                                    $response->Error();
+                        } else {
+                            $msg .= "<br>Algemene fout";
+                        }
+                        bluem_error_report_email(
+                            [
+                                'service'  => 'mandates',
+                                'function' => 'gform_execute',
+                                'message'  => $msg
+                            ]
+                        );
+
+                        bluem_dialogs_render_prompt( $msg );
+                        exit;
+                    }
+
+                    $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
+
+                    $_SESSION['bluem_mandateId'] = $mandate_id;
+
+                    // redirect cast to string, necessary for AJAX response handling
+                    $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
+
+                    $_SESSION['bluem_recentTransactionURL'] = $transactionURL;
+
+                    $db_creation_result = bluem_db_create_request(
+                        [
+                            'entrance_code'    => $request->entranceCode,
+                            'transaction_id'   => $request->mandateID,
+                            'transaction_url'  => $transactionURL,
+                            'user_id'          => 0,
+                            'timestamp'        => date( "Y-m-d H:i:s" ),
+                            'description'      => "Mandate request",
+                            'debtor_reference' => $debtorReference,
+                            'type'             => "mandates",
+                            'order_id'         => "",
+                            'payload'          => json_encode(
+                                [
+                                    'created_via' => 'gform',
+                                    'environment' => $bluem->getConfig('environment'),
+                                    'created_mandate_id' => $mandate_id,
+                                    'details' => json_encode(
+                                        [
+                                            'id' => $payload['form_id'],
+                                            'payload' => json_encode($payload),
+                                        ]
+                                    ),
+                                ]
+                            )
+                        ]
+                    );
+
+                    /**
+                     * Get Gravity Form entry.
+                     */
+                    $entry = GFAPI::get_entry( $payload['entry_id'] );
+                    if ( is_wp_error( $entry ) ) {
+                        // Handle error
+                    }
+
+                    /**
+                     * Update Gravity Forms details.
+                     */
+                    $entry['bluem_payload'] = [
+                        'mandate_id' => $request->mandateID,
+                        'mandate_entrance_code' => $request->entranceCode,
+                        'bluem_record_id' => $db_creation_result,
+                    ];
+
+                    var_dump($entry);
+                    $result = GFAPI::update_entry( $entry );
+                    var_dump($result);
+                    die;
+
+                    if ( is_wp_error( $result ) ) {
+                        // Handle error
+                    } else {
+                        // Entry updated successfully
+                    }
+
+                    if ( ob_get_length() !== false && ob_get_length() > 0 ) {
+                        ob_clean();
+                    }
+
+                    ob_start();
+                    wp_redirect( $transactionURL );
+                    exit;
+                } catch (\Exception $e) {
+                    var_dump($e->getMessage());
+                }
+            }
+            else
+            {
+                wp_redirect( $bluem_config->instantMandatesResponseURI . "?result=true" );
+                exit;
+            }
+        }
+    }
+}
+
+/**
+ * Gravity Forms integration.
+ * Filter to add custom meta data to requests.
+ */
+add_filter( 'gform_form_meta', 'bluem_woocommerce_integration_gform_add_meta', 10, 2 );
+
+function bluem_woocommerce_integration_gform_add_meta( $form_meta, $form_id ) {
+    // Add custom parameters to the form meta data
+    $form_meta['custom_params'] = array(
+        'my_param' => 'some_value',
+        'my_other_param' => 'some_other_value'
+    );
+
+    return $form_meta;
+}
+
+/**
+ * Gravity Forms integration.
+ * Callback after request
+ */
+add_action( 'parse_request', 'bluem_woocommerce_integration_gform_callback' );
+
+function bluem_woocommerce_integration_gform_callback()
+{
+    $bluem_config = bluem_woocommerce_get_config();
+
+    if (strpos($_SERVER["REQUEST_URI"], 'bluem-woocommerce/bluem-integrations/gform_callback') === false) {
+        return;
+    }
+
+    if ($bluem_config->gformActive !== 'Y') {
+        return;
+    }
+
+    try {
+        $bluem = new Bluem( $bluem_config );
+    } catch ( Exception $e ) {
+        // @todo: deal with incorrectly setup Bluem
+    }
+
+    $formID = $_SESSION['bluem_gform_formId'];
+
+    $entryID = $_SESSION['bluem_gform_entryId'];
+
+    $mandateID = $_SESSION['bluem_mandateId'];
+
+    $entranceCode = $_SESSION['bluem_entranceCode'];
+
+    if (empty($mandateID)) {
+        if (!empty($bluem_config->wpcf7Resultpage)) {
+            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&result=false&reason=error" );
+            exit;
+        }
+        $errormessage = "Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.";
+        bluem_error_report_email(
+            [
+                'service'  => 'mandates',
+                'function' => 'gform_callback',
+                'message'  => $errormessage
+            ]
+        );
+        bluem_dialogs_render_prompt( $errormessage );
+        exit;
+    }
+
+    if (empty($entranceCode)) {
+        $errormessage = "Fout: Entrancecode is niet set; kan dus geen mandaat opvragen";
+        bluem_error_report_email(
+            [
+                'service'  => 'mandates',
+                'function' => 'gform_callback',
+                'message'  => $errormessage
+            ]
+        );
+        bluem_dialogs_render_prompt( $errormessage );
+        exit;
+    }
+
+    $response = $bluem->MandateStatus( $mandateID, $entranceCode );
+
+    if (!$response->Status()) {
+        $errormessage = "Fout bij opvragen status: " . $response->Error() . "
+        <br>Neem contact op met de webshop en vermeld deze status";
+        bluem_error_report_email(
+            [
+                'service'  => 'mandates',
+                'function' => 'gform_callback',
+                'message'  => $errormessage
+            ]
+        );
+        bluem_dialogs_render_prompt( $errormessage );
+        exit;
+    }
+    $statusUpdateObject = $response->EMandateStatusUpdate;
+    $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
+
+    $request_from_db = bluem_db_get_request_by_transaction_id_and_type(
+        $mandateID,
+        "mandates"
+    );
+
+    if ($statusCode !== $request_from_db->status) {
+        bluem_db_update_request(
+            $request_from_db->id,
+            [
+                'status' => $statusCode
+            ]
+        );
+        // also update locally for email notification
+        $request_from_db->status = $statusCode;
+    }
+
+    bluem_transaction_notification_email(
+        $request_from_db->id
+    );
+
+    // Handling the response.
+    if ($statusCode === "Success")
+    {
+        if (!empty($request_from_db->payload)) {
+            try {
+                $newPayload = json_decode( $request_from_db->payload );
+            } catch ( Throwable $th ) {
+                $newPayload = new Stdclass;
+            }
+        } else {
+            $newPayload = new Stdclass;
+        }
+
+        if ( isset( $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport ) ) {
+            $newPayload->purchaseID = $response->EMandateStatusUpdate->EMandateStatus->PurchaseID . "";
+            $newPayload->report = $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport;
+
+            bluem_db_update_request(
+                $request_from_db->id,
+                [
+                    'payload' => json_encode( $newPayload )
+                ]
+            );
+        }
+
+        $request_from_db = bluem_db_get_request_by_transaction_id_and_type(
+            $mandateID,
+            "mandates"
+        );
+
+        // "De ondertekening is geslaagd";
+        if (!empty($bluem_config->wpcf7Resultpage)) {
+            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=true" );
+            exit;
+        }
+        $errormessage = "Fout: de ondertekening is geslaagd maar er is geen response URI opgegeven. Neem contact op met de website om dit technisch probleem aan te geven.";
+        bluem_error_report_email(
+            [
+                'service'  => 'mandates',
+                'function' => 'gform_callback',
+                'message'  => $errormessage
+            ]
+        );
+        bluem_dialogs_render_prompt( $errormessage );
+        return;
+    }
+    elseif ($statusCode === "Cancelled")
+    {
+        // "Je hebt de mandaat ondertekening geannuleerd";
+        if (!empty($bluem_config->wpcf7Resultpage)) {
+            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=cancelled" );
+            exit;
+        }
+        $errormessage = "Fout: de transactie is geannuleerd. Probeer het opnieuw.";
+        bluem_dialogs_render_prompt( $errormessage );
+        exit;
+    }
+    elseif ($statusCode === "Open" || $statusCode == "Pending")
+    {
+        // "De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch."
+        if (!empty($bluem_config->wpcf7Resultpage)) {
+            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=open" );
+            exit;
+        }
+        $errormessage = "Fout: de transactie staat nog open. Dit kan even duren. Vernieuw deze pagina regelmatig voor de status.";
+        bluem_dialogs_render_prompt( $errormessage );
+        exit;
+    }
+    elseif ($statusCode === "Expired")
+    {
+        // "Fout: De mandaat of het verzoek daartoe is verlopen";
+        if (!empty($bluem_config->wpcf7Resultpage)) {
+            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=expired" );
+            exit;
+        }
+        $errormessage = "Fout: de transactie is verlopen. Probeer het opnieuw.";
+        bluem_dialogs_render_prompt( $errormessage );
+        exit;
+    }
+    else
+    {
+        bluem_error_report_email(
+            [
+                'service'  => 'mandates',
+                'function' => 'gform_callback',
+                'message'  => "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site"
+            ]
+        );
+        if (!empty($bluem_config->wpcf7Resultpage)) {
+            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=error" );
+            exit;
+        }
+        $errormessage = "Fout: er is een onbekende fout opgetreden. Probeer het opnieuw.";
+        bluem_dialogs_render_prompt( $errormessage );
+        exit;
+    }
+    exit;
+}
+
+/**
+ * Gravity Forms integration.
+ * Shortcode to display results.
+ */
+add_shortcode( 'bluem_gform_results', 'bluem_woocommerce_integration_gform_results_shortcode' );
+
+function bluem_woocommerce_integration_gform_results_shortcode()
+{
+    $bluem_config = bluem_woocommerce_get_config();
+
+    if ($bluem_config->gformActive !== 'Y') {
+        return;
+    }
+
+    if (empty($_GET['form']) || empty($_GET['entry']) || empty($_GET['mid']) || empty($_GET['ec']) || empty($_GET['result'])) {
+        return 'Er is een fout opgetreden. Ga terug en probeer het opnieuw.';
+    }
+
+    $request_from_db = bluem_db_get_request_by_transaction_id_and_entrance_code(
+        $_GET['mid'],
+        $_GET['ec'],
+        "mandates"
+    );
+
+    if ($request_from_db !== false)
+    {
+        $request_id = $request_from_db->id;
+
+        $entrance_code = $request_from_db->entrance_code;
+
+        $transaction_id = $request_from_db->transaction_id;
+
+        if (!empty($request_from_db->payload))
+        {
+            $payload = json_decode($request_from_db->payload);
+
+            if (!empty($payload) && !empty($payload->details))
+            {
+                $details = json_decode($payload->details);
+
+                var_dump($details); die;
+
+                if (!empty($details->payload))
+                {
+                    $details_payload = json_decode($details->payload);
+
+                    $entry_id = $details_payload->entry_id;
+
+                    $form_id = $details_payload->form_id;
+                }
+            }
+        }
+
+        if (!empty($request_from_db->status)) {
+            $status = $request_from_db->status;
+        }
+    }
+
+    if (!empty($entry_id))
+    {
+        /**
+         * Get the entry instance.
+         */
+        $entry = GFAPI::get_entry( $entry_id );
+
+        // Define form
+        $form_id = $entry['form_id'];
+
+        // Get the form instance
+        $form = GFAPI::get_form( $form_id );
+
+        /**
+         * Define form data.
+         */
+        $form_data = [];
+
+        // Get the fields
+        $fields = $form['fields'];
+
+        // Loop through fields
+        foreach ( $fields as $field ) {
+            $field_id = $field['id'];
+            $field_label = $field['label'];
+            $field_value = rgar( $entry, $field_id );
+
+            if (!empty($field_id)) {
+                $form_data[$field_id] = $field_value;
+            } elseif (!empty($field_value)) {
+                $form_data[$field_label] = $field_value;
+            }
+        }
+
+        /**
+         * Update Gravity Forms details.
+         */
+        $entry['bluem_payload'] = [
+            'mandate_id' => $transaction_id,
+            'mandate_entrance_code' => $entrance_code,
+            'bluem_record_id' => $request_id,
+            'status' => $status,
+        ];
+
+        $entry['bluem_mandate_accountname'] = '';
+        $entry['bluem_mandate_iban'] = '';
+
+        // Update the entry
+        $result = GFAPI::update_entry( $entry );
+    }
+
+    if (!empty($status))
+    {
+        if ($status === 'Success') {
+            return '<p>' . !empty($form_data) && !empty($form_data['bluem_mandate_success']) ? $form_data['bluem_mandate_success'] : 'De machtiging is gelukt.' . '</p>';
+        } else {
+            return '<p>' . !empty($form_data) && !empty($form_data['bluem_mandate_failure']) ? $form_data['bluem_mandate_failure'] : 'De machtiging is mislukt. Probeer het opnieuw.' . '</p>';
+        }
+    }
+    else
+    {
+        return '<p>' . !empty($form_data) && !empty($form_data['bluem_mandate_failure']) ? $form_data['bluem_mandate_failure'] : 'De machtiging is mislukt. Probeer het opnieuw.' . '</p>';
+    }
 }
