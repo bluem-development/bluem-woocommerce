@@ -783,18 +783,25 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
     /**
      * Do mandate request.
      */
-    if ($bluem_mandate === 'true')
+    if ($bluem_mandate === 'true' && $bluem_mandate_approve === 'true')
     {
         $debtorReference = bin2hex(random_bytes(15));
 
         if (!empty($debtorReference))
         {
+            // Define debtor reference
             $debtorReference = sanitize_text_field( $debtorReference );
 
+            // Get previous requests by debtor reference
             $db_results = bluem_db_get_requests_by_keyvalues([
                 'debtor_reference' => $debtorReference,
                 'status' => 'Success',
             ]);
+
+            // Check for mandate type
+            if (!empty($bluem_mandate_type)) {
+                $bluem_config->sequenceType = $bluem_mandate_type;
+            }
 
             // Check the sequence type or previous success results
             if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0)
@@ -940,11 +947,6 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
                     var_dump($e->getMessage());
                 }
             }
-            else
-            {
-                wp_redirect( $bluem_config->instantMandatesResponseURI . "?result=true" );
-                exit;
-            }
         }
     }
 }
@@ -1079,6 +1081,83 @@ function bluem_woocommerce_integration_gform_callback()
             "mandates"
         );
 
+        if (!empty($entryID) && !empty($formID))
+        {
+            /**
+             * Get the entry instance.
+             */
+            $entry = GFAPI::get_entry( $entryID );
+            
+            // Get the form instance
+            $form = GFAPI::get_form( $formID );
+
+            /**
+             * Update Gravity Forms details.
+             */
+            $entry['bluem_payload'] = [
+                'mandate_id' => !empty($mandateID) ? $mandateID : '',
+                'mandate_entrance_code' => !empty($entranceCode) ? $entranceCode : '',
+                'bluem_record_id' => !empty($request_from_db) ? $request_from_db->id : '',
+                'status' => !empty($statusCode) ? $statusCode : '',
+            ];
+
+            // Update the entry
+            $result = GFAPI::update_entry( $entry );
+
+            /**
+             * Define form data.
+             */
+            $edit_data = [];
+            $form_data = [];
+
+            // Get the fields
+            $fields = $form['fields'];
+
+            // Loop through fields
+            foreach ( $fields as $field ) {
+                $field_id = $field['id'];
+                $field_name = $field['inputName'];
+                $field_label = $field['label'];
+                $field_value = rgar( $entry, $field_id );
+
+                if (!empty($field_name))
+                {
+                    $edit_data[] = [
+                        'field_id' => $field_id,
+                        'field_name' => $field_name,
+                        'field_label' => $field_label,
+                        'field_value' => $field_value,
+                    ];
+                }
+
+                if (!empty($field_label)) {
+                    $form_data[$field_label] = $field_value;
+                } elseif (!empty($field_id)) {
+                    $form_data[$field_id] = $field_value;
+                }
+            }
+
+            // Loop through data
+            foreach ($edit_data as $key => $value) {
+                $newValue = '';
+
+                if ($value['field_name'] === 'bluem_mandate_accountname') {
+                    $payload = json_decode(json_encode($newPayload));
+                    $newValue = $payload->report->DebtorAccountName;
+                } elseif ($value['field_name'] === 'bluem_mandate_iban') {
+                    $payload = json_decode(json_encode($newPayload));
+                    $newValue = $payload->report->DebtorIBAN;
+                }
+
+                /**
+                 * Edit field.
+                 */
+                if (!empty($newValue)) {
+                    $result = GFAPI::update_entry_field( $entryID, $value['field_id'], $newValue );
+                }
+            }
+        }
+
         // "De ondertekening is geslaagd";
         if (!empty($bluem_config->gformResultpage)) {
             wp_redirect( home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=true" );
@@ -1211,29 +1290,12 @@ function bluem_woocommerce_integration_gform_results_shortcode()
          */
         $entry = GFAPI::get_entry( $entry_id );
         
-        // Define form
-        $form_id = $entry['form_id'];
-
         // Get the form instance
-        $form = GFAPI::get_form( $form_id );
-
-        /**
-         * Update Gravity Forms details.
-         */
-        $entry['bluem_payload'] = [
-            'mandate_id' => !empty($transaction_id) ? $transaction_id : '',
-            'mandate_entrance_code' => !empty($entrance_code) ? $entrance_code : '',
-            'bluem_record_id' => !empty($request_id) ? $request_id : '',
-            'status' => !empty($status) ? $status : '',
-        ];
-
-        // Update the entry
-        $result = GFAPI::update_entry( $entry );
+        $form = GFAPI::get_form( $entry['form_id'] );
 
         /**
          * Define form data.
          */
-        $edit_data = [];
         $form_data = [];
 
         // Get the fields
@@ -1246,38 +1308,10 @@ function bluem_woocommerce_integration_gform_results_shortcode()
             $field_label = $field['label'];
             $field_value = rgar( $entry, $field_id );
 
-            if (!empty($field_name))
-            {
-                $edit_data[] = [
-                    'field_id' => $field_id,
-                    'field_name' => $field_name,
-                    'field_label' => $field_label,
-                    'field_value' => $field_value,
-                ];
-            }
-
             if (!empty($field_label)) {
                 $form_data[$field_label] = $field_value;
             } elseif (!empty($field_id)) {
                 $form_data[$field_id] = $field_value;
-            }
-        }
-
-        // Loop through data
-        foreach ($edit_data as $key => $value) {
-            $newValue = '';
-
-            if ($value['field_name'] === 'bluem_mandate_accountname') {
-                $newValue = $payload->report->DebtorAccountName;
-            } elseif ($value['field_name'] === 'bluem_mandate_iban') {
-                $newValue = $payload->report->DebtorIBAN;
-            }
-
-            /**
-             * Edit field.
-             */
-            if (!empty($newValue)) {
-                $result = GFAPI::update_entry_field( $entry_id, $value['field_id'], $newValue );
             }
         }
     }
