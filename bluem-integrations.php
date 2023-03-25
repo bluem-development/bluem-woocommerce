@@ -1218,6 +1218,19 @@ function bluem_woocommerce_integration_gform_results_shortcode()
         $form = GFAPI::get_form( $form_id );
 
         /**
+         * Update Gravity Forms details.
+         */
+        $entry['bluem_payload'] = [
+            'mandate_id' => !empty($transaction_id) ? $transaction_id : '',
+            'mandate_entrance_code' => !empty($entrance_code) ? $entrance_code : '',
+            'bluem_record_id' => !empty($request_id) ? $request_id : '',
+            'status' => !empty($status) ? $status : '',
+        ];
+
+        // Update the entry
+        $result = GFAPI::update_entry( $entry );
+
+        /**
          * Define form data.
          */
         $edit_data = [];
@@ -1260,25 +1273,13 @@ function bluem_woocommerce_integration_gform_results_shortcode()
                 $newValue = $payload->report->DebtorIBAN;
             }
 
+            /**
+             * Edit field.
+             */
             if (!empty($newValue)) {
                 $result = GFAPI::update_entry_field( $entry_id, $value['field_id'], $newValue );
             }
         }
-
-        
-
-        /**
-         * Update Gravity Forms details.
-         */
-        $entry['bluem_payload'] = [
-            'mandate_id' => $transaction_id,
-            'mandate_entrance_code' => $entrance_code,
-            'bluem_record_id' => $request_id,
-            'status' => $status,
-        ];
-
-        // Update the entry
-        $result = GFAPI::update_entry( $entry );
     }
 
     if (!empty($status))
