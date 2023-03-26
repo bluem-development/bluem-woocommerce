@@ -164,10 +164,12 @@ bluem_is_ajax=true
 ```
 Also, add a checkbox with the name 'bluem_mandate_approve' (under 'Advanced' section, after enabling dynamic entries) and a label with the value 'true'. This will give the permission to perform the mandate request.
 
-Also, if you want to store the IBAN number or accountholder, you have to name the fields with the following names:
+Also, if you want to store transaction details, you have to name the fields with the following names:
 ```php
 bluem_mandate_accountname = Name of the accountholder
+bluem_mandate_datetime = Date and time of registration
 bluem_mandate_iban = IBAN of the account
+bluem_mandate_request_id = MandateID
 ```
 Our plug-in will store the above data in the fields with the corresponding names.
 
