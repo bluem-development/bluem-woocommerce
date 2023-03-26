@@ -9,6 +9,7 @@ if ( empty(session_id()) ) {
 }
 
 use Bluem\BluemPHP\Bluem;
+use Carbon\Carbon;
 
 function bluem_woocommerce_integrations_settings_section() {
     echo '<p><a id="tab_integrations"></a></p>';
@@ -1141,11 +1142,15 @@ function bluem_woocommerce_integration_gform_callback()
             foreach ($edit_data as $key => $value) {
                 $newValue = '';
 
+                $payload = json_decode(json_encode($newPayload));
+
                 if ($value['field_name'] === 'bluem_mandate_accountname') {
-                    $payload = json_decode(json_encode($newPayload));
                     $newValue = $payload->report->DebtorAccountName;
+                } elseif ($value['field_name'] === 'bluem_mandate_request_id') {
+                    $newValue = $payload->report->MandateRequestID;
+                } elseif ($value['field_name'] === 'bluem_mandate_datetime') {
+                    $newValue = Carbon::parse($payload->report->DateTime)->format('d-m-Y H:i');
                 } elseif ($value['field_name'] === 'bluem_mandate_iban') {
-                    $payload = json_decode(json_encode($newPayload));
                     $newValue = $payload->report->DebtorIBAN;
                 }
 
