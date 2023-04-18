@@ -93,6 +93,7 @@ function bluem_woocommerce_settings_render_wpcf7Resultpage() {
 
 /**
  * ContactForm 7 integration.
+ * 
  * Javascript code in footer.
  */
 add_action('wp_footer', 'bluem_woocommerce_integration_wpcf7_javascript');
@@ -107,15 +108,11 @@ function bluem_woocommerce_integration_wpcf7_javascript() {
     echo '
     <script>
 
-    //var wpcf7Elm = document.querySelector(".wpcf7");
-
-    document.addEventListener( "wpcf7submit", function( event ) {
+    document.addEventListener( "wpcf7submit", function ( event ) {
         //
     }, false );
 
-    document.addEventListener( "wpcf7mailsent", function( event ) {
-        console.log(event);
-
+    document.addEventListener( "wpcf7mailsent", function ( event ) {
         const url = "' . home_url('bluem-woocommerce/bluem-integrations/wpcf7_mandate') . '"
 
         var contact_form_id = event.detail.contactFormId;
@@ -144,6 +141,36 @@ function bluem_woocommerce_integration_wpcf7_javascript() {
             }
         }
     }, false );
+
+    </script>';
+}
+
+/**
+ * Gravity Forms integration.
+ * 
+ * Javascript code in footer.
+ */
+add_action('wp_footer', 'bluem_woocommerce_integration_gform_javascript');
+
+function bluem_woocommerce_integration_gform_javascript() {
+    $bluem_config = bluem_woocommerce_get_config();
+
+    if ($bluem_config->gformActive !== 'Y') {
+        return;
+    }
+
+    echo '
+    <script>
+
+    document.addEventListener( "gform_confirmation_loaded", function ( event ) {
+        var formId = event.detail.apiResponse.form_id;
+        var iframe = document.getElementById("gform_ajax_frame_" + formId);
+        var responseText = iframe.contentDocument.body.innerText;
+        var responseObj = JSON.parse(responseText);
+        if (responseObj.redirect_url) {
+            window.location.href = responseObj.redirect_url;
+        }
+    });
 
     </script>';
 }
@@ -941,9 +968,18 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
                         ob_clean();
                     }
 
-                    ob_start();
-                    wp_redirect( $transactionURL );
-                    exit;
+                    if ($bluem_is_ajax === 'false')
+                    {
+                        ob_start();
+                        wp_redirect( $transactionURL );
+                        exit;
+                    } else {
+                        echo json_encode([
+                            'success' => true,
+                            'redirect_url' => $transactionURL,
+                        ]);
+                    }
+                    die;
                 } catch (\Exception $e) {
                     var_dump($e->getMessage());
                 }
