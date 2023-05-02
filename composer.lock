@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6c9066a5cccfd02fafeb365755ce65a0",
+    "content-hash": "85a33cf84c05596100f7129c060bc0de",
     "packages": [
         {
             "name": "bluem-development/bluem-php",
-            "version": "2.3.2",
+            "version": "2.3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bluem-development/bluem-php.git",
-                "reference": "aca73925e5e12b97bd348d6dfa52d47322ca6787"
+                "reference": "3d003941663d870541c5ad7f732f7e926135e4db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/aca73925e5e12b97bd348d6dfa52d47322ca6787",
-                "reference": "aca73925e5e12b97bd348d6dfa52d47322ca6787",
+                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/3d003941663d870541c5ad7f732f7e926135e4db",
+                "reference": "3d003941663d870541c5ad7f732f7e926135e4db",
                 "shasum": ""
             },
             "require": {
@@ -71,9 +71,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bluem-development/bluem-php",
-                "source": "https://github.com/bluem-development/bluem-php/tree/2.3.2"
+                "source": "https://github.com/bluem-development/bluem-php/tree/2.3.2.1"
             },
-            "time": "2023-04-06T16:33:28+00:00"
+            "time": "2023-04-26T22:01:35+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -2179,16 +2179,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "1.19.1",
+            "version": "1.20.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "f545fc30978190a056832aa7ed995e36a66267f3"
+                "reference": "7d568c87a9df9c5f7e8b5f075fc469aa8cb0a4cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/f545fc30978190a056832aa7ed995e36a66267f3",
-                "reference": "f545fc30978190a056832aa7ed995e36a66267f3",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/7d568c87a9df9c5f7e8b5f075fc469aa8cb0a4cd",
+                "reference": "7d568c87a9df9c5f7e8b5f075fc469aa8cb0a4cd",
                 "shasum": ""
             },
             "require": {
@@ -2218,9 +2218,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.19.1"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.20.4"
             },
-            "time": "2023-04-18T11:30:56+00:00"
+            "time": "2023-05-02T09:19:37+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
