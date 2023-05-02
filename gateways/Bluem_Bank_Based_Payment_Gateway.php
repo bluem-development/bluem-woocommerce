@@ -89,6 +89,24 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             // @todo: do this within the Bluem object in a smart way so we don't have to mix in
         }
 
+        if ( empty( $config->brandID ) ) {
+            if ( !empty( $config->paymentsIDEALBrandID ) ) {
+                $config->brandID = $config->paymentsIDEALBrandID;
+            }
+            if ( !empty( $config->paymentsCreditcardBrandID ) ) {
+                $config->brandID = $config->paymentsCreditcardBrandID;
+            }
+            if ( !empty( $config->paymentsPayPalBrandID ) ) {
+                $config->brandID = $config->paymentsPayPalBrandID;
+            }
+            if ( !empty( $config->paymentsSofortBrandID ) ) {
+                $config->brandID = $config->paymentsSofortBrandID;
+            }
+            if ( !empty( $config->paymentsCarteBancaireBrandID ) ) {
+                $config->brandID = $config->paymentsCarteBancaireBrandID;
+            }
+        }
+
         return $config;
     }
 
