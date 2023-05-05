@@ -1,3 +1,7 @@
+![Bluem](https://bluem.nl/img/BluemAboutIcon.svg)
+
+**Bluem-WordPress and WooCommerce plug-in for Payment, Mandates, iDIN & IBAN-Name check**
+
 *This is the developer repository and notes for the bluem WordPress and WooCommerce plug-in. 
 The stable, production-ready version of the plug-in is available from the WordPress plug-in directory: [wordpress.org/plugins/bluem/](https://wordpress.org/plugins/bluem/).*
 
