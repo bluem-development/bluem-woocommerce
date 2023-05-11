@@ -887,6 +887,25 @@ function register_age_verification_attribute() {
 }
 add_action( 'woocommerce_attribute_registered', 'register_age_verification_attribute' );
 
+function add_age_verification_field() {
+    echo '<div class="options_group">';
+    
+    // Custom Attribute Field
+    woocommerce_wp_select( array(
+      'id'          => '_add_age_verification',
+      'label'       => __('Age verification', 'your-plugin'),
+      'placeholder' => '',
+      'options'     => array(
+        'option1' => __('Option 1', 'your-plugin'),
+        'option2' => __('Option 2', 'your-plugin'),
+        'option3' => __('Option 3', 'your-plugin'),
+      )
+    ));
+    
+    echo '</div>';
+}
+add_action( 'woocommerce_product_options_general_product_data', 'add_age_verification_field' );  
+
 /**
  * Error reporting email functionality
  * @return bool
