@@ -875,6 +875,18 @@ function bluem_woocommerce_get_core_options(): array {
     ];
 }
 
+function register_age_verification_attribute() {
+    $args = array(
+      'name'         => 'Age verification',
+      'slug'         => 'age_verification',
+      'type'         => 'select',
+      'order_by'     => 'menu_order',
+      'has_archives' => true,
+    );
+    register_taxonomy( 'pa_age_verification_attribute', 'product', $args );
+}
+add_action( 'woocommerce_attribute_registered', 'register_age_verification_attribute' );
+
 /**
  * Error reporting email functionality
  * @return bool
