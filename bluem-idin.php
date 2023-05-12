@@ -84,7 +84,6 @@ function bluem_woocommerce_get_idin_options() {
             'default'     => ''
         ],
 
-
         'idin_scenario_active' => [
             'key'         => 'idin_scenario_active',
             'title'       => 'bluem_idin_scenario_active',
@@ -98,6 +97,19 @@ function bluem_woocommerce_get_idin_options() {
                 '2' => 'Voer een volledige identiteitscontrole uit en sla dit op, maar blokkeer de checkout NIET indien minimumleeftijd niet bereikt is',
                 '3' => 'Voer een volledige identiteitscontrole uit, sla dit op EN  blokkeer de checkout WEL indien minimumleeftijd niet bereikt is',
 
+            ],
+        ],
+
+        'idin_woocommerce_age_verification' => [
+            'key'         => 'idin_woocommerce_age_verification',
+            'title'       => 'bluem_idin_woocommerce_age_verification',
+            'name'        => 'Leeftijdsverificatie per product',
+            'description' => "Wil je de leeftijdsverificatie per product inschakelen? (WooCommerce vereist)",
+            'type'        => 'select',
+            'default'     => '0',
+            'options'     => [
+                '0' => 'Controle op leeftijd per product NIET uitvoeren',
+                '1' => 'Controle op leeftijd per product WEL uitvoeren',
             ],
         ],
 
@@ -486,6 +498,12 @@ function bluem_woocommerce_settings_render_IDINDescription() {
 function bluem_woocommerce_settings_render_idin_scenario_active() {
     bluem_woocommerce_settings_render_input(
         bluem_woocommerce_get_idin_option( 'idin_scenario_active' )
+    );
+}
+
+function bluem_woocommerce_settings_render_idin_woocommerce_age_verification() {
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_idin_option( 'idin_woocommerce_age_verification' )
     );
 }
 
@@ -1371,8 +1389,10 @@ function bluem_idin_validation_needed() {
     /**
      * Check if age verification is needed.
      */
-    if ( is_woocommerce_activated() && ! $age_verification_needed ) {
-        return false;
+    if ( isset( $options['idin_woocommerce_age_verification'] ) && $options['idin_woocommerce_age_verification'] === '1') {
+        if ( is_woocommerce_activated() && ! $age_verification_needed ) {
+            return false;
+        }
     }
 
 	return true;
@@ -1833,6 +1853,7 @@ function bluem_validate_idin_at_checkout( $fields, $errors ) {
 add_action( 'template_redirect', 'bluem_checkout_check_idin_validated' );
 function bluem_checkout_check_idin_validated() {
     global $current_user;
+    
     // ! is_user_logged_in() &&
 
     if ( ! function_exists( "is_checkout" ) || ! function_exists( 'is_wc_endpoint_url' ) ) {
@@ -1991,7 +2012,6 @@ add_filter(
     1
 );
 function bluem_checkout_check_idin_validated_filter() {
-
     // override this function if you want to add a filter to block the checkout procedure based on the iDIN validation procedure being completed.
     // if you return true, the checkout is enabled. If you return false, the checkout is blocked and a notice is shown.
 
@@ -2005,14 +2025,15 @@ function bluem_checkout_check_idin_validated_filter() {
 
 function bluem_idin_get_age_based_on_date( $birthday_string ) {
     $birthdate_seconds = strtotime( $birthday_string );
-    $now_seconds       = strtotime( "now" );
+    $now_seconds = strtotime( "now" );
 
     return (int) floor( ( $now_seconds - $birthdate_seconds ) / 60 / 60 / 24 / 365 );
 }
 
 function bluem_idin_get_verification_scenario() {
-    $options  = get_option( 'bluem_woocommerce_options' );
+    $options = get_option( 'bluem_woocommerce_options' );
     $scenario = 0;
+    
     if ( isset( $options['idin_scenario_active'] )
          && $options['idin_scenario_active'] !== ""
     ) {
@@ -2024,6 +2045,7 @@ function bluem_idin_get_verification_scenario() {
 
 function bluem_idin_get_min_age() {
     $options = get_option( 'bluem_woocommerce_options' );
+    
     if ( isset( $options['idin_check_age_minimum_age'] )
          && $options['idin_check_age_minimum_age'] !== ""
     ) {
