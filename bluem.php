@@ -876,6 +876,10 @@ function bluem_woocommerce_get_core_options(): array {
 }
 
 function register_age_verification_attribute() {
+/**
+ * Register the age verification attribute.
+ */
+function bluem_woocommerce_register_age_verification_attribute() {
     $args = array(
       'name'         => 'Age verification',
       'slug'         => 'age_verification',
@@ -884,8 +888,24 @@ function register_age_verification_attribute() {
       'has_archives' => true,
     );
     register_taxonomy( 'pa_age_verification_attribute', 'product', $args );
+    register_taxonomy( 'pa_age_verification', 'product', $args );
 }
 add_action( 'woocommerce_attribute_registered', 'register_age_verification_attribute' );
+add_action( 'woocommerce_attribute_registered', 'bluem_woocommerce_register_age_verification_attribute' );
+
+/**
+ * Add age verification field to admin product page.
+ */
+function bluem_woocommerce_add_age_verification_field() {
+    global $product_object;
+
+    // Get the saved value of the custom attribute
+    $age_verification_value = $product_object->get_meta('pa_age_verification');
+
+    // Set default value if the attribute value is not already set
+    if (empty($age_verification_value)) {
+        $age_verification_value = 'disable';
+    }
 
 function add_age_verification_field() {
     echo '<div class="options_group">';
@@ -900,11 +920,35 @@ function add_age_verification_field() {
         'option2' => __('Option 2', 'your-plugin'),
         'option3' => __('Option 3', 'your-plugin'),
       )
+        'id' => 'age_verification',
+        'label' => __('Age verification', 'bluem-woocommerce'),
+        'placeholder' => '',
+        'options' => array(
+            'enable' => __('Enable', 'bluem-woocommerce'),
+            'disable' => __('Disable', 'bluem-woocommerce'),
+        ),
+        'value' => $age_verification_value,
     ));
     
     echo '</div>';
 }
 add_action( 'woocommerce_product_options_general_product_data', 'add_age_verification_field' );  
+add_action( 'woocommerce_product_options_general_product_data', 'bluem_woocommerce_add_age_verification_field' );
+
+/**
+ * Save the age verification attribute value.
+ */
+function bluem_woocommerce_save_age_verification_values( $post_id ) {
+    if ( 'product' !== get_post_type( $post_id ) ) {
+        return;
+    }
+  
+    if ( isset( $_POST['age_verification'] ) ) {
+        $attribute_value = isset($_POST['age_verification']) ? sanitize_text_field($_POST['age_verification']) : '';
+        update_post_meta( $post_id, 'pa_age_verification', $attribute_value );
+    }
+}
+add_action( 'save_post', 'bluem_woocommerce_save_age_verification_values' );
 
 /**
  * Error reporting email functionality
