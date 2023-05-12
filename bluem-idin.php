@@ -7,11 +7,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Helpers\BluemIdentityCategoryList;
 
-//if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-//    // WooCommerce specific code incoming here
-//    // @todo: Add WooCommerce specific code here
-//}
+/**
+ * Check if WooCommerce is activated
+ */
+if ( ! function_exists( 'is_woocommerce_activated' ) ) {
+    function is_woocommerce_activated() {
+        $active_plugins = get_option( 'active_plugins' );
 
+        if ( in_array('woocommerce/woocommerce.php', $active_plugins) ) {
+            return true;
+        }
+        return false;
+    }
+}
 
 /**
  * Create a session
@@ -1331,7 +1339,10 @@ function bluem_idin_retrieve_results() {
 function bluem_idin_validation_needed() {
 	global $current_user;
 
+    $age_verification_needed = bluem_checkout_age_verification_needed();
+
 	$options = get_option( 'bluem_woocommerce_options' );
+    
     if ( isset( $options['idin_enable_ip_country_filtering'] )
          && $options['idin_enable_ip_country_filtering'] !== ""
     ) {
@@ -1356,6 +1367,14 @@ function bluem_idin_validation_needed() {
 			return false;
         }
     }
+
+    /**
+     * Check if age verification is needed.
+     */
+    if ( is_woocommerce_activated() && ! $age_verification_needed ) {
+        return false;
+    }
+
 	return true;
 }
 
@@ -1588,6 +1607,31 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
 // 'woocommerce_review_order_before_payment',
 // 'bluem_checkout_check_idin_validated'
 // );
+
+/**
+ * Check if age verification is needed by checkout.
+ */
+function bluem_checkout_age_verification_needed() {
+    $verification_needed = false;
+
+    // Get the products in the cart
+    $products = WC()->cart->get_cart();
+
+    // Loop through the products
+    foreach ($products as $cart_item_key => $cart_item) {
+        $product_id = $cart_item['product_id'];
+        $product = wc_get_product($product_id);
+
+        // Retrieve custom attribute value
+        $age_verification = $product->get_meta('pa_age_verification');
+
+        // Check if age verification is enabled by user
+        if ( ! empty( $age_verification ) && $age_verification === 'enable' ) {
+            $verification_needed = true;
+        }
+    }
+    return $verification_needed;
+}
 
 // CHECKOUT review message
 add_action( 'woocommerce_review_order_before_payment', 'bluem_checkout_idin_notice' );
