@@ -38,6 +38,8 @@ require_once __DIR__ . '/bluem-compatibility.php';
 // get composer dependencies
 require __DIR__ . '/vendor/autoload.php';
 
+use Bluem\BluemPHP\Bluem;
+
 if ( ! defined( "BLUEM_LOCAL_DATE_FORMAT" ) ) {
     define( "BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s" );
 }
@@ -251,11 +253,268 @@ function bluem_requests_view() {
             wp_redirect(
                 admin_url( "admin.php?page=bluem-transactions" )
             );
+        } elseif ( isset( $_GET['admin_action'] ) && $_GET['admin_action'] == "status-update" ) {
+            bluem_update_request_by_id( $_GET['request_id'] );
+
+            bluem_requests_view_request();
         } else {
             bluem_requests_view_request();
         }
     } else {
         bluem_requests_view_all();
+    }
+}
+
+function bluem_update_request_by_id ( $request_id )
+{
+    global $wpdb;
+
+    $request_query = $wpdb->get_results( "SELECT * FROM `bluem_requests` WHERE `id` = $request_id LIMIT 1" );
+    if ( count( $request_query ) == 0 ) {
+        bluem_requests_view_all();
+
+        return;
+    }
+
+    $request = (object) $request_query[0];
+
+    $payload = [];
+
+    if ( !empty ( $request->payload ) ) {
+        $payload = json_decode($request->payload, true);
+    }
+
+    $bluem_config = bluem_woocommerce_get_config();
+
+    $bluem_env = !empty( $payload['environment'] ) ? $payload['environment'] : '';
+
+    // Check for environment
+    if ( !empty ( $bluem_env ) ) {
+        $bluem_config->environment = $bluem_env;
+    }
+
+    $bluem = new Bluem( $bluem_config );
+
+    if ( $request->type === 'identity' )
+    {
+        try {
+            $response = $bluem->IdentityStatus( $request->transaction_id, $request->entrance_code );
+
+            if ( ! $response->ReceivedResponse() ) {
+                $errormessage = "Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status";
+                bluem_error_report_email(
+                    [
+                        'service'  => 'identity',
+                        'function' => 'identity_admin_status_update',
+                        'message'  => $errormessage
+                    ]
+                );
+                bluem_dialogs_render_prompt( $errormessage );
+                exit;
+            }
+
+            $statusCode = $response->GetStatusCode();
+
+            /**
+             * Update status in request
+             */
+            if ( $statusCode !== $request->status ) {
+                $db_status = bluem_db_update_request(
+                    $request->id,
+                    [
+                        'status' => $statusCode
+                    ]
+                );
+            }
+
+            /**
+             * Check for status
+             */
+            if ( $statusCode === "Success" ) {
+                $identityReport = $response->GetIdentityReport();
+
+                if ( !empty( $request->id ) ) {
+                    $new_data = [];
+
+                    $new_data['report'] = $identityReport;
+                    
+                    if ( count( $new_data ) > 0 ) {
+                        bluem_db_put_request_payload(
+                            $request->id,
+                            $new_data
+                        );
+                    }
+                }
+            } elseif ( $statusCode === "Pending" ) {
+                //
+            } elseif ( $statusCode === "Cancelled" ) {
+                //
+            } elseif ( $statusCode === "Open" ) {
+                //
+            } elseif ( $statusCode === "Expired" ) {
+                //
+            } elseif ( $statusCode === "New" ) {
+                //
+            } else {
+                //
+            }
+        } catch (Exception $e ) {
+            $errormessage = "Fout bij opvragen status: " . $e->getMessage() . "<br>Neem contact op met de webshop en vermeld deze status";
+            bluem_error_report_email(
+                [
+                    'service'  => 'identity',
+                    'function' => 'identity_admin_status_update',
+                    'message'  => $errormessage
+                ]
+            );
+            bluem_dialogs_render_prompt( $errormessage );
+            exit;
+        }
+    }
+    elseif ( $request->type === 'mandates' )
+    {
+        try {
+            $response = $bluem->MandateStatus( $request->transaction_id, $request->entrance_code );
+
+            if ( ! $response->Status() ) {
+                $errormessage = "Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status";
+                bluem_error_report_email(
+                    [
+                        'service'  => 'mandates',
+                        'function' => 'mandates_admin_status_update',
+                        'message'  => $errormessage
+                    ]
+                );
+                bluem_dialogs_render_prompt( $errormessage );
+                exit;
+            }
+
+            $statusUpdateObject = $response->EMandateStatusUpdate;
+		    $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
+
+            /**
+             * Update status in request
+             */
+            if ( $statusCode !== $request->status ) {
+                $db_status = bluem_db_update_request(
+                    $request->id,
+                    [
+                        'status' => $statusCode
+                    ]
+                );
+            }
+
+            /**
+             * Check for status
+             */
+            if ( $statusCode === "Success" ) {
+                if ( !empty( $request->id ) ) {
+                    $new_data = [];
+                    
+                    if ( isset( $response->EMandateStatusUpdate->EMandateStatus->PurchaseID ) ) {
+                        $new_data['purchaseID'] = $response->EMandateStatusUpdate->EMandateStatus->PurchaseID;
+                    }
+                    
+                    if ( isset( $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport ) ) {
+                        $new_data['report'] = $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport;
+                    }
+                    
+                    if ( count( $new_data ) > 0 ) {
+                        bluem_db_put_request_payload(
+                            $request->id,
+                            $new_data
+                        );
+                    }
+                }
+            } elseif ( $statusCode === "Pending" ) {
+                //
+            } elseif ( $statusCode === "Cancelled" ) {
+                //
+            } elseif ( $statusCode === "Open" ) {
+                //
+            } elseif ( $statusCode === "Expired" ) {
+                //
+            } elseif ( $statusCode === "New" ) {
+                //
+            } else {
+                //
+            }
+        } catch (Exception $e ) {
+            $errormessage = "Fout bij opvragen status: " . $e->getMessage() . "<br>Neem contact op met de webshop en vermeld deze status";
+            bluem_error_report_email(
+                [
+                    'service'  => 'mandates',
+                    'function' => 'mandates_admin_status_update',
+                    'message'  => $errormessage
+                ]
+            );
+            bluem_dialogs_render_prompt( $errormessage );
+            exit;
+        }
+    }
+    elseif ( $request->type === 'ideal' || $request->type === 'creditcard' || $request->type === 'paypal' || $request->type === 'sofort' || $request->type === 'cartebancaire' )
+    {
+        try {
+            $response = $bluem->PaymentStatus( $request->transaction_id, $request->entrance_code );
+
+            if ( ! $response->Status() ) {
+                $errormessage = "Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status";
+                bluem_error_report_email(
+                    [
+                        'service'  => 'payments',
+                        'function' => 'payments_admin_status_update',
+                        'message'  => $errormessage
+                    ]
+                );
+                bluem_dialogs_render_prompt( $errormessage );
+                exit;
+            }
+
+            $statusUpdateObject = $response->PaymentStatusUpdate;
+		    $statusCode = $statusUpdateObject->Status . "";
+
+            /**
+             * Update status in request
+             */
+            if ( $statusCode !== $request->status ) {
+                $db_status = bluem_db_update_request(
+                    $request->id,
+                    [
+                        'status' => $statusCode
+                    ]
+                );
+            }
+
+            /**
+             * Check for status
+             */
+            if ( $statusCode === "Success" ) {
+                //
+            } elseif ( $statusCode === "Pending" ) {
+                //
+            } elseif ( $statusCode === "Cancelled" ) {
+                //
+            } elseif ( $statusCode === "Open" ) {
+                //
+            } elseif ( $statusCode === "Expired" ) {
+                //
+            } elseif ( $statusCode === "New" ) {
+                //
+            } else {
+                //
+            }
+        } catch (Exception $e ) {
+            $errormessage = "Fout bij opvragen status: " . $e->getMessage() . "<br>Neem contact op met de webshop en vermeld deze status";
+            bluem_error_report_email(
+                [
+                    'service'  => 'payments',
+                    'function' => 'payments_admin_status_update',
+                    'message'  => $errormessage
+                ]
+            );
+            bluem_dialogs_render_prompt( $errormessage );
+            exit;
+        }
     }
 }
 

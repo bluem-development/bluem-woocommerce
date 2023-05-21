@@ -55,7 +55,7 @@
                 <span class="bluem-request-label">
                     Status:
                 </span>
-                <?php bluem_render_request_status($request->status); ?>
+                <?php bluem_render_request_status($request->status); ?> (<a href="<?php echo admin_url("admin.php?page=bluem-transactions&request_id=".$request->id."&admin_action=status-update");?>" title="Update status">Update status</a>)
             </p>
 
             <?php
