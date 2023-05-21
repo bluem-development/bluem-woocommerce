@@ -295,6 +295,11 @@ function bluem_update_request_by_id ( $request_id )
 
     $bluem = new Bluem( $bluem_config );
 
+    // Check for order
+    if ( !empty( $request->order_id ) ) {
+        $order = wc_get_order( $request->order_id );
+    }
+
     if ( $request->type === 'identity' )
     {
         try {
@@ -390,6 +395,7 @@ function bluem_update_request_by_id ( $request_id )
             }
 
             $statusUpdateObject = $response->EMandateStatusUpdate;
+
 		    $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
 
             /**
@@ -408,6 +414,11 @@ function bluem_update_request_by_id ( $request_id )
              * Check for status
              */
             if ( $statusCode === "Success" ) {
+                if ( !empty ( $order ) ) {
+                    $order->update_status( 'processing', __( 'Machtiging is binnengekomen', 'wc-gateway-bluem' ) );
+                    $order->add_order_note( __( "Betalingsproces voltooid" ) );
+                }
+
                 if ( !empty( $request->id ) ) {
                     $new_data = [];
                     
@@ -429,15 +440,21 @@ function bluem_update_request_by_id ( $request_id )
             } elseif ( $statusCode === "Pending" ) {
                 //
             } elseif ( $statusCode === "Cancelled" ) {
-                //
+                if ( !empty ( $order ) ) {
+                    $order->update_status( 'cancelled', __( 'Machtiging is geannuleerd', 'wc-gateway-bluem' ) );
+                }
             } elseif ( $statusCode === "Open" ) {
                 //
             } elseif ( $statusCode === "Expired" ) {
-                //
+                if ( !empty ( $order ) ) {
+                    $order->update_status( 'failed', __( 'Machtiging is verlopen', 'wc-gateway-bluem' ) );
+                }
             } elseif ( $statusCode === "New" ) {
                 //
             } else {
-                //
+                if ( !empty ( $order ) ) {
+                    $order->update_status( 'failed', __( 'Machtiging is gefaald: fout of onbekende status', 'wc-gateway-bluem' ) );
+                }
             }
         } catch (Exception $e ) {
             $errormessage = "Fout bij opvragen status: " . $e->getMessage() . "<br>Neem contact op met de webshop en vermeld deze status";
@@ -471,6 +488,7 @@ function bluem_update_request_by_id ( $request_id )
             }
 
             $statusUpdateObject = $response->PaymentStatusUpdate;
+
 		    $statusCode = $statusUpdateObject->Status . "";
 
             /**
@@ -489,19 +507,28 @@ function bluem_update_request_by_id ( $request_id )
              * Check for status
              */
             if ( $statusCode === "Success" ) {
-                //
+                if ( !empty ( $order ) ) {
+                    $order->update_status( 'processing', __( 'Betaling is binnengekomen', 'wc-gateway-bluem' ) );
+                    $order->add_order_note( __( "Betalingsproces voltooid" ) );
+                }
             } elseif ( $statusCode === "Pending" ) {
                 //
             } elseif ( $statusCode === "Cancelled" ) {
-                //
+                if ( !empty ( $order ) ) {
+                    $order->update_status( 'cancelled', __( 'Betaling is geannuleerd', 'wc-gateway-bluem' ) );
+                }
             } elseif ( $statusCode === "Open" ) {
                 //
             } elseif ( $statusCode === "Expired" ) {
-                //
+                if ( !empty ( $order ) ) {
+                    $order->update_status( 'failed', __( 'Betaling is verlopen', 'wc-gateway-bluem' ) );
+                }
             } elseif ( $statusCode === "New" ) {
                 //
             } else {
-                //
+                if ( !empty ( $order ) ) {
+                    $order->update_status( 'failed', __( 'Betaling is gefaald: fout of onbekende status', 'wc-gateway-bluem' ) );
+                }
             }
         } catch (Exception $e ) {
             $errormessage = "Fout bij opvragen status: " . $e->getMessage() . "<br>Neem contact op met de webshop en vermeld deze status";
