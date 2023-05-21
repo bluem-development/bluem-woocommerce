@@ -61,7 +61,7 @@
         padding: 10px 20px;
         text-decoration: none;
         background-color: #99bed9;
-        color: #FFF;
+        color: #2b4e6c;
     }
 
     div.payment-methods .nav-tab.active {
