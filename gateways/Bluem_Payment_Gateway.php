@@ -103,6 +103,22 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
     }
 
     /**
+     * Define payment fields
+     */
+    public function payment_fields()
+    {
+        //
+    }
+
+    /**
+     * Payment fields validation
+     */
+    public function validate_fields()
+    {
+        //
+    }
+
+    /**
      * Create plugin options page in admin interface
      */
     public function init_form_fields()

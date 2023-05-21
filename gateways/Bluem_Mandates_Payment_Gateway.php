@@ -7,6 +7,8 @@ include_once __DIR__ . '/Bluem_Payment_Gateway.php';
 
 class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 {
+	protected $_show_fields = false;
+
 	/**
 	 * Class constructor
 	 */
@@ -26,6 +28,14 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 		} else {
 			$this->method_title = 'Bluem Particuliere Incassomachtiging (eMandate)';
 		}
+
+		$this->has_fields = true;
+
+		$options = get_option( 'bluem_woocommerce_options' );
+
+		if ( !empty( $options['mandatesUseDebtorWallet'] ) && $options['mandatesUseDebtorWallet'] == '1' ) {
+            $this->_show_fields = true;
+        }
 
 		// This action hook saves the settings
 		add_action(
@@ -249,6 +259,47 @@ $reason = "Existing mandate found, but not valid";
 	}
 
 	/**
+     * Define payment fields
+     */
+    public function payment_fields()
+    {
+		$BICs = $this->bluem->retrieveBICsForContext( "Mandates" );
+
+		$description = $this->get_description();
+
+        $options = [];
+
+		if ( $description ) {
+			echo wpautop( wptexturize( $description ) ); // @codingStandardsIgnoreLine.
+		}
+
+        // Loop through BICS
+        foreach ( $BICs as $BIC ) {
+            $options[ $BIC->issuerID ] = $BIC->issuerName;
+        }
+
+		// Check for options
+        if ( $this->_show_fields && !empty( $options ) )
+        {
+            woocommerce_form_field( 'bluem_mandates_bic', array(
+                'type' => 'select',
+                'required' => true,
+                'label' => 'Selecteer een bank:',
+                'options' => $options,
+            ), '' );
+        }
+    }
+
+    /**
+     * Payment fields validation
+	 * @TODO
+     */
+    public function validate_fields()
+    {
+        return true;
+    }
+
+	/**
 	 * Process payment through Bluem portal
 	 *
 	 * @param String $order_id
@@ -294,10 +345,12 @@ $reason = "Existing mandate found, but not valid";
 			// @todo Possibly allow different redirect after fast checkout with existing, valid, mandate.
 		}
 
+		$bluem_mandates_bic = isset($_POST['bluem_mandates_bic']) ? sanitize_text_field($_POST['bluem_mandates_bic']) : '';
+
 		$order_id = $order->get_id();
 		// update: added prefixed order ID for retries of mandate requests
 		$prefixed_order_id = date( "His" ) . $order_id;
-		$mandate_id        = $this->bluem->CreateMandateId(
+		$mandate_id = $this->bluem->CreateMandateId(
 			$prefixed_order_id,
 			$user_id
 		);
@@ -312,6 +365,10 @@ $reason = "Existing mandate found, but not valid";
             // @todo: handle exception
         }
 
+		if ( !empty( $bluem_mandates_bic ) )
+        {
+            $request->selectDebtorWallet( $bluem_mandates_bic );
+        }
 
         // allow third parties to add additional data to the request object through this additional action
 		$request = apply_filters(
