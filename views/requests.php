@@ -20,7 +20,8 @@
         <?php } ?>
     </div>
 
-    <p>Klik op een transactie voor meer gedetailleerde informatie.<br>Bekijk nog meer informatie over alle transacties in het <a href='https://viamijnbank.net/' target='_blank'>viamijnbank.net dashboard</a>.</p>
+    <p>Klik op een transactie voor meer gedetailleerde informatie.</p>
+    <p>Bekijk nog meer informatie over alle transacties in het <a href='https://viamijnbank.net/' target='_blank'>viamijnbank.net dashboard</a>.</p>
 
     <?php bluem_render_footer(); ?>
 </div>
