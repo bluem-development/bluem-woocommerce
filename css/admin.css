@@ -21,10 +21,6 @@ Bluem 2021
         width: calc( 100% - 1em)/* scrollbar is average 1em/16px width, remove it from thead width */
     }
     
-    table.bluem-requests-table {
-        /* width: 400px; */
-    }
-    
     .bluem-request-list {
         border: 1px solid #aaa;
         background: white;
