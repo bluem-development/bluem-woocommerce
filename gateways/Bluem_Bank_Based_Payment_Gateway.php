@@ -132,6 +132,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             $description = "Bestelling $order_id";
         }
 
+        $bluem_payments_ideal_bic = isset($_POST['bluem_payments_ideal_bic']) ? sanitize_text_field($_POST['bluem_payments_ideal_bic']) : '';
+
         $debtorReference = $order_id;
         $amount          = $order->get_total();
         $currency        = "EUR"; // get dynamically from order
@@ -154,6 +156,11 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         if ( !empty( $this->bankSpecificBrandID ) ) {
             $request->setBrandId($this->getBankSpecificBrandID());
+        }
+
+        if ( !empty( $bluem_payments_ideal_bic ) )
+        {
+            $request->selectDebtorWallet( $bluem_payments_ideal_bic );
         }
 
         // temp overrides

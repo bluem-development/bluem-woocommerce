@@ -66,6 +66,15 @@ function bluem_woocommerce_get_payments_options() {
             'description' => 'Het Bluem BrandID voor betalingen via iDEAL Payments',
             'default'     => ''
         ],
+        'paymentsUseDebtorWallet'  => [
+            'key'         => 'paymentsUseDebtorWallet',
+            'title'       => 'bluem_paymentsUseDebtorWallet',
+            'name'        => 'Selecteer bank methode',
+            'description' => "Wil je dat er in deze website al een bank moet worden geselecteerd bij de Checkout procedure, in plaats van in de Bluem Portal? Indien je 'Gebruik eigen checkout' selecteert, wordt er een veld toegevoegd aan de WooCommerce checkout pagina waar je een van de beschikbare banken kan selecteren.",
+            'type'        => 'select',
+            'default'     => '0',
+            'options'     => [ '0' => 'Gebruik Bluem Portal (standaard)', '1' => 'Gebruik eigen checkout' ],
+        ],
         'paymentsCreditcardBrandID'                   => [
             'key'         => 'paymentsCreditcardBrandID',
             'title'       => 'bluem_paymentsCreditcardBrandID',
@@ -113,7 +122,7 @@ function bluem_woocommerce_get_payments_options() {
             'description' => "Indien hierboven 'Eigen URL' is gekozen, vul hier dan de URL in waarnaar doorverwezen moet worden. Je kan bijv. <code>thanks</code> invullen om de klant naar <strong>" . site_url( "thanks" ) . "</strong> te verwijzen",
             'type'        => 'text',
             'default'     => ''
-        ]
+        ],
     ];
 }
 
@@ -162,6 +171,12 @@ function bluem_woocommerce_settings_render_paymentCompleteRedirectCustomURL() {
     );
 }
 
+function bluem_woocommerce_settings_render_paymentsUseDebtorWallet() {
+    bluem_woocommerce_settings_render_input(
+        bluem_woocommerce_get_payments_option( 'paymentsUseDebtorWallet' )
+    );
+}
+
 
 // https://www.skyverge.com/blog/how-to-create-a-simple-woocommerce-payment-gateway/
 
@@ -205,3 +220,33 @@ function bluem_woocommerce_payments_show_extra_profile_fields( $user ) {
     </table>
     <?php
 }
+
+// $bluem_options = get_option( 'bluem_woocommerce_options' );
+
+// /**
+//  * Check for enabled ePayments debtorwallet
+//  */
+// if ( isset( $bluem_options['paymentsUseDebtorWallet'] ) && $bluem_options['paymentsUseDebtorWallet'] == "1" ) {
+//     add_action( "wp_ajax_bluem_retrieve_payments_bics_ajax", "bluem_retrieve_payments_bics_ajax" );
+
+//     // define the function to be fired for logged in users
+//     function bluem_retrieve_payments_bics_ajax() {
+//         // nonce check for an extra layer of security, the function will exit if it fails
+//         //    if ( !wp_verify_nonce( $_REQUEST['nonce'], "bluem_retrieve_bics_ajax_nonce")) {
+//         //       exit("Woof Woof Woof");
+//         //    }
+
+//         // switch()
+
+//         $bluem_config = bluem_woocommerce_get_config();
+//         $bluem = new Bluem( $bluem_config );
+//         $BICs = $bluem->retrieveBICsForContext( "Payments" );
+
+//         if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) {
+//             echo json_encode( $BICs );
+//         } else {
+//             header( "Location: " . $_SERVER["HTTP_REFERER"] );
+//         }
+//         die();
+//     }
+// }
