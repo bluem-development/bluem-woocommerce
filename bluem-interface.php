@@ -30,42 +30,32 @@ function bluem_render_request_table( $requests, $users_by_id = [] ) {
 
     <div class="bluem-requests-table-container">
         <table class="table widefat bluem-requests-table">
-
             <thead>
-            <tr>
-                <th style="width:20%;">Verzoek</th>
-                <th style="width:20%;">Gebruiker</th>
-                <th style="width:20%;">Datum</th>
-                <th style="width:20%;">Extra informatie</th>
-                <th style="width:20%;">Status</th>
-                <th style="width:20%;"></th>
-            </tr>
+                <tr>
+                    <th style="width:20%;">Verzoek</th>
+                    <th style="width:20%;">Gebruiker</th>
+                    <th style="width:15%;">Datum</th>
+                    <th style="width:20%;">Extra informatie</th>
+                    <th style="width:20%;">Status</th>
+                    <th style="width:5%;"></th>
+                </tr>
             </thead>
             <tbody>
-
-
-            <?php foreach ( $requests as $r ) {
-                ?>
+            <?php foreach ( $requests as $r ) { ?>
                 <tr>
-
-
-                    <td>
-                        <a href="<?php echo admin_url( "admin.php?page=bluem-transactions&request_id=" . $r->id ); ?>"
-                           target="_self">
+                    <td width="20%">
+                        <a href="<?php echo admin_url( "admin.php?page=bluem-transactions&request_id=" . $r->id ); ?>" target="_self">
                             <?php echo $r->description; ?>
                         </a>
                         <br>
                         <span style="color:#aaa; font-size:9pt;">
-                    <?php echo $r->transaction_id; ?>
-                </span>
+                            <?php echo $r->transaction_id; ?>
+                        </span>
                     </td>
-                    <td><?php
-                        bluem_render_request_user( $r, $users_by_id ); ?>
-                    </td><?php $rdate = Carbon::parse( $r->timestamp, 'UTC' )->setTimeZone( "Europe/Amsterdam" ); ?>
-                    <td title="<?php echo $rdate->format( "d-m-Y H:i:s" ); ?>">
-                        <?php echo $rdate->format( "d-m-Y H:i:s" ); ?>
-                    </td>
-                    <td>
+                    <td width="20%"><?php bluem_render_request_user( $r, $users_by_id ); ?></td>
+                    <?php $rdate = Carbon::parse( $r->timestamp, 'UTC' )->setTimeZone( "Europe/Amsterdam" ); ?>
+                    <td width="15%" title="<?php echo $rdate->format( "d-m-Y H:i:s" ); ?>"><?php echo $rdate->format( "d-m-Y H:i:s" ); ?></td>
+                    <td width="20%">
                         <?php
                         if ( ! is_null( $r->order_id ) && $r->order_id != "0" ) {
                             try {
@@ -93,16 +83,10 @@ function bluem_render_request_table( $requests, $users_by_id = [] ) {
                             <?php
                         } ?>
                     </td>
-                    <td>
-                        <?php bluem_render_request_status( $r->status ); ?>
-                    </td>
-                    <td></td>
+                    <td width="20%"><?php bluem_render_request_status( $r->status ); ?></td>
+                    <td width="5%"></td>
                 </tr>
-
-
-                <?php
-            } ?>
-
+            <?php } ?>
             </tbody>
         </table>
     </div>
