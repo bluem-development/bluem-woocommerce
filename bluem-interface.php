@@ -485,6 +485,25 @@ function bluem_render_obj_row_recursive( $key, $value, $level = 0 ) {
     echo "<br>";
 }
 
+function bluem_render_requests_type( $cat ) {
+    if ( $cat == "mandates" ) {
+        echo "Incassomachtigen";
+    } elseif ( $cat == "ideal" ) {
+        echo "iDEAL";
+    } elseif ( $cat == "creditcard" ) {
+        echo "Creditcard";
+    } elseif ( $cat == "paypal" ) {
+        echo "PayPal";
+    } elseif ( $cat == "cartebancaire" ) {
+        echo "Carte Bancaire";
+    } elseif ( $cat == "sofort" ) {
+        echo "SOFORT";
+    } elseif ( $cat == "identity" ) {
+        echo "Identiteit";
+    } elseif ( $cat == "integrations" ) {
+        echo "Integraties";
+    }
+}
 
 function bluem_render_requests_table_title( $cat ) {
     echo "<h2>";
