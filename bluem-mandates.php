@@ -190,15 +190,6 @@ function bluem_woocommerce_get_mandates_options() {
             'attrs'       => [ 'step' => '0.01', 'min' => '0.00', 'max' => '999.00', 'placeholder' => '1.00' ],
             'default'     => '1.00'
         ],
-        'useMandatesDebtorWallet'  => [
-            'key'         => 'useMandatesDebtorWallet',
-            'title'       => 'bluem_useMandatesDebtorWallet',
-            'name'        => 'Selecteer bank in Bluem Portal?',
-            'description' => "Wil je dat er in deze website al een bank moet worden geselecteerd bij de Checkout procedure, in plaats van in de Bluem Portal? Indien je 'Gebruik eigen checkout' selecteert, wordt er een veld toegevoegd aan de WooCommerce checkout pagina waar je een van de beschikbare banken kan selecteren.",
-            'type'        => 'select',
-            'default'     => '0',
-            'options'     => [ '0' => 'Gebruik Bluem Portal (standaard)', '1' => 'Gebruik eigen checkout' ],
-        ],
     ];
 }
 
