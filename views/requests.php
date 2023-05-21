@@ -6,8 +6,6 @@
 
     <?php bluem_render_nav_header('transactions');?>
 
-    <p>Klik op een transactie voor meer gedetailleerde informatie.<br>Bekijk nog meer informatie over alle transacties in het <a href='https://viamijnbank.net/' target='_blank'>viamijnbank.net dashboard</a>.</p>
-
     <div class="wrap payment-methods">
         <h2 class="nav-tab-wrapper">
             <?php foreach ($requests as $cat => $rs) { ?>
@@ -21,6 +19,8 @@
             </div>
         <?php } ?>
     </div>
+
+    <p>Klik op een transactie voor meer gedetailleerde informatie.<br>Bekijk nog meer informatie over alle transacties in het <a href='https://viamijnbank.net/' target='_blank'>viamijnbank.net dashboard</a>.</p>
 
     <?php bluem_render_footer(); ?>
 </div>
