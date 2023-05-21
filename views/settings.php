@@ -111,6 +111,10 @@
 
 <style type="text/css">
 
+    .form-table th {
+        padding: 20px 10px !important;
+    }
+
     div.payment-methods .nav-tab-wrapper {
         border-bottom: 1px solid #2b4e6c;
         margin-bottom: 0;
@@ -129,8 +133,12 @@
 
     div.payment-methods .tab-content {
         overflow: auto;
-        max-height: 500px;
+        max-height: 300px;
         display: none;
+    }
+    div.payment-methods .tab-content table {
+        border: 1px solid #2b4e6c;
+        margin-top: 0;
     }
 
     div.payment-methods .tab-content.active {
