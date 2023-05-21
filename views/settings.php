@@ -1,7 +1,7 @@
 <div class="wrap">
     <h1>
         <?php echo bluem_get_bluem_logo_html(48);?>
-        Transacties
+        Instellingen
     </h1>
 
     <?php bluem_render_nav_header('settings');?>
