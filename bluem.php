@@ -544,8 +544,6 @@ function bluem_requests_view_request() {
 
 function bluem_requests_view_all() {
     global $wpdb;
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
 
     $_requests = $wpdb->get_results(
         "SELECT *
@@ -589,96 +587,10 @@ function bluem_woocommerce_tab($default_tab = null) {
  * @return void
  */
 function bluem_settings_page() {
+    // Get the active tab from the GET param
+    $tab = bluem_woocommerce_tab();
 
-    //Get the active tab from the GET param
-    $tab = bluem_woocommerce_tab(); ?>
-
-    <div class="wrap">
-        <h1>
-            <?php echo bluem_get_bluem_logo_html( 48 ); ?>
-            <?php echo esc_html( get_admin_page_title() ); ?>
-        </h1>
-
-        <?php bluem_render_nav_header('settings');?>
-
-        <nav class="nav-tab-wrapper">
-            <a href="<?php echo $_SERVER['REQUEST_URI']; ?>#tab_general"
-               class="nav-tab
-    <?php if ( $tab === null ) {
-                   echo "nav-tab-active";
-               } ?>
-    ">
-                <span class="dashicons dashicons-admin-settings"></span>
-                Algemeen
-            </a>
-
-            <?php if ( bluem_module_enabled( 'mandates' ) ) { ?>
-
-                <a href="<?php echo $_SERVER['REQUEST_URI'] . '#tab_mandates'; ?>"
-                   class="nav-tab
-        <?php if ( $tab === 'mandates' ) {
-                       echo "nav-tab-active";
-                   } ?>
-        ">
-                    <span class="dashicons dashicons-money"></span>
-
-                    Incassomachtigen
-
-                </a>
-            <?php } ?>
-
-            <?php if ( bluem_module_enabled( 'payments' ) ) { ?>
-
-                <a href="<?php echo $_SERVER['REQUEST_URI'] . '#tab_payments'; ?>"
-                   class="nav-tab
-        <?php if ( $tab === 'payments' ) {
-                       echo "nav-tab-active";
-                   } ?>
-        ">
-
-                    <span class="dashicons dashicons-money-alt"></span>
-                    ePayments
-                </a>
-            <?php } ?>
-
-            <?php if ( bluem_module_enabled( 'idin' ) ) { ?>
-
-                <a href="<?php echo $_SERVER['REQUEST_URI'] . '#tab_idin'; ?>"
-                   class="nav-tab
-        <?php if ( $tab === 'idin' ) {
-                       echo "nav-tab-active";
-                   } ?>
-        ">
-                    <span class="dashicons dashicons-businessperson"></span>
-                    Identiteit
-                </a>
-            <?php } ?>
-
-            <a href="<?php echo $_SERVER['REQUEST_URI'] . '#tab_integrations'; ?>"
-               class="nav-tab
-    <?php if ( $tab === 'integrations' ) {
-                   echo "nav-tab-active";
-               } ?>
-    ">
-                <span class="dashicons dashicons-admin-plugins"></span>
-                Integraties
-            </a>
-        </nav>
-        <form action="options.php" method="post">
-            <?php
-            settings_fields( 'bluem_woocommerce_modules_options' );
-            do_settings_sections( 'bluem_woocommerce_modules' );
-            settings_fields( 'bluem_woocommerce_options' );
-            do_settings_sections( 'bluem_woocommerce' ); ?>
-
-            <input name="submit"
-                   class="button button-primary"
-                   type="submit" value="<?php esc_attr_e( 'Save' ); ?>"
-            />
-        </form>
-        <?php bluem_render_footer( false ); ?>
-    </div>
-    <?php
+    include_once 'views/settings.php';
 }
 
 function bluem_woocommerce_general_settings_section() {
