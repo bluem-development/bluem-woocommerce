@@ -553,11 +553,13 @@ function bluem_requests_view_all() {
         ORDER BY `type` , `timestamp` DESC"
     );
 
+    $requests['mandates'] = [];
     $requests['identity'] = [];
     $requests['ideal'] = [];
     $requests['creditcard'] = [];
     $requests['paypal'] = [];
-    $requests['mandates'] = [];
+    $requests['sofort'] = [];
+    $requests['cartebancaire'] = [];
 
     // @todo Allow filtering on only one type
 
@@ -577,9 +579,7 @@ function bluem_requests_view_all() {
 }
 
 // @todo Deprecate this
-function bluem_woocommerce_tab() {
-    $default_tab = null;
-
+function bluem_woocommerce_tab($default_tab = null) {
     return isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : $default_tab;
 }
 

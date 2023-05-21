@@ -5,7 +5,7 @@ Bluem 2021
     
     .bluem-requests-table tbody {
         display: block;
-        max-height: 500px;
+        max-height: 300px;
         overflow: auto;
     }
     
