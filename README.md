@@ -38,14 +38,14 @@ By default, they are not activated.
 See this example as how you could do this by adding a novel filter to the id `bluem_woocommerce_enhance_mandate_request`:
 
 ```php
-add_filter('bluem_woocommerce_enhance_mandate_request', 'nextdeli_administratie_bluem_add_customer_name_to_mandate', 10, 1);
+add_filter('bluem_woocommerce_enhance_mandate_request', 'bluem_add_customer_name_to_mandate', 10, 1);
 /**
  * allow third parties to add additional data to the request object through this additional action
  *
  * @param [type] $request
  * @return void
  */
-function nextdeli_administratie_bluem_add_customer_name_to_mandate(
+function bluem_add_customer_name_to_mandate(
     Bluem\BluemPHP\EmandateBluemRequest $request
 )
 {
@@ -62,14 +62,14 @@ function nextdeli_administratie_bluem_add_customer_name_to_mandate(
 See this example as how you could do this by adding a novel filter to the id `bluem_woocommerce_enhance_payment_request`:
 
 ```php
-add_filter('bluem_woocommerce_enhance_payment_request', 'nextdeli_administratie_bluem_add_customer_name_to_payment', 10, 1);
+add_filter('bluem_woocommerce_enhance_payment_request', 'bluem_add_customer_name_to_payment', 10, 1);
 /**
  * allow third parties to add additional data to the request object through this additional action
  *
  * @param [type] $request
  * @return void
  */
-function nextdeli_administratie_bluem_add_customer_name_to_payment(
+function bluem_add_customer_name_to_payment(
     $request
 )
 {
