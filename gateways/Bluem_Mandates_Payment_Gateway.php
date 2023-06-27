@@ -46,7 +46,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 		// ********** CREATING plugin URLs for specific functions **********
 		add_action(
 			'woocommerce_api_bluem_mandates_webhook',
-			array( $this, 'mandates_webhook' ),
+			array( $this, 'bluem_mandates_webhook' ),
 			5
 		);
 		add_action(
