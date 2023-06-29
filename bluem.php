@@ -258,10 +258,39 @@ function bluem_register_menu() {
 
 add_action( 'admin_menu', 'bluem_register_menu', 9 );
 
+/**
+ * Get composer dependency version.
+ */
+function get_composer_dependency_version($dependency_name) {
+    // Path to the composer.lock file
+    $composer_lock_path = plugin_dir_path(__FILE__) . 'composer.lock';
+
+    // Read and decode the contents of the composer.lock file
+    $composer_lock = json_decode(file_get_contents($composer_lock_path), true);
+
+    // Find the package entry by the dependency name
+    $package_entry = array_filter($composer_lock['packages'], function($package) use ($dependency_name) {
+        return $package['name'] === $dependency_name;
+    });
+
+    // Retrieve the version constraint of the specified dependency
+    $version_constraint = reset($package_entry)['version'];
+    
+    return $version_constraint;
+}
+
+/**
+ * Bluem home page.
+ */
 function bluem_home() {
+    $dependency_bluem_php_version = get_composer_dependency_version('bluem-development/bluem-php');
+
     include_once 'views/home.php';
 }
 
+/**
+ * Bluem plug-in activation page.
+ */
 function bluem_plugin_activation() {
     $bluem_options = get_option( 'bluem_woocommerce_options' );
     $bluem_registration = get_option( 'bluem_woocommerce_registration' );
@@ -303,6 +332,10 @@ function bluem_plugin_activation() {
 
         // Set plugin registration as done
         update_option('bluem_plugin_registration', true);
+
+        wp_redirect(
+            admin_url( "admin.php?page=bluem-activate" )
+        );
     }
 
     include_once 'views/activate.php';
@@ -1312,6 +1345,8 @@ function bluem_registration_report_email( $data = [] ): bool {
     
     $bluem_registration = get_option( 'bluem_woocommerce_registration' );
 
+    $dependency_bluem_php_version = get_composer_dependency_version('bluem-development/bluem-php');
+
     $activation_report_id = date( "Ymdhis" ) . '_' . rand( 0, 512 );
 
     $data = (object) $data;
@@ -1327,6 +1362,7 @@ function bluem_registration_report_email( $data = [] ): bool {
     $data->{'Tech email'} = $bluem_registration['tech_contact']['email'];
     $data->{'WooCommerce version'} = class_exists('WooCommerce') ? WC()->version : __('WooCommerce niet geinstalleerd.', 'bluem-woocommerce');
     $data->{'WordPress version'} = get_bloginfo( 'version' );
+    $data->{'Bluem PHP-library'} = $dependency_bluem_php_version;
     $data->{'Plug-in version'} = $bluem['Version'];
     $data->{'PHP version'} = phpversion();
 
