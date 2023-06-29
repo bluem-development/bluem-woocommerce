@@ -75,6 +75,7 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
+- 1.3.17.7: Updated PHP library for certificates.
 - 1.3.17.6: Extra functionalities and improvements.
 - 1.3.17.5: Added attribute to WooCommerce product to enable age verification per product.
 - 1.3.17.4: Stability fixes.
