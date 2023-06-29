@@ -239,7 +239,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      */
     public function bluem_bank_payments_webhook()
     {
-        if ( $_GET['env'] && is_string( $_GET['env'] )
+        if ( !empty( $_GET['env'] )
              && in_array(
                  sanitize_text_field( $_GET['env'] ),
                  [ 'test', 'prod' ]
@@ -253,6 +253,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         try {
             $this->bluem->Webhook();
         } catch ( Exception $e ) {
+            // var_dump($e->getMessage());
             // @todo: handle exception
         }
 
