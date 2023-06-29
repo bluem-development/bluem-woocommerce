@@ -9,6 +9,7 @@ Use this repository to get insight and possibly contribute to the development of
 
 # Requirements
 This plug-in requires PHP >= 7.4 | PHP >= 8.0, which is the standard WordPress recommendation (https://wordpress.org/about/requirements/).
+
 If you use our plug-in files or databases in your own custom development, please disable auto-update and check each update manually before installing.
 Our plug-in files or database tables structure may change during time.
 
