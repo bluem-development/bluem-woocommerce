@@ -4,10 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if ( empty(session_id()) ) {
-    session_start();
-}
-
 use Bluem\BluemPHP\Bluem;
 use Carbon\Carbon;
 
