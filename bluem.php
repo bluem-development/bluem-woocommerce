@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 global $bluem_db_version;
-$bluem_db_version = 1.3;
+$bluem_db_version = 1.4;
 
 const BLUEM_WOOCOMMERCE_MANUAL_URL = "https://codexology.notion.site/Bluem-voor-WordPress-en-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e";
 
@@ -331,7 +331,7 @@ function bluem_update_request_by_id ( $request_id )
 {
     global $wpdb;
 
-    $request_query = $wpdb->get_results( "SELECT * FROM `bluem_requests` WHERE `id` = $request_id LIMIT 1" );
+    $request_query = $wpdb->get_results( "SELECT * FROM `" . $wpdb->prefix . "bluem_requests` WHERE `id` = $request_id LIMIT 1" );
     if ( count( $request_query ) == 0 ) {
         bluem_requests_view_all();
 
@@ -614,7 +614,7 @@ function bluem_requests_view_request() {
 
     $id = $_GET['request_id'];
 
-    $request_query = $wpdb->get_results( "SELECT * FROM `bluem_requests` WHERE `id` = $id LIMIT 1" );
+    $request_query = $wpdb->get_results( "SELECT * FROM `" . $wpdb->prefix . "bluem_requests` WHERE `id` = $id LIMIT 1" );
     if ( count( $request_query ) == 0 ) {
         bluem_requests_view_all();
 
@@ -636,7 +636,7 @@ function bluem_requests_view_all() {
 
     $_requests = $wpdb->get_results(
         "SELECT *
-        FROM `bluem_requests`
+        FROM `" . $wpdb->prefix . "bluem_requests`
         ORDER BY `type` , `timestamp` DESC"
     );
 

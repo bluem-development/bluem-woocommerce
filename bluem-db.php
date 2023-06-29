@@ -12,12 +12,20 @@ function bluem_db_create_requests_table(): void {
     
     $installed_ver = (float) get_option( "bluem_db_version" );
 
-    if ( $installed_ver < $bluem_db_version ) {
+    if ( empty( $installed_ver ) || $installed_ver < $bluem_db_version ) {
         $charset_collate = $wpdb->get_charset_collate();
 
         include_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-        $sql = "CREATE TABLE IF NOT EXISTS `bluem_requests` (
+        // Define table names
+        $table_name_requests = $wpdb->prefix . 'bluem_requests';
+        $table_name_links = $wpdb->prefix . 'bluem_requests_links';
+        $table_name_logs = $wpdb->prefix . 'bluem_requests_log';
+
+        /**
+         * Create tables.
+         */
+        $sql = "CREATE TABLE IF NOT EXISTS `$table_name_requests` (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             user_id mediumint(9) NOT NULL,
             transaction_id varchar(64) NOT NULL,
@@ -34,7 +42,7 @@ function bluem_db_create_requests_table(): void {
             ) $charset_collate;";
         dbDelta( $sql );
 
-        $sql2 = "CREATE TABLE IF NOT EXISTS " . "bluem_requests_log (
+        $sql2 = "CREATE TABLE IF NOT EXISTS `$table_name_logs` (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             request_id mediumint(9) NOT NULL,
             timestamp timestamp DEFAULT NOW() NOT NULL,
@@ -44,8 +52,7 @@ function bluem_db_create_requests_table(): void {
             ) $charset_collate;";
         dbDelta( $sql2 );
 
-
-        $sql3 = "CREATE TABLE IF NOT EXISTS " . "bluem_requests_links (
+        $sql3 = "CREATE TABLE IF NOT EXISTS `$table_name_links` (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             request_id mediumint(9) NOT NULL,
             item_id mediumint(9) NOT NULL,
@@ -55,6 +62,31 @@ function bluem_db_create_requests_table(): void {
             ) $charset_collate;";
         dbDelta( $sql3 );
 
+        // Check for previous installed versions
+        if ( !empty( $installed_ver ) && $installed_ver <= '1.3' )
+        {
+            /**
+             * Migrate old tables to new tables.
+             */
+            $bluem_requests_table_exists = $wpdb->get_var("SHOW TABLES LIKE 'bluem_requests'") === 'bluem_requests';
+            $bluem_requests_links_table_exists = $wpdb->get_var("SHOW TABLES LIKE 'bluem_requests_log'") === 'bluem_requests_log';
+            $bluem_requests_log_table_exists = $wpdb->get_var("SHOW TABLES LIKE 'bluem_requests_links'") === 'bluem_requests_links';
+
+            if ( $bluem_requests_table_exists ) {
+                $sql4 = "INSERT INTO `$table_name_requests` SELECT * FROM bluem_requests;";
+                dbDelta( $sql4 );
+            }
+
+            if ( $bluem_requests_log_table_exists ) {
+                $sql5 = "INSERT INTO `$table_name_logs` SELECT * FROM bluem_requests_log;";
+                dbDelta( $sql5 );
+            }
+
+            if ( $bluem_requests_links_table_exists ) {
+                $sql6 = "INSERT INTO `$table_name_links` SELECT * FROM bluem_requests_links;";
+                dbDelta( $sql6 );
+            }
+        }
 
         update_option(
             "bluem_db_version",
@@ -85,7 +117,7 @@ function bluem_db_create_request( $request_object ) {
     }
 
     $insert_result = $wpdb->insert(
-        "bluem_requests",
+        $wpdb->prefix . "bluem_requests",
         $request_object
     );
 
@@ -122,7 +154,7 @@ function bluem_db_request_log( $request_id, $description, $log_data = [] ) {
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
     $insert_result = $wpdb->insert(
-        "bluem_requests_log",
+        $wpdb->prefix . "bluem_requests_log",
         [
             'request_id'  => $request_id,
             'description' => $description,
@@ -150,7 +182,7 @@ function bluem_db_update_request( $request_id, $request_object ) {
         return false;
     }
     $update_result = $wpdb->update(
-        "bluem_requests",
+        $wpdb->prefix . "bluem_requests",
         $request_object,
         [
             'id' => $request_id
@@ -257,8 +289,8 @@ function bluem_db_delete_request_by_id( $request_id ) {
 
     $wpdb->show_errors();
 
-    $query  = $wpdb->delete( 'bluem_requests', [ 'id' => $request_id ] );
-    $query2 = $wpdb->delete( 'bluem_requests_log', [ 'request_id' => $request_id ] );
+    $query  = $wpdb->delete( $wpdb->prefix . 'bluem_requests', [ 'id' => $request_id ] );
+    $query2 = $wpdb->delete( $wpdb->prefix . 'bluem_requests_log', [ 'request_id' => $request_id ] );
 
     return $query && $query2;
 }
@@ -346,7 +378,7 @@ function bluem_db_get_requests_by_keyvalues(
             }
         }
     }
-    $query = "SELECT *  FROM  `bluem_requests`{$kvs}";
+    $query = "SELECT *  FROM  `" . $wpdb->prefix . "bluem_requests` {$kvs}";
     if ( ! is_null( $sort_key ) && $sort_key !== ""
          && in_array( $sort_dir, [ 'ASC', 'DESC' ] )
     ) {
@@ -427,7 +459,7 @@ function bluem_db_get_most_recent_request( $user_id = null, $type = "mandates" )
     $wpdb->show_errors(); //setting the Show or Display errors option to true
 
     $query = "SELECT *
-        FROM  `bluem_requests`
+        FROM  `" . $wpdb->prefix . "bluem_requests`
         WHERE `user_id` = '{$user_id}'
             AND `type` = '{$type}'
         ORDER BY `timestamp` DESC
@@ -472,14 +504,13 @@ function bluem_db_put_request_payload( $request_id, $data ) {
     );
 }
 
-
 function bluem_db_get_logs_for_request( $id ) {
     global $wpdb;
     
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
-    return $wpdb->get_results( "SELECT *  FROM  `bluem_requests_log` WHERE `request_id` = $id ORDER BY `timestamp` DESC" );
+    return $wpdb->get_results( "SELECT *  FROM  `" . $wpdb->prefix . "bluem_requests_log` WHERE `request_id` = $id ORDER BY `timestamp` DESC" );
 }
 
 function bluem_db_get_links_for_order( $id ) {
@@ -488,7 +519,7 @@ function bluem_db_get_links_for_order( $id ) {
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
     
-    return $wpdb->get_results( "SELECT *  FROM  `bluem_requests_links` WHERE `item_id` = {$id} and `item_type` = 'order'ORDER BY `timestamp` DESC" );
+    return $wpdb->get_results( "SELECT *  FROM  `" . $wpdb->prefix . "bluem_requests_links` WHERE `item_id` = {$id} and `item_type` = 'order'ORDER BY `timestamp` DESC" );
 }
 
 function bluem_db_get_links_for_request( $id ) {
@@ -497,7 +528,7 @@ function bluem_db_get_links_for_request( $id ) {
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
     
-    return $wpdb->get_results( "SELECT *  FROM  `bluem_requests_links` WHERE `request_id` = {$id} ORDER BY `timestamp` DESC" );
+    return $wpdb->get_results( "SELECT *  FROM  `" . $wpdb->prefix . "bluem_requests_links` WHERE `request_id` = {$id} ORDER BY `timestamp` DESC" );
 }
 
 function bluem_db_create_link( $request_id, $item_id, $item_type = "order" ) {
@@ -512,7 +543,7 @@ function bluem_db_create_link( $request_id, $item_id, $item_type = "order" ) {
     }
 
     $insert_result = $wpdb->insert(
-        "bluem_requests_links",
+        $wpdb->prefix . "bluem_requests_links",
         [
             'request_id' => $request_id,
             'item_id'    => $item_id,
