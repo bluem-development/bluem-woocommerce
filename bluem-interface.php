@@ -535,6 +535,16 @@ function bluem_render_nav_header( $active_page = '' ) {
             <span class="dashicons dashicons-admin-home"></span>
             Home
         </a>
+        <a href="<?php echo admin_url( 'admin.php?page=bluem-activate' ); ?>"
+            <?php if ( $active_page == "activate" ) {
+                echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
+            } else {
+                echo 'class="nav-tab"';
+            }
+            ?>>
+            <span class="dashicons dashicons-yes-alt"></span>
+            Activatie
+        </a>
         <a href="<?php echo admin_url( 'admin.php?page=bluem-transactions' ); ?>"
             <?php if ( $active_page == "transactions" ) {
                 echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';

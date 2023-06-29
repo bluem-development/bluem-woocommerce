@@ -139,6 +139,13 @@ if ( ! is_permalinks_enabled() ) {
     add_action( 'admin_notices', 'bluem_woocommerce_no_permalinks_notice' );
 }
 
+// Plug-in activation
+function bluem_woocommerce_plugin_activate() {
+    update_option('bluem_plugin_registration', false);
+}
+
+register_activation_hook(__FILE__, 'bluem_woocommerce_plugin_activate');
+
 // Update CSS within in Admin
 function bluem_add_admin_style() {
     wp_enqueue_style( 'admin-styles', plugin_dir_url( __FILE__ ) . '/css/admin.css' );
@@ -214,6 +221,15 @@ function bluem_register_menu() {
 
     add_submenu_page(
         'bluem-admin',
+        'Activatie',
+        'Activatie',
+        'manage_options',
+        'bluem-activate',
+        'bluem_plugin_activation'
+    );
+
+    add_submenu_page(
+        'bluem-admin',
         'Transacties',
         'Transacties',
         'manage_options',
@@ -244,6 +260,52 @@ add_action( 'admin_menu', 'bluem_register_menu', 9 );
 
 function bluem_home() {
     include_once 'views/home.php';
+}
+
+function bluem_plugin_activation() {
+    $bluem_options = get_option( 'bluem_woocommerce_options' );
+    $bluem_registration = get_option( 'bluem_woocommerce_registration' );
+    $bluem_plugin_registration = get_option( 'bluem_plugin_registration' );
+
+    if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
+        $acc_senderid = sanitize_text_field($_POST['acc_senderid']);
+        $acc_testtoken = sanitize_text_field($_POST['acc_testtoken']);
+        $acc_prodtoken = sanitize_text_field($_POST['acc_prodtoken']);
+
+        $company_name = sanitize_text_field($_POST['company_name']);
+        $company_telephone = sanitize_text_field($_POST['company_telephone']);
+        $company_email = sanitize_text_field($_POST['company_email']);
+        
+        $tech_name = sanitize_text_field($_POST['tech_name']);
+        $tech_telephone = sanitize_text_field($_POST['tech_telephone']);
+        $tech_email = sanitize_text_field($_POST['tech_email']);
+
+        $bluem_options['senderID'] = $acc_senderid;
+        $bluem_options['test_accessToken'] = $acc_testtoken;
+        $bluem_options['production_accessToken'] = $acc_prodtoken;
+
+        $bluem_registration['company']['name'] = $company_name;
+        $bluem_registration['company']['telephone'] = $company_telephone;
+        $bluem_registration['company']['email'] = $company_email;
+        
+        $bluem_registration['tech_contact']['name'] = $tech_name;
+        $bluem_registration['tech_contact']['telephone'] = $tech_telephone;
+        $bluem_registration['tech_contact']['email'] = $tech_email;
+
+        // Sent registration notify email
+        bluem_registration_report_email();
+
+        // Update Bluem options
+        update_option('bluem_woocommerce_options', $bluem_options);
+
+        // Update Bluem registration
+        update_option('bluem_woocommerce_registration', $bluem_registration);
+
+        // Set plugin registration as done
+        update_option('bluem_plugin_registration', true);
+    }
+
+    include_once 'views/activate.php';
 }
 
 function bluem_requests_view() {
@@ -797,9 +859,31 @@ function bluem_woocommerce_register_settings() {
             );
         }
     }
+
+    $user = wp_get_current_user();
+    
+    // Check if user is administrator
+    if (in_array('administrator', $user->roles)) {
+        // Check if the form has already been filled
+        $form_filled = get_option('bluem_plugin_registration', false);
+        if ( ! $form_filled ) {
+            if ( empty( $_GET ) || !empty( $_GET['page'] ) && $_GET['page'] !== "bluem-activate" ) {
+                wp_redirect(
+                    admin_url( "admin.php?page=bluem-activate" )
+                );
+            }
+        }
+    }
 }
 
 add_action( 'admin_init', 'bluem_woocommerce_register_settings' );
+
+function start_session() {
+    if ( session_status() === PHP_SESSION_NONE ) {
+        session_start();
+    }
+}
+add_action('init', 'start_session');
 
 add_action( 'show_user_profile', 'bluem_woocommerce_show_general_profile_fields', 1 );
 
@@ -1213,6 +1297,91 @@ function bluem_error_report_email( $data = [] ): bool {
     }
 
     return false;
+}
+
+/**
+ * Registration reporting email functionality
+ * @return bool
+ */
+function bluem_registration_report_email( $data = [] ): bool {
+    $debug = false;
+
+    $bluem = get_plugin_data( WP_PLUGIN_DIR . '/bluem/bluem.php' );
+
+    $bluem_options = get_option( 'bluem_woocommerce_options' );
+    
+    $bluem_registration = get_option( 'bluem_woocommerce_registration' );
+
+    $activation_report_id = date( "Ymdhis" ) . '_' . rand( 0, 512 );
+
+    $data = (object) $data;
+    $data->activation_report_id = $activation_report_id;
+    $data->{'Bluem SenderID'} = $bluem_options['senderID'];
+    $data->{'Website name'} = get_bloginfo( 'name' );
+    $data->{'Website URL'} = get_bloginfo( 'url' );
+    $data->{'Company name'} = $bluem_registration['company']['name'];
+    $data->{'Company telephone'} = $bluem_registration['company']['telephone'];
+    $data->{'Company email'} = $bluem_registration['company']['email'];
+    $data->{'Tech name'} = $bluem_registration['tech_contact']['name'];
+    $data->{'Tech telephone'} = $bluem_registration['tech_contact']['telephone'];
+    $data->{'Tech email'} = $bluem_registration['tech_contact']['email'];
+    $data->{'WooCommerce version'} = class_exists('WooCommerce') ? WC()->version : __('WooCommerce niet geinstalleerd.', 'bluem-woocommerce');
+    $data->{'WordPress version'} = get_bloginfo( 'version' );
+    $data->{'Plug-in version'} = $bluem['Version'];
+    $data->{'PHP version'} = phpversion();
+
+    if ( is_null( $data ) ) {
+        return false;
+    }
+
+    if ( $debug ) {
+        echo "Sending notify reporting email; Data:";
+        var_dump( $data );
+    }
+
+    $author_name  = "Administratie van " . get_bloginfo( 'name' );
+    $author_email = esc_attr(
+        get_option( "admin_email" )
+    );
+
+    $to = "pluginsupport@bluem.nl";
+
+    $subject = "[" . get_bloginfo( 'name' ) . "] ";
+    $subject .= "WordPress plug-in activation";
+
+    $message = "<p>WordPress plug-in activation.<br />$author_name <$author_email>,</p>";
+    $message .= "<p>Data: <br>" . json_encode( $data ) . "</p>";
+
+    ob_start();
+    foreach ( $data as $k => $v ) {
+        if ( is_null( $v ) ) {
+            continue;
+        }
+
+        bluem_render_obj_row_recursive(
+            "<strong>" . ucfirst( $k ) . "</strong>",
+            $v
+        );
+    }
+    $message_p = ob_get_clean();
+
+    $message .= $message_p;
+    $message .= "</p>";
+
+    $message = nl2br( $message );
+
+    $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+    if ( $debug ) {
+        bluem_email_debug( $to, $subject, $message, $headers );
+    }
+
+    $mailing = wp_mail( $to, $subject, $message, $headers );
+
+    if ( $mailing ) {
+        bluem_db_request_log( $activation_report_id, "Sent activation report mail to " . $to );
+    }
+
+    return $mailing;
 }
 
 function bluem_email_footer(): string {
