@@ -254,6 +254,15 @@ function bluem_register_menu() {
         'bluem-importexport',
         'bluem_admin_importexport'
     );
+
+    add_submenu_page(
+        'bluem-admin',
+        'Logs',
+        'Logs',
+        'manage_options',
+        'bluem-logs',
+        'bluem_admin_logs'
+    );
 }
 
 add_action( 'admin_menu', 'bluem_register_menu', 9 );
@@ -1965,6 +1974,53 @@ function bluem_admin_importexport() {
     include_once 'views/importexport.php';
 }
 
+/**
+ * Render the admin Logs page
+ * @return void
+ */
+function bluem_admin_logs() {
+    $import_data = null;
+    $messages = [];
+
+    if ( isset( $_POST['action'] ) && $_POST['action'] == "import" ) {
+        $decoded = true;
+
+        if ( isset( $_POST['import'] ) && $_POST['import'] !== "" ) {
+            $import_data = json_decode(
+                stripslashes(
+                    $_POST['import']
+                ),
+                true
+            );
+            if ( is_null( $import_data ) ) {
+                $messages[] = "Kon niet importeren: de input is niet geldige JSON";
+                $decoded = false;
+            }
+        }
+
+        if ( $decoded ) {
+            $results    = bluem_admin_import_execute( $import_data );
+            $sett_count = 0;
+            foreach ( $results as $r ) {
+                if ( $r ) {
+                    $sett_count ++;
+                }
+            }
+            $messages[] = "Importeren is uitgevoerd: $sett_count instellingen aangepast.";
+        }
+    }
+
+    $options = get_option( 'bluem_woocommerce_options' );
+
+    $options_json = "";
+    if ( $options !== false ) {
+        $options_json = json_encode( $options );
+    }
+
+    // @todo: improve this by creating a renderer function and passing the renderdata
+    // @todo: then generalise this to other parts of the plugin
+    include_once 'views/logs.php';
+}
 
 function bluem_woocommerce_is_woocommerce_active(): bool {
     return in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
