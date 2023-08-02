@@ -28,7 +28,7 @@
 
     <?php bluem_render_nav_header('logs');?>
 
-    <h2 style="margin-top: 25px;">Logs</h2>
+    <h2 style="margin-top: 25px;"><span class="dashicons dashicons-book"></span> Logs</h2>
 
     <?php
 
