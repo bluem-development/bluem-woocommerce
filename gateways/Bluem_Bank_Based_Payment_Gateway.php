@@ -147,8 +147,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                 $dueDateTime,
                 $currency,
                 $entranceCode,
-                home_url( sprintf( 'wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode ) ),
-                str_replace( '-', '', $request->paymentReference )
+                home_url( sprintf( 'wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode ) )
             );
         } catch ( Exception $e ) {
             // @todo: handle exception
