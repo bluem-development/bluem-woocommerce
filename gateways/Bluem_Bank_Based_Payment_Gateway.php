@@ -150,7 +150,10 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                 home_url( sprintf( 'wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode ) )
             );
         } catch ( Exception $e ) {
-            // @todo: handle exception
+            return array(
+                'exception' => $e->getMessage(),
+                'result' => 'failure'
+            );
         }
 
         if ( !empty( $this->bankSpecificBrandID ) ) {
@@ -186,7 +189,10 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         try {
             $response = $this->bluem->PerformRequest( $request );
         } catch ( Exception $e ) {
-            // @todo: handle exception
+            return array(
+                'exception' => $e->getMessage(),
+                'result' => 'failure'
+            );
         }
         // Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled',
 
@@ -252,8 +258,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         try {
             $this->bluem->Webhook();
         } catch ( Exception $e ) {
-            // var_dump($e->getMessage());
-            // @todo: handle exception
+            echo "Error: Exception: " . $e->getMessage();
+            exit;
         }
 
         // @todo: continue webhook specifics
