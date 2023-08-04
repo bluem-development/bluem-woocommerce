@@ -181,7 +181,10 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                     $bluem_latest_mandate_entrance_code
                 );
             } catch ( Exception $e ) {
-                // @todo: handle exception
+                return array(
+                    'exception' => $e->getMessage(),
+                    'result' => 'failure'
+                );
             }
 
             if ( ! $existing_mandate_response->Status() ) {
@@ -322,8 +325,10 @@ $reason = "Existing mandate found, but not valid";
         try {
             $this->bluem = new Bluem( $this->bluem_config );
         } catch ( Exception $e ) {
-
-            // @todo: deal with this
+            return array(
+                'exception' => $e->getMessage(),
+                'result' => 'failure'
+            );
         }
 
         $order = wc_get_order( $order_id );
@@ -362,7 +367,10 @@ $reason = "Existing mandate found, but not valid";
                 $mandate_id
             );
         } catch ( Exception $e ) {
-            // @todo: handle exception
+            return array(
+                'exception' => $e->getMessage(),
+                'result' => 'failure'
+            );
         }
 
 		if ( !empty( $bluem_mandates_bic ) )
@@ -379,7 +387,10 @@ $reason = "Existing mandate found, but not valid";
         try {
             $response = $this->bluem->PerformRequest( $request );
         } catch ( Exception $e ) {
-            // @todo: handle exception
+            return array(
+                'exception' => $e->getMessage(),
+                'result' => 'failure'
+            );
         }
 
         if ( self::VERBOSE ) {
@@ -400,7 +411,6 @@ $reason = "Existing mandate found, but not valid";
 			throw new RuntimeException( "An error occurred in reading the transaction response. Please contact the webshop owner" );
 		}
 		$entranceCode = $attrs['entranceCode'] . "";
-
 
 		update_post_meta( $order_id, 'bluem_entrancecode', $entranceCode );
 		update_post_meta( $order_id, 'bluem_mandateid', $mandate_id );
@@ -516,11 +526,9 @@ $reason = "Existing mandate found, but not valid";
 			$maxAmountEnabled = ( isset( $settings['maxAmountEnabled'] ) && $settings['maxAmountEnabled'] === "1" );
 		}
 
-
 		if ( self::VERBOSE ) {
 			echo "mandate_amount: {$mandate_amount}" . PHP_EOL;
 		}
-
 
 		if ( $maxAmountEnabled ) {
 
