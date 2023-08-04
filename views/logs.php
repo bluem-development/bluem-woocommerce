@@ -32,31 +32,76 @@
 
     <?php
 
-//    $log_file_path = WP_CONTENT_DIR . '/debug.log';
-//    $log_lines = file($log_file_path);
-//
-//    $lines_to_display = array_slice($log_lines, -10);
-//
-//    var_dump($lines_to_display);
+    /**
+     * Display PHP error log (if accessible)
+     * @return string
+     */
+    function display_php_errors() {
+        $error_log_path = ini_get('error_log');
 
-    function display_php_errors_in_plugin() {
-        $php_error_log_path = ini_get('error_log');
-
-        if (!empty($php_error_log_path) && file_exists($php_error_log_path)) {
-            if ($log_contents = @file_get_contents($php_error_log_path)) {
-                // Output the error log in a <pre> tag for formatting
-                echo '<pre>' . $log_contents . '</pre>';
+        if (!empty($error_log_path) && file_exists($error_log_path)) {
+            if ($log_contents = @file_get_contents($error_log_path)) {
+                $content = '<pre>' . esc_html($log_contents) . '</pre>';
             } else {
-                echo 'PHP error log not found or logging is disabled.';
+                $content = 'PHP error log not found or logging is disabled.';
             }
         } else {
-            echo 'PHP error log not found or logging is disabled.';
+            $content = 'PHP error log not found or logging is disabled.';
         }
+        return $content;
     }
 
-    display_php_errors_in_plugin();
+    /**
+     * Display WordPress debug log (if exists)
+     *
+     * @return string
+     */
+    function display_wordpress_debug_log() {
+        $error_log_path = WP_CONTENT_DIR . '/debug.log';
+
+        if (!empty($error_log_path) && file_exists($error_log_path)) {
+            if ($log_contents = @file_get_contents($error_log_path)) {
+                $content = '<pre>' . esc_html($log_contents) . '</pre>';
+            } else {
+                $content = 'PHP error log not found or logging is disabled.';
+            }
+        } else {
+            $content = 'PHP error log not found or logging is disabled.';
+        }
+        return $content;
+    }
+
+    /**
+     * Display WordPress debug log (if exists)
+     *
+     * @return string
+     */
+    function display_woocommerce_logs() {
+        $woocommerce_logs = glob(WC_LOG_DIR . '*.log');
+
+        $content = '';
+
+        if (!empty($woocommerce_logs) && is_array($woocommerce_logs)) {
+            foreach ($woocommerce_logs as $log) {
+                $content .= '<h4>' . basename($log) . '</h4>';
+                $content .= '<pre>' . esc_html(file_get_contents($log)) . '</pre>';
+            }
+        } else {
+            $content = 'WooCommerce error logs not found or logging is disabled.';
+        }
+        return $content;
+    }
 
     ?>
+
+    <h3>PHP errors</h3>
+    <?php display_php_errors(); ?>
+
+    <h3>WordPress debug log</h3>
+    <?php display_wordpress_debug_log(); ?>
+
+    <h3>WooCommerce error logs</h3>
+    <?php display_woocommerce_logs(); ?>
 
     <?php bluem_render_footer(); ?>
 </div>

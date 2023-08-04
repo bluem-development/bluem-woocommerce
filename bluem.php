@@ -1979,44 +1979,6 @@ function bluem_admin_importexport() {
  * @return void
  */
 function bluem_admin_logs() {
-    $import_data = null;
-    $messages = [];
-
-    if ( isset( $_POST['action'] ) && $_POST['action'] == "import" ) {
-        $decoded = true;
-
-        if ( isset( $_POST['import'] ) && $_POST['import'] !== "" ) {
-            $import_data = json_decode(
-                stripslashes(
-                    $_POST['import']
-                ),
-                true
-            );
-            if ( is_null( $import_data ) ) {
-                $messages[] = "Kon niet importeren: de input is niet geldige JSON";
-                $decoded = false;
-            }
-        }
-
-        if ( $decoded ) {
-            $results    = bluem_admin_import_execute( $import_data );
-            $sett_count = 0;
-            foreach ( $results as $r ) {
-                if ( $r ) {
-                    $sett_count ++;
-                }
-            }
-            $messages[] = "Importeren is uitgevoerd: $sett_count instellingen aangepast.";
-        }
-    }
-
-    $options = get_option( 'bluem_woocommerce_options' );
-
-    $options_json = "";
-    if ( $options !== false ) {
-        $options_json = json_encode( $options );
-    }
-
     // @todo: improve this by creating a renderer function and passing the renderdata
     // @todo: then generalise this to other parts of the plugin
     include_once 'views/logs.php';
