@@ -3,6 +3,10 @@ Bluem 2021
 */
     /* https://stackoverflow.com/questions/23989463/how-to-set-tbody-height-with-overflow-scroll/23989771 */
     
+    input.error {
+        border: 2px solid #cc0000;
+    }
+
     .bluem-requests-table tbody {
         display: block;
         max-height: 500px;

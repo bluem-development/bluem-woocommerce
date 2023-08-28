@@ -19,7 +19,7 @@
     <h3>Account vereist</h3>
     <p>Voor het gebruik van onze diensten is een account vereist.<br />Kijk voor meer informatie op de <a href="https://bluem.nl/direct-online-betalen/" title="Bluem website bezoeken" target="_blank">Bluem website</a>, of bel <a href="tel:+31852220400" title="Bellen naar Bluem">+31(0)85-2220400</a> of email naar <a href="mailto:info@bluem.nl" title="Mailen naar Bluem">info@bluem.nl</a>.</p>
 
-    <form method="POST">
+    <form id="activateform" method="POST">
         <h2>Accountgegevens</h2>
         <p>Vul hieronder de accountgegevens in, zoals door Bluem is verstrekt.<br />Neem voor meer informatie contact op met uw accountmanager.<br />Laat velden leeg om dit later op te geven.</p>
         
@@ -85,3 +85,37 @@
 
     <?php bluem_render_footer(); ?>
 </div>
+
+<script type="text/javascript">
+
+    /**
+     * Validate the required inputs.
+     *
+     * @returns {boolean}
+     */
+    function validateRequiredInputs() {
+        let isValid = true;
+
+        // Select all input fields with the 'required' attribute
+        $("input[required]").each(function() {
+            if ($(this).val() === "") {
+                isValid = false;
+                $(this).addClass('error'); // Add an 'error' class for visual indication
+            } else {
+                $(this).removeClass('error');
+            }
+        });
+
+        return isValid;
+    }
+
+    $(document).ready(function() {
+        $("#activateform").submit(function(e) {
+            if (!validateRequiredInputs()) {
+                e.preventDefault(); // Prevent form submission if validation fails
+                alert("Gelieve alle verplichte velden correct in te vullen.");
+            }
+        });
+    });
+
+</script>
