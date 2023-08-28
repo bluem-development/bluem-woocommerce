@@ -30,7 +30,7 @@
 
     <div class="bluem_logo">Bluem Payments & Identity Services</div>
 
-    <h2 style="margin-top: 25px;">Maak betalen gemakkelijk</h2>
+    <h2 style="margin-top: 25px;">Maak betalen gemakkelijk!</h2>
 
     <p>Met de Bluem WordPress plug-in integreer je online betalingen, identificaties en leeftijdsverificaties gemakkelijk op je website.</p>
 
