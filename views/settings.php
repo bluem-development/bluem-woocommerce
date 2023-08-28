@@ -133,7 +133,7 @@
 
     div.payment-methods .tab-content {
         overflow: auto;
-        max-height: 300px;
+        max-height: 500px;
         display: none;
     }
     div.payment-methods .tab-content table {
