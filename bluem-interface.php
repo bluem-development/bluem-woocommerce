@@ -575,15 +575,15 @@ function bluem_render_nav_header( $active_page = '' ) {
             <span class="dashicons dashicons-database"></span>
             Import / export
         </a>
-        <a href="<?php echo admin_url( 'admin.php?page=bluem-logs' ); ?>"
-            <?php if ( $active_page == "logs" ) {
+        <a href="<?php echo admin_url( 'admin.php?page=bluem-status' ); ?>"
+            <?php if ( $active_page == "status" ) {
                 echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
             } else {
                 echo 'class="nav-tab"';
             }
             ?>>
-            <span class="dashicons dashicons-book"></span>
-            Logs
+            <span class="dashicons dashicons-info"></span>
+            Status
         </a>
         <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e"
            target="_blank"

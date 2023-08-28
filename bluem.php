@@ -257,11 +257,11 @@ function bluem_register_menu() {
 
     add_submenu_page(
         'bluem-admin',
-        'Logs',
-        'Logs',
+        'Status',
+        'Status',
         'manage_options',
-        'bluem-logs',
-        'bluem_admin_logs'
+        'bluem-status',
+        'bluem_admin_status'
     );
 }
 
@@ -1975,13 +1975,13 @@ function bluem_admin_importexport() {
 }
 
 /**
- * Render the admin Logs page
+ * Render the admin Status page
  * @return void
  */
-function bluem_admin_logs() {
+function bluem_admin_status() {
     // @todo: improve this by creating a renderer function and passing the renderdata
     // @todo: then generalise this to other parts of the plugin
-    include_once 'views/logs.php';
+    include_once 'views/status.php';
 }
 
 function bluem_woocommerce_is_woocommerce_active(): bool {
