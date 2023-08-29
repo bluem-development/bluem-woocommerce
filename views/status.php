@@ -100,7 +100,7 @@ function display_woocommerce_logs() {
         </h2>
 
         <div id="general" class="tab-content">
-            <h1>Status</h1>
+            <h1>Systeem</h1>
 
             <p>De volgende betaalmethoden zijn ingeschakeld:</p>
             <ul>
