@@ -142,8 +142,19 @@ By default, this is disabled as it is quite context specific if the webshop is s
 ## Important notes when compiling:
 - delete `vendor/bluem-development/bluem-php/examples` to be sure as it is not necessary in production.
 
+# InstantMandates (custom integration)
+U can use our plug-in to initiate an eMandate transaction directly from, as example, within an App.
+All u have to do is make a GET request to bluem-woocommerce/mandate_instant_request with the `debtorreference` as query.
+Make sure the debtorreference is unique and refers to an customer/user.
+Set the return URI within the Bluem plug-in settings.
+
+# Shortcodes
+
+## eMandate
+It is possible to include our eMandate-meganism in a page, by using the `[bluem_machtigingsformulier]` shortcode.
+
 # Integrations
-Besides of the integration with WooCommerce, we also have integrations with the popular ContactForm 7 and Gravity Forms. Below you'll find the instructions to active the integration.
+Besides of the integration with WooCommerce, we also have integrations with the popular ContactForm 7 and Gravity Forms. Below you'll find the instructions to activate and use the integration.
 
 ## Important notes
 - The integration(s) has to be enabled in the **Bluem** -> **Settings** page first before they will work.
