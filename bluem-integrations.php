@@ -251,9 +251,9 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                 );
 
                 // Save the necessary data to later request more information and refer to this transaction
-                $_SESSION['bluem_wpcf7_formId'] = $contact_form_id;
-                $_SESSION['bluem_mandateId'] = $request->mandateID;
-                $_SESSION['bluem_entranceCode'] = $request->entranceCode;
+                setcookie('bluem_wpcf7_formId', $contact_form_id, 0, '/');
+                setcookie('bluem_mandateId', $request->mandateID, 0, '/');
+                setcookie('bluem_entranceCode', $request->entranceCode, 0, '/');
 
                 // Actually perform the request.
                 try {
@@ -288,12 +288,12 @@ function bluem_woocommerce_integration_wpcf7_ajax()
 
                     $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
 
-                    $_SESSION['bluem_mandateId'] = $mandate_id;
+                    setcookie('bluem_mandateId', $mandate_id, 0, '/');
 
                     // redirect cast to string, necessary for AJAX response handling
                     $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
 
-                    $_SESSION['bluem_recentTransactionURL'] = $transactionURL;
+                    setcookie('bluem_recentTransactionURL', $transactionURL, 0, '/');
 
                     $db_creation_result = bluem_db_create_request(
                         [
@@ -429,9 +429,9 @@ function bluem_woocommerce_integration_wpcf7_submit() {
                 );
 
                 // Save the necessary data to later request more information and refer to this transaction
-                $_SESSION['bluem_wpcf7_formId'] = $contact_form_id;
-                $_SESSION['bluem_mandateId'] = $request->mandateID;
-                $_SESSION['bluem_entranceCode'] = $request->entranceCode;
+                setcookie('bluem_wpcf7_formId', $contact_form_id, 0, '/');
+                setcookie('bluem_mandateId', $request->mandateID, 0, '/');
+                setcookie('bluem_entranceCode', $request->entranceCode, 0, '/');
 
                 // Actually perform the request.
                 try {
@@ -464,12 +464,12 @@ function bluem_woocommerce_integration_wpcf7_submit() {
 
                     $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
 
-                    $_SESSION['bluem_mandateId'] = $mandate_id;
+                    setcookie('bluem_mandateId', $mandate_id, 0, '/');
 
                     // redirect cast to string, necessary for AJAX response handling
                     $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
 
-                    $_SESSION['bluem_recentTransactionURL'] = $transactionURL;
+                    setcookie('bluem_recentTransactionURL', $transactionURL, 0, '/');
 
                     $db_creation_result = bluem_db_create_request(
                         [
@@ -542,11 +542,11 @@ function bluem_woocommerce_integration_wpcf7_callback()
         // @todo: deal with incorrectly setup Bluem
     }
 
-    $formID = $_SESSION['bluem_wpcf7_formId'];
+    $formID = $_COOKIE['bluem_wpcf7_formId'] ?? 0;
 
-    $mandateID = $_SESSION['bluem_mandateId'];
+    $mandateID = $_COOKIE['bluem_mandateId'] ?? 0;
 
-    $entranceCode = $_SESSION['bluem_entranceCode'];
+    $entranceCode = $_COOKIE['bluem_entranceCode'] ?? '';
 
     if (empty($mandateID)) {
         if (!empty($bluem_config->wpcf7Resultpage)) {
@@ -864,10 +864,10 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
                 );
 
                 // Save the necessary data to later request more information and refer to this transaction
-                $_SESSION['bluem_gform_entryId'] = $payload['entry_id'];
-                $_SESSION['bluem_gform_formId'] = $payload['form_id'];
-                $_SESSION['bluem_mandateId'] = $request->mandateID;
-                $_SESSION['bluem_entranceCode'] = $request->entranceCode;
+                setcookie('bluem_gform_entryId', $payload['entry_id'], 0, '/');
+                setcookie('bluem_gform_formId', $payload['form_id'], 0, '/');
+                setcookie('bluem_mandateId', $request->mandateID, 0, '/');
+                setcookie('bluem_entranceCode', $request->entranceCode, 0, '/');
 
                 // Actually perform the request.
                 try {
@@ -900,12 +900,12 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
 
                     $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
 
-                    $_SESSION['bluem_mandateId'] = $mandate_id;
+                    setcookie('bluem_mandateId', $mandate_id, 0, '/');
 
                     // redirect cast to string, necessary for AJAX response handling
                     $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
 
-                    $_SESSION['bluem_recentTransactionURL'] = $transactionURL;
+                    setcookie('bluem_recentTransactionURL', $transactionURL, 0, '/');
 
                     $db_creation_result = bluem_db_create_request(
                         [
@@ -1008,13 +1008,13 @@ function bluem_woocommerce_integration_gform_callback()
         // @todo: deal with incorrectly setup Bluem
     }
 
-    $formID = $_SESSION['bluem_gform_formId'];
+    $formID = $_COOKIE['bluem_gform_formId'] ?? 0;
 
-    $entryID = $_SESSION['bluem_gform_entryId'];
+    $entryID = $_COOKIE['bluem_gform_entryId'] ?? 0;
 
-    $mandateID = $_SESSION['bluem_mandateId'];
+    $mandateID = $_COOKIE['bluem_mandateId'] ?? 0;
 
-    $entranceCode = $_SESSION['bluem_entranceCode'];
+    $entranceCode = $_COOKIE['bluem_entranceCode'] ?? '';
 
     if (empty($mandateID)) {
         if (!empty($bluem_config->gformResultpage)) {

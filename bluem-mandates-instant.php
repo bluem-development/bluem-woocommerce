@@ -8,10 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if ( empty(session_id()) ) {
-    session_start();
-}
-
 use Bluem\BluemPHP\Bluem;
 
 add_action( 'parse_request', 'bluem_mandates_instant_request' );
@@ -70,8 +66,8 @@ function bluem_mandates_instant_request()
             );
 
             // Save the necessary data to later request more information and refer to this transaction
-            $_SESSION['bluem_mandateId'] = $request->mandateID;
-            $_SESSION['bluem_entranceCode'] = $request->entranceCode;
+            setcookie('bluem_mandateId', $request->mandateID, 0, '/');
+            setcookie('bluem_entranceCode', $request->entranceCode, 0, '/');
 
             // Actually perform the request.
             try {
@@ -103,12 +99,12 @@ function bluem_mandates_instant_request()
 
                 $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
 
-                $_SESSION['bluem_mandateId'] = $mandate_id;
+                setcookie('bluem_mandateId', $mandate_id, 0, '/');
 
                 // redirect cast to string, necessary for AJAX response handling
                 $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
 
-                $_SESSION['bluem_recentTransactionURL'] = $transactionURL;
+                setcookie('bluem_recentTransactionURL', $transactionURL, 0, '/');
 
                 $db_creation_result = bluem_db_create_request(
                     [
@@ -154,7 +150,7 @@ function bluem_mandates_instant_request()
 add_action( 'parse_request', 'bluem_mandates_instant_callback' );
 
 /**
- * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Session, sent for a SUD to the Bluem API.
+ * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Cookie, sent for a SUD to the Bluem API.
  *
  * @return void
  */
@@ -172,9 +168,9 @@ function bluem_mandates_instant_callback()
         // @todo: deal with incorrectly setup Bluem
     }
 
-    $mandateID = $_SESSION['bluem_mandateId'];
+    $mandateID = $_COOKIE['bluem_mandateId'] ?? 0;
 
-    $entranceCode = $_SESSION['bluem_entranceCode'];
+    $entranceCode = $_COOKIE['bluem_entranceCode'] ?? '';
 
     if (empty($mandateID)) {
         if (!empty($bluem_config->instantMandatesResponseURI)) {

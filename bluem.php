@@ -920,13 +920,6 @@ function bluem_woocommerce_register_settings() {
 
 add_action( 'admin_init', 'bluem_woocommerce_register_settings' );
 
-function start_session() {
-    if ( session_status() === PHP_SESSION_NONE ) {
-        session_start();
-    }
-}
-add_action('init', 'start_session');
-
 add_action( 'show_user_profile', 'bluem_woocommerce_show_general_profile_fields', 1 );
 
 function bluem_woocommerce_show_general_profile_fields() {

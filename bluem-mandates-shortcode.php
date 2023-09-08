@@ -8,10 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if ( empty(session_id()) ) {
-    session_start();
-}
-
 use Bluem\BluemPHP\Bluem;
 
 add_action( 'parse_request', 'bluem_mandate_shortcode_execute' );
@@ -20,8 +16,11 @@ add_action( 'parse_request', 'bluem_mandate_shortcode_execute' );
  * This function is called POST from the form rendered on a page or post
  *
  * @return void
+ * @throws DOMException
+ * @throws HTTP_Request2_LogicException
+ * @throws \Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException
  */
-function bluem_mandate_shortcode_execute()
+function bluem_mandate_shortcode_execute(): void
 {
     if (substr($_SERVER["REQUEST_URI"], - 43) !== "bluem-woocommerce/mandate_shortcode_execute") {
         return;
@@ -42,37 +41,7 @@ function bluem_mandate_shortcode_execute()
         // Check for recurring mode
         if ($bluem_config->sequenceType === 'RCUR')
         {
-            if (!empty($_SESSION['bluem_debtorreference']))
-            {
-                $debtorReference = $_SESSION['bluem_debtorreference'];
-
-                $db_query = [
-                    'debtor_reference' => $debtorReference,
-                    'user_id' => get_current_user_id(),
-                    'status' => 'Success',
-                ];
-
-                // Check for a successful transaction
-                $db_results = bluem_db_get_requests_by_keyvalues($db_query);
-
-                if ($db_results !== false && is_array($db_results) && sizeof($db_results) > 0) {
-                    $mandateID = $db_results[0]->transaction_id;
-
-                    $_SESSION['bluem_mandateId'] = $mandateID;
-
-                    if (!empty($current_user)) {
-                        if (current_user_can('edit_user', $current_user->ID)) {
-                            update_user_meta( $current_user->ID, "bluem_mandates_validated", true );
-                            update_user_meta( $current_user->ID, "bluem_latest_mandate_id", $mandateID );
-                        }
-                    }
-
-                    wp_redirect( home_url( $bluem_config->thanksPageURL ) . "?result=true" );
-
-                    exit;
-                }
-            }
-            elseif (!empty($_COOKIE['bluem_debtorreference']))
+            if (!empty($_COOKIE['bluem_debtorreference']))
             {
                 $debtorReference = $_COOKIE['bluem_debtorreference'];
 
@@ -88,7 +57,7 @@ function bluem_mandate_shortcode_execute()
                 if ($db_results !== false && is_array($db_results) && sizeof($db_results) > 0) {
                     $mandateID = $db_results[0]->transaction_id;
 
-                    $_SESSION['bluem_mandateId'] = $mandateID;
+                    setcookie('bluem_mandateId', $mandateID, 0, '/');
 
                     if (!empty($current_user)) {
                         if (current_user_can('edit_user', $current_user->ID)) {
@@ -108,7 +77,7 @@ function bluem_mandate_shortcode_execute()
                 {
                     $debtorReference = sanitize_text_field( $_POST["bluem_debtorReference"] );
 
-                    $_SESSION['bluem_debtorreference'] = $debtorReference;
+                    setcookie('bluem_debtorreference', $debtorReference, 0, '/');
 
                     $db_query = [
                         'debtor_reference' => $debtorReference,
@@ -122,7 +91,7 @@ function bluem_mandate_shortcode_execute()
                     if ($db_results !== false && is_array($db_results) && sizeof($db_results) > 0) {
                         $mandateID = $db_results[0]->transaction_id;
 
-                        $_SESSION['bluem_mandateId'] = $mandateID;
+                        setcookie('bluem_mandateId', $mandateID, 0, '/');
 
                         if (!empty($current_user)) {
                             if (current_user_can('edit_user', $current_user->ID)) {
@@ -141,7 +110,7 @@ function bluem_mandate_shortcode_execute()
                     if (is_user_logged_in()) {
                         $debtorReference = $current_user->user_nicename();
 
-                        $_SESSION['bluem_debtorreference'] = $debtorReference;
+                        setcookie('bluem_debtorreference', $debtorReference, 0, '/');
                     }
                 }
             }
@@ -151,12 +120,12 @@ function bluem_mandate_shortcode_execute()
             if (!empty($_POST["bluem_debtorReference"])) {
                 $debtorReference = sanitize_text_field( $_POST["bluem_debtorReference"] );
 
-                $_SESSION['bluem_debtorreference'] = $debtorReference;
+                setcookie('bluem_debtorreference', $debtorReference, 0, '/');
             } else {
                 if ( is_user_logged_in() ) {
                     $debtorReference = $current_user->user_nicename();
 
-                    $_SESSION['bluem_debtorreference'] = $debtorReference;
+                    setcookie('bluem_debtorreference', $debtorReference, 0, '/');
                 }
             }
         }
@@ -189,8 +158,8 @@ function bluem_mandate_shortcode_execute()
         );
 
         // Save the necessary data to later request more information and refer to this transaction
-        $_SESSION['bluem_mandateId'] = $request->mandateID;
-        $_SESSION['bluem_entranceCode'] = $request->entranceCode;
+        setcookie('bluem_mandateId', $request->mandateID, 0, '/');
+        setcookie('bluem_entranceCode', $request->entranceCode, 0, '/');
 
         if (!empty($current_user))
         {
@@ -198,7 +167,7 @@ function bluem_mandate_shortcode_execute()
                 update_user_meta(
                     $current_user->ID,
                     "bluem_latest_mandate_entrance_code",
-                    $request->entranceCode . ""
+                    $request->entranceCode
                 );
             }
         }
@@ -232,7 +201,7 @@ function bluem_mandate_shortcode_execute()
 
         $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
 
-        $_SESSION['bluem_mandateId'] = $mandate_id;
+        setcookie('bluem_mandateId', $mandate_id, 0, '/');
 
         if (!empty($current_user))
         {
@@ -248,9 +217,9 @@ function bluem_mandate_shortcode_execute()
         // redirect cast to string, necessary for AJAX response handling
         $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
 
-        $_SESSION['bluem_recentTransactionURL'] = $transactionURL;
+        setcookie('bluem_recentTransactionURL', $transactionURL, 0, '/');
 
-        $db_creation_result = bluem_db_create_request(
+        bluem_db_create_request(
             [
                 'entrance_code'    => $request->entranceCode,
                 'transaction_id'   => $request->mandateID,
@@ -285,11 +254,11 @@ function bluem_mandate_shortcode_execute()
 
 add_action( 'parse_request', 'bluem_mandate_mandate_shortcode_callback' );
 /**
- * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Session, sent for a SUD to the Bluem API.
+ * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Cookie, sent for a SUD to the Bluem API.
  *
  * @return void
  */
-function bluem_mandate_mandate_shortcode_callback()
+function bluem_mandate_mandate_shortcode_callback(): void
 {
     if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/mandate_shortcode_callback") === false) {
         return;
@@ -305,6 +274,7 @@ function bluem_mandate_mandate_shortcode_callback()
         $bluem = new Bluem( $bluem_config );
     } catch ( Exception $e ) {
         // @todo: deal with incorrectly setup Bluem
+        // $e->getMessage();
     }
 
     // @todo: .. then use request-based approach soon as first check, then fallback to user meta check.
@@ -312,8 +282,8 @@ function bluem_mandate_mandate_shortcode_callback()
         $mandateID = get_user_meta( $current_user->ID, "bluem_latest_mandate_id", true );
         $entranceCode = get_user_meta( $current_user->ID, "bluem_latest_mandate_entrance_code", true );
     } else {
-        $mandateID = $_SESSION['bluem_mandateId'];
-        $entranceCode = $_SESSION['bluem_entranceCode'];
+        $mandateID = $_COOKIE['bluem_mandateId'] ?? 0;
+        $entranceCode = $_COOKIE['bluem_entranceCode'] ?? '';
     }
 
     if (!isset($_GET['mandateID'])) {
@@ -390,7 +360,7 @@ function bluem_mandate_mandate_shortcode_callback()
     if ($statusCode === "Success")
     {
         // Define a cookie so that this will be recognised the next time
-        setcookie('bluem_debtorreference', $debtorReference, time()+60*60*24*30, '/', $_SERVER['SERVER_NAME'], false, true);
+        setcookie('bluem_mandateId', $mandateID, 0, '/', $_SERVER['SERVER_NAME'], false, true);
 
         if (!empty($current_user)) {
             if (current_user_can('edit_user', $current_user->ID)) {
@@ -419,12 +389,6 @@ function bluem_mandate_mandate_shortcode_callback()
                 ]
             );
         }
-
-        $request_from_db = bluem_db_get_request_by_transaction_id_and_type(
-            $mandateID,
-            "mandates"
-        );
-
         wp_redirect( home_url( $bluem_config->thanksPageURL ) . "?result=true" );
         exit;
     }
@@ -453,7 +417,7 @@ function bluem_mandate_mandate_shortcode_callback()
             [
                 'service'  => 'mandates',
                 'function' => 'shortcode_callback',
-                'message'  => "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site"
+                'message'  => "Fout: Onbekende of foutieve status teruggekregen: $statusCode<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site"
             ]
         );
         wp_redirect( home_url( $bluem_config->thanksPageURL ) . "?result=false&reason=error" );
@@ -467,9 +431,9 @@ add_shortcode( 'bluem_machtigingsformulier', 'bluem_mandateform' );
  * Rendering the static form
  * Shortcode: `[bluem_machtigingsformulier]`
  *
- * @return void
+ * @return string
  */
-function bluem_mandateform()
+function bluem_mandateform(): string
 {
     global $current_user;
 
@@ -479,8 +443,6 @@ function bluem_mandateform()
         'wc-api/bluem_mandates_callback'
     );
 
-    $bluem = new Bluem( $bluem_config );
-
     $user_allowed = apply_filters(
         'bluem_woocommerce_mandate_shortcode_allow_user',
         true
@@ -489,6 +451,8 @@ function bluem_mandateform()
     if (!$user_allowed) {
         return '';
     }
+
+    $mandateID = 0;
 
     $validated = false;
 
@@ -527,35 +491,14 @@ function bluem_mandateform()
         /**
          * Visitor not logged in. Check other storages.
          */
-        if (!empty($_SESSION['bluem_mandateId']))
+        if (!empty($_COOKIE['bluem_mandateId']))
         {
-            $mandateID = $_SESSION['bluem_mandateId'];
+            $mandateID = $_COOKIE['bluem_mandateId'];
 
             // Check for recurring mode
             if ($bluem_config->sequenceType === 'RCUR') {
                 $db_query = [
                     'transaction_id' => $mandateID,
-                    'user_id' => get_current_user_id(),
-                    'status' => 'Success',
-                ];
-
-                $db_results = bluem_db_get_requests_by_keyvalues($db_query);
-
-                if ($db_results !== false && is_array($db_results) && sizeof($db_results) > 0) {
-                    $mandateID = $db_results[0]->transaction_id;
-
-                    $validated = true;
-                }
-            }
-        }
-        elseif (!empty($_SESSION['bluem_debtorreference']))
-        {
-            $debtorReference = $_SESSION['bluem_debtorreference'];
-
-            // Check for recurring mode
-            if ($bluem_config->sequenceType === 'RCUR') {
-                $db_query = [
-                    'debtor_reference' => $debtorReference,
                     'user_id' => get_current_user_id(),
                     'status' => 'Success',
                 ];
@@ -593,7 +536,7 @@ function bluem_mandateform()
     }
 
     /**
-     * Check if eMandate is valide..
+     * Check if eMandate is valid..
      */
     if ($validated !== false) {
         return "<p>Bedankt voor je machtiging met machtiging ID: <span class='bluem-mandate-id'>$mandateID</span></p>";
