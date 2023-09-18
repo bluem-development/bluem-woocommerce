@@ -18,6 +18,7 @@ function bluem_db_create_requests_table(): void {
         include_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
         // Define table names
+        $table_name_storage = $wpdb->prefix . 'bluem_storage';
         $table_name_requests = $wpdb->prefix . 'bluem_requests';
         $table_name_links = $wpdb->prefix . 'bluem_requests_links';
         $table_name_logs = $wpdb->prefix . 'bluem_requests_log';
@@ -42,49 +43,63 @@ function bluem_db_create_requests_table(): void {
             ) $charset_collate;";
         dbDelta( $sql );
 
-        $sql2 = "CREATE TABLE IF NOT EXISTS `$table_name_logs` (
+        $sql = "CREATE TABLE IF NOT EXISTS `$table_name_logs` (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             request_id mediumint(9) NOT NULL,
             timestamp timestamp DEFAULT NOW() NOT NULL,
             description varchar(512) NOT NULL,
             user_id mediumint(9) NULL,
-            PRIMARY KEY  (id)
+            PRIMARY KEY (id)
             ) $charset_collate;";
-        dbDelta( $sql2 );
+        dbDelta( $sql );
 
-        $sql3 = "CREATE TABLE IF NOT EXISTS `$table_name_links` (
+        $sql = "CREATE TABLE IF NOT EXISTS `$table_name_links` (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             request_id mediumint(9) NOT NULL,
             item_id mediumint(9) NOT NULL,
             item_type varchar(32) NOT NULL DEFAULT 'order',
             timestamp timestamp DEFAULT NOW() NOT NULL,
-            PRIMARY KEY  (id)
+            PRIMARY KEY (id)
             ) $charset_collate;";
-        dbDelta( $sql3 );
+        dbDelta( $sql );
+
+        $sql = "CREATE TABLE IF NOT EXISTS `$table_name_storage` (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            token varchar(191) NOT NULL,
+            secret varchar(191) NOT NULL,
+            data longtext NOT NULL,
+            timestamp timestamp DEFAULT NOW() NOT NULL,
+            PRIMARY KEY (id)
+            ) $charset_collate;";
+        dbDelta( $sql );
 
         // Check for previous installed versions
-        if ( !empty( $installed_ver ) && $installed_ver <= '1.3' )
+        if ( !empty( $installed_ver ) )
         {
             /**
-             * Migrate old tables to new tables.
+             * Migrate old tables to new tables including wp-prefix.
+             * Old tables in release version <= 1.3.
              */
-            $bluem_requests_table_exists = $wpdb->get_var("SHOW TABLES LIKE 'bluem_requests'") === 'bluem_requests';
-            $bluem_requests_links_table_exists = $wpdb->get_var("SHOW TABLES LIKE 'bluem_requests_log'") === 'bluem_requests_log';
-            $bluem_requests_log_table_exists = $wpdb->get_var("SHOW TABLES LIKE 'bluem_requests_links'") === 'bluem_requests_links';
+            if ( $installed_ver <= '1.3' )
+            {
+                $bluem_requests_table_exists = $wpdb->get_var("SHOW TABLES LIKE 'bluem_requests'") === 'bluem_requests';
+                $bluem_requests_links_table_exists = $wpdb->get_var("SHOW TABLES LIKE 'bluem_requests_log'") === 'bluem_requests_log';
+                $bluem_requests_log_table_exists = $wpdb->get_var("SHOW TABLES LIKE 'bluem_requests_links'") === 'bluem_requests_links';
 
-            if ( $bluem_requests_table_exists ) {
-                $sql4 = "INSERT INTO `$table_name_requests` SELECT * FROM bluem_requests;";
-                dbDelta( $sql4 );
-            }
+                if ( $bluem_requests_table_exists ) {
+                    $sql = "INSERT INTO `$table_name_requests` SELECT * FROM bluem_requests;";
+                    dbDelta( $sql );
+                }
 
-            if ( $bluem_requests_log_table_exists ) {
-                $sql5 = "INSERT INTO `$table_name_logs` SELECT * FROM bluem_requests_log;";
-                dbDelta( $sql5 );
-            }
+                if ( $bluem_requests_log_table_exists ) {
+                    $sql = "INSERT INTO `$table_name_logs` SELECT * FROM bluem_requests_log;";
+                    dbDelta( $sql );
+                }
 
-            if ( $bluem_requests_links_table_exists ) {
-                $sql6 = "INSERT INTO `$table_name_links` SELECT * FROM bluem_requests_links;";
-                dbDelta( $sql6 );
+                if ( $bluem_requests_links_table_exists ) {
+                    $sql = "INSERT INTO `$table_name_links` SELECT * FROM bluem_requests_links;";
+                    dbDelta( $sql );
+                }
             }
         }
 
