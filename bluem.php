@@ -305,46 +305,71 @@ function bluem_plugin_activation() {
     $bluem_registration = get_option( 'bluem_woocommerce_registration' );
     $bluem_plugin_registration = get_option( 'bluem_plugin_registration' );
 
-    if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
-        $acc_senderid = sanitize_text_field($_POST['acc_senderid']);
-        $acc_testtoken = sanitize_text_field($_POST['acc_testtoken']);
-        $acc_prodtoken = sanitize_text_field($_POST['acc_prodtoken']);
+    $required_fields = [
+        'company_name',
+        'company_telephone',
+        'company_email',
+        'tech_name',
+        'tech_telephone',
+        'tech_email'
+    ];
 
-        $company_name = sanitize_text_field($_POST['company_name']);
-        $company_telephone = sanitize_text_field($_POST['company_telephone']);
-        $company_email = sanitize_text_field($_POST['company_email']);
-        
-        $tech_name = sanitize_text_field($_POST['tech_name']);
-        $tech_telephone = sanitize_text_field($_POST['tech_telephone']);
-        $tech_email = sanitize_text_field($_POST['tech_email']);
+    if ( $_SERVER['REQUEST_METHOD'] === 'POST' )
+    {
+        // Validate input
+        $is_valid = true;
 
-        $bluem_options['senderID'] = $acc_senderid;
-        $bluem_options['test_accessToken'] = $acc_testtoken;
-        $bluem_options['production_accessToken'] = $acc_prodtoken;
+        foreach ($required_fields as $required_field)
+        {
+            $value = $_POST[$required_field];
 
-        $bluem_registration['company']['name'] = $company_name;
-        $bluem_registration['company']['telephone'] = $company_telephone;
-        $bluem_registration['company']['email'] = $company_email;
-        
-        $bluem_registration['tech_contact']['name'] = $tech_name;
-        $bluem_registration['tech_contact']['telephone'] = $tech_telephone;
-        $bluem_registration['tech_contact']['email'] = $tech_email;
+            if ( empty ($value) ) {
+                $is_valid = false;
+            }
+        }
 
-        // Sent registration notify email
-        bluem_registration_report_email();
+        if ( $is_valid )
+        {
+            $acc_senderid = sanitize_text_field($_POST['acc_senderid']);
+            $acc_testtoken = sanitize_text_field($_POST['acc_testtoken']);
+            $acc_prodtoken = sanitize_text_field($_POST['acc_prodtoken']);
 
-        // Update Bluem options
-        update_option('bluem_woocommerce_options', $bluem_options);
+            $company_name = sanitize_text_field($_POST['company_name']);
+            $company_telephone = sanitize_text_field($_POST['company_telephone']);
+            $company_email = sanitize_text_field($_POST['company_email']);
 
-        // Update Bluem registration
-        update_option('bluem_woocommerce_registration', $bluem_registration);
+            $tech_name = sanitize_text_field($_POST['tech_name']);
+            $tech_telephone = sanitize_text_field($_POST['tech_telephone']);
+            $tech_email = sanitize_text_field($_POST['tech_email']);
 
-        // Set plugin registration as done
-        update_option('bluem_plugin_registration', true);
+            $bluem_options['senderID'] = $acc_senderid;
+            $bluem_options['test_accessToken'] = $acc_testtoken;
+            $bluem_options['production_accessToken'] = $acc_prodtoken;
 
-        wp_redirect(
-            admin_url( "admin.php?page=bluem-activate" )
-        );
+            $bluem_registration['company']['name'] = $company_name;
+            $bluem_registration['company']['telephone'] = $company_telephone;
+            $bluem_registration['company']['email'] = $company_email;
+
+            $bluem_registration['tech_contact']['name'] = $tech_name;
+            $bluem_registration['tech_contact']['telephone'] = $tech_telephone;
+            $bluem_registration['tech_contact']['email'] = $tech_email;
+
+            // Sent registration notify email
+            bluem_registration_report_email();
+
+            // Update Bluem options
+            update_option('bluem_woocommerce_options', $bluem_options);
+
+            // Update Bluem registration
+            update_option('bluem_woocommerce_registration', $bluem_registration);
+
+            // Set plugin registration as done
+            update_option('bluem_plugin_registration', true);
+
+            wp_redirect(
+                admin_url( "admin.php?page=bluem-activate" )
+            );
+        }
     }
 
     include_once 'views/activate.php';
