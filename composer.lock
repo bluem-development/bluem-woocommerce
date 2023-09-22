@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "bluem-development/bluem-php",
-            "version": "2.3.2.4",
+            "version": "2.3.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bluem-development/bluem-php.git",
-                "reference": "e101cb1b6fc8f7629f02cc0bad6e2124a6e4fd6c"
+                "reference": "100b3d59d0452b6aeedf7408d3b5e65f91988a74"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/e101cb1b6fc8f7629f02cc0bad6e2124a6e4fd6c",
-                "reference": "e101cb1b6fc8f7629f02cc0bad6e2124a6e4fd6c",
+                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/100b3d59d0452b6aeedf7408d3b5e65f91988a74",
+                "reference": "100b3d59d0452b6aeedf7408d3b5e65f91988a74",
                 "shasum": ""
             },
             "require": {
@@ -70,9 +70,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bluem-development/bluem-php",
-                "source": "https://github.com/bluem-development/bluem-php/tree/2.3.2.4"
+                "source": "https://github.com/bluem-development/bluem-php/tree/2.3.2.5"
             },
-            "time": "2023-08-28T17:17:39+00:00"
+            "time": "2023-09-01T06:50:29+00:00"
         },
         {
             "name": "erusev/parsedown",
