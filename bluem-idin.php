@@ -708,17 +708,19 @@ function bluem_idin_form() {
         return "";
     }
 
-    // ob_start();
-    $html      = '';
+    $html = '';
+
     $validated = false;
+
+    $storage = bluem_db_get_storage();
+
     if ( is_user_logged_in() ) {
         $validated = get_user_meta( get_current_user_id(), "bluem_idin_validated", true ) == "1";
     } else {
-
-        if ( isset( $_COOKIE['bluem_idin_validated'] ) && $_COOKIE['bluem_idin_validated'] === "true" ) {
+        if ( isset( $storage['bluem_idin_validated'] ) && $storage['bluem_idin_validated'] === true ) {
             $validated = true;
         }
-        // @todo: handle $_COOKIE['bluem_idin_report_agecheckresponse'] if necessary
+        // @todo: handle $storage['bluem_idin_report_agecheckresponse'] if necessary
     }
 
     if ( $validated ) {
@@ -756,9 +758,9 @@ function bluem_idin_form() {
                 $html .= "<p>Er is een fout opgetreden. Uw verzoek is geannuleerd.</p>";
             }
 
-            if ( !empty( $_COOKIE['BluemIDINTransactionURL'] ) ) {
-                $retryURL = $_COOKIE['BluemIDINTransactionURL'];
-                $html     .= "<p><a href='$retryURL' target='_self' alt='probeer opnieuw' class='button'>Probeer het opnieuw</a></p>";
+            if ( !empty( $storage['bluem_idin_transaction_url'] ) ) {
+                $retryURL = $storage['bluem_idin_transaction_url'];
+                $html .= "<p><a href='$retryURL' target='_self' alt='probeer opnieuw' class='button'>Probeer het opnieuw</a></p>";
             }
             $html .= '</div>';
         } else {
@@ -770,10 +772,7 @@ function bluem_idin_form() {
             $html .= '</form>';
         }
     }
-
-
     return $html;
-    //ob_get_clean();
 }
 
 add_action( 'parse_request', 'bluem_idin_shortcode_idin_execute' );
@@ -808,7 +807,7 @@ function bluem_idin_shortcode_idin_execute() {
  **/
 add_action( 'parse_request', 'bluem_idin_shortcode_callback' );
 /**
- * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Cookie, sent for a SUD to the Bluem API.
+ * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in user or Bluem session storage, sent for a SUD to the Bluem API.
  *
  */
 function bluem_idin_shortcode_callback() {
@@ -820,17 +819,15 @@ function bluem_idin_shortcode_callback() {
 
     // fallback until this is corrected in bluem-php
     $bluem_config->brandID = $bluem_config->IDINBrandID;
+
     try {
         $bluem = new Bluem( $bluem_config );
     } catch ( Exception $e ) {
         // @todo: deal with incorrectly configured Bluem here
     }
 
-    // 27-09-2021
-    // added retrieval of request for guest users if the session is lost
-    // based on the debtor reference we can still retrieve valuable information
-    // about the request
-    $request_by_debtor_ref = false;//new Stdclass;
+    $request_by_debtor_ref = false;
+
     if ( isset( $_GET['debtorReference'] ) && $_GET['debtorReference'] !== "" ) {
         $debtorReference = $_GET['debtorReference'];
         $request_by_debtor_ref = bluem_db_get_request_by_debtor_reference( $debtorReference );
@@ -841,8 +838,10 @@ function bluem_idin_shortcode_callback() {
         $transactionID = get_user_meta( get_current_user_id(), "bluem_idin_transaction_id", true );
         $transactionURL = get_user_meta( get_current_user_id(), "bluem_idin_transaction_url", true );
     } else {
-        if ( !empty( $_COOKIE["bluem_idin_entrance_code"] ) ) {
-            $entranceCode = $_COOKIE["bluem_idin_entrance_code"];
+        $storage = bluem_db_get_storage();
+
+        if ( !empty( $storage["bluem_idin_entrance_code"] ) ) {
+            $entranceCode = $storage["bluem_idin_entrance_code"];
         } else {
             if ( $request_by_debtor_ref !== false
                  && isset( $request_by_debtor_ref->entrance_code )
@@ -850,7 +849,7 @@ function bluem_idin_shortcode_callback() {
             ) {
                 $entranceCode = $request_by_debtor_ref->entrance_code;
             } else {
-                $errormessage = "Error: bluem_idin_entrance_code from cookie missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
+                $errormessage = "Error: bluem_idin_entrance_code from user or Bluem session storage missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
                 bluem_error_report_email(
                     [
                         'service'  => 'idin',
@@ -862,8 +861,9 @@ function bluem_idin_shortcode_callback() {
                 exit;
             }
         }
-        if ( !empty( $_COOKIE["bluem_idin_transaction_id"] ) ) {
-            $transactionID = $_COOKIE["bluem_idin_transaction_id"];
+
+        if ( !empty( $storage["bluem_idin_transaction_id"] ) ) {
+            $transactionID = $storage["bluem_idin_transaction_id"];
         } else {
             if ( $request_by_debtor_ref !== false
                  && isset( $request_by_debtor_ref->transaction_id )
@@ -871,7 +871,7 @@ function bluem_idin_shortcode_callback() {
             ) {
                 $transactionID = $request_by_debtor_ref->transaction_id;
             } else {
-                $errormessage = "Error: bluem_idin_transaction_id from cookie missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
+                $errormessage = "Error: bluem_idin_transaction_id from user or Bluem session storage missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
                 bluem_error_report_email(
                     [
                         'service'  => 'idin',
@@ -896,7 +896,6 @@ function bluem_idin_shortcode_callback() {
 
     if ( ! $statusResponse->ReceivedResponse() ) {
         $errormessage = "Error: kon verzoek met $transactionID en entrance $entranceCode niet vinden";
-        // from cookie missing - this is needed before you can complete any identification. Please go back to the shop and try again.";
         bluem_error_report_email(
             [
                 'service'  => 'idin',
@@ -927,7 +926,9 @@ function bluem_idin_shortcode_callback() {
                 false
             );
         } else {
-            setcookie('bluem_idin_validated', "false", 0, '/');
+            bluem_db_insert_storage([
+                'bluem_idin_validated' => false,
+            ]);
         }
 
         /**
@@ -952,8 +953,10 @@ function bluem_idin_shortcode_callback() {
                     update_user_meta( get_current_user_id(), "bluem_idin_results", json_encode( $identityReport ) );
                     update_user_meta( get_current_user_id(), "bluem_idin_validated", true );
                 } else {
-                    setcookie('bluem_idin_validated', "true", 0, '/');
-                    setcookie('bluem_idin_results', json_encode( $identityReport ), 0, '/');
+                    bluem_db_insert_storage([
+                        'bluem_idin_validated' => true,
+                        'bluem_idin_results' => json_encode( $identityReport ),
+                    ]);
                 }
 
                 // update an age check response field if that sccenario is active.
@@ -966,7 +969,9 @@ function bluem_idin_shortcode_callback() {
                     if ( is_user_logged_in() ) {
                         update_user_meta( get_current_user_id(), "bluem_idin_report_agecheckresponse", $agecheckresponse );
                     } else {
-                        setcookie('bluem_idin_report_agecheckresponse', $agecheckresponse, 0, '/');
+                        bluem_db_insert_storage([
+                            'bluem_idin_report_agecheckresponse' => $agecheckresponse,
+                        ]);
                     }
                 }
                 if ( isset( $identityReport->CustomerIDResponse ) ) {
@@ -974,7 +979,9 @@ function bluem_idin_shortcode_callback() {
                     if ( is_user_logged_in() ) {
                         update_user_meta( get_current_user_id(), "bluem_idin_report_customeridresponse", $customeridresponse );
                     } else {
-                        setcookie('bluem_idin_report_customeridresponse', $customeridresponse, 0, '/');
+                        bluem_db_insert_storage([
+                            'bluem_idin_report_customeridresponse' => $customeridresponse,
+                        ]);
                     }
                 }
                 if ( isset( $identityReport->DateTime ) ) {
@@ -982,7 +989,9 @@ function bluem_idin_shortcode_callback() {
                     if ( is_user_logged_in() ) {
                         update_user_meta( get_current_user_id(), "bluem_idin_report_last_verification_timestamp", $datetime );
                     } else {
-                        setcookie('bluem_idin_report_last_verification_timestamp', $datetime, 0, '/');
+                        bluem_db_insert_storage([
+                            'bluem_idin_report_last_verification_timestamp' => $datetime,
+                        ]);
                     }
                 }
 
@@ -995,7 +1004,9 @@ function bluem_idin_shortcode_callback() {
                             $birthdate
                         );
                     } else {
-                        setcookie('bluem_idin_report_birthdate', $birthdate, 0, '/');
+                        bluem_db_insert_storage([
+                            'bluem_idin_report_birthdate' => $birthdate,
+                        ]);
                     }
                 }
                 if ( isset( $identityReport->TelephoneResponse ) ) {
@@ -1019,8 +1030,8 @@ function bluem_idin_shortcode_callback() {
                     }
                 }
 
-
                 $min_age = bluem_idin_get_min_age();
+
                 if ( $verification_scenario == 3
                      && isset( $identityReport->BirthDateResponse )
                 ) {
@@ -1036,11 +1047,13 @@ function bluem_idin_shortcode_callback() {
                                 "true"
                             );
                         } else {
-                            setcookie('bluem_idin_report_agecheckresponse', true, 0, '/');
+                            bluem_db_insert_storage([
+                                'bluem_idin_report_agecheckresponse' => true,
+                            ]);
                         }
                     }
                 }
-                // var_dump($request_from_db);
+
                 if ( isset( $request_from_db ) && $request_from_db !== false ) {
                     if ( $request_from_db->payload !== "" ) {
                         try {
@@ -1070,9 +1083,6 @@ function bluem_idin_shortcode_callback() {
                 exit;
             case 'Processing':
             case 'Pending':
-                echo "Request has status Pending";
-                echo "Request has status Processing";
-
                 // @todo: improve this flow
                 // no break
 
@@ -1080,26 +1090,22 @@ function bluem_idin_shortcode_callback() {
                 // do something when the request is still processing (for example tell the user to come back later to this page)
                 break;
             case 'Cancelled':
-                echo "Request has status Cancelled";
-
                 // @todo: improve this flow
                 // do something when the request has been canceled by the user
                 break;
             case 'Open':
-                echo "Request has status Open";
-
                 // @todo: improve this flow
                 // do something when the request has not yet been completed by the user, redirecting to the transactionURL again
                 break;
             case 'Expired':
-                echo "Request has status Expired";
-
                 // @todo: improve this flow
                 // do something when the request has expired
                 break;
-            // case 'New':
-            //     echo "New request";
-            // break;
+            case 'New':
+                // @todo: improve this flow
+                // do something when the request is still new
+                break;
+            break;
             default:
                 // unexpected status returned, show an error
                 break;
@@ -1109,10 +1115,8 @@ function bluem_idin_shortcode_callback() {
             $request_from_db->id
         );
 
-        wp_redirect(
-            home_url( $goto ) .
-            "?result=false&status=$statusCode"
-        );
+        wp_safe_redirect( $goto . "?result=false&status=$statusCode" );
+        exit;
     }
 }
 
@@ -1325,11 +1329,12 @@ function bluem_woocommerce_idin_save_extra_profile_fields( $user_id ): bool {
 }
 
 function bluem_idin_retrieve_results() {
+    $storage = bluem_db_get_storage();
+
     if ( is_user_logged_in() ) {
         $raw = get_user_meta( get_current_user_id(), "bluem_idin_results", true );
     } else {
-        // As suggested by Joost Oostdyck | HeathenMead - juni 2021
-        $raw = $_COOKIE['bluem_idin_results'] ?? '';
+        $raw = $storage['bluem_idin_results'] ?? '';
     }
 
     return json_decode( $raw );
@@ -1354,6 +1359,7 @@ function bluem_idin_validation_needed() {
     }
 
 	$bluem_config = bluem_woocommerce_get_config();
+
     $bluem_config->brandID = $bluem_config->IDINBrandID;
 
 	try {
@@ -1388,11 +1394,13 @@ function bluem_idin_validation_needed() {
 function bluem_idin_user_validated() {
     global $current_user;
 
+    $storage = bluem_db_get_storage();
+
     if ( is_user_logged_in() ) {
         return get_user_meta( get_current_user_id(), "bluem_idin_validated", true ) == "1";
     }
     // or as a guest:
-    if ( isset( $_COOKIE['bluem_idin_validated'] ) && $_COOKIE['bluem_idin_validated'] === "true" ) {
+    if ( isset( $storage['bluem_idin_validated'] ) && $storage['bluem_idin_validated'] === true ) {
         return true;
     }
     return false;
@@ -1505,8 +1513,8 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
         $response = $bluem->PerformRequest( $request );
 
         if ( $response->ReceivedResponse() ) {
-            $entranceCode   = $response->GetEntranceCode();
-            $transactionID  = $response->GetTransactionID();
+            $entranceCode = $response->GetEntranceCode();
+            $transactionID = $response->GetTransactionID();
             $transactionURL = $response->GetTransactionURL();
 
             bluem_db_create_request(
@@ -1546,9 +1554,11 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
                     $transactionURL
                 );
             } else {
-                setcookie('bluem_idin_entrance_code', $entranceCode, 0, '/');
-                setcookie('bluem_idin_transaction_id', $transactionID, 0, '/');
-                setcookie('bluem_idin_transaction_url', $transactionURL, 0, '/');
+                bluem_db_insert_storage([
+                    'bluem_idin_entrance_code' => $entranceCode,
+                    'bluem_idin_transaction_id' => $transactionID,
+                    'bluem_idin_transaction_url' => $transactionURL,
+                ]);
             }
 
             if ( $redirect ) {
@@ -1701,12 +1711,10 @@ Lees hier meer: [https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-o
     if ( $validation_needed && $scenario > 0 ) {
         echo "<h3>Identificatie</h3>";
 
-        $validated          = bluem_idin_user_validated();
+        $validated = bluem_idin_user_validated();
+
         $validation_message = $idin_identity_topbar_no_verification_text;
-        // $validation_message = "Let op: Graag eerst eenmalig identificeren.";
-        //"Identificatie is vereist voordat de bestelling kan worden afgerond.";
-        $idin_logo_html = bluem_get_idin_logo_html();
-        // above 0: any form of verification is required
+
         if ( ! $validated ) {
             echo bluem_idin_generate_notice( $validation_message, true );
 
@@ -1727,7 +1735,9 @@ Lees hier meer: [https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-o
                     true
                 );
             } else {
-                $ageCheckResponse = $_COOKIE['bluem_idin_report_agecheckresponse'] ?? '';
+                $storage = bluem_db_get_storage();
+
+                $ageCheckResponse = $storage['bluem_idin_report_agecheckresponse'] ?? '';
             }
 
             // var_dump($ageCheckResponse);
@@ -1922,7 +1932,9 @@ function bluem_checkout_check_idin_validated() {
                         true
                     );
                 } else {
-                    $ageCheckResponse = $_COOKIE['bluem_idin_report_agecheckresponse'] ?? '';
+                    $storage = bluem_db_get_storage();
+
+                    $ageCheckResponse = $storage['bluem_idin_report_agecheckresponse'] ?? '';
                 }
 
                 // check on age based on response of AgeCheckRequest in user meta
@@ -2331,15 +2343,17 @@ function bluem_idin_generate_notice( string $message = "", bool $button = false,
 **/
 add_action( 'user_register', 'bluem_link_idin_request_to_sesh', 10, 1 );
 function bluem_link_idin_request_to_sesh( $user_id ) {
-    if ( ! isset( $_COOKIE['bluem_idin_transaction_id'] ) ) {
+    $storage = bluem_db_get_storage();
+
+    if ( ! isset( $storage['bluem_idin_transaction_id'] ) ) {
         return;
     }
 
-    $tid = $_COOKIE['bluem_idin_transaction_id'];
+    $tid = $storage['bluem_idin_transaction_id'];
 
     $req = bluem_db_get_request_by_transaction_id( $tid );
 
-    // only if the current response from the cookie
+    // only if the current response from the Bluem session storage
     // IS NOT YET linked to any user, i.e. user_id == 0
     if ( $req->user_id == "0" ) {
         bluem_db_update_request(

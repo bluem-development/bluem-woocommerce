@@ -28,6 +28,8 @@ function bluem_mandate_shortcode_execute(): void
 
     global $current_user;
 
+    $storage = bluem_db_get_storage();
+
     if (isset($_POST['bluem-submitted']))
     {
         $debtorReference = "";
@@ -41,9 +43,9 @@ function bluem_mandate_shortcode_execute(): void
         // Check for recurring mode
         if ($bluem_config->sequenceType === 'RCUR')
         {
-            if (!empty($_COOKIE['bluem_debtorreference']))
+            if (!empty($storage['bluem_mandate_debtorreference']))
             {
-                $debtorReference = $_COOKIE['bluem_debtorreference'];
+                $debtorReference = $storage['bluem_mandate_debtorreference'];
 
                 $db_query = [
                     'debtor_reference' => $debtorReference,
@@ -57,7 +59,9 @@ function bluem_mandate_shortcode_execute(): void
                 if ($db_results !== false && is_array($db_results) && sizeof($db_results) > 0) {
                     $mandateID = $db_results[0]->transaction_id;
 
-                    setcookie('bluem_mandateId', $mandateID, 0, '/');
+                    bluem_db_insert_storage([
+                        'bluem_mandate_transaction_id' => $mandateID,
+                    ]);
 
                     if (!empty($current_user)) {
                         if (current_user_can('edit_user', $current_user->ID)) {
@@ -67,7 +71,6 @@ function bluem_mandate_shortcode_execute(): void
                     }
 
                     wp_redirect( home_url( $bluem_config->thanksPageURL ) . "?result=true" );
-
                     exit;
                 }
             }
@@ -77,7 +80,9 @@ function bluem_mandate_shortcode_execute(): void
                 {
                     $debtorReference = sanitize_text_field( $_POST["bluem_debtorReference"] );
 
-                    setcookie('bluem_debtorreference', $debtorReference, 0, '/');
+                    bluem_db_insert_storage([
+                        'bluem_mandate_debtorreference' => $debtorReference,
+                    ]);
 
                     $db_query = [
                         'debtor_reference' => $debtorReference,
@@ -91,7 +96,9 @@ function bluem_mandate_shortcode_execute(): void
                     if ($db_results !== false && is_array($db_results) && sizeof($db_results) > 0) {
                         $mandateID = $db_results[0]->transaction_id;
 
-                        setcookie('bluem_mandateId', $mandateID, 0, '/');
+                        bluem_db_insert_storage([
+                            'bluem_mandate_transaction_id' => $mandateID,
+                        ]);
 
                         if (!empty($current_user)) {
                             if (current_user_can('edit_user', $current_user->ID)) {
@@ -110,7 +117,9 @@ function bluem_mandate_shortcode_execute(): void
                     if (is_user_logged_in()) {
                         $debtorReference = $current_user->user_nicename();
 
-                        setcookie('bluem_debtorreference', $debtorReference, 0, '/');
+                        bluem_db_insert_storage([
+                            'bluem_mandate_debtorreference' => $debtorReference,
+                        ]);
                     }
                 }
             }
@@ -120,12 +129,16 @@ function bluem_mandate_shortcode_execute(): void
             if (!empty($_POST["bluem_debtorReference"])) {
                 $debtorReference = sanitize_text_field( $_POST["bluem_debtorReference"] );
 
-                setcookie('bluem_debtorreference', $debtorReference, 0, '/');
+                bluem_db_insert_storage([
+                    'bluem_mandate_debtorreference' => $debtorReference,
+                ]);
             } else {
                 if ( is_user_logged_in() ) {
                     $debtorReference = $current_user->user_nicename();
 
-                    setcookie('bluem_debtorreference', $debtorReference, 0, '/');
+                    bluem_db_insert_storage([
+                        'bluem_mandate_debtorreference' => $debtorReference,
+                    ]);
                 }
             }
         }
@@ -158,8 +171,10 @@ function bluem_mandate_shortcode_execute(): void
         );
 
         // Save the necessary data to later request more information and refer to this transaction
-        setcookie('bluem_mandateId', $request->mandateID, 0, '/');
-        setcookie('bluem_entranceCode', $request->entranceCode, 0, '/');
+        bluem_db_insert_storage([
+            'bluem_mandate_transaction_id' => $request->mandateID,
+            'bluem_mandate_entrance_code' => $request->entranceCode,
+        ]);
 
         if (!empty($current_user))
         {
@@ -201,7 +216,13 @@ function bluem_mandate_shortcode_execute(): void
 
         $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
 
-        setcookie('bluem_mandateId', $mandate_id, 0, '/');
+        // redirect cast to string, necessary for AJAX response handling
+        $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
+
+        bluem_db_insert_storage([
+            'bluem_mandate_transaction_id' => $mandate_id,
+            'bluem_mandate_transaction_url' => $transactionURL,
+        ]);
 
         if (!empty($current_user))
         {
@@ -213,11 +234,6 @@ function bluem_mandate_shortcode_execute(): void
                 );
             }
         }
-
-        // redirect cast to string, necessary for AJAX response handling
-        $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
-
-        setcookie('bluem_recentTransactionURL', $transactionURL, 0, '/');
 
         bluem_db_create_request(
             [
@@ -246,7 +262,6 @@ function bluem_mandate_shortcode_execute(): void
 
         ob_start();
         wp_redirect( $transactionURL );
-
         exit;
     }
     exit;
@@ -270,6 +285,8 @@ function bluem_mandate_mandate_shortcode_callback(): void
 
     $bluem_config->merchantReturnURLBase = home_url( 'wc-api/bluem_mandates_callback' );
 
+    $storage = bluem_db_get_storage();
+
     try {
         $bluem = new Bluem( $bluem_config );
     } catch ( Exception $e ) {
@@ -282,8 +299,8 @@ function bluem_mandate_mandate_shortcode_callback(): void
         $mandateID = get_user_meta( $current_user->ID, "bluem_latest_mandate_id", true );
         $entranceCode = get_user_meta( $current_user->ID, "bluem_latest_mandate_entrance_code", true );
     } else {
-        $mandateID = $_COOKIE['bluem_mandateId'] ?? 0;
-        $entranceCode = $_COOKIE['bluem_entranceCode'] ?? '';
+        $mandateID = $storage['bluem_mandate_transaction_id'] ?? 0;
+        $entranceCode = $storage['bluem_mandate_entrance_code'] ?? '';
     }
 
     if (!isset($_GET['mandateID'])) {
@@ -360,7 +377,9 @@ function bluem_mandate_mandate_shortcode_callback(): void
     if ($statusCode === "Success")
     {
         // Define a cookie so that this will be recognised the next time
-        setcookie('bluem_mandateId', $mandateID, 0, '/', $_SERVER['SERVER_NAME'], false, true);
+        bluem_db_insert_storage([
+            'bluem_mandate_transaction_id' => $mandateID,
+        ]);
 
         if (!empty($current_user)) {
             if (current_user_can('edit_user', $current_user->ID)) {
@@ -439,6 +458,8 @@ function bluem_mandateform(): string
 
     $bluem_config = bluem_woocommerce_get_config();
 
+    $storage = bluem_db_get_storage();
+
     $bluem_config->merchantReturnURLBase = home_url(
         'wc-api/bluem_mandates_callback'
     );
@@ -491,9 +512,9 @@ function bluem_mandateform(): string
         /**
          * Visitor not logged in. Check other storages.
          */
-        if (!empty($_COOKIE['bluem_mandateId']))
+        if (!empty($storage['bluem_mandate_transaction_id']))
         {
-            $mandateID = $_COOKIE['bluem_mandateId'];
+            $mandateID = $storage['bluem_mandate_transaction_id'];
 
             // Check for recurring mode
             if ($bluem_config->sequenceType === 'RCUR') {
@@ -512,9 +533,9 @@ function bluem_mandateform(): string
                 }
             }
         }
-        elseif (!empty($_COOKIE['bluem_debtorreference']))
+        elseif (!empty($storage['bluem_mandate_debtorreference']))
         {
-            $debtorReference = $_COOKIE['bluem_debtorreference'];
+            $debtorReference = $storage['bluem_mandate_debtorreference'];
 
             // Check for recurring mode
             if ($bluem_config->sequenceType === 'RCUR') {

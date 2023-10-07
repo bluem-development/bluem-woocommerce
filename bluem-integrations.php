@@ -251,9 +251,11 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                 );
 
                 // Save the necessary data to later request more information and refer to this transaction
-                setcookie('bluem_wpcf7_formId', $contact_form_id, 0, '/');
-                setcookie('bluem_mandateId', $request->mandateID, 0, '/');
-                setcookie('bluem_entranceCode', $request->entranceCode, 0, '/');
+                bluem_db_insert_storage([
+                    'bluem_integration_wpcf7_form_id' => $contact_form_id,
+                    'bluem_mandate_transaction_id' => $request->mandateID,
+                    'bluem_mandate_entrance_code' => $request->entranceCode,
+                ]);
 
                 // Actually perform the request.
                 try {
@@ -288,12 +290,13 @@ function bluem_woocommerce_integration_wpcf7_ajax()
 
                     $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
 
-                    setcookie('bluem_mandateId', $mandate_id, 0, '/');
-
                     // redirect cast to string, necessary for AJAX response handling
                     $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
 
-                    setcookie('bluem_recentTransactionURL', $transactionURL, 0, '/');
+                    bluem_db_insert_storage([
+                        'bluem_mandate_transaction_id' => $mandate_id,
+                        'bluem_mandate_transaction_url' => $transactionURL,
+                    ]);
 
                     $db_creation_result = bluem_db_create_request(
                         [
@@ -429,9 +432,11 @@ function bluem_woocommerce_integration_wpcf7_submit() {
                 );
 
                 // Save the necessary data to later request more information and refer to this transaction
-                setcookie('bluem_wpcf7_formId', $contact_form_id, 0, '/');
-                setcookie('bluem_mandateId', $request->mandateID, 0, '/');
-                setcookie('bluem_entranceCode', $request->entranceCode, 0, '/');
+                bluem_db_insert_storage([
+                    'bluem_integration_wpcf7_form_id' => $contact_form_id,
+                    'bluem_mandate_transaction_id' => $request->mandateID,
+                    'bluem_mandate_entrance_code' => $request->entranceCode,
+                ]);
 
                 // Actually perform the request.
                 try {
@@ -464,12 +469,13 @@ function bluem_woocommerce_integration_wpcf7_submit() {
 
                     $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
 
-                    setcookie('bluem_mandateId', $mandate_id, 0, '/');
-
                     // redirect cast to string, necessary for AJAX response handling
                     $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
 
-                    setcookie('bluem_recentTransactionURL', $transactionURL, 0, '/');
+                    bluem_db_insert_storage([
+                        'bluem_mandate_transaction_id' => $mandate_id,
+                        'bluem_mandate_transaction_url' => $transactionURL,
+                    ]);
 
                     $db_creation_result = bluem_db_create_request(
                         [
@@ -528,6 +534,8 @@ function bluem_woocommerce_integration_wpcf7_callback()
 {
     $bluem_config = bluem_woocommerce_get_config();
 
+    $storage = bluem_db_get_storage();
+
     if (strpos($_SERVER["REQUEST_URI"], 'bluem-woocommerce/bluem-integrations/wpcf7_callback') === false) {
         return;
     }
@@ -542,11 +550,11 @@ function bluem_woocommerce_integration_wpcf7_callback()
         // @todo: deal with incorrectly setup Bluem
     }
 
-    $formID = $_COOKIE['bluem_wpcf7_formId'] ?? 0;
+    $formID = $storage['bluem_integration_wpcf7_form_id'] ?? 0;
 
-    $mandateID = $_COOKIE['bluem_mandateId'] ?? 0;
+    $mandateID = $storage['bluem_mandate_transaction_id'] ?? 0;
 
-    $entranceCode = $_COOKIE['bluem_entranceCode'] ?? '';
+    $entranceCode = $storage['bluem_mandate_entrance_code'] ?? '';
 
     if (empty($mandateID)) {
         if (!empty($bluem_config->wpcf7Resultpage)) {
@@ -864,10 +872,12 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
                 );
 
                 // Save the necessary data to later request more information and refer to this transaction
-                setcookie('bluem_gform_entryId', $payload['entry_id'], 0, '/');
-                setcookie('bluem_gform_formId', $payload['form_id'], 0, '/');
-                setcookie('bluem_mandateId', $request->mandateID, 0, '/');
-                setcookie('bluem_entranceCode', $request->entranceCode, 0, '/');
+                bluem_db_insert_storage([
+                    'bluem_integration_gform_form_id' => $payload['form_id'],
+                    'bluem_integration_gform_entry_id' => $payload['entry_id'],
+                    'bluem_mandate_transaction_id' => $request->mandateID,
+                    'bluem_mandate_entrance_code' => $request->entranceCode,
+                ]);
 
                 // Actually perform the request.
                 try {
@@ -900,12 +910,13 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
 
                     $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
 
-                    setcookie('bluem_mandateId', $mandate_id, 0, '/');
-
                     // redirect cast to string, necessary for AJAX response handling
                     $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
 
-                    setcookie('bluem_recentTransactionURL', $transactionURL, 0, '/');
+                    bluem_db_insert_storage([
+                        'bluem_mandate_transaction_id' => $mandate_id,
+                        'bluem_mandate_transaction_url' => $transactionURL,
+                    ]);
 
                     $db_creation_result = bluem_db_create_request(
                         [
@@ -994,6 +1005,8 @@ function bluem_woocommerce_integration_gform_callback()
 {
     $bluem_config = bluem_woocommerce_get_config();
 
+    $storage = bluem_db_get_storage();
+
     if (strpos($_SERVER["REQUEST_URI"], 'bluem-woocommerce/bluem-integrations/gform_callback') === false) {
         return;
     }
@@ -1008,13 +1021,13 @@ function bluem_woocommerce_integration_gform_callback()
         // @todo: deal with incorrectly setup Bluem
     }
 
-    $formID = $_COOKIE['bluem_gform_formId'] ?? 0;
+    $formID = $storage['bluem_integration_gform_form_id'] ?? 0;
 
-    $entryID = $_COOKIE['bluem_gform_entryId'] ?? 0;
+    $entryID = $storage['bluem_integration_gform_entry_id'] ?? 0;
 
-    $mandateID = $_COOKIE['bluem_mandateId'] ?? 0;
+    $mandateID = $storage['bluem_mandate_transaction_id'] ?? 0;
 
-    $entranceCode = $_COOKIE['bluem_entranceCode'] ?? '';
+    $entranceCode = $storage['bluem_mandate_entrance_code'] ?? '';
 
     if (empty($mandateID)) {
         if (!empty($bluem_config->gformResultpage)) {

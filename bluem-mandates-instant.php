@@ -66,8 +66,10 @@ function bluem_mandates_instant_request()
             );
 
             // Save the necessary data to later request more information and refer to this transaction
-            setcookie('bluem_mandateId', $request->mandateID, 0, '/');
-            setcookie('bluem_entranceCode', $request->entranceCode, 0, '/');
+            bluem_db_insert_storage([
+                'bluem_mandate_transaction_id' => $request->mandateID,
+                'bluem_mandate_entrance_code' => $request->entranceCode,
+            ]);
 
             // Actually perform the request.
             try {
@@ -99,12 +101,13 @@ function bluem_mandates_instant_request()
 
                 $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
 
-                setcookie('bluem_mandateId', $mandate_id, 0, '/');
-
                 // redirect cast to string, necessary for AJAX response handling
                 $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
 
-                setcookie('bluem_recentTransactionURL', $transactionURL, 0, '/');
+                bluem_db_insert_storage([
+                    'bluem_mandate_transaction_id' => $mandate_id,
+                    'bluem_mandate_transaction_url' => $transactionURL,
+                ]);
 
                 $db_creation_result = bluem_db_create_request(
                     [
@@ -168,9 +171,11 @@ function bluem_mandates_instant_callback()
         // @todo: deal with incorrectly setup Bluem
     }
 
-    $mandateID = $_COOKIE['bluem_mandateId'] ?? 0;
+    $storage = bluem_db_get_storage();
 
-    $entranceCode = $_COOKIE['bluem_entranceCode'] ?? '';
+    $mandateID = $storage['bluem_mandate_transaction_id'] ?? 0;
+
+    $entranceCode = $storage['bluem_mandate_entrance_code'] ?? '';
 
     if (empty($mandateID)) {
         if (!empty($bluem_config->instantMandatesResponseURI)) {
@@ -255,7 +260,7 @@ function bluem_mandates_instant_callback()
 
         if ( isset( $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport ) ) {
             $newPayload->purchaseID = $response->EMandateStatusUpdate->EMandateStatus->PurchaseID . "";
-            $newPayload->report     = $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport;
+            $newPayload->report = $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport;
 
             bluem_db_update_request(
                 $request_from_db->id,
