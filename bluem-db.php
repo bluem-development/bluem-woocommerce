@@ -9,7 +9,7 @@ register_activation_hook( __FILE__, 'bluem_db_create_requests_table' );
  */
 function bluem_db_create_requests_table(): void {
     global $wpdb, $bluem_db_version;
-    
+
     $installed_ver = (float) get_option( "bluem_db_version" );
 
     if ( empty( $installed_ver ) || $installed_ver < $bluem_db_version ) {
@@ -112,7 +112,7 @@ function bluem_db_create_requests_table(): void {
 
 function bluem_db_check() {
     global $bluem_db_version;
-    
+
     if ( (float) get_site_option( 'bluem_db_version' ) !== (float) $bluem_db_version ) {
         bluem_db_create_requests_table();
     }
@@ -123,7 +123,7 @@ add_action( 'plugins_loaded', 'bluem_db_check' );
 // request specific functions
 function bluem_db_create_request( $request_object ) {
     global $wpdb;
-    
+
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -142,8 +142,8 @@ function bluem_db_create_request( $request_object ) {
         $request_object = (object) $request_object;
 
         if ( isset( $request_object->order_id )
-             && ! is_null( $request_object->order_id )
-             && $request_object->order_id != ""
+            && ! is_null( $request_object->order_id )
+            && $request_object->order_id != ""
         ) {
             bluem_db_create_link(
                 $request_id,
@@ -164,11 +164,11 @@ function bluem_db_create_request( $request_object ) {
 
 function bluem_db_request_log( $request_id, $description, $log_data = [] ) {
     global $wpdb, $current_user;
-    
+
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
-    $insert_result = $wpdb->insert(
+    return $wpdb->insert(
         $wpdb->prefix . "bluem_requests_log",
         [
             'request_id'  => $request_id,
@@ -177,8 +177,145 @@ function bluem_db_request_log( $request_id, $description, $log_data = [] ) {
             'user_id'     => $current_user->ID
         ]
     );
+}
 
-    return $insert_result;
+/**
+ * Insert data into storage
+ *
+ * @param $object
+ * @return bool
+ * @throws Exception
+ */
+function bluem_db_insert_storage( $object ) {
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'bluem_storage';
+
+    $token = !empty( $_COOKIE['bluem_storage_token'] ) ? sanitize_text_field( $_COOKIE['bluem_storage_token'] ) : '';
+
+    $secret = !empty( $_COOKIE['bluem_storage_secret'] ) ? sanitize_text_field( $_COOKIE['bluem_storage_secret'] ) : '';
+
+    if ( !empty( $token ) && !empty( $secret ) )
+    {
+        $query = $wpdb->prepare( "SELECT id, data FROM $table_name WHERE token = %s AND secret = %s", $token, $secret );
+
+        $result = $wpdb->get_results( $query );
+
+        if ( $result ) {
+            $decoded_data = json_decode( $result[0]->data, true );
+
+            $record_id = $result[0]->id;
+
+            if ( $decoded_data !== null ) {
+                $new_object = [];
+
+                // Loop through current data
+                foreach ($decoded_data as $key => $value) {
+                    $new_object[$key] = $value;
+                }
+
+                // Loop through new data
+                foreach ($object as $key => $value) {
+                    $new_object[$key] = $value; // Overwrite if key exists
+                }
+
+                return bluem_db_update_storage($record_id, [
+                    'data' => json_encode( $new_object ),
+                ]);
+            }
+        }
+    }
+
+    // Generate a 32-character token
+    $token = bin2hex( random_bytes( 16 ) );
+
+    // Generate a 64-character secret
+    $secret = bin2hex( random_bytes( 32 ) );
+
+    $db_result = $wpdb->insert(
+        $wpdb->prefix . "bluem_storage",
+        [
+            'token' => $token,
+            'secret' => $secret,
+            'data' => json_encode( $object ),
+            'timestamp' => date( "Y-m-d H:i:s" ),
+        ]
+    );
+
+    if ( $db_result !== false )
+    {
+        // Set cookies for token and secret for
+        setcookie( 'bluem_storage_token', $token, 0, '/', $_SERVER['SERVER_NAME'], false, true );
+        setcookie( 'bluem_storage_secret', $secret, 0, '/', $_SERVER['SERVER_NAME'], false, true );
+
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Get data from storage.
+ *
+ * @param $key
+ * @return false|mixed|void
+ */
+function bluem_db_get_storage( $key = null ) {
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'bluem_storage';
+
+    $token = !empty( $_COOKIE['bluem_storage_token'] ) ? sanitize_text_field( $_COOKIE['bluem_storage_token'] ) : '';
+
+    $secret = !empty( $_COOKIE['bluem_storage_secret'] ) ? sanitize_text_field( $_COOKIE['bluem_storage_secret'] ) : '';
+
+    if ( !empty( $token ) && !empty( $secret ) )
+    {
+        $query = $wpdb->prepare( "SELECT data FROM $table_name WHERE token = %s AND secret = %s", $token, $secret );
+
+        $result = $wpdb->get_var( $query );
+
+        if ( $result ) {
+            // Decode the JSON data
+            $decoded_data = json_decode( $result, true );
+
+            if ( $decoded_data !== null ) {
+                if ( $key !== null && isset($decoded_data[ $key ]) ) {
+                    return $decoded_data[ $key ]; // Return the specific key's value
+                } else {
+                    return $decoded_data; // Return the entire decoded JSON data as an array
+                }
+            }
+        }
+    }
+    return false;
+}
+
+/**
+ * Update data from storage.
+ *
+ * @param $id
+ * @param $object
+ *
+ * @return bool
+ */
+function bluem_db_update_storage( $id, $object ) {
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'bluem_storage';
+
+    $update_result = $wpdb->update(
+        $table_name,
+        $object,
+        [
+            'id' => $id
+        ]
+    );
+
+    if ( $update_result ) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /**
@@ -189,7 +326,7 @@ function bluem_db_request_log( $request_id, $description, $log_data = [] ) {
  */
 function bluem_db_update_request( $request_id, $request_object ) {
     global $wpdb;
-    
+
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -298,7 +435,7 @@ function bluem_db_get_request_by_id( string $request_id ) {
 
 function bluem_db_delete_request_by_id( $request_id ) {
     global $wpdb;
-    
+
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -372,7 +509,7 @@ function bluem_db_get_requests_by_keyvalues(
     $limit = 0
 ) {
     global $wpdb;
-    
+
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -381,7 +518,7 @@ function bluem_db_get_requests_by_keyvalues(
 
     if ( count( $keyvalues ) > 0 ) {
         $kvs = " WHERE ";
-        
+
         $i = 0; foreach ($keyvalues as $key => $value) {
             if ( empty($key) || $value === "" ) {
                 continue;
@@ -395,17 +532,17 @@ function bluem_db_get_requests_by_keyvalues(
     }
     $query = "SELECT *  FROM  `" . $wpdb->prefix . "bluem_requests` {$kvs}";
     if ( ! is_null( $sort_key ) && $sort_key !== ""
-         && in_array( $sort_dir, [ 'ASC', 'DESC' ] )
+        && in_array( $sort_dir, [ 'ASC', 'DESC' ] )
     ) {
         $query .= " ORDER BY {$sort_key} {$sort_dir}";
     }
 
     if ( ! is_null( $limit ) && $limit !== ""
-         && is_numeric( $limit ) && $limit > 0
+        && is_numeric( $limit ) && $limit > 0
     ) {
         $query .= " LIMIT {$limit}";
     }
-    
+
     try {
         return $wpdb->get_results(
             $query
@@ -467,7 +604,7 @@ function bluem_db_get_most_recent_request( $user_id = null, $type = "mandates" )
     }
 
     global $wpdb;
-    
+
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -497,7 +634,7 @@ function bluem_db_get_most_recent_request( $user_id = null, $type = "mandates" )
 
 function bluem_db_put_request_payload( $request_id, $data ) {
     $request = bluem_db_get_request_by_id( $request_id );
-    
+
     if ( $request->payload !== "" ) {
         try {
             $newPayload = json_decode( $request->payload );
@@ -521,7 +658,7 @@ function bluem_db_put_request_payload( $request_id, $data ) {
 
 function bluem_db_get_logs_for_request( $id ) {
     global $wpdb;
-    
+
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
@@ -530,25 +667,25 @@ function bluem_db_get_logs_for_request( $id ) {
 
 function bluem_db_get_links_for_order( $id ) {
     global $wpdb;
-    
+
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
-    
+
     return $wpdb->get_results( "SELECT *  FROM  `" . $wpdb->prefix . "bluem_requests_links` WHERE `item_id` = {$id} and `item_type` = 'order'ORDER BY `timestamp` DESC" );
 }
 
 function bluem_db_get_links_for_request( $id ) {
     global $wpdb;
-    
+
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
-    
+
     return $wpdb->get_results( "SELECT *  FROM  `" . $wpdb->prefix . "bluem_requests_links` WHERE `request_id` = {$id} ORDER BY `timestamp` DESC" );
 }
 
 function bluem_db_create_link( $request_id, $item_id, $item_type = "order" ) {
     global $wpdb;
-    
+
     // date_default_timezone_set('Europe/Amsterdam');
     // $wpdb->time_zone = 'Europe/Amsterdam';
 
