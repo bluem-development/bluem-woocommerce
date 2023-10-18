@@ -30,7 +30,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         /**
          * Set payment identifier.
-        */
+         */
         $this->setPaymentIdentifier($this->id);
 
         // ********** CREATING plugin URLs for specific functions **********
@@ -244,106 +244,61 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      */
     public function bluem_bank_payments_webhook()
     {
-        if ( !empty( $_GET['env'] )
-             && in_array(
-                 sanitize_text_field( $_GET['env'] ),
-                 [ 'test', 'prod' ]
-             )
-        ) {
-            $env = sanitize_text_field( $_GET['env'] );
-        } else {
-            $env = "test";
-        }
-
         try {
-            $this->bluem->Webhook();
+            $webhook = $this->bluem->Webhook();
+
+            if ($webhook->xmlObject ?? null !== null) {
+                if (method_exists($webhook, 'getStatus')) {
+                    $webhook_status = $webhook->getStatus();
+                }
+                if (method_exists($webhook, 'getEntranceCode')) {
+                    $entranceCode = $webhook->getEntranceCode();
+                }
+                if (method_exists($webhook, 'getTransactionID')) {
+                    $transactionID = $webhook->getTransactionID();
+                }
+
+                $order = $this->getOrder( $transactionID );
+                if ( is_null( $order ) ) {
+                    http_response_code(404);
+                    echo "Error: No order found";
+                    exit;
+                }
+                $order_status = $order->get_status();
+
+                if ( self::VERBOSE ) {
+                    echo "order_status: $order_status" . PHP_EOL;
+                    echo "webhook_status: $webhook_status" . PHP_EOL;
+                }
+
+                $user_id = $order->get_user_id();
+
+                $user_meta = get_user_meta( $user_id );
+
+                if ( $webhook_status === "Success" ) {
+                    if ( $order_status === "processing" ) {
+                        // order is already marked as processing, nothing more is necessary
+                    } else if ( $order_status === "pending" ) {
+                        $order->update_status( 'processing', __( 'Betaling is gelukt en goedgekeurd; via webhook', 'wc-gateway-bluem' ) );
+                    }
+                } elseif ( $webhook_status === "Cancelled" ) {
+                    $order->update_status('cancelled', __('Betaling is geannuleerd; via webhook', 'wc-gateway-bluem'));
+                } elseif ( $webhook_status === "Open" || $webhook_status == "Pending" ) {
+                    // if the webhook is still open or pending, nothing has to be done yet
+                } elseif ( $webhook_status === "Expired" ) {
+                    $order->update_status( 'failed', __( 'Betaling is verlopen; via webhook', 'wc-gateway-bluem' ) );
+                } else {
+                    $order->update_status( 'failed', __( 'Betaling is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem' ) );
+                }
+                http_response_code(200);
+                echo 'OK';
+                exit;
+            }
         } catch ( Exception $e ) {
+            http_response_code(500);
             echo "Error: Exception: " . $e->getMessage();
             exit;
         }
-
-        // @todo: continue webhook specifics
-        // @todo: remove obsolete mandate references, this code below is to be deleted
-
-        $entranceCode  = $statusUpdateObject->entranceCode . "";
-        $transactionID = $statusUpdateObject->PaymentStatus->MandateID . "";
-
-        $webhook_status = $statusUpdateObject->PaymentStatus->Status . "";
-
-        $order = $this->getOrder( $transactionID );
-        if ( is_null( $order ) ) {
-            echo "Error: No order found";
-            exit;
-        }
-        $order_status = $order->get_status();
-
-        if ( self::VERBOSE ) {
-            echo "order_status: $order_status" . PHP_EOL;
-            echo "webhook_status: $webhook_status" . PHP_EOL;
-        }
-
-        $user_id   = $user_id = $order->get_user_id();
-        $user_meta = get_user_meta( $user_id );
-
-        // Todo: if max amount comes back from webhook (it should) then it can be accessed here
-        // if (isset($user_meta['bluem_latest_mandate_amount'][0])) {
-        // 	$mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
-        // } else {
-        // }
-
-
-        if ( isset( $statusUpdateObject->PaymentStatus->AcceptanceReport->MaxAmount ) ) {
-            $mandate_amount = (float) ( $statusUpdateObject->PaymentStatus->AcceptanceReport->MaxAmount . "" );
-        } else {
-            $mandate_amount = 0.0;    // mandate amount is not set, so it is unlimited
-        }
-        if ( self::VERBOSE ) {
-            var_dump( $mandate_amount );
-            echo PHP_EOL;
-            die();
-        }
-
-        if ( self::VERBOSE ) {
-            echo "mandate_amount: $mandate_amount" . PHP_EOL;
-        }
-
-        $mandate_successful = false;
-
-        if ( $mandate_amount !== 0.0 ) {
-            $order_price      = $order->get_total();
-            $max_order_amount = ( $order_price * 1.1 );
-            if ( self::VERBOSE ) {
-                echo "max_order_amount: $max_order_amount" . PHP_EOL;
-            }
-
-            if ( $mandate_amount >= $max_order_amount ) {
-                $mandate_successful = true;
-                if ( self::VERBOSE ) {
-                    echo "payment is enough" . PHP_EOL;
-                }
-            } else if ( self::VERBOSE ) {
-                echo "payment is too small" . PHP_EOL;
-            }
-        }
-        if ( $webhook_status === "Success" ) {
-//                if ($order_status === "processing") {
-            // order is already marked as processing, nothing more is necessary
-//                } else
-            // check if maximum of order does not exceed mandate size based on user metadata
-            if ( ( $order_status === "pending" ) && $mandate_successful ) {
-                $order->update_status( 'processing', __( 'Betaling is gelukt en goedgekeurd; via webhook', 'wc-gateway-bluem' ) );
-            }
-        } elseif ( $webhook_status === "Cancelled" ) {
-            $order->update_status( 'cancelled', __( 'Betaling is geannuleerd; via webhook', 'wc-gateway-bluem' ) );
-
-//            elseif ($webhook_status === "Open" || $webhook_status == "Pending") {
-            // if the webhook is still open or pending, nothing has to be done yet
-        } elseif ( $webhook_status === "Expired" ) {
-            $order->update_status( 'failed', __( 'Betaling is verlopen; via webhook', 'wc-gateway-bluem' ) );
-        } else {
-            $order->update_status( 'failed', __( 'Betaling is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem' ) );
-        }
-        exit;
     }
 
     public function getOrderByEntranceCode( $entranceCode )
