@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "bluem-development/bluem-php",
-            "version": "2.3.2.6",
+            "version": "2.3.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bluem-development/bluem-php.git",
-                "reference": "55e4eb2dbf9220d12a5cb579dad66d2b92575b94"
+                "reference": "4ae6f7d71fec1f0dfb08d317858aaac4fa7a285c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/55e4eb2dbf9220d12a5cb579dad66d2b92575b94",
-                "reference": "55e4eb2dbf9220d12a5cb579dad66d2b92575b94",
+                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/4ae6f7d71fec1f0dfb08d317858aaac4fa7a285c",
+                "reference": "4ae6f7d71fec1f0dfb08d317858aaac4fa7a285c",
                 "shasum": ""
             },
             "require": {
@@ -70,9 +70,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bluem-development/bluem-php",
-                "source": "https://github.com/bluem-development/bluem-php/tree/2.3.2.6"
+                "source": "https://github.com/bluem-development/bluem-php/tree/2.3.2.7"
             },
-            "time": "2023-09-29T17:12:12+00:00"
+            "time": "2023-10-11T11:20:36+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -983,16 +983,16 @@
         },
         {
             "name": "composer/pcre",
-            "version": "3.1.0",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/pcre.git",
-                "reference": "4bff79ddd77851fe3cdd11616ed3f92841ba5bd2"
+                "reference": "00104306927c7a0919b4ced2aaa6782c1e61a3c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/pcre/zipball/4bff79ddd77851fe3cdd11616ed3f92841ba5bd2",
-                "reference": "4bff79ddd77851fe3cdd11616ed3f92841ba5bd2",
+                "url": "https://api.github.com/repos/composer/pcre/zipball/00104306927c7a0919b4ced2aaa6782c1e61a3c9",
+                "reference": "00104306927c7a0919b4ced2aaa6782c1e61a3c9",
                 "shasum": ""
             },
             "require": {
@@ -1034,7 +1034,7 @@
             ],
             "support": {
                 "issues": "https://github.com/composer/pcre/issues",
-                "source": "https://github.com/composer/pcre/tree/3.1.0"
+                "source": "https://github.com/composer/pcre/tree/3.1.1"
             },
             "funding": [
                 {
@@ -1050,7 +1050,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-11-17T09:50:14+00:00"
+            "time": "2023-10-11T07:11:09+00:00"
         },
         {
             "name": "composer/semver",
