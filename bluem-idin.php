@@ -31,7 +31,7 @@ function bluem_woocommerce_get_idin_option( $key ) {
 }
 
 function bluem_woocommerce_get_idin_options() {
-    $idinDescriptionTags     = (
+    $idinDescriptionTags = (
     function_exists( 'bluem_get_IDINDescription_tags' ) ?
         bluem_get_IDINDescription_tags() : []
     );
@@ -39,7 +39,7 @@ function bluem_woocommerce_get_idin_options() {
     function_exists( 'bluem_get_IDINDescription_replaces' ) ?
         bluem_get_IDINDescription_replaces() : []
     );
-    $idinDescriptionTable    = "<table><thead><tr><th>Invulveld</th><th>Voorbeeld invulling</th></tr></thead><tbody>";
+    $idinDescriptionTable = "<table><thead><tr><th>Invulveld</th><th>Voorbeeld invulling</th></tr></thead><tbody>";
     foreach ( $idinDescriptionTags as $ti => $tag ) {
         if ( ! isset( $idinDescriptionReplaces[ $ti ] ) ) {
             continue;
@@ -48,7 +48,7 @@ function bluem_woocommerce_get_idin_options() {
     }
 
     $idinDescriptionTable .= "</tbody></table>";
-    $options              = get_option( 'bluem_woocommerce_options' );
+    $options = get_option( 'bluem_woocommerce_options' );
 
     if ( $options !== false
          && isset( $options['IDINDescription'] )
@@ -108,7 +108,7 @@ function bluem_woocommerce_get_idin_options() {
             'type'        => 'number',
             'default'     => '18',
         ],
-        'idin_request_name'          => [
+        'idin_request_name' => [
             'key'         => 'idin_request_name',
             'title'       => 'bluem_idin_request_name',
             'name'        => 'Naam opvragen?',
@@ -117,7 +117,7 @@ function bluem_woocommerce_get_idin_options() {
             'type'        => 'bool',
             'default'     => '1',
         ],
-        'idin_request_address'       => [
+        'idin_request_address' => [
             'key'         => 'idin_request_address',
             'title'       => 'bluem_idin_request_address',
             'name'        => 'Adres opvragen?',
@@ -126,7 +126,7 @@ function bluem_woocommerce_get_idin_options() {
             'type'        => 'bool',
             'default'     => '1',
         ],
-        'idin_request_birthdate'     => [
+        'idin_request_birthdate' => [
             'key'         => 'idin_request_birthdate',
             'title'       => 'bluem_idin_request_birthdate',
             'name'        => 'Geboortedatum opvragen?',
@@ -136,7 +136,7 @@ function bluem_woocommerce_get_idin_options() {
             'type'        => 'bool',
             'default'     => '1',
         ],
-        'idin_request_gender'        => [
+        'idin_request_gender' => [
             'key'         => 'idin_request_gender',
             'title'       => 'bluem_idin_request_gender',
             'name'        => 'Geslacht opvragen?',
@@ -145,7 +145,7 @@ function bluem_woocommerce_get_idin_options() {
             'type'        => 'bool',
             'default'     => '0',
         ],
-        'idin_request_telephone'     => [
+        'idin_request_telephone' => [
             'key'         => 'idin_request_telephone',
             'title'       => 'bluem_idin_request_telephone',
             'name'        => 'Telefoonnummer opvragen?',
@@ -154,7 +154,7 @@ function bluem_woocommerce_get_idin_options() {
             'type'        => 'bool',
             'default'     => '1',
         ],
-        'idin_request_email'         => [
+        'idin_request_email' => [
             'key'         => 'idin_request_email',
             'title'       => 'bluem_idin_request_email',
             'name'        => 'E-mailadres opvragen?',
@@ -171,7 +171,7 @@ function bluem_woocommerce_get_idin_options() {
             'description' => 'Een bondige beschrijving volstaat.',
             'default'     => 'Uw identificatie is succesvol ontvangen. Hartelijk dank.'
         ],
-        'IDINErrorMessage'   => [
+        'IDINErrorMessage' => [
             'key'         => 'IDINErrorMessage',
             'title'       => 'bluem_IDINErrorMessage',
             'name'        => 'Melding bij gefaalde Identificatie via shortcode',
@@ -207,7 +207,7 @@ function bluem_woocommerce_get_idin_options() {
                 '1' => 'Alleen voor ingelogde bezoekers'
             ],
         ],
-        'IDINDescription'             => [
+        'IDINDescription' => [
             'key'         => 'IDINDescription',
             'title'       => 'bluem_IDINDescription',
             'name'        => 'Formaat beschrijving request',
@@ -228,7 +228,7 @@ function bluem_woocommerce_get_idin_options() {
             'default'     => 'Identificatie {gebruikersnaam}'
         ],
 
-        'idin_add_field_in_order_emails'     => [
+        'idin_add_field_in_order_emails' => [
             'key'         => 'idin_add_field_in_order_emails',
             'title'       => 'bluem_idin_add_field_in_order_emails',
             'name'        => 'Identificatie status in emails',
@@ -237,7 +237,7 @@ function bluem_woocommerce_get_idin_options() {
             'type'        => 'bool',
             'default'     => '1',
         ],
-        'idin_add_address_in_order_emails'   => [
+        'idin_add_address_in_order_emails' => [
             'key'         => 'idin_add_address_in_order_emails',
             'title'       => 'bluem_idin_add_address_in_order_emails',
             'name'        => 'Identificatie adres in emails',
@@ -246,7 +246,7 @@ function bluem_woocommerce_get_idin_options() {
             'type'        => 'bool',
             'default'     => '1',
         ],
-        'idin_add_name_in_order_emails'      => [
+        'idin_add_name_in_order_emails' => [
             'key'         => 'idin_add_name_in_order_emails',
             'title'       => 'bluem_idin_add_name_in_order_emails',
             'name'        => 'Identificatie naam in emails',
@@ -264,8 +264,6 @@ function bluem_woocommerce_get_idin_options() {
             'type'        => 'bool',
             'default'     => '1',
         ],
-
-
         'idin_identify_button_inner' => [
             'key'         => 'idin_identify_button_inner',
             'title'       => 'bluem_idin_identify_button_inner',
@@ -297,7 +295,6 @@ function bluem_woocommerce_get_idin_options() {
             'description' => 'Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.',
             'default'     => "Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden."
         ],
-
 
         'idin_identity_dialog_thank_you_message' => [
             'key'         => 'idin_identity_dialog_thank_you_message',
@@ -337,15 +334,14 @@ De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDEA
             'default'     => '1',
         ],
 
-
-        // 'idin_show_notice_in_checkout' => [
-        //     'key' => 'idin_show_notice_in_checkout',
-        //     'title' => 'bluem_idin_show_notice_in_checkout',
-        //     'name' => 'Wil je de identificatie melding bovenin de checkout weergeven?',
-        //     'description' => "Wil je de melding van identificatie nodig ook bovenaan de checkout als melding weergeven?",
-        //     'type' => 'bool',
-        //     'default' => '1',
-        // ],
+        'idin_show_notice_in_checkout' => [
+            'key' => 'idin_show_notice_in_checkout',
+            'title' => 'bluem_idin_show_notice_in_checkout',
+            'name' => 'Wil je de identificatie melding bovenin de checkout weergeven?',
+            'description' => "Wil je de melding van identificatie nodig ook bovenaan de checkout als melding weergeven?",
+            'type' => 'bool',
+            'default' => '1',
+        ],
     ];
 }
 
@@ -625,7 +621,6 @@ function bluem_woocommerce_settings_render_idin_enable_ip_country_filtering() {
     );
 }
 
-
 function bluem_idin_get_categories( int $preset_scenario = null ) {
     $catListObject = new BluemIdentityCategoryList();
     $options       = get_option( 'bluem_woocommerce_options' );
@@ -641,54 +636,89 @@ function bluem_idin_get_categories( int $preset_scenario = null ) {
         $scenario = $preset_scenario;
     }
 
-
-    // '0' => 'Voer geen identiteitscheck uit voor de checkout procedure', dus we overschrijven hier geen categoriëen
-
-    // '1' => 'Check op de minimumleeftijd door een AgeCheckRequest',
+    /**
+     * Check the scenario
+     *
+     * '0' => 'Voer geen identiteitscheck uit voor de checkout procedure', dus we overschrijven hier geen categoriëen
+     * '1' => 'Check op de minimumleeftijd door een AgeCheckRequest'
+     * '2' => 'Voer een volledige identiteitscontrole uit en sla dit op, maar blokkeer de checkout NIET, als minimumleeftijd niet bereikt is'
+     * '3' => 'Voer een volledige identiteitscontrole uit, sla dit op EN blokkeer de checkout WEL, als minimumleeftijd niet bereikt is'
+     */
     if ( $scenario == 1 ) {
-        $catListObject->addCat( "AgeCheckRequest" );
+        if (method_exists($catListObject, 'Add')) {
+            $catListObject->Add( "AgeCheckRequest" );
+        } else {
+            $catListObject->addCat( "AgeCheckRequest" );
+        }
 
-        // return prematurely because we don't even consider the rest of the stuffs.
-        return $catListObject->getCats();
-
-
-        // '2' => 'Voer een volledige identiteitscontrole uit en sla dit op, maar blokkeer de checkout NIET, als minimumleeftijd niet bereikt is',
-        // '3' => 'Voer een volledige identiteitscontrole uit, sla dit op EN blokkeer de checkout WEL, als minimumleeftijd niet bereikt is',
+        if (method_exists($catListObject, 'getCategories')) {
+            return $catListObject->getCategories();
+        } else {
+            return $catListObject->getCats();
+        }
     } elseif ( $scenario == 2 || $scenario == 3 ) {
-        // always ask for this
-        $catListObject->addCat( "CustomerIDRequest" );
+        if (method_exists($catListObject, 'Add')) {
+            $catListObject->Add( "CustomerIDRequest" );
+        } else {
+            $catListObject->addCat( "CustomerIDRequest" );
+        }
 
         if ( $scenario == 3 ) {
-            // deze moet verplicht mee
+            if (method_exists($catListObject, 'Add')) {
+                $catListObject->Add( "BirthDateRequest" );
+            } else {
+                $catListObject->addCat( "BirthDateRequest" );
+            }
+        }
+    }
+
+    /**
+     * Check which data to get.
+     */
+    if ( isset( $options['idin_request_name'] ) && $options['idin_request_name'] == "1" ) {
+        if (method_exists($catListObject, 'Add')) {
+            $catListObject->Add( "NameRequest" );
+        } else {
+            $catListObject->addCat( "NameRequest" );
+        }
+    }
+    if ( isset( $options['idin_request_address'] ) && $options['idin_request_address'] == "1" ) {
+        if (method_exists($catListObject, 'Add')) {
+            $catListObject->Add( "AddressRequest" );
+        } else {
+            $catListObject->addCat( "AddressRequest" );
+        }
+    }
+    if ( isset( $options['idin_request_birthdate'] ) && $options['idin_request_birthdate'] == "1" ) {
+        if (method_exists($catListObject, 'Add')) {
+            $catListObject->Add( "BirthDateRequest" );
+        } else {
             $catListObject->addCat( "BirthDateRequest" );
         }
     }
-    if ( isset( $options['idin_request_name'] ) && $options['idin_request_name'] == "1" ) {
-        $catListObject->addCat( "NameRequest" );
-    }
-    if ( isset( $options['idin_request_address'] ) && $options['idin_request_address'] == "1" ) {
-        $catListObject->addCat( "AddressRequest" );
-    }
-    if ( isset( $options['idin_request_address'] ) && $options['idin_request_address'] == "1" ) {
-        $catListObject->addCat( "AddressRequest" );
-    }
-    if ( isset( $options['idin_request_birthdate'] ) && $options['idin_request_birthdate'] == "1" ) {
-        $catListObject->addCat( "BirthDateRequest" );
-    }
     if ( isset( $options['idin_request_gender'] ) && $options['idin_request_gender'] == "1" ) {
-        $catListObject->addCat( "GenderRequest" );
+        if (method_exists($catListObject, 'Add')) {
+            $catListObject->Add( "GenderRequest" );
+        } else {
+            $catListObject->addCat( "GenderRequest" );
+        }
     }
     if ( isset( $options['idin_request_telephone'] ) && $options['idin_request_telephone'] == "1" ) {
-        $catListObject->addCat( "TelephoneRequest" );
+        if (method_exists($catListObject, 'Add')) {
+            $catListObject->Add( "TelephoneRequest" );
+        } else {
+            $catListObject->addCat( "TelephoneRequest" );
+        }
     }
     if ( isset( $options['idin_request_email'] ) && $options['idin_request_email'] == "1" ) {
-        $catListObject->addCat( "EmailRequest" );
+        if (method_exists($catListObject, 'Add')) {
+            $catListObject->Add( "EmailRequest" );
+        } else {
+            $catListObject->addCat( "EmailRequest" );
+        }
     }
-
-    return $catListObject->getCats();
-    //explode(",", str_replace(" ", "", $bluem_config->IDINCategories));
+    return $catListObject->getCategories();
 }
-
 
 /* ********* RENDERING THE STATIC FORM *********** */
 add_shortcode( 'bluem_identificatieformulier', 'bluem_idin_form' );
@@ -802,13 +832,9 @@ function bluem_idin_shortcode_idin_execute() {
     bluem_idin_execute( null, true, $goto );
 }
 
-/**
- * CALLBACK
- **/
 add_action( 'parse_request', 'bluem_idin_shortcode_callback' );
 /**
  * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in user or Bluem session storage, sent for a SUD to the Bluem API.
- *
  */
 function bluem_idin_shortcode_callback() {
     if ( ! str_contains( $_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback" ) ) {
@@ -1118,6 +1144,19 @@ function bluem_idin_shortcode_callback() {
         wp_safe_redirect( $goto . "?result=false&status=$statusCode" );
         exit;
     }
+}
+
+add_action( 'parse_request', 'bluem_idin_webhook' );
+/**
+ * Identity webhook action
+ *
+ * @return void
+ */
+function bluem_idin_webhook()
+{
+    http_response_code(200);
+    var_dump('Soon available..');
+    exit;
 }
 
 add_action( 'show_user_profile', 'bluem_woocommerce_idin_show_extra_profile_fields', 2 );
@@ -2047,23 +2086,6 @@ function bluem_idin_get_min_age() {
     return $min_age;
 }
 
-// @todo: deprecate this
-//class BluemIdentityCategoryList
-//{
-//    public $_cats = [];
-//
-//    public function getCats()
-//    {
-//        return $this->_cats;
-//    }
-//    public function addCat($cat)
-//    {
-//        if (!in_array($cat, $this->_cats)) {
-//            $this->_cats[] = $cat;
-//        }
-//    }
-//}
-
 // https://wordpress.stackexchange.com/questions/314955/add-custom-order-meta-to-order-completed-email
 add_filter( 'woocommerce_email_order_meta_fields', 'bluem_order_email_identity_meta_data', 10, 3 );
 
@@ -2079,7 +2101,6 @@ add_filter( 'woocommerce_email_order_meta_fields', 'bluem_order_email_identity_m
  */
 function bluem_order_email_identity_meta_data( $fields, $sent_to_admin, $order ) {
     global $current_user;
-
 
     $options = get_option( 'bluem_woocommerce_options' );
 
