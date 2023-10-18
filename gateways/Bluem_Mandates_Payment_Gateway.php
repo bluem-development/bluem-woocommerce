@@ -474,116 +474,129 @@ payment for another order {$order_id}"
      */
     public function bluem_mandates_webhook()
     {
-        // @todo: update this
-
         try {
-            $this->bluem->Webhook();
+            $webhook = $this->bluem->Webhook();
+
+            if ($webhook->xmlObject ?? null !== null) {
+                if (method_exists($webhook, 'getStatus')) {
+                    $webhook_status = $webhook->getStatus();
+                }
+                if (method_exists($webhook, 'getEntranceCode')) {
+                    $entranceCode = $webhook->getEntranceCode();
+                }
+                if (method_exists($webhook, 'getTransactionID')) {
+                    $transactionID = $webhook->getTransactionID();
+                }
+                if (method_exists($webhook, 'getMandateID')) {
+                    $mandateID = $webhook->getMandateID();
+                }
+
+                $order = $this->getOrder( $mandateID );
+                if ( is_null( $order ) ) {
+                    http_response_code(404);
+                    echo "Error: No order found";
+                    exit;
+                }
+                $order_status = $order->get_status();
+
+                if ( self::VERBOSE ) {
+                    echo "order_status: $order_status" . PHP_EOL;
+                    echo "webhook_status: $webhook_status" . PHP_EOL;
+                }
+
+                $user_id = $user_id = $order->get_user_id();
+
+                $user_meta = get_user_meta( $user_id );
+
+                // Todo: if maxamount comes back from webhook (it should) then it can be accessed here
+                // if (isset($user_meta['bluem_latest_mandate_amount'][0])) {
+                // 	$mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
+                // } else {
+                // }
+
+                $acceptanceReport = $webhook->getAcceptanceReportArray();
+
+                if ( !empty( $acceptanceReport['MaxAmount'] ) ) {
+                    $mandate_amount = (float) ( $acceptanceReport['MaxAmount'] . "" );
+                } else {
+                    $mandate_amount = 0.0;    // mandate amount is not set, so it is unlimited
+                }
+                if ( self::VERBOSE ) {
+                    var_dump( $mandate_amount );
+                    echo PHP_EOL;
+                }
+
+                $settings = get_option( 'bluem_woocommerce_options' );
+
+                if ( $settings['localInstrumentCode'] !== "B2B" ) {
+                    $maxAmountEnabled = true;
+                } else {
+                    $maxAmountEnabled = ( isset( $settings['maxAmountEnabled'] ) && $settings['maxAmountEnabled'] === "1" );
+                }
+
+                if ( self::VERBOSE ) {
+                    echo "mandate_amount: {$mandate_amount}" . PHP_EOL;
+                }
+
+                if ( $maxAmountEnabled ) {
+                    $maxAmountFactor =  isset( $settings['maxAmountFactor'] )
+                        ? (float) ( $settings['maxAmountFactor'] )
+                        : 1.0 ;
+
+                    $mandate_successful = false;
+
+                    if ( $mandate_amount !== 0.0 ) {
+                        $order_price = $order->get_total();
+                        $max_order_amount = $order_price * $maxAmountFactor;
+                        if ( self::VERBOSE ) {
+                            echo "max_order_amount: {$max_order_amount}" . PHP_EOL;
+                        }
+
+                        if ( $mandate_amount >= $max_order_amount ) {
+                            $mandate_successful = true;
+                            if ( self::VERBOSE ) {
+                                echo "mandate is enough" . PHP_EOL;
+                            }
+                        } else if ( self::VERBOSE ) {
+                            echo "mandate is too small" . PHP_EOL;
+                        }
+                    }
+                } else {
+                    $mandate_successful = true;
+                }
+
+                if ( $webhook_status === "Success" ) {
+                    if ($order_status === "processing") {
+                        // order is already marked as processing, nothing more is necessary
+                    } else {
+                        if ( ( $order_status === "pending" ) && $mandate_successful ) {
+                            $order->update_status(
+                                'processing',
+                                __(
+                                    "Machtiging (Mandaat ID $mandateID) is gelukt en goedgekeurd; via webhook",
+                                    'wc-gateway-bluem'
+                                )
+                            );
+                        }
+                    }
+                } elseif ( $webhook_status === "Cancelled" ) {
+                    $order->update_status( 'cancelled', __( 'Machtiging is geannuleerd; via webhook', 'wc-gateway-bluem' ) );
+                } elseif ($webhook_status === "Open" || $webhook_status == "Pending") {
+                    // if the webhook is still open or pending, nothing has to be done yet
+                } elseif ( $webhook_status === "Expired" ) {
+                    $order->update_status( 'failed', __( 'Machtiging is verlopen; via webhook', 'wc-gateway-bluem' ) );
+                } else {
+                    $order->update_status( 'failed', __( 'Machtiging is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem' ) );
+                }
+                http_response_code(200);
+                echo 'OK';
+                exit;
+            }
         } catch ( Exception $e ) {
-            // @todo: handle exception
-        }
-
-        $entranceCode = $statusUpdateObject->entranceCode . "";
-        $mandateID    = $statusUpdateObject->EMandateStatus->MandateID . "";
-
-        $webhook_status = $statusUpdateObject->EMandateStatus->Status . "";
-
-        $order = $this->getOrder( $mandateID );
-        if ( is_null( $order ) ) {
-            echo "Error: No order found";
+            http_response_code(500);
+            echo "Error: Exception: " . $e->getMessage();
             exit;
         }
-        $order_status = $order->get_status();
-
-        if ( self::VERBOSE ) {
-            echo "order_status: {$order_status}" . PHP_EOL;
-            echo "webhook_status: {$webhook_status}" . PHP_EOL;
-        }
-
-        $user_id   = $user_id = $order->get_user_id();
-        $user_meta = get_user_meta( $user_id );
-
-        // Todo: if maxamount comes back from webhook (it should) then it can be accessed here
-        // if (isset($user_meta['bluem_latest_mandate_amount'][0])) {
-        // 	$mandate_amount = $user_meta['bluem_latest_mandate_amount'][0];
-        // } else {
-        // }
-
-        if ( isset( $statusUpdateObject->EMandateStatus->AcceptanceReport->MaxAmount ) ) {
-            $mandate_amount = (float) ( $statusUpdateObject->EMandateStatus->AcceptanceReport->MaxAmount . "" );
-        } else {
-            $mandate_amount = 0.0;    // mandate amount is not set, so it is unlimited
-        }
-        if ( self::VERBOSE ) {
-            var_dump( $mandate_amount );
-            echo PHP_EOL;
-        }
-
-        $settings = get_option( 'bluem_woocommerce_options' );
-
-        if ( $settings['localInstrumentCode'] !== "B2B" ) {
-            $maxAmountEnabled = true;
-        } else {
-            $maxAmountEnabled = ( isset( $settings['maxAmountEnabled'] ) && $settings['maxAmountEnabled'] === "1" );
-        }
-
-        if ( self::VERBOSE ) {
-            echo "mandate_amount: {$mandate_amount}" . PHP_EOL;
-        }
-
-        if ( $maxAmountEnabled ) {
-
-            $maxAmountFactor =  isset( $settings['maxAmountFactor'] )
-                ? (float) ( $settings['maxAmountFactor'] )
-                : 1.0 ;
-
-            $mandate_successful = false;
-
-            if ( $mandate_amount !== 0.0 ) {
-                $order_price      = $order->get_total();
-                $max_order_amount =  $order_price * $maxAmountFactor;
-                if ( self::VERBOSE ) {
-                    echo "max_order_amount: {$max_order_amount}" . PHP_EOL;
-                }
-
-                if ( $mandate_amount >= $max_order_amount ) {
-                    $mandate_successful = true;
-                    if ( self::VERBOSE ) {
-                        echo "mandate is enough" . PHP_EOL;
-                    }
-                } else if ( self::VERBOSE ) {
-                    echo "mandate is too small" . PHP_EOL;
-                }
-            }
-        } else {
-            $mandate_successful = true;
-        }
-
-        if ( $webhook_status === "Success" ) {
-//                if ($order_status === "processing") {
-//                    // order is already marked as processing, nothing more is necessary
-//                } else
-            // check if maximum of order does not exceed mandate size based on user metadata
-            if ( ( $order_status === "pending" ) && $mandate_successful ) {
-                $order->update_status(
-                    'processing',
-                    __(
-                        "Machtiging (Mandaat ID $mandateID) is gelukt en goedgekeurd; via webhook",
-                        'wc-gateway-bluem'
-                    )
-                );
-            }
-        } elseif ( $webhook_status === "Cancelled" ) {
-            $order->update_status( 'cancelled', __( 'Machtiging is geannuleerd; via webhook', 'wc-gateway-bluem' ) );
-        }
-//            elseif ($webhook_status === "Open" || $webhook_status == "Pending") {
-        // if the webhook is still open or pending, nothing has to be done yet
-//            }
-        elseif ( $webhook_status === "Expired" ) {
-            $order->update_status( 'failed', __( 'Machtiging is verlopen; via webhook', 'wc-gateway-bluem' ) );
-        } else {
-            $order->update_status( 'failed', __( 'Machtiging is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem' ) );
-        }
-        exit;
     }
 
     /**
