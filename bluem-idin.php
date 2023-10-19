@@ -1154,6 +1154,9 @@ add_action( 'parse_request', 'bluem_idin_webhook' );
  */
 function bluem_idin_webhook()
 {
+    if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/bluem_idin_webhook") === false) {
+        return;
+    }
     http_response_code(200);
     var_dump('Soon available..');
     exit;
