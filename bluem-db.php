@@ -3,6 +3,8 @@
 register_activation_hook( __FILE__, 'bluem_db_create_requests_table' );
 // no need for a deactivation hook yet.
 
+use Bluem\BluemPHP\Application\RequestRepository;
+
 /**
  * Initialize a database table for the requests.
  * @return void
@@ -122,22 +124,12 @@ add_action( 'plugins_loaded', 'bluem_db_check' );
 
 // request specific functions
 function bluem_db_create_request( $request_object ) {
-    global $wpdb;
+    $requestRepository = new RequestRepository();
 
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
-
-    if ( ! bluem_db_validated_request( $request_object ) ) {
-        return - 1;
-    }
-
-    $insert_result = $wpdb->insert(
-        $wpdb->prefix . "bluem_requests",
-        $request_object
-    );
+    $insert_result = $requestRepository->add($request_object);
 
     if ( $insert_result ) {
-        $request_id = $wpdb->insert_id;
+        $request_id = $insert_result->id;
 
         $request_object = (object) $request_object;
 
@@ -351,48 +343,6 @@ function bluem_db_update_request( $request_id, $request_object ) {
     } else {
         return false;
     }
-}
-
-/**
- * check if all fields are well-formed
- *
- * @param [type] $request
- *
- * @return bool
- */
-function bluem_db_validated_request_well_formed( $request ): bool {
-    // @todo: check all available fields on their format
-    return true;
-}
-
-/**
- * check if all required fields are present and well-formed
- *
- * @param [type] $request
- *
- * @return void
- */
-function bluem_db_validated_request( $request ) {
-    // check if present
-    // entrance_code
-    // transaction_id
-    // transaction_url
-    // user_id
-    // timestamp
-    // description
-    // type
-
-    // optional fields
-    // debtor_reference
-    // order_id
-    // payload
-
-    // and well formed
-    if ( ! bluem_db_validated_request_well_formed( $request ) ) {
-        return false;
-    }
-
-    return true;
 }
 
 /**
