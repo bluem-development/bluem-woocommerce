@@ -4,6 +4,7 @@ register_activation_hook( __FILE__, 'bluem_db_create_requests_table' );
 // no need for a deactivation hook yet.
 
 use Bluem\BluemPHP\Application\RequestRepository;
+use Bluem\BluemPHP\Domain\Request;
 
 /**
  * Initialize a database table for the requests.
@@ -123,52 +124,15 @@ function bluem_db_check() {
 add_action( 'plugins_loaded', 'bluem_db_check' );
 
 // request specific functions
-function bluem_db_create_request( $request_object ) {
-    $requestRepository = new RequestRepository();
+function bluem_db_create_request( $request_array ): int
+{
+    $request = (new RequestRepository())->add($request_array);
 
-    $insert_result = $requestRepository->add($request_object);
-
-    if ( $insert_result ) {
-        $request_id = $insert_result->id;
-
-        $request_object = (object) $request_object;
-
-        if ( isset( $request_object->order_id )
-            && ! is_null( $request_object->order_id )
-            && $request_object->order_id != ""
-        ) {
-            bluem_db_create_link(
-                $request_id,
-                $request_object->order_id,
-                "order"
-            );
-        }
-        bluem_db_request_log(
-            $request_id,
-            "Created request"
-        );
-
-        return $wpdb->insert_id;
-    } else {
-        return - 1;
-    }
+    return $request !== null ? $request->id : -1;
 }
 
-function bluem_db_request_log( $request_id, $description, $log_data = [] ) {
-    global $wpdb, $current_user;
-
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
-
-    return $wpdb->insert(
-        $wpdb->prefix . "bluem_requests_log",
-        [
-            'request_id'  => $request_id,
-            'description' => $description,
-            'timestamp'   => date( "Y-m-d H:i:s" ),
-            'user_id'     => $current_user->ID
-        ]
-    );
+function bluem_db_request_log( $request_id, $description ) {
+    (new RequestRepository())->addRequestLogItem($request_id, $description);
 }
 
 /**
@@ -316,85 +280,22 @@ function bluem_db_update_storage( $id, $object ) {
  *
  * @return bool
  */
-function bluem_db_update_request( $request_id, $request_object ) {
-    global $wpdb;
-
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
-
-    if ( ! bluem_db_validated_request_well_formed( $request_object ) ) {
-        return false;
-    }
-    $update_result = $wpdb->update(
-        $wpdb->prefix . "bluem_requests",
-        $request_object,
-        [
-            'id' => $request_id
-        ]
-    );
-
-    if ( $update_result ) {
-        bluem_db_request_log(
-            $request_id,
-            "Updated request. New data: " . json_encode( $request_object )
-        );
-
-        return true;
-    } else {
-        return false;
-    }
-}
-
-/**
- * Get fields within any request
- * @return string[]
- */
-function bluem_db_get_request_fields() {
-    return [
-        'id',
-        'entrance_code',
-        'transaction_id',
-        'transaction_url',
-        'user_id',
-        'timestamp',
-        'description',
-        'type',
-        'debtor_reference',
-        'order_id',
-        'payload'
-    ];
+function bluem_db_update_request( $request_id, $request_object ): bool
+{
+    return (new RequestRepository())->updateRequest($request_id, $request_object);
 }
 
 /**
  * Get the request for a given ID, or false if not found
- *
- * @param $request_id
- *
- * @return bool|object
  */
-function bluem_db_get_request_by_id( string $request_id ) {
-    // @todo change to only accept int for $request_id
-
-    $res = bluem_db_get_requests_by_keyvalue(
-        'id',
-        $request_id
-    );
-
-    return $res[0] ?? false;
+function bluem_db_get_request_by_id( string $request_id ): ?Request
+{
+    return (new RequestRepository())->getRequest((int) $request_id);
 }
 
-function bluem_db_delete_request_by_id( $request_id ) {
-    global $wpdb;
-
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
-
-    $wpdb->show_errors();
-
-    $query  = $wpdb->delete( $wpdb->prefix . 'bluem_requests', [ 'id' => $request_id ] );
-    $query2 = $wpdb->delete( $wpdb->prefix . 'bluem_requests_log', [ 'request_id' => $request_id ] );
-
-    return $query && $query2;
+function bluem_db_delete_request_by_id( $request_id ): bool
+{
+    return (new RequestRepository())->deleteRequest((int) $request_id);
 }
 
 function bluem_db_get_request_by_debtor_reference( $debtor_reference ) {
@@ -555,11 +456,6 @@ function bluem_db_get_most_recent_request( $user_id = null, $type = "mandates" )
 
     global $wpdb;
 
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
-
-    $wpdb->show_errors(); //setting the Show or Display errors option to true
-
     $query = "SELECT *
         FROM  `" . $wpdb->prefix . "bluem_requests`
         WHERE `user_id` = '{$user_id}'
@@ -585,52 +481,44 @@ function bluem_db_get_most_recent_request( $user_id = null, $type = "mandates" )
 function bluem_db_put_request_payload( $request_id, $data ) {
     $request = bluem_db_get_request_by_id( $request_id );
 
-    if ( $request->payload !== "" ) {
-        try {
-            $newPayload = json_decode( $request->payload );
-        } catch ( Throwable $th ) {
-            $newPayload = new Stdclass;
-        }
-    } else {
-        $newPayload = new Stdclass;
+    if(!$request) {
+        return;
     }
+
+    $newPayload = [];
+    if ( $request->payload !== [] ) {
+        $newPayload = $request->payload ;
+    }
+
     foreach ( $data as $k => $v ) {
-        $newPayload->$k = $v;
+        $newPayload[$k] = $v;
     }
 
-    bluem_db_update_request(
-        $request_id,
-        [
-            'payload' => json_encode( $newPayload )
-        ]
-    );
+    try {
+        (new RequestRepository())->updateRequest(
+            $request_id,
+            [
+                'payload' => json_encode($newPayload, JSON_THROW_ON_ERROR)
+            ]
+        );
+    } catch (JsonException $e) {
+
+    }
 }
 
-function bluem_db_get_logs_for_request( $id ) {
-    global $wpdb;
-
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
-
-    return $wpdb->get_results( "SELECT *  FROM  `" . $wpdb->prefix . "bluem_requests_log` WHERE `request_id` = $id ORDER BY `timestamp` DESC" );
+function bluem_db_get_logs_for_request( $id ): ?array
+{
+    return (new RequestRepository())->getRequestLogs((int) $id);
 }
 
-function bluem_db_get_links_for_order( $id ) {
-    global $wpdb;
-
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
-
-    return $wpdb->get_results( "SELECT *  FROM  `" . $wpdb->prefix . "bluem_requests_links` WHERE `item_id` = {$id} and `item_type` = 'order'ORDER BY `timestamp` DESC" );
+function bluem_db_get_links_for_order( $id ): ?array
+{
+    return (new RequestRepository())->getRequestLinksByItemId((int) $id);
 }
 
-function bluem_db_get_links_for_request( $id ) {
-    global $wpdb;
-
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
-
-    return $wpdb->get_results( "SELECT *  FROM  `" . $wpdb->prefix . "bluem_requests_links` WHERE `request_id` = {$id} ORDER BY `timestamp` DESC" );
+function bluem_db_get_links_for_request( $id ): ?array
+{
+    return (new RequestRepository())->getRequestLinksByRequestId((int) $id);
 }
 
 function bluem_db_create_link( $request_id, $item_id, $item_type = "order" ) {
@@ -644,20 +532,5 @@ function bluem_db_create_link( $request_id, $item_id, $item_type = "order" ) {
         return;
     }
 
-    $insert_result = $wpdb->insert(
-        $wpdb->prefix . "bluem_requests_links",
-        [
-            'request_id' => $request_id,
-            'item_id'    => $item_id,
-            'item_type'  => $item_type
-        ]
-    );
-
-    if ( $insert_result ) {
-        $link_id = $wpdb->insert_id;
-
-        return $link_id;
-    } else {
-        return - 1;
-    }
+    (new RequestRepository())->addLinkToRequest($request_id, $item_id);
 }
