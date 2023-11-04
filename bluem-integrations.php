@@ -89,7 +89,7 @@ function bluem_woocommerce_settings_render_wpcf7Resultpage() {
 
 /**
  * ContactForm 7 integration.
- * 
+ *
  * Javascript code in footer.
  */
 add_action('wp_footer', 'bluem_woocommerce_integration_wpcf7_javascript');
@@ -143,7 +143,7 @@ function bluem_woocommerce_integration_wpcf7_javascript() {
 
 /**
  * Gravity Forms integration.
- * 
+ *
  * Javascript code in footer.
  */
 add_action('wp_footer', 'bluem_woocommerce_integration_gform_javascript');
@@ -250,13 +250,6 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                     $mandate_id
                 );
 
-                // Save the necessary data to later request more information and refer to this transaction
-                bluem_db_insert_storage([
-                    'bluem_integration_wpcf7_form_id' => $contact_form_id,
-                    'bluem_mandate_transaction_id' => $request->mandateID,
-                    'bluem_mandate_entrance_code' => $request->entranceCode,
-                ]);
-
                 // Actually perform the request.
                 try {
                     $response = $bluem->PerformRequest( $request );
@@ -267,10 +260,10 @@ function bluem_woocommerce_integration_wpcf7_ajax()
 
                         if ( isset( $response->EMandateTransactionResponse->Error->ErrorMessage ) ) {
                             $msg .= "<br>" .
-                                    $response->EMandateTransactionResponse->Error->ErrorMessage;
+                                $response->EMandateTransactionResponse->Error->ErrorMessage;
                         } elseif ( get_class( $response ) == "Bluem\BluemPHP\ErrorBluemResponse" ) {
                             $msg .= "<br>" .
-                                    $response->Error();
+                                $response->Error();
                         } else {
                             $msg .= "<br>Algemene fout";
                         }
@@ -296,6 +289,8 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                     bluem_db_insert_storage([
                         'bluem_mandate_transaction_id' => $mandate_id,
                         'bluem_mandate_transaction_url' => $transactionURL,
+                        'bluem_integration_wpcf7_form_id' => $contact_form_id,
+                        'bluem_mandate_entrance_code' => $request->entranceCode,
                     ]);
 
                     $db_creation_result = bluem_db_create_request(
@@ -368,9 +363,9 @@ function bluem_woocommerce_integration_wpcf7_submit() {
     $is_bluem_mandate = $contact_form->is_true( 'bluem_mandate' );
 
     $bluem_mandate_approve = $contact_form->pref( 'bluem_mandate_approve' );
-    
+
     $bluem_mandate_reason = $contact_form->pref( 'bluem_mandate_reason' );
-    
+
     /**
      * TODO: Add to request.
      * Overwrite Bluem config variable.
@@ -431,13 +426,6 @@ function bluem_woocommerce_integration_wpcf7_submit() {
                     $mandate_id
                 );
 
-                // Save the necessary data to later request more information and refer to this transaction
-                bluem_db_insert_storage([
-                    'bluem_integration_wpcf7_form_id' => $contact_form_id,
-                    'bluem_mandate_transaction_id' => $request->mandateID,
-                    'bluem_mandate_entrance_code' => $request->entranceCode,
-                ]);
-
                 // Actually perform the request.
                 try {
                     $response = $bluem->PerformRequest( $request );
@@ -448,10 +436,10 @@ function bluem_woocommerce_integration_wpcf7_submit() {
 
                         if ( isset( $response->EMandateTransactionResponse->Error->ErrorMessage ) ) {
                             $msg .= "<br>" .
-                                    $response->EMandateTransactionResponse->Error->ErrorMessage;
+                                $response->EMandateTransactionResponse->Error->ErrorMessage;
                         } elseif ( get_class( $response ) == "Bluem\BluemPHP\ErrorBluemResponse" ) {
                             $msg .= "<br>" .
-                                    $response->Error();
+                                $response->Error();
                         } else {
                             $msg .= "<br>Algemene fout";
                         }
@@ -475,6 +463,8 @@ function bluem_woocommerce_integration_wpcf7_submit() {
                     bluem_db_insert_storage([
                         'bluem_mandate_transaction_id' => $mandate_id,
                         'bluem_mandate_transaction_url' => $transactionURL,
+                        'bluem_integration_wpcf7_form_id' => $contact_form_id,
+                        'bluem_mandate_entrance_code' => $request->entranceCode,
                     ]);
 
                     $db_creation_result = bluem_db_create_request(
@@ -791,7 +781,7 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
             $form_data[$field->label] = $value;
         }
     }
-    
+
     // Get custom parameters for this form
     $bluem_mandate = $form_data['bluem_mandate'];
     $bluem_mandate_approve = $form_data['bluem_mandate_approve'];
@@ -799,7 +789,7 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
     $bluem_mandate_failure = $form_data['bluem_mandate_failure'];
     $bluem_mandate_reason = $form_data['bluem_mandate_reason'];
     $bluem_mandate_type = $form_data['bluem_mandate_type'];
-    
+
     $bluem_is_ajax = $form_data['bluem_is_ajax'];
 
     /**
@@ -871,14 +861,6 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
                     $mandate_id
                 );
 
-                // Save the necessary data to later request more information and refer to this transaction
-                bluem_db_insert_storage([
-                    'bluem_integration_gform_form_id' => $payload['form_id'],
-                    'bluem_integration_gform_entry_id' => $payload['entry_id'],
-                    'bluem_mandate_transaction_id' => $request->mandateID,
-                    'bluem_mandate_entrance_code' => $request->entranceCode,
-                ]);
-
                 // Actually perform the request.
                 try {
                     $response = $bluem->PerformRequest( $request );
@@ -889,10 +871,10 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
 
                         if ( isset( $response->EMandateTransactionResponse->Error->ErrorMessage ) ) {
                             $msg .= "<br>" .
-                                    $response->EMandateTransactionResponse->Error->ErrorMessage;
+                                $response->EMandateTransactionResponse->Error->ErrorMessage;
                         } elseif ( get_class( $response ) == "Bluem\BluemPHP\ErrorBluemResponse" ) {
                             $msg .= "<br>" .
-                                    $response->Error();
+                                $response->Error();
                         } else {
                             $msg .= "<br>Algemene fout";
                         }
@@ -916,6 +898,9 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
                     bluem_db_insert_storage([
                         'bluem_mandate_transaction_id' => $mandate_id,
                         'bluem_mandate_transaction_url' => $transactionURL,
+                        'bluem_integration_gform_form_id' => $payload['form_id'],
+                        'bluem_integration_gform_entry_id' => $payload['entry_id'],
+                        'bluem_mandate_entrance_code' => $request->entranceCode,
                     ]);
 
                     $db_creation_result = bluem_db_create_request(
@@ -1133,7 +1118,7 @@ function bluem_woocommerce_integration_gform_callback()
              * Get the entry instance.
              */
             $entry = GFAPI::get_entry( $entryID );
-            
+
             // Get the form instance
             $form = GFAPI::get_form( $formID );
 
@@ -1339,7 +1324,7 @@ function bluem_woocommerce_integration_gform_results_shortcode()
          * Get the entry instance.
          */
         $entry = GFAPI::get_entry( $entry_id );
-        
+
         // Get the form instance
         $form = GFAPI::get_form( $entry['form_id'] );
 

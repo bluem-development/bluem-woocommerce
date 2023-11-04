@@ -65,12 +65,6 @@ function bluem_mandates_instant_request()
                 $mandate_id
             );
 
-            // Save the necessary data to later request more information and refer to this transaction
-            bluem_db_insert_storage([
-                'bluem_mandate_transaction_id' => $request->mandateID,
-                'bluem_mandate_entrance_code' => $request->entranceCode,
-            ]);
-
             // Actually perform the request.
             try {
                 $response = $bluem->PerformRequest( $request );
@@ -81,10 +75,10 @@ function bluem_mandates_instant_request()
 
                     if ( isset( $response->EMandateTransactionResponse->Error->ErrorMessage ) ) {
                         $msg .= "<br>" .
-                                $response->EMandateTransactionResponse->Error->ErrorMessage;
+                            $response->EMandateTransactionResponse->Error->ErrorMessage;
                     } elseif ( get_class( $response ) == "Bluem\BluemPHP\ErrorBluemResponse" ) {
                         $msg .= "<br>" .
-                                $response->Error();
+                            $response->Error();
                     } else {
                         $msg .= "<br>Algemene fout";
                     }
@@ -107,6 +101,7 @@ function bluem_mandates_instant_request()
                 bluem_db_insert_storage([
                     'bluem_mandate_transaction_id' => $mandate_id,
                     'bluem_mandate_transaction_url' => $transactionURL,
+                    'bluem_mandate_entrance_code' => $request->entranceCode,
                 ]);
 
                 $db_creation_result = bluem_db_create_request(
