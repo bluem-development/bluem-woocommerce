@@ -169,10 +169,12 @@ bluem_mandate_failure="De machtiging is mislukt. Probeer het opnieuw."
 bluem_mandate_type="RCUR"
 bluem_is_ajax=true
 ```
+Also, add a checkbox with the name 'bluem_mandate_approve'. This will give the user-permission to perform the mandate request.
+Otherwise, the form will be submitted but our mandate request wouldn't be executed. U can mark the checkbox within ContactForm 7 as required to always force the mandate request after form submission.
 
 ## Gravity Forms
 To activate our Gravity Forms integration, you have to add some hidden fields to the form to activate the flow.
-```
+```php
 bluem_mandate=true
 bluem_mandate_reason="Lidmaatschap"
 bluem_mandate_success="Bedankt voor het afgeven van de machtiging"
@@ -180,9 +182,12 @@ bluem_mandate_failure="De machtiging is mislukt. Probeer het opnieuw."
 bluem_mandate_type="RCUR"
 bluem_is_ajax=true
 ```
-Also, add a checkbox with the name 'bluem_mandate_approve' (under 'Advanced' section, after enabling dynamic entries) and a label with the value 'true'. This will give the permission to perform the mandate request.
+Also, add a checkbox with the name 'bluem_mandate_approve' (under 'Advanced' section, after enabling dynamic entries) and a label with the value 'true'. This will give the user-permission to perform the mandate request.
+Otherwise, the form will be submitted but our mandate request wouldn't be executed. U can mark the checkbox within Gravity Forms as required to always force the mandate request after form submission.
 
-Also, if you want to store transaction details, you have to name the fields with the following names:
+Also, if you want to store additional transaction details, add hidden fields with the following field names.
+Our plug-in will fill these fields so that they are saved with the other form data.
+The transaction and details are always visible through our plug-in page.
 ```php
 bluem_mandate_accountname = Name of the accountholder
 bluem_mandate_datetime = Date and time of registration
