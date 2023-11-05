@@ -947,8 +947,6 @@ function bluem_woocommerce_register_settings() {
 add_action( 'admin_init', 'bluem_woocommerce_register_settings' );
 
 function bluem_woocommerce_init() {
-    load_plugin_textdomain('bluem', false, dirname(plugin_basename(__FILE__)) . '/languages');
-
     /**
      * Create session storage.
      */
