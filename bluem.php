@@ -284,7 +284,7 @@ function get_composer_dependency_version($dependency_name) {
 
     // Retrieve the version constraint of the specified dependency
     $version_constraint = reset($package_entry)['version'];
-    
+
     return $version_constraint;
 }
 
@@ -471,7 +471,7 @@ function bluem_update_request_by_id ( $request_id )
                     $new_data = [];
 
                     $new_data['report'] = $identityReport;
-                    
+
                     if ( count( $new_data ) > 0 ) {
                         bluem_db_put_request_payload(
                             $request->id,
@@ -525,7 +525,7 @@ function bluem_update_request_by_id ( $request_id )
 
             $statusUpdateObject = $response->EMandateStatusUpdate;
 
-		    $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
+            $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
 
             /**
              * Update status in request
@@ -550,15 +550,15 @@ function bluem_update_request_by_id ( $request_id )
 
                 if ( !empty( $request->id ) ) {
                     $new_data = [];
-                    
+
                     if ( isset( $response->EMandateStatusUpdate->EMandateStatus->PurchaseID ) ) {
                         $new_data['purchaseID'] = $response->EMandateStatusUpdate->EMandateStatus->PurchaseID;
                     }
-                    
+
                     if ( isset( $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport ) ) {
                         $new_data['report'] = $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport;
                     }
-                    
+
                     if ( count( $new_data ) > 0 ) {
                         bluem_db_put_request_payload(
                             $request->id,
@@ -618,7 +618,7 @@ function bluem_update_request_by_id ( $request_id )
 
             $statusUpdateObject = $response->PaymentStatusUpdate;
 
-		    $statusCode = $statusUpdateObject->Status . "";
+            $statusCode = $statusUpdateObject->Status . "";
 
             /**
              * Update status in request
@@ -928,7 +928,7 @@ function bluem_woocommerce_register_settings() {
     }
 
     $user = wp_get_current_user();
-    
+
     // Check if user is administrator
     if (in_array('administrator', $user->roles)) {
         // Check if the form has already been filled
@@ -943,7 +943,20 @@ function bluem_woocommerce_register_settings() {
     }
 }
 
+// Only executed on admin pages and AJAX requests.
 add_action( 'admin_init', 'bluem_woocommerce_register_settings' );
+
+function bluem_woocommerce_init() {
+    /**
+     * Create session storage.
+     */
+    bluem_db_insert_storage([
+        'bluem_storage_init' => true,
+    ]);
+}
+
+// Always executed while plug-in is activated
+add_action( 'init', 'bluem_woocommerce_init' );
 
 add_action( 'show_user_profile', 'bluem_woocommerce_show_general_profile_fields', 1 );
 
@@ -1036,7 +1049,7 @@ function bluem_woocommerce_settings_render_input( $field ) {
             foreach ( $field['options'] as $option_value => $option_name ) {
                 ?>
                 <option
-                    value="<?php echo $option_value; ?>" <?php if ( isset( $values[ $key ] ) && $values[ $key ] !== "" && $option_value == $values[ $key ] ) {
+                        value="<?php echo $option_value; ?>" <?php if ( isset( $values[ $key ] ) && $values[ $key ] !== "" && $option_value == $values[ $key ] ) {
                     echo "selected='selected'";
                 } ?>><?php echo $option_name; ?></option>
                 <?php
@@ -1222,11 +1235,11 @@ function bluem_woocommerce_get_core_options(): array {
  */
 function bluem_woocommerce_register_age_verification_attribute() {
     $args = array(
-      'name'         => 'Age verification',
-      'slug'         => 'age_verification',
-      'type'         => 'select',
-      'order_by'     => 'menu_order',
-      'has_archives' => true,
+        'name'         => 'Age verification',
+        'slug'         => 'age_verification',
+        'type'         => 'select',
+        'order_by'     => 'menu_order',
+        'has_archives' => true,
     );
     register_taxonomy( 'pa_age_verification', 'product', $args );
 }
@@ -1247,7 +1260,7 @@ function bluem_woocommerce_add_age_verification_field() {
     }
 
     echo '<div class="options_group">';
-    
+
     // Custom Attribute Field
     woocommerce_wp_select( array(
         'id' => 'age_verification',
@@ -1259,7 +1272,7 @@ function bluem_woocommerce_add_age_verification_field() {
         ),
         'value' => $age_verification_value,
     ));
-    
+
     echo '</div>';
 }
 add_action( 'woocommerce_product_options_general_product_data', 'bluem_woocommerce_add_age_verification_field' );
@@ -1271,7 +1284,7 @@ function bluem_woocommerce_save_age_verification_values( $post_id ) {
     if ( 'product' !== get_post_type( $post_id ) ) {
         return;
     }
-  
+
     if ( isset( $_POST['age_verification'] ) ) {
         $attribute_value = isset($_POST['age_verification']) ? sanitize_text_field($_POST['age_verification']) : '';
         update_post_meta( $post_id, 'pa_age_verification', $attribute_value );
@@ -1301,7 +1314,7 @@ function bluem_error_report_email( $data = [] ): bool {
     }
 
     if ( ! isset( $settings['error_reporting_email'] )
-         || $settings['error_reporting_email'] == 1
+        || $settings['error_reporting_email'] == 1
     ) {
         if ( $debug ) {
             echo "Sending error reporting email; Data:";
@@ -1369,7 +1382,7 @@ function bluem_registration_report_email( $data = [] ): bool {
     $bluem = get_plugin_data( WP_PLUGIN_DIR . '/bluem/bluem.php' );
 
     $bluem_options = get_option( 'bluem_woocommerce_options' );
-    
+
     $bluem_registration = get_option( 'bluem_woocommerce_registration' );
 
     $dependency_bluem_php_version = get_composer_dependency_version('bluem-development/bluem-php');
@@ -1493,7 +1506,7 @@ function bluem_transaction_notification_email(
     }
 
     if ( ! isset( $settings['transaction_notification_email'] )
-         || $settings['transaction_notification_email'] == 1
+        || $settings['transaction_notification_email'] == 1
     ) {
         if ( $debug ) {
             echo "Sending notification email for request. Data:";
@@ -1663,8 +1676,8 @@ function bluem_module_enabled( $module ): bool {
         return false;
     }
     if ( $bluem_options !== false
-         && ! isset( $bluem_options["{$module}_enabled"] )
-         || $bluem_options["{$module}_enabled"] == "1"
+        && ! isset( $bluem_options["{$module}_enabled"] )
+        || $bluem_options["{$module}_enabled"] == "1"
     ) {
         return true;
     }
@@ -1725,52 +1738,52 @@ function bluem_setup_incomplete() {
         $valid_setup = true;
         $messages    = [];
         if ( ! array_key_exists( 'senderID', $options )
-             || $options['senderID'] === ""
+            || $options['senderID'] === ""
         ) {
             $messages[]  = "SenderID ontbreekt";
             $valid_setup = false;
         }
         if ( ! array_key_exists( 'test_accessToken', $options )
-             || $options['test_accessToken'] === ""
+            || $options['test_accessToken'] === ""
         ) {
             $messages[]  = "Test accessToken ontbreekt";
             $valid_setup = false;
         }
 
         if ( isset( $options['environment'] )
-             && $options['environment'] == "prod"
-             && (
-                 ! array_key_exists( 'production_accessToken', $options )
-                 || $options['production_accessToken'] === ""
-             )
+            && $options['environment'] == "prod"
+            && (
+                ! array_key_exists( 'production_accessToken', $options )
+                || $options['production_accessToken'] === ""
+            )
         ) {
             $messages[]  = "Production accessToken ontbreekt";
             $valid_setup = false;
         }
 
         if ( bluem_module_enabled( 'mandates' )
-             && (
-                 ! array_key_exists( 'brandID', $options )
-                 || $options['brandID'] === ""
-             )
+            && (
+                ! array_key_exists( 'brandID', $options )
+                || $options['brandID'] === ""
+            )
         ) {
             $messages[]  = "eMandates brandID ontbreekt";
             $valid_setup = false;
         }
 
         if ( bluem_module_enabled( 'mandates' )
-             && (
-                 ! array_key_exists( 'merchantID', $options )
-                 || $options['merchantID'] === ""
-             )
+            && (
+                ! array_key_exists( 'merchantID', $options )
+                || $options['merchantID'] === ""
+            )
         ) {
             $messages[]  = "eMandates merchantID ontbreekt";
             $valid_setup = false;
         }
 
         if ( bluem_module_enabled( 'idin' )
-             && ( ! array_key_exists( 'IDINBrandID', $options )
-                  || $options['IDINBrandID'] === "" )
+            && ( ! array_key_exists( 'IDINBrandID', $options )
+                || $options['IDINBrandID'] === "" )
         ) {
             $messages[]  = "iDIN BrandID ontbreekt";
             $valid_setup = false;
@@ -1892,7 +1905,7 @@ function bluem_dialogs_get_simple_header(): string {
     style='font-family:Arial,sans-serif;display:block;
     margin:40pt auto; padding:10pt 20pt; border:1px solid #eee;
     background:#fff; max-width:500px;'>" .
-           bluem_get_bluem_logo_html( 48 );
+        bluem_get_bluem_logo_html( 48 );
 }
 
 /**
@@ -1904,10 +1917,10 @@ function bluem_dialogs_get_simple_header(): string {
  */
 function bluem_dialogs_get_simple_footer( bool $include_link = true ): string {
     return (
-           $include_link ?
-               "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug naar de webshop</a></p>" :
-               ""
-           ) . "</div></body></html>";
+        $include_link ?
+            "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>Ga terug naar de webshop</a></p>" :
+            ""
+        ) . "</div></body></html>";
 }
 
 /**
