@@ -196,5 +196,24 @@ bluem_mandate_request_id = MandateID
 ```
 Our plug-in will store the above data in the fields with the corresponding names.
 
+# Development
+
+## Docker
+The Dockerfile within this package is used to run composer with a specific PHP version.
+Please follow the steps below to build a Docker environment and run composer.
+
+1) Build the Docker environment.
+```shell
+docker build -t my-php8-composer .
+```
+2) Run composer in the created Docker environment.
+```shell
+docker run --rm -v $(pwd):/var/www my-php8-composer composer show
+```
+3) Prepare plug-in dependencies before deployment.
+```shell
+docker run --rm -v $(pwd):/var/www my-php8-composer composer update --no-dev
+```
+
 # Support
 If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsupport@bluem.nl).
