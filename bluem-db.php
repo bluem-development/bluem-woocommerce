@@ -206,23 +206,23 @@ function bluem_db_insert_storage( $object ) {
 
             $record_id = $result[0]->id;
 
-            if ( $decoded_data !== null ) {
-                $new_object = [];
+            $new_object = [];
 
+            if ( $decoded_data !== null ) {
                 // Loop through current data
                 foreach ($decoded_data as $key => $value) {
                     $new_object[$key] = $value;
                 }
-
-                // Loop through new data
-                foreach ($object as $key => $value) {
-                    $new_object[$key] = $value; // Overwrite if key exists
-                }
-
-                return bluem_db_update_storage($record_id, [
-                    'data' => json_encode( $new_object ),
-                ]);
             }
+
+            // Loop through new data
+            foreach ($object as $key => $value) {
+                $new_object[$key] = $value; // Overwrite if key exists
+            }
+
+            return bluem_db_update_storage($record_id, [
+                'data' => json_encode( $new_object ),
+            ]);
         }
     }
 
