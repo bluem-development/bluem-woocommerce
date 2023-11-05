@@ -13,7 +13,6 @@
  * WC tested up to: 8.2
  *
  * Text Domain: bluem
- * Domain Path: /lang/
  *
  * @package WordPress
  * @author Hugh Lashbrooke
@@ -544,8 +543,8 @@ function bluem_update_request_by_id ( $request_id )
              */
             if ( $statusCode === "Success" ) {
                 if ( !empty ( $order ) ) {
-                    $order->update_status( 'processing', __( 'Machtiging is binnengekomen', 'wc-gateway-bluem' ) );
-                    $order->add_order_note( __( "Betalingsproces voltooid" ) );
+                    $order->update_status( 'processing', __( 'Authorization has been received', 'bluem' ) );
+                    $order->add_order_note( __( "Payment process completed", 'bluem' ) );
                 }
 
                 if ( !empty( $request->id ) ) {
@@ -570,19 +569,19 @@ function bluem_update_request_by_id ( $request_id )
                 //
             } elseif ( $statusCode === "Cancelled" ) {
                 if ( !empty ( $order ) ) {
-                    $order->update_status( 'cancelled', __( 'Machtiging is geannuleerd', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'cancelled', __( 'Authorization has been canceled', 'bluem' ) );
                 }
             } elseif ( $statusCode === "Open" ) {
                 //
             } elseif ( $statusCode === "Expired" ) {
                 if ( !empty ( $order ) ) {
-                    $order->update_status( 'failed', __( 'Machtiging is verlopen', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'failed', __( 'Authorization has expired', 'bluem' ) );
                 }
             } elseif ( $statusCode === "New" ) {
                 //
             } else {
                 if ( !empty ( $order ) ) {
-                    $order->update_status( 'failed', __( 'Machtiging is gefaald: fout of onbekende status', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'failed', __( 'Authorization failed: error or unknown status', 'bluem' ) );
                 }
             }
         } catch (Exception $e ) {
@@ -637,26 +636,26 @@ function bluem_update_request_by_id ( $request_id )
              */
             if ( $statusCode === "Success" ) {
                 if ( !empty ( $order ) ) {
-                    $order->update_status( 'processing', __( 'Betaling is binnengekomen', 'wc-gateway-bluem' ) );
-                    $order->add_order_note( __( "Betalingsproces voltooid" ) );
+                    $order->update_status( 'processing', __( 'Betaling is binnengekomen', 'bluem' ) );
+                    $order->add_order_note( __( "Betalingsproces voltooid", 'bluem' ) );
                 }
             } elseif ( $statusCode === "Pending" ) {
                 //
             } elseif ( $statusCode === "Cancelled" ) {
                 if ( !empty ( $order ) ) {
-                    $order->update_status( 'cancelled', __( 'Betaling is geannuleerd', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'cancelled', __( 'Betaling is geannuleerd', 'bluem' ) );
                 }
             } elseif ( $statusCode === "Open" ) {
                 //
             } elseif ( $statusCode === "Expired" ) {
                 if ( !empty ( $order ) ) {
-                    $order->update_status( 'failed', __( 'Betaling is verlopen', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'failed', __( 'Betaling is verlopen', 'bluem' ) );
                 }
             } elseif ( $statusCode === "New" ) {
                 //
             } else {
                 if ( !empty ( $order ) ) {
-                    $order->update_status( 'failed', __( 'Betaling is gefaald: fout of onbekende status', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'failed', __( 'Betaling is gefaald: fout of onbekende status', 'bluem' ) );
                 }
             }
         } catch (Exception $e ) {
@@ -788,41 +787,41 @@ function bluem_woocommerce_register_settings() {
         );
         add_settings_section(
             'bluem_woocommerce_modules_section',
-            _( 'Beheer onderdelen van deze plug-in' ),
+            _( 'Manage components of this plugin', 'bluem' ),
             'bluem_woocommerce_modules_settings_section',
             'bluem_woocommerce'
         );
         add_settings_field(
             "mandates_enabled",
-            _( "Mandates actief" ),
+            _( "eMandates active", 'bluem' ),
             "bluem_woocommerce_modules_render_mandates_activation",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
         );
         add_settings_field(
             "payments_enabled",
-            _( "ePayments actief" ),
+            _( "ePayments active", 'bluem' ),
             "bluem_woocommerce_modules_render_payments_activation",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
         );
         add_settings_field(
             "idin_enabled",
-            _( "iDIN actief" ),
+            _( "iDIN active", 'bluem' ),
             "bluem_woocommerce_modules_render_idin_activation",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
         );
         add_settings_field(
             "suppress_warning",
-            _( "In admin omgeving waarschuwen als plugin nog niet goed is ingesteld" ),
+            _( "Warn in admin environment if plugin has not yet been set up properly", 'bluem' ),
             "bluem_woocommerce_modules_render_suppress_warning",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
         );
         add_settings_section(
             'bluem_woocommerce_general_section',
-            '<span class="dashicons dashicons-admin-settings"></span> Algemene instellingen',
+            '<span class="dashicons dashicons-admin-settings"></span> ' . _( "General settings", 'bluem' ),
             'bluem_woocommerce_general_settings_section',
             'bluem_woocommerce'
         );
@@ -841,7 +840,7 @@ function bluem_woocommerce_register_settings() {
     if ( bluem_module_enabled( 'mandates' ) ) {
         add_settings_section(
             'bluem_woocommerce_mandates_section',
-            '<span class="dashicons dashicons-money"></span> Digitale Incassomachtiging instellingen',
+            '<span class="dashicons dashicons-money"></span> ' . _( "eMandates settings", 'bluem' ),
             'bluem_woocommerce_mandates_settings_section',
             'bluem_woocommerce'
         );
@@ -863,7 +862,7 @@ function bluem_woocommerce_register_settings() {
     if ( bluem_module_enabled( 'payments' ) ) {
         add_settings_section(
             'bluem_woocommerce_payments_section',
-            '<span class="dashicons dashicons-money-alt"></span> ePayments payments instellingen',
+            '<span class="dashicons dashicons-money-alt"></span> ' . _( "ePayments settings", 'bluem' ),
             'bluem_woocommerce_payments_settings_section',
             'bluem_woocommerce'
         );
@@ -886,7 +885,7 @@ function bluem_woocommerce_register_settings() {
     if ( bluem_module_enabled( 'idin' ) ) {
         add_settings_section(
             'bluem_woocommerce_idin_section',
-            '<span class="dashicons dashicons-admin-users"></span> iDIN instellingen',
+            '<span class="dashicons dashicons-admin-users"></span> ' . _( "eIdentity settings", 'bluem' ),
             'bluem_woocommerce_idin_settings_section',
             'bluem_woocommerce'
         );
@@ -908,7 +907,7 @@ function bluem_woocommerce_register_settings() {
 
     add_settings_section(
         'bluem_woocommerce_integrations_section',
-        '<span class="dashicons dashicons-admin-plugins"></span> Integratie instellingen',
+        '<span class="dashicons dashicons-admin-plugins"></span> ' . _( "integration settings", 'bluem' ),
         'bluem_woocommerce_integrations_settings_section',
         'bluem_woocommerce'
     );
@@ -1264,11 +1263,11 @@ function bluem_woocommerce_add_age_verification_field() {
     // Custom Attribute Field
     woocommerce_wp_select( array(
         'id' => 'age_verification',
-        'label' => __('Age verification', 'bluem-woocommerce'),
+        'label' => __('Age verification', 'bluem'),
         'placeholder' => '',
         'options' => array(
-            'enable' => __('Enable', 'bluem-woocommerce'),
-            'disable' => __('Disable', 'bluem-woocommerce'),
+            'enable' => __('Enable', 'bluem'),
+            'disable' => __('Disable', 'bluem'),
         ),
         'value' => $age_verification_value,
     ));
@@ -1400,7 +1399,7 @@ function bluem_registration_report_email( $data = [] ): bool {
     $data->{'Tech name'} = $bluem_registration['tech_contact']['name'];
     $data->{'Tech telephone'} = $bluem_registration['tech_contact']['telephone'];
     $data->{'Tech email'} = $bluem_registration['tech_contact']['email'];
-    $data->{'WooCommerce version'} = class_exists('WooCommerce') ? WC()->version : __('WooCommerce niet geinstalleerd.', 'bluem-woocommerce');
+    $data->{'WooCommerce version'} = class_exists('WooCommerce') ? WC()->version : __('WooCommerce not installed', 'bluem');
     $data->{'WordPress version'} = get_bloginfo( 'version' );
     $data->{'Bluem PHP-library'} = $dependency_bluem_php_version;
     $data->{'Plug-in version'} = $bluem['Version'];
@@ -1856,10 +1855,7 @@ add_action( 'add_meta_boxes', 'bluem_order_requests_metabox' );
 function bluem_order_requests_metabox() {
     add_meta_box(
         'bluem_order_requests_metabox_content',
-        __(
-            'Bluem request(s)',
-            'bluem'
-        ),
+        __('Bluem request(s)', 'bluem'),
         'bluem_order_requests_metabox_content',
         'shop_order',
         'normal',

@@ -38,7 +38,7 @@
 
     <p><strong>Plugin versie</strong><br />Versie <?php $bluem = get_plugin_data( WP_PLUGIN_DIR . '/bluem/bluem.php' ); echo $bluem['Version']; ?> (<a href="<?php echo admin_url('plugin-install.php?tab=plugin-information&plugin=bluem&TB_iframe=true&width=600&height=550'); ?>" target="_blank">Details bekijken</a>)</p>
 
-    <p><strong>Technische informatie</strong><br />WordPress versie: <?php echo get_bloginfo('version'); ?><br />WooCommerce versie: <?php echo class_exists('WooCommerce') ? WC()->version : __('WooCommerce niet geinstalleerd.', 'bluem-woocommerce'); ?><br />Bluem PHP-library versie: <?php echo $dependency_bluem_php_version; ?><br />PHP versie: <?php echo phpversion(); ?></p>
+    <p><strong>Technische informatie</strong><br />WordPress versie: <?php echo get_bloginfo('version'); ?><br />WooCommerce versie: <?php echo class_exists('WooCommerce') ? WC()->version : __('WooCommerce not installed', 'bluem'); ?><br />Bluem PHP-library versie: <?php echo $dependency_bluem_php_version; ?><br />PHP versie: <?php echo phpversion(); ?></p>
 
     <?php bluem_render_footer(); ?>
 </div>

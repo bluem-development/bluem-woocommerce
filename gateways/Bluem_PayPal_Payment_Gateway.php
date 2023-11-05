@@ -8,8 +8,8 @@ class Bluem_PayPal_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
     {
         parent::__construct(
             'bluem_payments_paypal',
-            __('Bluem betalingen via PayPal'),
-            __('Betaal gemakkelijk, snel en veilig via PayPal')
+            __('Bluem payments via PayPal', 'bluem'),
+            __('Pay easily, quickly and safely via PayPal', 'bluem')
         );
 
         $options = get_option( 'bluem_woocommerce_options' );

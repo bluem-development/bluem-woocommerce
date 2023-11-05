@@ -76,7 +76,7 @@
             </div>
 
             <div style="margin-top: 0; padding-top: 25px; border-top: 1px solid #2b4e6c;">
-                <input name="submit" class="button button-primary" type="submit" value="<?php esc_attr_e( 'Wijzigingen opslaan' ); ?>" />
+                <input name="submit" class="button button-primary" type="submit" value="<?php esc_attr_e( 'Save changes', 'bluem' ); ?>" />
             </div>
         </form>
     </div>

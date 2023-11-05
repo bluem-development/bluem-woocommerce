@@ -196,10 +196,10 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         }
         // Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled',
 
-        $order->update_status( 'pending', __( 'Awaiting Bluem Payment Signature', 'wc-gateway-bluem' ) );
+        $order->update_status( 'pending', __( 'Awaiting Bluem Payment Signature', 'bluem' ) );
 
         if ( isset( $response->PaymentTransactionResponse->TransactionURL ) ) {
-            $order->add_order_note( __( "Betalingsproces geïnitieerd" ) );
+            $order->add_order_note( __( "Betalingsproces geïnitieerd", 'bluem' ) );
 
             $transactionID = "" . $response->PaymentTransactionResponse->TransactionID;
             update_post_meta( $order_id, 'bluem_transactionid', $transactionID );
@@ -279,16 +279,16 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                     if ( $order_status === "processing" ) {
                         // order is already marked as processing, nothing more is necessary
                     } else if ( $order_status === "pending" ) {
-                        $order->update_status( 'processing', __( 'Betaling is gelukt en goedgekeurd; via webhook', 'wc-gateway-bluem' ) );
+                        $order->update_status( 'processing', __( 'Betaling is gelukt en goedgekeurd; via webhook', 'bluem' ) );
                     }
                 } elseif ( $webhook_status === "Cancelled" ) {
-                    $order->update_status('cancelled', __('Betaling is geannuleerd; via webhook', 'wc-gateway-bluem'));
+                    $order->update_status('cancelled', __('Betaling is geannuleerd; via webhook', 'bluem'));
                 } elseif ( $webhook_status === "Open" || $webhook_status == "Pending" ) {
                     // if the webhook is still open or pending, nothing has to be done yet
                 } elseif ( $webhook_status === "Expired" ) {
-                    $order->update_status( 'failed', __( 'Betaling is verlopen; via webhook', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'failed', __( 'Betaling is verlopen; via webhook', 'bluem' ) );
                 } else {
-                    $order->update_status( 'failed', __( 'Betaling is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'failed', __( 'Betaling is gefaald: fout of onbekende status; via webhook', 'bluem' ) );
                 }
                 http_response_code(200);
                 echo 'OK';
@@ -428,9 +428,9 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         }
 
         if ( $statusCode === self::PAYMENT_STATUS_SUCCESS ) {
-            $order->update_status( 'processing', __( 'Betaling is binnengekomen', 'wc-gateway-bluem' ) );
+            $order->update_status( 'processing', __( 'Payment has been received', 'bluem' ) );
 
-            $order->add_order_note( __( "Betalingsproces voltooid" ) );
+            $order->add_order_note( __( "Payment process completed", 'bluem' ) );
 
             bluem_transaction_notification_email(
                 $request_from_db->id
@@ -442,8 +442,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
             $this->thank_you_page( $order->get_id() );
         } elseif ( $statusCode === self::PAYMENT_STATUS_FAILURE ) {
-            $order->update_status( 'failed', __( 'Betaling is verlopen', 'wc-gateway-bluem' ) );
-            $order->add_order_note( __( "Betalingsproces niet voltooid" ) );
+            $order->update_status( 'failed', __( 'Payment has expired', 'bluem' ) );
+            $order->add_order_note( __( "Payment process not completed", 'bluem' ) );
             bluem_transaction_notification_email(
                 $request_from_db->id
             );
@@ -465,7 +465,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             );
             exit;
         } elseif ( $statusCode === "Cancelled" ) {
-            $order->update_status( 'cancelled', __( 'Betaling is geannuleerd', 'wc-gateway-bluem' ) );
+            $order->update_status( 'cancelled', __( 'Payment has been canceled', 'bluem' ) );
 
 
             bluem_transaction_notification_email(
@@ -483,7 +483,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             // is simpelweg SITE/wc-api/bluem_callback?transactionID=$transactionID
             exit;
         } elseif ( $statusCode === "Expired" ) {
-            $order->update_status( 'failed', __( 'Betaling is verlopen', 'wc-gateway-bluem' ) );
+            $order->update_status( 'failed', __( 'Payment has expired', 'bluem' ) );
             bluem_transaction_notification_email(
                 $request_from_db->id
             );
@@ -491,7 +491,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             bluem_dialogs_render_prompt( "Fout: De betaling of het verzoek daartoe is verlopen" );
             exit;
         } else {
-            $order->update_status( 'failed', __( 'Betaling is gefaald: fout of onbekende status', 'wc-gateway-bluem' ) );
+            $order->update_status( 'failed', __( 'Payment failed: error or unknown status', 'bluem' ) );
             bluem_transaction_notification_email(
                 $request_from_db->id
             );

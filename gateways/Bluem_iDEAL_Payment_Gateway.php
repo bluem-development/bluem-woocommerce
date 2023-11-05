@@ -10,8 +10,8 @@ class Bluem_iDEAL_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
     {
         parent::__construct(
             'bluem_payments_ideal',
-            __('Bluem betalingen via iDEAL'),
-            __('Betaal gemakkelijk, snel en veilig via iDEAL')
+            __('Bluem payments via iDEAL', 'bluem'),
+            __('Pay easily, quickly and safely via iDEAL', 'bluem')
         );
 
         $this->has_fields = true;
@@ -55,7 +55,7 @@ class Bluem_iDEAL_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
             woocommerce_form_field( 'bluem_payments_ideal_bic', array(
                 'type' => 'select',
                 'required' => true,
-                'label' => 'Selecteer een bank:',
+                'label' => __('Select a bank:', 'bluem'),
                 'options' => $options
             ), '' );
         }

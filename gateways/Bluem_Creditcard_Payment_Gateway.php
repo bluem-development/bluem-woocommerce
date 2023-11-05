@@ -8,8 +8,8 @@ class Bluem_Creditcard_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
     {
         parent::__construct(
             'bluem_payments_creditcard',
-            __('Bluem betalingen via Credit Card'),
-            __('Betaal gemakkelijk, snel en veilig via Credit Card'),
+            __('Bluem payments via Credit Card', 'bluem'),
+            __('Pay easily, quickly and safely via Credit Card', 'bluem'),
             home_url( 'wc-api/bluem_payments_callback' )
         );
 

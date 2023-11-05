@@ -421,7 +421,7 @@ payment for another order {$order_id}"
         // Remove cart
         global $woocommerce;
         $woocommerce->cart->empty_cart();
-        $order->update_status( 'pending', __( 'Awaiting Bluem eMandate Signature', 'wc-gateway-bluem' ) );
+        $order->update_status( 'pending', __( 'Awaiting Bluem eMandate Signature', 'bluem' ) );
 
         if ( isset( $response->EMandateTransactionResponse->TransactionURL ) ) {
 
@@ -572,21 +572,21 @@ payment for another order {$order_id}"
                         if ( ( $order_status === "pending" ) && $mandate_successful ) {
                             $order->update_status(
                                 'processing',
-                                __(
-                                    "Machtiging (Mandaat ID $mandateID) is gelukt en goedgekeurd; via webhook",
-                                    'wc-gateway-bluem'
+                                printf(
+                                    __( 'Authorization (Mandate ID %s) was successful and approved; via webhook', 'bluem' ),
+                                    $mandateID
                                 )
                             );
                         }
                     }
                 } elseif ( $webhook_status === "Cancelled" ) {
-                    $order->update_status( 'cancelled', __( 'Machtiging is geannuleerd; via webhook', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'cancelled', __( 'Authorization has been canceled; via webhook', 'bluem' ) );
                 } elseif ($webhook_status === "Open" || $webhook_status == "Pending") {
                     // if the webhook is still open or pending, nothing has to be done yet
                 } elseif ( $webhook_status === "Expired" ) {
-                    $order->update_status( 'failed', __( 'Machtiging is verlopen; via webhook', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'failed', __( 'Authorization has expired; via webhook', 'bluem' ) );
                 } else {
-                    $order->update_status( 'failed', __( 'Machtiging is gefaald: fout of onbekende status; via webhook', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'failed', __( 'Authorization failed: error or unknown status; via webhook', 'bluem' ) );
                 }
                 http_response_code(200);
                 echo 'OK';
@@ -766,7 +766,7 @@ payment for another order {$order_id}"
         } elseif ( $statusCode === "Cancelled" ) {
             $order->update_status(
                 'cancelled',
-                __( 'Machtiging is geannuleerd', 'wc-gateway-bluem' )
+                __( 'Authorization has been canceled', 'bluem' )
             );
 
             bluem_transaction_notification_email(
@@ -783,10 +783,7 @@ payment for another order {$order_id}"
         } elseif ( $statusCode === "Expired" ) {
             $order->update_status(
                 'failed',
-                __(
-                    'Machtiging is verlopen',
-                    'wc-gateway-bluem'
-                )
+                __('Authorization has expired', 'bluem')
             );
 
             bluem_transaction_notification_email(
@@ -800,10 +797,7 @@ payment for another order {$order_id}"
         } else {
             $order->update_status(
                 'failed',
-                __(
-                    'Machtiging is gefaald: fout of onbekende status',
-                    'wc-gateway-bluem'
-                )
+                __('Authorization failed: error or unknown status', 'bluem')
             );
             $errormessage = "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}
                     <br>Neem contact op met de webshop en vermeld deze status";
@@ -903,9 +897,9 @@ payment for another order {$order_id}"
                 if ( $allowed_margin ) {
                     $successful_mandate = true;
                 } else if ( $block_processing ) {
-                    $order->update_status( 'pending', __( 'Machtiging moet opnieuw ondertekend worden, want mandaat bedrag is te laag', 'wc-gateway-bluem' ) );
+                    $order->update_status( 'pending', __( 'Authorization must be signed again because the mandate amount is too low', 'bluem' ) );
 
-                    $url                     = $order->get_checkout_payment_url();
+                    $url = $order->get_checkout_payment_url();
                     $order_total_plus_string = str_replace( ".", ",", ( "" . round( $order_total_plus, 2 ) ) );
                     bluem_dialogs_render_prompt(
                         "<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
@@ -923,8 +917,6 @@ payment for another order {$order_id}"
 total including correction is &euro; {$order_total_plus_string}.
 The user is prompted to create a new mandate to fulfill this order."
                     );
-
-
                     exit;
                 }
             } else {
@@ -982,11 +974,7 @@ The user is prompted to create a new mandate to fulfill this order."
 
             $order->update_status(
                 'processing',
-                __(
-                    "Machtiging (mandaat ID {$mandate_id}, verzoek ID {$request_id}
-                        is gelukt en goedgekeurd",
-                    'wc-gateway-bluem'
-                )
+                printf(__('Authorization (Mandate ID %1$s, Request ID %2$s) has been obtained and approved', 'bluem'), $mandate_id, $request_id)
             );
 
             bluem_transaction_notification_email(

@@ -2142,15 +2142,15 @@ function bluem_order_email_identity_meta_data( $fields, $sent_to_admin, $order )
         if ( is_user_logged_in() ) {
             $validation_text = "";
             if ( get_user_meta( $current_user->ID, 'bluem_idin_validated', true ) ) {
-                $validation_text = __( 'ja', 'bluem' );
+                $validation_text = __( 'yes', 'bluem' );
                 // $validation_text .= " (Transactie ". get_user_meta($current_user->ID, 'bluem_idin_transaction_id', true).")";
             } else {
-                $validation_text = __( 'ja, als gastgebruiker', 'bluem' );
+                $validation_text = __( 'yes, as a guest user', 'bluem' );
             }
         }
 
         $fields['bluem_idin_validated'] = [
-            'label' => __( 'Identiteit geverifieerd', 'bluem' ),
+            'label' => __( 'Identity verified', 'bluem' ),
             'value' => $validation_text
         ];
     }
@@ -2180,13 +2180,13 @@ function bluem_order_email_identity_meta_data( $fields, $sent_to_admin, $order )
                 }
 
                 $fields['bluem_idin_address'] = [
-                    'label' => __( 'Adres uit verificatie', 'bluem' ),
+                    'label' => __( 'Address from verification', 'bluem' ),
                     'value' => $address_text
                 ];
             } else {
                 $fields['bluem_idin_address'] = [
-                    'label' => __( 'Adres uit verificatie', 'bluem' ),
-                    'value' => "Onbekend"
+                    'label' => __( 'Address from verification', 'bluem' ),
+                    'value' => __( 'Unknown', 'bluem' )
                 ];
             }
         }
@@ -2215,13 +2215,13 @@ function bluem_order_email_identity_meta_data( $fields, $sent_to_admin, $order )
             }
 
             $fields['bluem_idin_name'] = [
-                'label' => __( 'Naam uit verificatie', 'bluem' ),
+                'label' => __( 'Name from verification', 'bluem' ),
                 'value' => $name_text
             ];
         } else {
             $fields['bluem_idin_name'] = [
-                'label' => __( 'Naam uit verificatie', 'bluem' ),
-                'value' => "Onbekend"
+                'label' => __( 'Name from verification', 'bluem' ),
+                'value' => __( 'Unknown', 'bluem' )
             ];
         }
     }
@@ -2239,13 +2239,13 @@ function bluem_order_email_identity_meta_data( $fields, $sent_to_admin, $order )
             }
 
             $fields['bluem_idin_birthdate'] = [
-                'label' => __( 'Geboortedatum uit verificatie', 'bluem' ),
+                'label' => __( 'Date of birth from verification', 'bluem' ),
                 'value' => $birthdate_text
             ];
         } else {
             $fields['bluem_idin_birthdate'] = [
-                'label' => __( 'Geboortedatum uit verificatie', 'bluem' ),
-                'value' => "Onbekend"
+                'label' => __( 'Date of birth from verification', 'bluem' ),
+                'value' => __( 'Unknown', 'bluem' )
             ];
         }
     }

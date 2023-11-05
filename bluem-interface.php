@@ -23,7 +23,7 @@ function bluem_get_bluem_logo_html( $height = 64 ) {
 
 function bluem_render_request_table( $requests, $users_by_id = [] ) {
     if ( count( $requests ) == 0 ) {
-        echo "<p>" . __( "Nog geen transacties", 'bluem' ) . "</p>";
+        echo "<p>" . __( "No transactions yet", 'bluem' ) . "</p>";
 
         return;
     } ?>

@@ -8,8 +8,8 @@ class Bluem_CarteBancaire_Payment_Gateway extends Bluem_Bank_Based_Payment_Gatew
     {
         parent::__construct(
             'bluem_payments_cartebancaire',
-            __('Bluem betalingen via Carte Bancaire'),
-            __('Betaal gemakkelijk, snel en veilig via Carte Bancaire')
+            __('Bluem payments via Carte Bancaire', 'bluem'),
+            __('Pay easily, quickly and safely via Carte Bancaire', 'bluem')
         );
 
         $options = get_option( 'bluem_woocommerce_options' );
