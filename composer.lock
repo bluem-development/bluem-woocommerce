@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "bluem-development/bluem-php",
-            "version": "2.3.2.7",
+            "version": "2.3.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bluem-development/bluem-php.git",
-                "reference": "4ae6f7d71fec1f0dfb08d317858aaac4fa7a285c"
+                "reference": "2441a00cc9cdd6099f136bf9bc00f6c816f8853f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/4ae6f7d71fec1f0dfb08d317858aaac4fa7a285c",
-                "reference": "4ae6f7d71fec1f0dfb08d317858aaac4fa7a285c",
+                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/2441a00cc9cdd6099f136bf9bc00f6c816f8853f",
+                "reference": "2441a00cc9cdd6099f136bf9bc00f6c816f8853f",
                 "shasum": ""
             },
             "require": {
@@ -27,7 +27,8 @@
                 "ext-libxml": "*",
                 "ext-openssl": "*",
                 "ext-simplexml": "*",
-                "php": ">=8.0"
+                "php": ">=8.0",
+                "selective/xmldsig": "^3.0"
             },
             "require-dev": {
                 "magento/magento-coding-standard": "^31.0",
@@ -70,9 +71,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bluem-development/bluem-php",
-                "source": "https://github.com/bluem-development/bluem-php/tree/2.3.2.7"
+                "source": "https://github.com/bluem-development/bluem-php/tree/2.3.2.8"
             },
-            "time": "2023-10-11T11:20:36+00:00"
+            "time": "2023-10-18T23:56:47+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -327,6 +328,57 @@
                 "source": "https://github.com/php-fig/log/tree/1.1.4"
             },
             "time": "2021-05-03T11:20:27+00:00"
+        },
+        {
+            "name": "selective/xmldsig",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/selective-php/xmldsig.git",
+                "reference": "fb9cdf2ecfcf4b65931db8796c7336a43b607d73"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/selective-php/xmldsig/zipball/fb9cdf2ecfcf4b65931db8796c7336a43b607d73",
+                "reference": "fb9cdf2ecfcf4b65931db8796c7336a43b607d73",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-openssl": "*",
+                "php": "~8.0 || ~8.1 || ~8.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3",
+                "phpstan/phpstan": "^1",
+                "phpunit/phpunit": "^9 || ^10",
+                "squizlabs/php_codesniffer": "^3",
+                "starkbank/ecdsa": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Selective\\XmlDSig\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Sign XML Documents with Digital Signatures",
+            "homepage": "https://github.com/selective-php/xmldsig",
+            "keywords": [
+                "signatures",
+                "verify",
+                "xml",
+                "xmldsig"
+            ],
+            "support": {
+                "issues": "https://github.com/selective-php/xmldsig/issues",
+                "source": "https://github.com/selective-php/xmldsig/tree/3.0.0"
+            },
+            "abandoned": "robrichards/xmlseclibs",
+            "time": "2023-01-28T18:17:36+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -4285,5 +4337,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
