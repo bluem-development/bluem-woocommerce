@@ -787,41 +787,41 @@ function bluem_woocommerce_register_settings() {
         );
         add_settings_section(
             'bluem_woocommerce_modules_section',
-            _( 'Manage components of this plugin', 'bluem' ),
+            __( 'Manage components of this plugin', 'bluem' ),
             'bluem_woocommerce_modules_settings_section',
             'bluem_woocommerce'
         );
         add_settings_field(
             "mandates_enabled",
-            _( "eMandates active", 'bluem' ),
+            __( "eMandates active", 'bluem' ),
             "bluem_woocommerce_modules_render_mandates_activation",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
         );
         add_settings_field(
             "payments_enabled",
-            _( "ePayments active", 'bluem' ),
+            __( "ePayments active", 'bluem' ),
             "bluem_woocommerce_modules_render_payments_activation",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
         );
         add_settings_field(
             "idin_enabled",
-            _( "iDIN active", 'bluem' ),
+            __( "iDIN active", 'bluem' ),
             "bluem_woocommerce_modules_render_idin_activation",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
         );
         add_settings_field(
             "suppress_warning",
-            _( "Warn in admin environment if plugin has not yet been set up properly", 'bluem' ),
+            __( "Warn in admin environment if plugin has not yet been set up properly", 'bluem' ),
             "bluem_woocommerce_modules_render_suppress_warning",
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
         );
         add_settings_section(
             'bluem_woocommerce_general_section',
-            '<span class="dashicons dashicons-admin-settings"></span> ' . _( "General settings", 'bluem' ),
+            '<span class="dashicons dashicons-admin-settings"></span> ' . __( "General settings", 'bluem' ),
             'bluem_woocommerce_general_settings_section',
             'bluem_woocommerce'
         );
@@ -840,7 +840,7 @@ function bluem_woocommerce_register_settings() {
     if ( bluem_module_enabled( 'mandates' ) ) {
         add_settings_section(
             'bluem_woocommerce_mandates_section',
-            '<span class="dashicons dashicons-money"></span> ' . _( "eMandates settings", 'bluem' ),
+            '<span class="dashicons dashicons-money"></span> ' . __( "eMandates settings", 'bluem' ),
             'bluem_woocommerce_mandates_settings_section',
             'bluem_woocommerce'
         );
@@ -862,7 +862,7 @@ function bluem_woocommerce_register_settings() {
     if ( bluem_module_enabled( 'payments' ) ) {
         add_settings_section(
             'bluem_woocommerce_payments_section',
-            '<span class="dashicons dashicons-money-alt"></span> ' . _( "ePayments settings", 'bluem' ),
+            '<span class="dashicons dashicons-money-alt"></span> ' . __( "ePayments settings", 'bluem' ),
             'bluem_woocommerce_payments_settings_section',
             'bluem_woocommerce'
         );
@@ -885,7 +885,7 @@ function bluem_woocommerce_register_settings() {
     if ( bluem_module_enabled( 'idin' ) ) {
         add_settings_section(
             'bluem_woocommerce_idin_section',
-            '<span class="dashicons dashicons-admin-users"></span> ' . _( "eIdentity settings", 'bluem' ),
+            '<span class="dashicons dashicons-admin-users"></span> ' . __( "eIdentity settings", 'bluem' ),
             'bluem_woocommerce_idin_settings_section',
             'bluem_woocommerce'
         );
@@ -907,7 +907,7 @@ function bluem_woocommerce_register_settings() {
 
     add_settings_section(
         'bluem_woocommerce_integrations_section',
-        '<span class="dashicons dashicons-admin-plugins"></span> ' . _( "integration settings", 'bluem' ),
+        '<span class="dashicons dashicons-admin-plugins"></span> ' . __( "integration settings", 'bluem' ),
         'bluem_woocommerce_integrations_settings_section',
         'bluem_woocommerce'
     );
