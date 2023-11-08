@@ -185,7 +185,9 @@ function bluem_woocommerce_integration_wpcf7_ajax()
         return;
     }
 
-    if ($bluem_config->wpcf7Active !== 'Y') {
+    $bluem_mandate_approve = !empty($_POST['bluem_mandate_approve']) ? $_POST['bluem_mandate_approve'] : '';
+
+    if ($bluem_config->wpcf7Active !== 'Y' || empty($bluem_mandate_approve)) {
         return;
     }
 
@@ -374,7 +376,7 @@ function bluem_woocommerce_integration_wpcf7_submit() {
 
     $is_bluem_ajax = $contact_form->is_true( 'bluem_is_ajax' );
 
-    if ( $is_bluem_mandate && !$is_bluem_ajax && $submission ) {
+    if ( $is_bluem_mandate && !$is_bluem_ajax && !empty($bluem_mandate_approve) && !empty($submission) ) {
         $posted_data = $submission->get_posted_data();
 
         $posted_data_hash = $submission->get_posted_data_hash();
