@@ -14,6 +14,14 @@ help:
 install:
 	composer install
 
+.PHONY: lint
+lint:
+	./tools/php-cs-fixer/vendor/bin/php-cs-fixer check .
+
+.PHONY: lint_fix
+lint_fix:
+	./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix .
+
 .PHONY: test
 test: unit_test acceptance_test
 
