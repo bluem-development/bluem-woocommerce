@@ -18,3 +18,6 @@ bluem.zip
 _notes
 docker
 ._*
+/tests/Support/_generated/AcceptanceTesterActions.php
+/tests/Support/_generated/FunctionalTesterActions.php
+/tests/Support/_generated/UnitTesterActions.php
