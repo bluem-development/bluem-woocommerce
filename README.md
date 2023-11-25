@@ -22,6 +22,8 @@ make add_git_hooks
 ```
 to enable git hooks, which will automatically run **unit** tests and CS linting (soon) before any commit.
 
+- Also if you want to lint or use automatic lint-fixes, ensure that the PHP CS fixer is installed in the `tools` folder.
+
 ### Unit testing
 
 ```bash
