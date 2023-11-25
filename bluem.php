@@ -170,7 +170,7 @@ function bluem_woocommerce_no_woocommerce_notice() {
         if ( ! isset( $bluem_options['suppress_woo'] ) || $bluem_options['suppress_woo'] == "0" ) {
             echo '<div class="notice notice-warning is-dismissible">
             <p><span class="dashicons dashicons-warning"></span> De Bluem integratie is grotendeels afhankelijk van WooCommerce - installeer en/of activeer deze plug-in.<br>
-            Je kan deze melding en WooCommerce gerelateerde functionaliteiten ook uitzetten bij de <a href="' . admin_url( 'admin.php?page=bluem-settings' ) . '">instellingen</a>.</p>
+            Gebruik je geen WooCommerce? Dan kan je deze melding en WooCommerce gerelateerde functionaliteiten uitzetten bij de <a href="' . admin_url( 'admin.php?page=bluem-settings' ) . '">instellingen</a>.</p>
             </div>';
         }
     }
@@ -1379,7 +1379,7 @@ function bluem_registration_report_email( $data = [] ): bool {
 
     $data = (object) $data;
     $data->activation_report_id = $activation_report_id;
-    $data->{'Bluem SenderID'} = $bluem_options['senderID'];
+    $data->{'Bluem SenderID'} = $bluem_options['senderID'] ?? '';
     $data->{'Website name'} = get_bloginfo( 'name' );
     $data->{'Website URL'} = get_bloginfo( 'url' );
     $data->{'Company name'} = $bluem_registration['company']['name'];
