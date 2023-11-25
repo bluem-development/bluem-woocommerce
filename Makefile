@@ -4,10 +4,15 @@
 help:
 	@printf '\nTo run a task: make <task_name>\n'
 	@printf '\nExamples:\n'
+	@printf '\- make install\n'
 	@printf '\- make test\n'
 	@printf '\- make unit_test\n'
 	@printf '\- make acceptance_test\n'
 	@printf '\- make add_git_hooks\n'
+
+.PHONY: install
+install:
+	composer install
 
 .PHONY: test
 test: unit_test acceptance_test
