@@ -8,7 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Bluem\BluemPHP\Bluem as Bluem;
-use Carbon\Carbon;
 
 /*
  * This action hook registers our PHP class as a WooCommerce payment gateway
