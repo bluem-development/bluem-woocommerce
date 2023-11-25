@@ -12,10 +12,10 @@ class Bluem_CarteBancaire_Payment_Gateway extends Bluem_Bank_Based_Payment_Gatew
             __('Pay easily, quickly and safely via Carte Bancaire', 'bluem')
         );
 
-        $options = get_option( 'bluem_woocommerce_options' );
-        if ( !empty( $options['paymentsCarteBancaireBrandID'] ) ) {
+        $options = get_option('bluem_woocommerce_options');
+        if (!empty($options['paymentsCarteBancaireBrandID'])) {
             $this->setBankSpecificBrandID($options['paymentsCarteBancaireBrandID']);
-        } elseif ( !empty( $options['paymentBrandID'] ) ) {
+        } elseif (!empty($options['paymentBrandID'])) {
             $this->setBankSpecificBrandID($options['paymentBrandID']); // legacy brandID support
         }
     }
