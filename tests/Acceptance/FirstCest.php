@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Tests\Acceptance;
 
 use Tests\Support\AcceptanceTester;
@@ -15,10 +14,5 @@ class FirstCest
     {
         $I->amOnPage('/');
         $I->see('Home');
-    }
-
-    // tests
-    public function tryToTest(AcceptanceTester $I)
-    {
     }
 }
