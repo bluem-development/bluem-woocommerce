@@ -1391,7 +1391,7 @@ function bluem_idin_validation_needed() {
     $age_verification_needed = bluem_checkout_age_verification_needed();
 
 	$options = get_option( 'bluem_woocommerce_options' );
-    
+
     if ( isset( $options['idin_enable_ip_country_filtering'] )
          && $options['idin_enable_ip_country_filtering'] !== ""
     ) {
@@ -1489,9 +1489,9 @@ function bluem_parse_IDINDescription( $input ) {
 
 function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page = false ) {
     global $current_user;
-    
+
     $bluem_config = bluem_woocommerce_get_config();
-    
+
     if ( isset( $bluem_config->IDINDescription ) ) {
         $description = bluem_parse_IDINDescription( $bluem_config->IDINDescription );
     } else {
@@ -1506,11 +1506,11 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
 
     // fallback until this is corrected in bluem-php
     $bluem_config->brandID = $bluem_config->IDINBrandID;
-    
+
     $bluem = new Bluem( $bluem_config );
 
     $cats = bluem_idin_get_categories();
-    
+
     if ( count( $cats ) == 0 ) {
         $errormessage = "Geen juiste iDIN categories ingesteld";
         bluem_error_report_email(
@@ -1545,11 +1545,6 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
     if ( $bluem_config->environment === BLUEM_ENVIRONMENT_TESTING ) {
         $request->enableStatusGUI();
     }
-
-    #debug
-//    bluem_prettyprint($request);
-//    echo ($request->XmlString());
-//    die();
 
     try {
         $response = $bluem->PerformRequest( $request );
@@ -1616,7 +1611,7 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
         } else {
             $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
             Vermeld onderstaande informatie aan het websitebeheer:";
-            
+
             if ( $response->Error() !== "" ) {
                 $msg .= "<br>Response: " .
                         $response->Error();
@@ -1637,7 +1632,7 @@ function bluem_idin_execute( $callback = null, $redirect = true, $redirect_page 
     } catch (\Exception $e) {
         $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
         Vermeld onderstaande informatie aan het websitebeheer:";
-        
+
         if ( !empty($e->getMessage()) ) {
             $msg .= "<br>Response: " . $e->getMessage();
         } else {
@@ -1883,7 +1878,7 @@ function bluem_validate_idin_at_checkout( $fields, $errors ) {
 add_action( 'template_redirect', 'bluem_checkout_check_idin_validated' );
 function bluem_checkout_check_idin_validated() {
     global $current_user;
-    
+
     // ! is_user_logged_in() &&
 
     if ( ! function_exists( "is_checkout" ) || ! function_exists( 'is_wc_endpoint_url' ) ) {
@@ -2065,7 +2060,7 @@ function bluem_idin_get_age_based_on_date( $birthday_string ) {
 function bluem_idin_get_verification_scenario() {
     $options = get_option( 'bluem_woocommerce_options' );
     $scenario = 0;
-    
+
     if ( isset( $options['idin_scenario_active'] )
          && $options['idin_scenario_active'] !== ""
     ) {
@@ -2077,7 +2072,7 @@ function bluem_idin_get_verification_scenario() {
 
 function bluem_idin_get_min_age() {
     $options = get_option( 'bluem_woocommerce_options' );
-    
+
     if ( isset( $options['idin_check_age_minimum_age'] )
          && $options['idin_check_age_minimum_age'] !== ""
     ) {

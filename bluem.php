@@ -1296,8 +1296,6 @@ add_action( 'save_post', 'bluem_woocommerce_save_age_verification_values' );
  * @return bool
  */
 function bluem_error_report_email( $data = [] ): bool {
-    $debug = false;
-
     $error_report_id = date( "Ymdhis" ) . '_' . rand( 0, 512 );
 
     $data = (object) $data;
@@ -1315,11 +1313,6 @@ function bluem_error_report_email( $data = [] ): bool {
     if ( ! isset( $settings['error_reporting_email'] )
         || $settings['error_reporting_email'] == 1
     ) {
-        if ( $debug ) {
-            echo "Sending error reporting email; Data:";
-            var_dump( $data );
-        }
-
         $author_name  = "Administratie van " . get_bloginfo( 'name' );
         $author_email = esc_attr(
             get_option( "admin_email" )
@@ -1353,9 +1346,6 @@ function bluem_error_report_email( $data = [] ): bool {
         $message = nl2br( $message );
 
         $headers = array( 'Content-Type: text/html; charset=UTF-8' );
-        if ( $debug ) {
-            bluem_email_debug( $to, $subject, $message, $headers );
-        }
 
         $mailing = wp_mail( $to, $subject, $message, $headers );
 
@@ -1376,7 +1366,6 @@ function bluem_error_report_email( $data = [] ): bool {
  * @return bool
  */
 function bluem_registration_report_email( $data = [] ): bool {
-    $debug = false;
 
     $bluem = get_plugin_data( WP_PLUGIN_DIR . '/bluem/bluem.php' );
 
@@ -1407,11 +1396,6 @@ function bluem_registration_report_email( $data = [] ): bool {
 
     if ( is_null( $data ) ) {
         return false;
-    }
-
-    if ( $debug ) {
-        echo "Sending notify reporting email; Data:";
-        var_dump( $data );
     }
 
     $author_name  = "Administratie van " . get_bloginfo( 'name' );
@@ -1446,9 +1430,6 @@ function bluem_registration_report_email( $data = [] ): bool {
     $message = nl2br( $message );
 
     $headers = array( 'Content-Type: text/html; charset=UTF-8' );
-    if ( $debug ) {
-        bluem_email_debug( $to, $subject, $message, $headers );
-    }
 
     $mailing = wp_mail( $to, $subject, $message, $headers );
 
@@ -1463,17 +1444,6 @@ function bluem_email_footer(): string {
     return "<p>Ga naar de site op " . home_url() . " om dit verzoek in detail te bekijken.</p>";
 }
 
-function bluem_email_debug( $to, $subject, $message, $headers ) {
-    echo "<HR> " . PHP_EOL;
-    var_dump( $to );
-    var_dump( $subject );
-    echo "<HR> " . PHP_EOL;
-    echo( $message );
-    echo "<HR> " . PHP_EOL;
-    var_dump( $headers );
-    die();
-}
-
 /**
  * This function executes a notification mail, if this is set as such in the settings.
  *
@@ -1484,7 +1454,6 @@ function bluem_email_debug( $to, $subject, $message, $headers ) {
 function bluem_transaction_notification_email(
     $request_id
 ): bool {
-    $debug = false;
 
     $settings = get_option( 'bluem_woocommerce_options' );
 
@@ -1507,13 +1476,7 @@ function bluem_transaction_notification_email(
     if ( ! isset( $settings['transaction_notification_email'] )
         || $settings['transaction_notification_email'] == 1
     ) {
-        if ( $debug ) {
-            echo "Sending notification email for request. Data:";
-            var_dump( $data );
-        }
-
-        $author_name = "administratie van " . get_bloginfo( 'name' );
-        //get_the_author_meta('user_nicename');
+        $author_name = "Administratie van " . get_bloginfo( 'name' );
 
         $to = esc_attr(
             get_option( "admin_email" )
@@ -1554,9 +1517,6 @@ function bluem_transaction_notification_email(
 
         $headers = array( 'Content-Type: text/html; charset=UTF-8' );
 
-        if ( $debug ) {
-            bluem_email_debug( $to, $subject, $message, $headers );
-        }
         $mailing = wp_mail( $to, $subject, $message, $headers );
 
         if ( $mailing ) {
