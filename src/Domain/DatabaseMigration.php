@@ -8,5 +8,5 @@ final class DatabaseMigration
 
     public function __construct(string $sql) {
         $this->sql = $sql;
-    };
+    }
 }

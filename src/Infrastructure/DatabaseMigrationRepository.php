@@ -9,9 +9,15 @@ class DatabaseMigrationRepository
     /**
      * @return DatabaseMigration[]
      */
-    public function getMigrations($installed_ver): array
+    public function getMigrations(): array
     {
-        global $wpdb;
+        global $wpdb, $bluem_db_version;
+
+        $installed_ver = (float) get_option( "bluem_db_version" );
+        if ( !empty( $installed_ver ) && $installed_ver >= $bluem_db_version ) {
+            // up to date
+            return [];
+        }
 
         // Define table names
         $table_name_storage = $wpdb->prefix . 'bluem_storage';
@@ -90,6 +96,7 @@ class DatabaseMigrationRepository
                 $migrations[] = new DatabaseMigration("INSERT INTO `$table_name_links` SELECT * FROM bluem_requests_links;");
             }
         }
+
         return $migrations;
     }
 }
