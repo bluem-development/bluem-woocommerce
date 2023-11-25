@@ -15,4 +15,42 @@ class FirstCest
         $I->amOnPage('/');
         $I->see('Home');
     }
+
+    public function loginPageWorks(AcceptanceTester $I)
+    {
+        $I->amOnPage('/wp-admin');
+        $I->see('Username or Email Address');
+    }
+
+    public function loginWithValidCredentials(AcceptanceTester $I)
+    {
+        $this->ifIAmLoggedIn($I);
+        $I->see('Dashboard');
+    }
+
+    public function loginWithInvalidCredentials(AcceptanceTester $I)
+    {
+        $I->amOnPage('/wp-login.php');
+        $I->fillField('input[name="log"]', 'wordpress');
+        $I->fillField('input[name="pwd"]', 'notwordpress');
+        $I->click('Log In');
+        $I->see('Error: The password you entered for the username wordpress is incorrect.');
+
+    }
+
+    public function logout(AcceptanceTester $I)
+    {
+        $this->ifIAmLoggedIn($I);
+        $I->click('#wp-admin-bar-my-account > a');
+        $I->click('#wp-admin-bar-logout > a');
+        $I->see('logged out');
+    }
+
+    private function ifIAmLoggedIn($I): void
+    {
+        $I->amOnPage('/wp-admin');
+        $I->fillField('input[name="log"]', 'wordpress');
+        $I->fillField('input[name="pwd"]', 'wordpress');
+        $I->click('Log In');
+    }
 }
