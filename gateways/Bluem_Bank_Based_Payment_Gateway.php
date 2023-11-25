@@ -1,11 +1,10 @@
 <?php
 
-use Carbon\Carbon;
-
 include_once __DIR__ . '/Bluem_Payment_Gateway.php';
 
 abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 {
+    private const EURO_CURRENCY = 'EUR';
     /**
      * @var ?string
      */
@@ -134,17 +133,18 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         $bluem_payments_ideal_bic = isset($_POST['bluem_payments_ideal_bic']) ? sanitize_text_field($_POST['bluem_payments_ideal_bic']) : '';
 
+
         $debtorReference = $order_id;
         $amount          = $order->get_total();
-        $currency        = "EUR"; // get dynamically from order
-        $dueDateTime     = Carbon::now()->addDay();
+        $currency        = self::EURO_CURRENCY; // @todo: get dynamically from order
+        $dueDateTime     = (new DateTimeImmutable())->modify('+1 day');
 
         try {
             $request = $this->bluem->CreatePaymentRequest(
                 $description,
                 $debtorReference,
                 $amount,
-                $dueDateTime,
+                $dueDateTime->format('Y-m-d H:i:s'),
                 $currency,
                 $entranceCode,
                 home_url( sprintf( 'wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode ) )
@@ -162,7 +162,14 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         if ( !empty( $bluem_payments_ideal_bic ) )
         {
-            $request->selectDebtorWallet( $bluem_payments_ideal_bic );
+            try {
+                $request->selectDebtorWallet($bluem_payments_ideal_bic);
+            } catch (Exception $e) {
+                return array(
+                    'exception' => $e->getMessage(),
+                    'result' => 'failure'
+                );
+            }
         }
 
         // temp overrides
@@ -171,14 +178,14 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $request->dueDateTime      = $dueDateTime->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
         $request->debtorReturnURL  = home_url( sprintf( 'wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode ) );
 
-        $payload = json_encode( [
-            'environment'       => $this->bluem_config->environment,
-            'amount'            => $amount,
-            'method'            => $this->bankSpecificBrandID,
-            'currency'          => $currency,
-            'due_date'          => $request->dueDateTime,
+        $payload = json_encode([
+            'environment' => $this->bluem_config->environment,
+            'amount' => $amount,
+            'method' => $this->bankSpecificBrandID,
+            'currency' => $currency,
+            'due_date' => $request->dueDateTime,
             'payment_reference' => $request->paymentReference
-        ] );
+        ], JSON_THROW_ON_ERROR);
 
         // allow third parties to add additional data to the request object through this additional action
         $request = apply_filters(

@@ -5,7 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Bluem\BluemPHP\Bluem;
-use Carbon\Carbon;
 
 function bluem_woocommerce_integrations_settings_section() {
     echo '<p><a id="tab_integrations"></a></p>';
@@ -504,7 +503,7 @@ function bluem_woocommerce_integration_wpcf7_submit() {
                     wp_redirect( $transactionURL );
                     exit;
                 } catch (\Exception $e) {
-                    var_dump($e->getMessage());
+                    exit("Error");
                 }
             }
             else
@@ -975,7 +974,10 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
                     }
                     die;
                 } catch (\Exception $e) {
-                    var_dump($e->getMessage());
+                    echo json_encode([
+                        'success' => false
+                    ]);
+                    die();
                 }
             }
         }
@@ -1176,12 +1178,20 @@ function bluem_woocommerce_integration_gform_callback()
 
                 $payload = json_decode(json_encode($newPayload));
 
+                $mandateDateTimeFormatted = '';
+                try {
+                    $mandateDateTime = new DateTimeImmutable($payload->report->DateTime);
+                    $mandateDateTimeFormatted = $mandateDateTime->format('d-m-Y H:i');
+                } catch (Exception $e) {
+                }
+
+
                 if ($value['field_name'] === 'bluem_mandate_accountname') {
                     $newValue = $payload->report->DebtorAccountName;
                 } elseif ($value['field_name'] === 'bluem_mandate_request_id') {
                     $newValue = $payload->report->MandateRequestID;
                 } elseif ($value['field_name'] === 'bluem_mandate_datetime') {
-                    $newValue = Carbon::parse($payload->report->DateTime)->format('d-m-Y H:i');
+                    $newValue = $mandateDateTimeFormatted;
                 } elseif ($value['field_name'] === 'bluem_mandate_iban') {
                     $newValue = $payload->report->DebtorIBAN;
                 }
