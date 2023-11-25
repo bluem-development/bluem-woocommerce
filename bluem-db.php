@@ -11,26 +11,21 @@ use Bluem\WooCommerce\Infrastructure\DatabaseMigrationRepository;
  * Initialize a database table for the requests.
  * @return void
  */
-function bluem_db_create_requests_table(): void {
-    global $wpdb, $bluem_db_version;
+function bluem_db_create_requests_table(): void
+{
+    global $bluem_db_version;
 
-    $installed_ver = (float) get_option( "bluem_db_version" );
+    include_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-    if ( empty( $installed_ver ) || $installed_ver < $bluem_db_version ) {
-        $charset_collate = $wpdb->get_charset_collate();
-
-        include_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-        $migrationRepository = new DatabaseMigrationRepository();
-        foreach($migrationRepository->getMigrations($installed_ver) as $migration) {
-            dbDelta($migration->sql);
-        }
-
-        update_option(
-            "bluem_db_version",
-            $bluem_db_version
-        );
+    $repo = new DatabaseMigrationRepository();
+    foreach($repo->getMigrations() as $migration) {
+        dbDelta($migration->sql);
     }
+
+    update_option(
+        "bluem_db_version",
+        $bluem_db_version
+    );
 }
 
 function bluem_db_check() {

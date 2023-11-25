@@ -25,6 +25,11 @@
         "yoast/phpunit-polyfills": "^1.0",
         "vimeo/psalm": "^4.16"
     },
+    "autoload": {
+        "psr-4": {
+            "Bluem\\WooCommerce\\": "src"
+        }
+    },
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": false
