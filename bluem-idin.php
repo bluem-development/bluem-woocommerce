@@ -844,11 +844,12 @@ function bluem_idin_shortcode_callback() {
     $bluem_config = bluem_woocommerce_get_config();
 
     // fallback until this is corrected in bluem-php
-    $bluem_config->brandID = $bluem_config->IDINBrandID;
+    $bluem_config->brandID = $bluem_config->IDINBrandID ??  $bluem_config->brandID ?? '';
 
     try {
         $bluem = new Bluem( $bluem_config );
     } catch ( Exception $e ) {
+        return;
         // @todo: deal with incorrectly configured Bluem here
     }
 
@@ -1402,15 +1403,20 @@ function bluem_idin_validation_needed() {
 
 	$bluem_config = bluem_woocommerce_get_config();
 
-    $bluem_config->brandID = $bluem_config->IDINBrandID;
+    $bluem_config->brandID = $bluem_config->IDINBrandID ?? $bluem_config->brandID ?? '';
+
+    if(empty($bluem_config->brandID)) {
+        return false;
+    }
 
 	try {
         $bluem = new Bluem( $bluem_config );
     } catch ( Exception $e ) {
-        // @todo: deal with non-configured bluem, or assert that is has been configured on a higher level
+        // @todo: deal with non-configured bluem brandID, or assert that is has been configured on a higher level
+        return false;
     }
 
-	// Check if IP filtering is enabled
+    // Check if IP filtering is enabled
 	if ( $idin_enable_ip_country_filtering ) {
 		// override international IP's - don't validate idin when not NL
         if ( ! $bluem->VerifyIPIsNetherlands() ) {
