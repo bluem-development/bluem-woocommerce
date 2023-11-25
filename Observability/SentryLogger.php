@@ -15,11 +15,16 @@ final class SentryLogger
 
     public function initialize(): void
     {
+        $bluem = get_plugin_data( WP_PLUGIN_DIR . '/bluem/bluem.php' );
+        $plugin_version = $bluem['Version'];
+
         \Sentry\init([
             'dsn' => 'https://'.self::KEY.'.ingest.sentry.io/'.self::PROJECT_ID,
             'environment' => $this->getEnvironment(),
             'attach_stacktrace'=> true,
+            'release' => 'bluem-woocommerce@'.$plugin_version,
         ]);
+
 
         $values = get_option( 'bluem_woocommerce_options' );
         $senderId =$values['senderID'] ?? '';

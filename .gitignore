@@ -12,6 +12,7 @@ composer.lock
 bluem.zip
 .phpunit.result.cache
 .phpunit.cache*
+.php-cs-fixer.cache
 .idea
 /copyscript.sh
 _notes

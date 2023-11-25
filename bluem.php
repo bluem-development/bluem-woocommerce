@@ -1994,9 +1994,7 @@ function bluem_register_error_logging() {
     if ( ! isset( $settings['error_reporting_email'] )
         || ((int)$settings['error_reporting_email'] === 1)
     ) {
-        echo "Init";
         $logger = new SentryLogger();
         $logger->initialize();
     }
-    throw new \RuntimeException('test voor Peter');
 }
