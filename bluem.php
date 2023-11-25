@@ -38,6 +38,7 @@ require_once __DIR__ . '/bluem-compatibility.php';
 require __DIR__ . '/vendor/autoload.php';
 
 use Bluem\BluemPHP\Bluem;
+use Bluem\Wordpress\Observability\SentryLogger;
 
 if ( ! defined( "BLUEM_LOCAL_DATE_FORMAT" ) ) {
     define( "BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s" );
@@ -65,6 +66,9 @@ require_once __DIR__ . '/bluem-interface.php';
 
 // integrations with external plugins
 require_once __DIR__ . '/bluem-integrations.php';
+
+// Observability
+require_once __DIR__ . '/Observability/SentryLogger.php';
 
 /**
  * Check if WooCommerce is activated
@@ -373,6 +377,7 @@ function bluem_plugin_activation() {
 
     include_once 'views/activate.php';
 }
+
 
 function bluem_requests_view() {
     if ( isset( $_GET['request_id'] ) && $_GET['request_id'] !== "" ) {
@@ -819,6 +824,7 @@ function bluem_woocommerce_register_settings() {
             "bluem_woocommerce",
             "bluem_woocommerce_modules_section"
         );
+
         add_settings_section(
             'bluem_woocommerce_general_section',
             '<span class="dashicons dashicons-admin-settings"></span> ' . __( "General settings", 'bluem' ),
@@ -946,6 +952,12 @@ function bluem_woocommerce_register_settings() {
 add_action( 'admin_init', 'bluem_woocommerce_register_settings' );
 
 function bluem_woocommerce_init() {
+
+    /**
+     * Register error logging
+     */
+    bluem_register_error_logging();
+
     /**
      * Create session storage.
      */
@@ -1203,8 +1215,8 @@ function bluem_woocommerce_get_core_options(): array {
         'error_reporting_email'          => [
             'key'         => 'error_reporting_email',
             'title'       => 'bluem_error_reporting_email',
-            'name'        => 'Rapporteer errors bij de developers via een automatische email',
-            'description' => "Help ons snel problemen oplossen en downtime minimaliseren. Geef hier aan of je als de developers van Bluem  automatisch een notificatie e-mail wil sturen met technische details (geen persoonlijke informatie). Dit staat standaard aan, behalve als je dit expliciet uitzet. ",
+            'name'        => 'Rapporteer errors bij de developers',
+            'description' => "Help ons snel problemen oplossen en downtime minimaliseren door niet-persoonlijke technische meldingen door te laten sturen.",
             'type'        => 'select',
             'default'     => '1',
             'options'     => [
@@ -1593,12 +1605,12 @@ function bluem_woocommerce_modules_render_suppress_warning() {
     bluem_woocommerce_modules_render_generic_activation( "suppress_warning" );
 }
 
-
 function bluem_woocommerce_settings_render_suppress_woo() {
     bluem_woocommerce_settings_render_input(
         bluem_woocommerce_get_option( 'suppress_woo' )
     );
 }
+//throw new Exception("Voorbeeld voor Peter");
 
 function bluem_woocommerce_settings_render_error_reporting_email() {
     bluem_woocommerce_settings_render_input(
@@ -1973,4 +1985,18 @@ function bluem_admin_status() {
 
 function bluem_woocommerce_is_woocommerce_active(): bool {
     return in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
+}
+
+
+function bluem_register_error_logging() {
+    $settings = get_option( 'bluem_woocommerce_options' );
+
+    if ( ! isset( $settings['error_reporting_email'] )
+        || ((int)$settings['error_reporting_email'] === 1)
+    ) {
+        echo "Init";
+        $logger = new SentryLogger();
+        $logger->initialize();
+    }
+    throw new \RuntimeException('test voor Peter');
 }
