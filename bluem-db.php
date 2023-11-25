@@ -3,8 +3,9 @@
 register_activation_hook( __FILE__, 'bluem_db_create_requests_table' );
 // no need for a deactivation hook yet.
 
-use Bluem\BluemPHP\Application\RequestRepository;
-use Bluem\BluemPHP\Domain\Request;
+use Bluem\WooCommerce\Application\RequestRepository;
+use Bluem\WooCommerce\Domain\Request;
+use Bluem\WooCommerce\Infrastructure\DatabaseMigrationRepository;
 
 /**
  * Initialize a database table for the requests.

@@ -1,8 +1,8 @@
 <?php
 
-namespace Bluem\BluemPHP\Infrastructure;
+namespace Bluem\WooCommerce\Infrastructure;
 
-use Bluem\BluemPHP\Domain\Request;
+use Bluem\WooCommerce\Domain\Request;
 
 class RequestFactory
 {

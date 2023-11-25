@@ -1,6 +1,6 @@
 <?php
 
-namespace Bluem\BluemPHP\Domain;
+namespace Bluem\WooCommerce\Domain;
 
 class Request
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bluem\BluemPHP\Infrastructure;
+namespace Bluem\WooCommerce\Infrastructure;
 
 class DatabaseService
 {

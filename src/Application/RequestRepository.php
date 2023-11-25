@@ -1,6 +1,6 @@
 <?php
 
-namespace Bluem\BluemPHP\Application;
+namespace Bluem\WooCommerce\Application;
 
 use Bluem\BluemPHP\Domain\Request;
 use Bluem\BluemPHP\Infrastructure\DatabaseService;
