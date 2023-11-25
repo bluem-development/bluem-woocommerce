@@ -1737,13 +1737,12 @@ function bluem_checkout_idin_notice() {
     if ( isset( $options['idin_identity_more_information_popup'] ) && $options['idin_identity_more_information_popup'] !== "" ) {
         $idin_identity_more_information_popup = $options['idin_identity_more_information_popup'];
     } else {
-        $idin_identity_more_information_popup = "**Identificeren is per 1 juli 2021 verplicht in winkels waar producten verkocht worden met een identiteitsplicht van de klant.**
+        $idin_identity_more_information_popup = "<strong>Identificeren is per 1 juli 2021 verplicht in winkels waar producten verkocht worden met een identiteitsplicht van de klant.</strong><br><br>
 
-De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDEAL.   Het duurt hoogstens twee minuten en het resultaat wordt opgeslagen voor vervolgtransacties als je ingelogd bent als terugkerende klant.
+De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDEAL.   Het duurt hoogstens twee minuten en het resultaat wordt opgeslagen voor vervolgtransacties als je ingelogd bent als terugkerende klant.<br><br>
 
-Lees hier meer: [https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/](https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/)";
+Lees hier meer: <a href='https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht/' target='_blank' alt='bluem blog over alcoholwet'>https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-1-juli-online-leeftijdsverificatie-verplicht</a>";
     }
-    // todo: remove these obsolete defaults
 
     if ( $validation_needed && $scenario > 0 ) {
         echo "<h3>Identificatie</h3>";
@@ -2285,12 +2284,8 @@ function bluem_idin_generate_notice( string $message = "", bool $button = false,
     if ( isset( $options['idin_identity_more_information_popup'] ) && $options['idin_identity_more_information_popup'] !== "" ) {
         $more_information_popup = $options['idin_identity_more_information_popup'];
     } else {
-        $more_information_popup = "Toelicthing op IDIN als essentieel onderdeel van het winkelproces";
+        $more_information_popup = "Toelichting op IDIN als essentieel onderdeel van het winkelproces";
     }
-    $Parsedown = new Parsedown();
-
-    $more_information_popup_parsed = $Parsedown->text( $more_information_popup );
-
 
     $idin_button_html = "<a href='" .
                         home_url( 'bluem-woocommerce/idin_execute?redirect_to_checkout=true' ) .
@@ -2336,7 +2331,7 @@ function bluem_idin_generate_notice( string $message = "", bool $button = false,
     <h4>Toelichting op vereiste identificatie</h4>
     <a class="bluem-idin-popup-close bluem-idin-popup-close-icon" href="' . $checkout_url . '#">&times;</a>
     <div class="bluem-idin-popup-content">
-    ' . $more_information_popup_parsed . '
+    ' . $more_information_popup . '
 
     <hr>
     <a class="bluem-idin-popup-close" href="' . $checkout_url . '#">Klik hier om dit kader te sluiten</a>

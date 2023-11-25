@@ -15,7 +15,6 @@
         "symfony/polyfill-mbstring": "v1.19.0",
         "symfony/polyfill-php80": "^1.27",
         "psr/log":"1.1.4",
-        "erusev/parsedown": "^1.7",
         "ext-json": "*"
     },
     "minimum-stability": "dev",
