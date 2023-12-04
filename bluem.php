@@ -98,13 +98,12 @@ if ( ! function_exists( 'is_contactform7_activated' ) ) {
  * Check if Gravity Forms is activated
  */
 if ( ! function_exists( 'is_gravityforms_activated' ) ) {
-    function is_gravityforms_activated() {
+    function is_gravityforms_activated(): bool
+    {
         $active_plugins = get_option( 'active_plugins' );
 
-        if ( in_array('gravityforms', $active_plugins) ) {
-            return true;
-        }
-        return false;
+        return in_array('gravityforms', $active_plugins, true)
+            || in_array('gravityforms/gravityforms.php', $active_plugins, true);
     }
 }
 
