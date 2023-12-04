@@ -266,6 +266,10 @@ payment for another order {$order_id}"
      */
     public function payment_fields()
     {
+        if($this->bluem === null) {
+            return;
+        }
+
         $BICs = $this->bluem->retrieveBICsForContext( "Mandates" );
 
         $description = $this->get_description();
@@ -307,7 +311,7 @@ payment for another order {$order_id}"
      *
      * @param String $order_id
      *
-     * @return void
+     * @return array
      */
     public function process_payment( $order_id )
     {
