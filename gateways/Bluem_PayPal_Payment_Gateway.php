@@ -12,10 +12,11 @@ class Bluem_PayPal_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
             __('Pay easily, quickly and safely via PayPal', 'bluem')
         );
 
-        $options = get_option( 'bluem_woocommerce_options' );
-        if ( !empty( $options['paymentsPayPalBrandID'] ) ) {
+        $options = get_option('bluem_woocommerce_options');
+
+        if (!empty($options['paymentsPayPalBrandID'])) {
             $this->setBankSpecificBrandID($options['paymentsPayPalBrandID']);
-        } elseif ( !empty( $options['paymentBrandID'] ) ) {
+        } elseif (!empty($options['paymentBrandID'])) {
             $this->setBankSpecificBrandID($options['paymentBrandID']); // legacy brandID support
         }
     }

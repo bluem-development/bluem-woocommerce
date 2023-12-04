@@ -1,17 +1,18 @@
 <?php
+
 require_once __DIR__ . '/Bluem_Payment_Gateway_Interface.php';
 
 use Bluem\BluemPHP\Bluem;
 
 abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem_Payment_Gateway_Interface
 {
-    const PAYMENT_STATUS_SUCCESS = "Success";
-    const PAYMENT_STATUS_FAILURE = "Failure";
+    public const PAYMENT_STATUS_SUCCESS = "Success";
+    public const PAYMENT_STATUS_FAILURE = "Failure";
 
     /**
      * This boolean will cause more output to be generated for testing purposes. Keep it at false for the production environment or final testing
      */
-    const VERBOSE = false;
+    public const VERBOSE = false;
 
     /**
      * @var Stdclass
@@ -23,7 +24,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
      */
     protected $bluem;
 
-    public function __construct($id, $method_title, $method_description, $callbackURL, $icon='')
+    public function __construct($id, $method_title, $method_description, $callbackURL, $icon = '')
     {
         // must be lowercase and with underscores for spaces
         $this->id = $id;
@@ -43,8 +44,8 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
         // Method with all the options fields
         $this->init_form_fields();
 
-        $this->title = $this->get_option( 'title' ) ?? $this->method_title;
-        $this->description = $this->get_option( 'description' ) ?? $this->method_description_content;
+        $this->title = $this->get_option('title') ?? $this->method_title;
+        $this->description = $this->get_option('description') ?? $this->method_description_content;
 
 
         $this->bluem_config = bluem_woocommerce_get_config();
@@ -53,14 +54,14 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
         $this->bluem_config = $this->methodSpecificConfigurationMixin($this->bluem_config);
 
 
-        if ( $this->validateAndEnableBluemConfiguration() ) {
-            $this->enabled = $this->get_option( 'enabled' );
+        if ($this->validateAndEnableBluemConfiguration()) {
+            $this->enabled = $this->get_option('enabled');
 
             // This action hook saves the settings
-            add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array(
+            add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(
                 $this,
                 'process_admin_options'
-            ) );
+            ));
 
             // ********** CREATING plugin URLs for specific functions **********
             // using WooCommerce's builtin webhook possibilities. This action creates an accessible URL wc-api/bluem_payments_webhook and one for the callback as well
@@ -74,11 +75,11 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
             // ********** Allow filtering Orders based on TransactionID **********
             add_filter(
                 'woocommerce_order_data_store_cpt_get_orders_query',
-                function ( $query, $query_vars ) {
-                    if ( ! empty( $query_vars['bluem_transactionid'] ) ) {
+                function ($query, $query_vars) {
+                    if (!empty($query_vars['bluem_transactionid'])) {
                         $query['meta_query'][] = array(
                             'key'   => 'bluem_transactionid',
-                            'value' => esc_attr( $query_vars['bluem_transactionid'] ),
+                            'value' => esc_attr($query_vars['bluem_transactionid']),
                         );
                     }
 
@@ -89,16 +90,16 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
             );
 
             // ********** Allow filtering Orders based on EntranceCode **********
-            add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', function ( $query, $query_vars ) {
-                if ( ! empty( $query_vars['bluem_entrancecode'] ) ) {
+            add_filter('woocommerce_order_data_store_cpt_get_orders_query', function ($query, $query_vars) {
+                if (!empty($query_vars['bluem_entrancecode'])) {
                     $query['meta_query'][] = array(
                         'key'   => 'bluem_entrancecode',
-                        'value' => esc_attr( $query_vars['bluem_entrancecode'] ),
+                        'value' => esc_attr($query_vars['bluem_entrancecode']),
                     );
                 }
 
                 return $query;
-            }, 9, 2 );
+            }, 9, 2);
         }
     }
 
@@ -123,7 +124,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
      */
     public function init_form_fields()
     {
-        $this->form_fields = apply_filters( 'wc_offline_form_fields', [
+        $this->form_fields = apply_filters('wc_offline_form_fields', [
             'enabled'     => [
                 'title'       => __('Enable/disable', 'bluem'),
                 'label'       => 'Enable '.$this->method_title,
@@ -143,31 +144,31 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
                 'description' => __('This is the description the user sees during checkout.', 'bluem'),
                 'default'     => $this->description
             ]
-        ] );
+        ]);
     }
 
     /**
      * Thank you page.
      */
-    protected function thank_you_page( string $order_id )
+    protected function thank_you_page(string $order_id)
     {
-        $order = wc_get_order( $order_id );
+        $order = wc_get_order($order_id);
 
         $url = $order->get_checkout_order_received_url();
 
-        $options = get_option( 'bluem_woocommerce_options' );
-        if ( isset( $options['paymentCompleteRedirectType'] ) ) {
-            if ( $options['paymentCompleteRedirectType'] === "custom"
-                 && ! empty( $options['paymentCompleteRedirectCustomURL'] )
+        $options = get_option('bluem_woocommerce_options');
+        if (isset($options['paymentCompleteRedirectType'])) {
+            if ($options['paymentCompleteRedirectType'] === "custom"
+                 && !empty($options['paymentCompleteRedirectCustomURL'])
             ) {
-                $url = site_url( $options['paymentCompleteRedirectCustomURL'] );
+                $url = site_url($options['paymentCompleteRedirectCustomURL']);
             } else {
                 $url = $order->get_checkout_order_received_url();
             }
         }
 
-        if ( ! $order->has_status( 'failed' ) ) {
-            wp_safe_redirect( $url );
+        if (!$order->has_status('failed')) {
+            wp_safe_redirect($url);
             exit;
         }
     }
@@ -179,8 +180,8 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
     protected function validateAndEnableBluemConfiguration(): bool
     {
         try {
-            $this->bluem        = new Bluem( $this->bluem_config );
-        } catch ( Exception $e ) {
+            $this->bluem        = new Bluem($this->bluem_config);
+        } catch (Exception $e) {
             return false;
         }
         return true;
@@ -192,7 +193,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
         return $config;
     }
 
-    public function process_payment( $order_id )
+    public function process_payment($order_id)
     {
         //
     }

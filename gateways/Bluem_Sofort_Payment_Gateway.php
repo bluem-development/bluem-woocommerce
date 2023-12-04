@@ -12,10 +12,10 @@ class Bluem_Sofort_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
             __('Pay easily, quickly and safely via SOFORT', 'bluem')
         );
 
-        $options = get_option( 'bluem_woocommerce_options' );
-        if ( !empty( $options['paymentsSofortBrandID'] ) ) {
+        $options = get_option('bluem_woocommerce_options');
+        if (!empty($options['paymentsSofortBrandID'])) {
             $this->setBankSpecificBrandID($options['paymentsSofortBrandID']);
-        } elseif ( !empty( $options['paymentBrandID'] ) ) {
+        } elseif (!empty($options['paymentBrandID'])) {
             $this->setBankSpecificBrandID($options['paymentBrandID']); // legacy brandID support
         }
     }

@@ -13,6 +13,37 @@
     <?php if ( $bluem_plugin_registration == 1 ) { ?>
         <div class="notice notice-success is-dismissible">
             <p><span class="dashicons dashicons-yes-alt"></span> De plug-in is geactiveerd.</p>
+
+            Volgende stappen:
+            <ul>
+                <?php if(is_woocommerce_activated()) { ?>
+
+                <li>
+                    ✓&nbsp;
+                    <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout');?>"
+                       title="WooCommerce betaalmethoden"
+                    >
+                        Activeer en beheer de betaalmethoden in WooCommerce instellingen
+                    </a>
+                </li>
+                <?php } ?>
+                <li>
+                    ✓&nbsp;
+                    <a href="<?php echo admin_url('admin.php?page=bluem-transactions');?>"
+                       title="WooCommerce instellingen"
+                    >
+                        Bekijk de transactieweergave
+                    </a>
+                </li>
+                <li>
+                    ✓&nbsp;
+                    Ga naar <strong>Instellingen</strong> en beheer de specifieke instellingen per betaalmethode.<br>
+                    Hier vind je ook de integratiemogelijkheden met Gravity Forms en ContactForm 7.
+                </li>
+            </ul>
+
+
+
         </div>
     <?php } ?>
 
@@ -22,13 +53,10 @@
         </div>
     <?php } ?>
 
-    <h3>Account vereist</h3>
-    <p>Voor het gebruik van onze diensten is een account vereist.<br />Kijk voor meer informatie op de <a href="https://bluem.nl/direct-online-betalen/" title="Bluem website bezoeken" target="_blank">Bluem website</a>, bel <a href="tel:+31852220400" title="Bellen naar Bluem">+31(0)85-2220400</a> of e-mail naar <a href="mailto:info@bluem.nl" title="Mailen naar Bluem">info@bluem.nl</a>.</p>
 
     <form id="activateform" method="POST">
         <h2>Accountgegevens</h2>
-        <p>Vul hieronder de accountgegevens in, zoals door Bluem is verstrekt.<br />Neem voor meer informatie contact op met uw accountmanager.<br />Laat velden leeg om dit later op te geven.</p>
-        
+        <div class="wizard-flexbox">
         <table class="form-table">
             <tbody>
                 <tr>
@@ -45,10 +73,17 @@
                 </tr>
             </tbody>
         </table>
-    
+            <div style="">
+    <h3>Account vereist</h3>
+    <p>Voor het gebruik van onze diensten is een account vereist.<br />Kijk voor meer informatie op de <a href="https://bluem.nl/direct-online-betalen/" title="Bluem website bezoeken" target="_blank">Bluem website</a>, bel <a href="tel:+31852220400" title="Bellen naar Bluem">+31(0)85-2220400</a> of e-mail naar <a href="mailto:info@bluem.nl" title="Mailen naar Bluem">info@bluem.nl</a>.</p>
+
+        <p>Vul hier de accountgegevens in, zoals door Bluem is verstrekt.<br />Neem voor meer informatie contact op met uw accountmanager.<br />Laat velden leeg om dit later op te geven.</p>
+            </div>
+        </div>
+
         <h2>Bedrijfsgegevens</h2>
-        <p>Vul hieronder de gegevens van uw bedrijf in.</p>
-        
+        <div class="wizard-flexbox">
+
         <table class="form-table">
             <tbody>
                 <tr>
@@ -64,11 +99,17 @@
                     <td><input type="email" name="company_email" id="company_email" value="<?php echo !empty( $_POST['company_email'] ) ? $_POST['company_email'] : (!empty( $bluem_registration['company'] ) && !empty( $bluem_registration['company']['email'] ) ? $bluem_registration['company']['email'] : ''); ?>" class="form-control" required="required"></td>
                 </tr>
             </tbody>
+
         </table>
-    
+            <div>
+            <p>Vul het profiel van uw bedrijf in. </p>
+            </div>
+        </div>
+
         <h2>Technisch contactpersoon</h2>
-        <p>Vul hieronder de gegevens van de technisch contactpersoon in.<br />Ingeval van belangrijke updates brengen wij de contactpersoon op de hoogte.</p>
-        
+        <div class="wizard-flexbox">
+
+
         <table class="form-table">
             <tbody>
                 <tr>
@@ -85,9 +126,15 @@
                 </tr>
             </tbody>
         </table>
+            <div>
+
+            <p>Vul de gegevens van de technisch contactpersoon in.<br />In geval van belangrijke updates brengen wij dit persoon op de hoogte.</p>
+            </div>
+        </div>
 
         <input type="submit" value="Opslaan" class="button button-primary">
     </form>
+
 
     <?php bluem_render_footer(); ?>
 </div>
