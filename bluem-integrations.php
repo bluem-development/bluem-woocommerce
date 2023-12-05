@@ -327,7 +327,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                         'redirect_uri' => $transactionURL,
                     ]);
                     die;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     echo json_encode([
                         'success' => false,
                     ]);
@@ -503,7 +503,7 @@ function bluem_woocommerce_integration_wpcf7_submit() {
                     ob_start();
                     wp_redirect( $transactionURL );
                     exit;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     var_dump($e->getMessage());
                 }
             }
@@ -777,23 +777,36 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
             }
         }
 
-        if (!empty($field->inputName) && !empty($value)) {
+        if (!empty($field->inputName) && !empty($value) && strpos($field->inputName, "bluem_") === 0) {
+//            echo " set $value for input {$field->inputName}";
             $form_data[$field->inputName] = $value;
-        } elseif (!empty($field->label) && !empty($value)) {
+        }
+
+        if (!empty($field->label) && !empty($value)  && strpos($field->label, "bluem_") === 0) {
+//            echo " set $value for label {$field->label}";
             $form_data[$field->label] = $value;
         }
     }
 
+
     // Get custom parameters for this form
-    $bluem_mandate = $form_data['bluem_mandate'];
-    $bluem_mandate_approve = $form_data['bluem_mandate_approve'];
-    $bluem_mandate_success = $form_data['bluem_mandate_success'];
-    $bluem_mandate_failure = $form_data['bluem_mandate_failure'];
-    $bluem_mandate_reason = $form_data['bluem_mandate_reason'];
-    $bluem_mandate_type = $form_data['bluem_mandate_type'];
+    $bluem_mandate = $form_data['bluem_mandate'] ?? null;
+    $bluem_mandate_approve = $form_data['bluem_mandate_approve'] ?? null;
+    $bluem_mandate_success = $form_data['bluem_mandate_success'] ?? null;
+    $bluem_mandate_failure = $form_data['bluem_mandate_failure'] ?? null;
+    $bluem_mandate_reason = $form_data['bluem_mandate_reason'] ?? null;
+    $bluem_mandate_type = $form_data['bluem_mandate_type'] ?? null;
 
-    $bluem_is_ajax = $form_data['bluem_is_ajax'];
+    $bluem_is_ajax = $form_data['bluem_is_ajax'] ?? null;
 
+//    var_dump($form_data);
+//    var_dump('bluem_mandate: '. $bluem_mandate."<BR>");
+//    var_dump('bluem_mandate_approve: '. $bluem_mandate_approve."<BR>");
+//    var_dump('bluem_mandate_success: '. $bluem_mandate_success."<BR>");
+//    var_dump('bluem_mandate_failure: '. $bluem_mandate_failure."<BR>");
+//    var_dump('bluem_mandate_reason: '. $bluem_mandate_reason."<BR>");
+//    var_dump('bluem_mandate_type: '. $bluem_mandate_type."<BR>");
+//    var_dump('bluem_is_ajax: '. $bluem_is_ajax."<BR>");
     /**
      * Define payload for Bluem.
      */
@@ -811,52 +824,61 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
     {
         $debtorReference = bin2hex(random_bytes(15));
 
-        if (!empty($debtorReference))
+        if (empty($debtorReference))
         {
-            // Define debtor reference
-            $debtorReference = sanitize_text_field( $debtorReference );
+            return;
+        }
 
-            // Get previous requests by debtor reference
-            $db_results = bluem_db_get_requests_by_keyvalues([
-                'debtor_reference' => $debtorReference,
-                'status' => 'Success',
-            ]);
+        // Define debtor reference
+        $debtorReference = sanitize_text_field( $debtorReference );
 
-            // Check for mandate type
-            if (!empty($bluem_mandate_type)) {
-                $bluem_config->sequenceType = $bluem_mandate_type;
+        // Get previous requests by debtor reference
+        $db_results = bluem_db_get_requests_by_keyvalues([
+            'debtor_reference' => $debtorReference,
+            'status' => 'Success',
+        ]);
+
+        // Check for mandate type
+        if (!empty($bluem_mandate_type)) {
+            $bluem_config->sequenceType = $bluem_mandate_type;
+        }
+
+        // Check the sequence type or previous success results
+        if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0)
+        {
+            $bluem_config->merchantReturnURLBase = home_url(
+                "bluem-woocommerce/bluem-integrations/gform_callback"
+            );
+
+            $preferences = get_option( 'bluem_woocommerce_options' );
+
+            // Convert UTF-8 to ISO
+            if (!empty($bluem_mandate_reason)) {
+                $bluem_config->eMandateReason = $bluem_mandate_reason . ' (' . $debtorReference . ')';
+            } elseif (!empty($bluem_config->eMandateReason)) {
+                $bluem_config->eMandateReason = utf8_decode($bluem_config->eMandateReason);
+            } else {
+                $bluem_config->eMandateReason = "Incasso machtiging " . $debtorReference;
             }
 
-            // Check the sequence type or previous success results
-            if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0)
-            {
-                $bluem_config->merchantReturnURLBase = home_url(
-                    "bluem-woocommerce/bluem-integrations/gform_callback"
-                );
-
-                $preferences = get_option( 'bluem_woocommerce_options' );
-
-                // Convert UTF-8 to ISO
-                if (!empty($bluem_mandate_reason)) {
-                    $bluem_config->eMandateReason = $bluem_mandate_reason . ' (' . $debtorReference . ')';
-                } elseif (!empty($bluem_config->eMandateReason)) {
-                    $bluem_config->eMandateReason = utf8_decode($bluem_config->eMandateReason);
-                } else {
-                    $bluem_config->eMandateReason = "Incasso machtiging " . $debtorReference;
-                }
-
+            try {
                 $bluem = new Bluem( $bluem_config );
+            } catch ( Exception $e ) {
+                echo ("Kon gravity form niet goed uitvoeren; check je instellingen");
+                die();
+            }
 
-                $mandate_id_counter = get_option( 'bluem_woocommerce_mandate_id_counter' );
+            $mandate_id_counter = get_option( 'bluem_woocommerce_mandate_id_counter' );
 
-                if ( ! isset( $mandate_id_counter ) ) {
-                    $mandate_id_counter = $preferences['mandate_id_counter'];
-                }
+            if ( ! isset( $mandate_id_counter ) ) {
+                $mandate_id_counter = $preferences['mandate_id_counter'];
+            }
 
-                $mandate_id = $mandate_id_counter + 1;
+            $mandate_id = $mandate_id_counter + 1;
 
-                update_option( 'bluem_woocommerce_mandate_id_counter', $mandate_id );
+            update_option( 'bluem_woocommerce_mandate_id_counter', $mandate_id );
 
+            try {
                 $request = $bluem->CreateMandateRequest(
                     $debtorReference,
                     $debtorReference,
@@ -864,119 +886,121 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
                 );
 
                 // Actually perform the request.
-                try {
-                    $response = $bluem->PerformRequest( $request );
 
-                    if ( ! isset( $response->EMandateTransactionResponse->TransactionURL ) ) {
-                        $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
-                        Vermeld onderstaande informatie aan het websitebeheer:";
+                $response = $bluem->PerformRequest( $request );
 
-                        if ( isset( $response->EMandateTransactionResponse->Error->ErrorMessage ) ) {
-                            $msg .= "<br>" .
-                                $response->EMandateTransactionResponse->Error->ErrorMessage;
-                        } elseif ( get_class( $response ) == "Bluem\BluemPHP\ErrorBluemResponse" ) {
-                            $msg .= "<br>" .
-                                $response->Error();
-                        } else {
-                            $msg .= "<br>Algemene fout";
-                        }
-                        bluem_error_report_email(
-                            [
-                                'service'  => 'mandates',
-                                'function' => 'gform_execute',
-                                'message'  => $msg
-                            ]
-                        );
+                if ( ! isset( $response->EMandateTransactionResponse->TransactionURL ) ) {
+                    $msg = "Er ging iets mis bij het aanmaken van de transactie.<br>
+                    Vermeld onderstaande informatie aan het websitebeheer:";
 
-                        bluem_dialogs_render_prompt( $msg );
-                        exit;
+                    if ( isset( $response->EMandateTransactionResponse->Error->ErrorMessage ) ) {
+                        $msg .= "<br>" .
+                            $response->EMandateTransactionResponse->Error->ErrorMessage;
+                    } elseif ( get_class( $response ) === "Bluem\BluemPHP\ErrorBluemResponse" ) {
+                        $msg .= "<br>" .
+                            $response->Error();
+                    } else {
+                        $msg .= "<br>Algemene fout";
                     }
 
-                    $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
-
-                    // redirect cast to string, necessary for AJAX response handling
-                    $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
-
-                    bluem_db_insert_storage([
-                        'bluem_mandate_transaction_id' => $mandate_id,
-                        'bluem_mandate_transaction_url' => $transactionURL,
-                        'bluem_integration_gform_form_id' => $payload['form_id'],
-                        'bluem_integration_gform_entry_id' => $payload['entry_id'],
-                        'bluem_mandate_entrance_code' => $request->entranceCode,
-                    ]);
-
-                    $db_creation_result = bluem_db_create_request(
+                    bluem_error_report_email(
                         [
-                            'entrance_code'    => $request->entranceCode,
-                            'transaction_id'   => $request->mandateID,
-                            'transaction_url'  => $transactionURL,
-                            'user_id'          => 0,
-                            'timestamp'        => date( "Y-m-d H:i:s" ),
-                            'description'      => "Mandate request",
-                            'debtor_reference' => $debtorReference,
-                            'type'             => "mandates",
-                            'order_id'         => "",
-                            'payload'          => json_encode(
-                                [
-                                    'created_via' => 'gform',
-                                    'environment' => $bluem->getConfig('environment'),
-                                    'created_mandate_id' => $mandate_id,
-                                    'details' => json_encode(
-                                        [
-                                            'id' => $payload['form_id'],
-                                            'payload' => json_encode($payload),
-                                        ]
-                                    ),
-                                ]
-                            )
+                            'service'  => 'mandates',
+                            'function' => 'gform_execute',
+                            'message'  => $msg
                         ]
                     );
 
-                    /**
-                     * Get Gravity Form entry.
-                     */
-                    $entry = GFAPI::get_entry( $payload['entry_id'] );
-                    if ( is_wp_error( $entry ) ) {
-                        // Handle error
-                    }
-
-                    /**
-                     * Update Gravity Forms details.
-                     */
-                    $entry['bluem_payload'] = [
-                        'mandate_id' => $request->mandateID,
-                        'mandate_entrance_code' => $request->entranceCode,
-                        'bluem_record_id' => $db_creation_result,
-                    ];
-
-                    // Update the entry
-                    $result = GFAPI::update_entry( $entry );
-
-                    if ( is_wp_error( $result ) ) {
-                        // Handle error
-                    } else {
-                        // Entry updated successfully
-                    }
-
-                    if ( ob_get_length() !== false && ob_get_length() > 0 ) {
-                        ob_clean();
-                    }
-
-                    if ($bluem_is_ajax === 'false')
-                    {
-                        ob_start();
-                        wp_redirect( $transactionURL );
-                        exit;
-                    } else {
-                        echo json_encode([
-                            'success' => true,
-                            'redirect_url' => $transactionURL,
-                        ]);
-                    }
-                    die;
-                } catch (\Exception $e) {
-                    var_dump($e->getMessage());
+                    bluem_dialogs_render_prompt( $msg );
+                    exit;
                 }
+
+                $mandate_id = $response->EMandateTransactionResponse->MandateID . "";
+
+                // redirect cast to string, necessary for AJAX response handling
+                $transactionURL = ( $response->EMandateTransactionResponse->TransactionURL . "" );
+
+                bluem_db_insert_storage([
+                    'bluem_mandate_transaction_id' => $mandate_id,
+                    'bluem_mandate_transaction_url' => $transactionURL,
+                    'bluem_integration_gform_form_id' => $payload['form_id'],
+                    'bluem_integration_gform_entry_id' => $payload['entry_id'],
+                    'bluem_mandate_entrance_code' => $request->entranceCode,
+                ]);
+
+                $db_creation_result = bluem_db_create_request(
+                    [
+                        'entrance_code'    => $request->entranceCode,
+                        'transaction_id'   => $request->mandateID,
+                        'transaction_url'  => $transactionURL,
+                        'user_id'          => 0,
+                        'timestamp'        => date( "Y-m-d H:i:s" ),
+                        'description'      => "Mandate request",
+                        'debtor_reference' => $debtorReference,
+                        'type'             => "mandates",
+                        'order_id'         => "",
+                        'payload'          => json_encode(
+                            [
+                                'created_via' => 'gform',
+                                'environment' => $bluem->getConfig('environment'),
+                                'created_mandate_id' => $mandate_id,
+                                'details' => json_encode(
+                                    [
+                                        'id' => $payload['form_id'],
+                                        'payload' => json_encode($payload),
+                                    ]
+                                ),
+                            ]
+                        )
+                    ]
+                );
+
+                /**
+                 * Get Gravity Form entry.
+                 */
+                $entry = GFAPI::get_entry( $payload['entry_id'] );
+                if ( is_wp_error( $entry ) ) {
+                    // Handle error
+                }
+
+                /**
+                 * Update Gravity Forms details.
+                 */
+                $entry['bluem_payload'] = [
+                    'mandate_id' => $request->mandateID,
+                    'mandate_entrance_code' => $request->entranceCode,
+                    'bluem_record_id' => $db_creation_result,
+                ];
+
+                // Update the entry
+                $result = GFAPI::update_entry( $entry );
+
+                if ( is_wp_error( $result ) ) {
+                    // Handle error
+                    var_dump( $result );
+                    die();
+                } else {
+                    // Entry updated successfully
+                }
+
+                if ( ob_get_length() !== false && ob_get_length() > 0 ) {
+                    ob_clean();
+                }
+
+                if ($bluem_is_ajax === 'true')
+                {
+                    echo json_encode([
+                        'success' => true,
+                        'redirect_url' => $transactionURL,
+                    ]);
+                } else {
+                    ob_start();
+                    wp_redirect( $transactionURL );
+                }
+                exit;
+            } catch (Exception $e) {
+                var_dump($e->getMessage());
+                die();
             }
         }
     }
