@@ -34,7 +34,11 @@ class Bluem_iDEAL_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
      */
     public function payment_fields()
     {
-        $BICs = $this->bluem->retrieveBICsForContext("Payments");
+        if($this->bluem === null) {
+            return;
+        }
+
+        $BICs = $this->bluem->retrieveBICsForContext( "Payments" );
 
         $description = $this->get_description();
 
