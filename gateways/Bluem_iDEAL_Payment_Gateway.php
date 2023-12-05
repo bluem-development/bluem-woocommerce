@@ -16,15 +16,15 @@ class Bluem_iDEAL_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
 
         $this->has_fields = true;
 
-        $options = get_option( 'bluem_woocommerce_options' );
+        $options = get_option('bluem_woocommerce_options');
 
-        if ( !empty( $options['paymentsIDEALBrandID'] ) ) {
+        if (!empty($options['paymentsIDEALBrandID'])) {
             $this->setBankSpecificBrandID($options['paymentsIDEALBrandID']);
-        } elseif ( !empty( $options['paymentBrandID'] ) ) {
+        } elseif (!empty($options['paymentBrandID'])) {
             $this->setBankSpecificBrandID($options['paymentBrandID']); // legacy brandID support
         }
 
-        if ( !empty( $options['paymentsUseDebtorWallet'] ) && $options['paymentsUseDebtorWallet'] == '1' ) {
+        if (!empty($options['paymentsUseDebtorWallet']) && $options['paymentsUseDebtorWallet'] == '1') {
             $this->_show_fields = true;
         }
     }
@@ -44,24 +44,23 @@ class Bluem_iDEAL_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
 
         $options = [];
 
-        if ( $description ) {
-			echo wpautop( wptexturize( $description ) ); // @codingStandardsIgnoreLine.
-		}
+        if ($description) {
+            echo wpautop(wptexturize($description)); // @codingStandardsIgnoreLine.
+        }
 
         // Loop through BICS
-        foreach ( $BICs as $BIC ) {
+        foreach ($BICs as $BIC) {
             $options[ $BIC->issuerID ] = $BIC->issuerName;
         }
 
         // Check for options
-        if ( $this->_show_fields && !empty( $options ) )
-        {
-            woocommerce_form_field( 'bluem_payments_ideal_bic', array(
+        if ($this->_show_fields && !empty($options)) {
+            woocommerce_form_field('bluem_payments_ideal_bic', array(
                 'type' => 'select',
                 'required' => true,
                 'label' => __('Select a bank:', 'bluem'),
                 'options' => $options
-            ), '' );
+            ), '');
         }
     }
 

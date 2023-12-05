@@ -1,7 +1,5 @@
 <?php
 
-use Carbon\Carbon;
-
 // @todo create a language file and consistently localize everything
 
 function bluem_get_idin_logo_html() {
@@ -53,8 +51,12 @@ function bluem_render_request_table( $requests, $users_by_id = [] ) {
                         </span>
                     </td>
                     <td width="20%"><?php bluem_render_request_user( $r, $users_by_id ); ?></td>
-                    <?php $rdate = Carbon::parse( $r->timestamp, 'UTC' )->setTimeZone( "Europe/Amsterdam" ); ?>
-                    <td width="15%" title="<?php echo $rdate->format( "d-m-Y H:i:s" ); ?>"><?php echo $rdate->format( "d-m-Y H:i:s" ); ?></td>
+                    <?php
+                    $rdate = new DateTimeImmutable( $r->timestamp, new DateTimeZone('Europe/Amsterdam'));
+                    $rdateFormatted = $rdate->format("d-m-Y H:i:s" )
+
+                    ?>
+                    <td width="15%" title="<?php echo $rdateFormatted; ?>"><?php echo $rdateFormatted; ?></td>
                     <td width="20%">
                         <?php
                         if ( ! is_null( $r->order_id ) && $r->order_id != "0" ) {
@@ -352,8 +354,8 @@ function bluem_render_requests_list( $requests ) {
             <span class="bluem-request-label">
                 Tijdstip
             </span>
-                    <?php $rdate = strtotime( $r->timestamp ); ?>
-                    <?php echo date( "d-m-Y H:i:s", $rdate ); ?>
+                    <?php $rdate = new DateTimeImmutable( $r->timestamp , new DateTimeZone("Europe/Amsterdam")); ?>
+                    <?php echo $rdate->format( "d-m-Y H:i:s" ); ?>
                 </div>
 
 

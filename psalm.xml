@@ -7,33 +7,7 @@
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
 >
     <projectFiles>
-        <file name="bluem-compatibility.php" />
-        <file name="bluem-db.php" />
-        <file name="bluem-idin.php" />
-        <file name="bluem-interface.php" />
-        <file name="bluem-login.php" />
-        <file name="bluem-mandates-shortcode.php" />
-        <file name="bluem-mandates.php" />
-        <file name="bluem-payments.php" />
-        <file name="bluem.php" />
-        <file name="index.php" />
-        <file name="uninstall.php" />
-        <file name="tests/BluemWooFirstTest.php" />
-        <file name="vendor/autoload.php" />
-        <file name="views/importexport.php" />
-        <file name="views/request.php" />
-        <file name="views/requests.php" />
-        <file name="vendor/composer/autoload_classmap.php" />
-        <file name="vendor/composer/autoload_files.php" />
-        <file name="vendor/composer/autoload_namespaces.php" />
-        <file name="vendor/composer/autoload_psr4.php" />
-        <file name="vendor/composer/autoload_real.php" />
-        <file name="vendor/composer/autoload_static.php" />
-        <file name="vendor/composer/ClassLoader.php" />
-        <file name="vendor/composer/include_paths.php" />
-        <file name="vendor/composer/installed.php" />
-        <file name="vendor/composer/InstalledVersions.php" />
-        <file name="vendor/composer/platform_check.php" />
+
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>
