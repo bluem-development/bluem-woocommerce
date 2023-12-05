@@ -798,14 +798,6 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
 
     $bluem_is_ajax = $form_data['bluem_is_ajax'] ?? null;
 
-//    var_dump($form_data);
-//    var_dump('bluem_mandate: '. $bluem_mandate."<BR>");
-//    var_dump('bluem_mandate_approve: '. $bluem_mandate_approve."<BR>");
-//    var_dump('bluem_mandate_success: '. $bluem_mandate_success."<BR>");
-//    var_dump('bluem_mandate_failure: '. $bluem_mandate_failure."<BR>");
-//    var_dump('bluem_mandate_reason: '. $bluem_mandate_reason."<BR>");
-//    var_dump('bluem_mandate_type: '. $bluem_mandate_type."<BR>");
-//    var_dump('bluem_is_ajax: '. $bluem_is_ajax."<BR>");
     /**
      * Define payload for Bluem.
      */
