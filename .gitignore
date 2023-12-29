@@ -22,3 +22,6 @@ docker
 /tests/Support/_generated/FunctionalTesterActions.php
 /tests/Support/_generated/UnitTesterActions.php
 /.php-cs-fixer.cache
+/tests/_output/Tests.Acceptance.FirstCest.frontpageWorks.fail.html
+/tests/_output/Tests.Acceptance.FirstCest.loginWithInvalidCredentials.fail.html
+/tests/_output/Tests.Acceptance.FirstCest.logout.fail.html
