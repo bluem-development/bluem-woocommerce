@@ -25,3 +25,7 @@ docker
 /tests/_output/Tests.Acceptance.FirstCest.frontpageWorks.fail.html
 /tests/_output/Tests.Acceptance.FirstCest.loginWithInvalidCredentials.fail.html
 /tests/_output/Tests.Acceptance.FirstCest.logout.fail.html
+build
+tools
+tools/*
+.env
