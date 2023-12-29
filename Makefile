@@ -23,14 +23,18 @@ lint_fix:
 	./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix .
 
 .PHONY: test
-test: unit_test acceptance_test
+test:
+	make unit_test;
+	make acceptance_test;
 
 .PHONY: unit_test
 unit_test:
+	@printf 'Unit tests:\n';
 	./vendor/bin/phpunit
 
 .PHONY: acceptance_test
 acceptance_test:
+	@printf 'Acceptance tests:\n';
 	php vendor/bin/codecept run --steps
 
 .PHONY: add_git_hooks
