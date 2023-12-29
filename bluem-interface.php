@@ -425,16 +425,28 @@ function bluem_render_obj_row_recursive( $key, $value, $level = 0 ) {
                 $form_details = '';
 
                 if (!empty($additional_details->id) || !empty($additional_details->payload)) {
-                    $form_details = '<table style="display: inline-block; vertical-align: inherit;"><thead><tr><th style="text-align: left;">Naam</th><th style="text-align: left;">Waarde</th></tr></thead><tbody>';
+                    $form_details = '<table style="padding:5pt; border:1px solid #ddd; margin:10px 0; display: inline-block; vertical-align: inherit;"><thead><tr><th style="text-align: left;">Naam</th><th style="text-align: left;">Waarde</th></tr></thead><tbody>';
                 }
 
                 if (!empty($additional_details->payload)) {
-                    $additional_details_payload = json_decode($additional_details->payload);
-                    foreach ($additional_details_payload as $key => $value) {
-                        $form_details .= '<tr><td>' . $key . '</td><td>' . $value . '</td></tr>';
+                    $additional_details_payload = json_decode($additional_details->payload, false);
+                    foreach ($additional_details_payload as $dKey => $dValue) {
+                        if($dKey === 'source_url') {
+                            $dValue = '<a href="' . $dValue . '" target="_blank">' . $dValue . '</a>';
+                        }
+
+                        $form_details .= sprintf("<tr><td><span class='bluem-request-label'>%s</span></td><td>%s</td></tr>", ucfirst(str_replace('_',' ',$dKey)), $dValue);
                     }
-                    $form_details .= '<tr><td colspan="2"><a href="admin.php?page=gf_entries&view=entry&id=' . $additional_details_payload->form_id . '&lid=' . $additional_details_payload->entry_id . '&order=ASC&filter&paged=1&pos=0&field_id&operator">Bekijk formulier</a></td></tr>';
+                    $formLink = admin_url("admin.php?page=gf_entries&view=entry&id={$additional_details_payload->form_id}&lid={$additional_details_payload->entry_id}&order=ASC&filter&paged=1&pos=0&field_id&operator");
+                    $form_details .= "<tr>
+<td><span class='bluem-request-label'>Formulier invulling</span></td>
+                        <td>
+                            <a href=\"$formLink\" target='_blank'>
+                            Bekijk</a>
+                        </td>
+                    </tr>";
                 }
+
 
                 if (!empty($form_details)) {
                     echo $form_details . '</tbody></table>';

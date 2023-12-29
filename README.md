@@ -204,12 +204,16 @@ bluem_mandate=true
 bluem_mandate_reason="Lidmaatschap"
 bluem_mandate_success="Bedankt voor het afgeven van de machtiging"
 bluem_mandate_failure="De machtiging is mislukt. Probeer het opnieuw."
-bluem_mandate_type="RCUR"
-bluem_is_ajax=true
+bluem_mandate_type="OOFF"
 ```
+
 Also, add a checkbox with the name 'bluem_mandate_approve' (under 'Advanced' section, after enabling dynamic entries) and a label with the value 'true'. This will give the user-permission to perform the mandate request.
 Otherwise, the form will be submitted but our mandate request wouldn't be executed. U can mark the checkbox within Gravity Forms as required to always force the mandate request after form submission.
 
+Add a hidden field with this label and value to your form if the form is being called through AJAX. 
+```
+bluem_is_ajax=true
+```
 Also, if you want to store additional transaction details, add hidden fields with the following field names.
 Our plug-in will fill these fields so that they are saved with the other form data.
 The transaction and details are always visible through our plug-in page.

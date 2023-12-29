@@ -68,6 +68,10 @@ function display_wordpress_debug_log() {
  * @return string
  */
 function display_woocommerce_logs() {
+    if (!defined('WC_LOG_DIR')) {
+        return 'WooCommerce is not enabled.';
+    }
+
     $woocommerce_logs = glob(WC_LOG_DIR . '*.log');
 
     $content = '';
@@ -77,10 +81,10 @@ function display_woocommerce_logs() {
             $content .= '<h4>' . basename($log) . '</h4>';
             $content .= '<pre>' . esc_html(file_get_contents($log)) . '</pre>';
         }
-    } else {
-        $content = 'Unable to access the WooCommerce logs. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.';
+        return $content;
     }
-    return $content;
+
+    return 'Unable to access the WooCommerce logs. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.';
 }
 
 ?>
