@@ -19,9 +19,9 @@ function bluem_get_bluem_logo_html( $height = 64 ) {
 }
 
 
-function bluem_render_request_table( $requests, $users_by_id = [] ) {
+function bluem_render_request_table($categoryName,  $requests, $users_by_id = [] ) {
     if ( count( $requests ) == 0 ) {
-        echo "<p>" . __( "No transactions yet", 'bluem' ) . "</p>";
+        echo "<p>" . __( "No transactions yet for $categoryName.", 'bluem' ) . "</p>";
 
         return;
     } ?>
@@ -613,3 +613,25 @@ function bluem_render_nav_header( $active_page = '' ) {
 
     <?php
 }
+
+
+// Helper class for layout
+
+/**
+ * @param string $requestTimestamp
+ * @param string $format
+ * @return string
+ */
+function bluem_get_formattedDate(string $requestTimestamp, string $format ='d-m-Y H:i:s'): string
+{
+    try {
+        $dateTime = new DateTime($requestTimestamp);
+    } catch (Exception $e) {
+        return '';
+    }
+
+    $dateTime->setTimezone(new DateTimeZone('Europe/Amsterdam'));
+    return $dateTime->format($format);
+}
+
+

@@ -53,7 +53,9 @@
                     </tr>
                     <tr>
                         <td>Datum:</td>
-                        <td><?php echo \Carbon\Carbon::parse($request->timestamp)->timezone('Europe/Amsterdam')->format('d-m-Y H:i:s'); ?></td>
+                        <td><?php  echo bluem_get_formattedDate($request->timestamp ?? '');
+                            ?>
+                        </td>
                     </tr>
                     <tr>
                         <td>Status:</td>
@@ -81,7 +83,7 @@
                                 <?php $order_data = $order->get_data(); ?>
                                 <tr>
                                     <td>
-                                        <?php echo \Carbon\Carbon::parse($order->get_date_created())->timezone('Europe/Amsterdam')->format('d-m-Y H:i'); ?>
+                                        <?php echo bluem_get_formattedDate($order->get_date_created(), 'd-m-Y H:i'); ?>
                                     </td>
                                     <td>
                                         <a href='<?php echo admin_url("post.php?post={$link->item_id}&action=edit"); ?>' target='_blank'>Order #<?php echo $order->get_order_number(); ?></a>
@@ -116,7 +118,7 @@
                     $dparts = explode("New data: ", $d, 2); ?>
                     <li>
                         <span class="bluem-request-label">
-                            <?php echo \Carbon\Carbon::parse($log->timestamp)->timezone('Europe/Amsterdam')->format('d-m-Y H:i:s'); ?>
+                            <?php echo bluem_get_formattedDate($log->timestamp); ?>
                         </span>
                         <?php echo $dparts[0]; ?><?php
                         if (isset($dparts[1])) {
@@ -230,3 +232,4 @@ margin:10pt 0 0 0; padding:5pt 15pt;">
     </div>
     <?php bluem_render_footer(); ?>
 </div>
+

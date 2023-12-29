@@ -26,7 +26,7 @@
 
         <?php foreach ($requests as $cat => $rs) { ?>
             <div id="<?php echo $cat; ?>" class="tab-content">
-                <?php bluem_render_request_table($rs, $users_by_id); ?>
+                <?php bluem_render_request_table($cat, $rs, $users_by_id); ?>
             </div>
         <?php } ?>
     </div>

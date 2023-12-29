@@ -1643,8 +1643,8 @@ function bluem_module_enabled( $module ): bool {
     if ( $bluem_options === false ) {
         return false;
     }
-    if ( $bluem_options !== false
-        && ! isset( $bluem_options["{$module}_enabled"] )
+    if ( ($bluem_options !== false
+            && !isset($bluem_options["{$module}_enabled"]))
         || $bluem_options["{$module}_enabled"] == "1"
     ) {
         return true;
