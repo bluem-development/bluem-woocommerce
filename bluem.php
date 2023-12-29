@@ -40,6 +40,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\SentryLogger;
 
+
 if ( ! defined( "BLUEM_LOCAL_DATE_FORMAT" ) ) {
     define( "BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s" );
 }
@@ -68,7 +69,7 @@ require_once __DIR__ . '/bluem-interface.php';
 require_once __DIR__ . '/bluem-integrations.php';
 
 // Observability
-require_once __DIR__ . '/Observability/SentryLogger.php';
+//require_once __DIR__ . '/Observability/SentryLogger.php';
 
 /**
  * Check if WooCommerce is activated
@@ -1378,7 +1379,7 @@ function bluem_error_report_email( $data = [] ): bool {
  */
 function bluem_registration_report_email( $data = [] ): bool {
 
-    $bluem = get_plugin_data( WP_PLUGIN_DIR . '/bluem/bluem.php' );
+    $bluem = \get_plugin_data( WP_PLUGIN_DIR . '/bluem/bluem.php' );
 
     $bluem_options = get_option( 'bluem_woocommerce_options' );
 

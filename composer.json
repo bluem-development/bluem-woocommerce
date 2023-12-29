@@ -39,5 +39,10 @@
         "allow-plugins": {
             "composer/package-versions-deprecated": false
         }
+    },
+    "autoload": {
+        "psr-4": {
+            "Bluem\\Wordpress\\": "src/"
+        }
     }
 }
