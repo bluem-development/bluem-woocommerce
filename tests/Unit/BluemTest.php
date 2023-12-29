@@ -12,9 +12,10 @@ class BluemTest extends TestCase
 {
     private Bluem $bluem;
 
-    protected function setUp(): void {
+    protected function setUp(): void
+    {
         parent::setUp();
-        
+
         $bluem_config = $this->getConfig();
 
         try {
@@ -26,18 +27,20 @@ class BluemTest extends TestCase
         }
     }
 
-    protected function tearDown(): void {
+    protected function tearDown(): void
+    {
         //$this->bluem = Bluem;
     }
 
-    public function testMandateRequest() {
+    public function testMandateRequest()
+    {
         $result = true;
         $this->assertEquals(true, $result);
     }
 
     private function getConfig(): stdClass
     {
-        $bluem_config = new stdClass;
+        $bluem_config = new stdClass();
         $bluem_config->environment = 'test';
         $bluem_config->senderID = 'S12345';
 

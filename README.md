@@ -13,6 +13,31 @@ This plug-in requires PHP >= 7.4 | PHP >= 8.0, which is the standard WordPress r
 If you use our plug-in files or databases in your own custom development, please disable auto-update and check each update manually before installing.
 Our plug-in files or database tables structure may change during time.
 
+
+## Development & testing
+### Before you start developing
+Run 
+```bash
+make add_git_hooks
+```
+to enable git hooks, which will automatically run **unit** tests and CS linting (soon) before any commit.
+
+- Also if you want to lint or use automatic lint-fixes, ensure that the PHP CS fixer is installed in the `tools` folder.
+
+### Unit testing
+
+```bash
+make unit_test
+```
+
+### Acceptance testing
+Your local environment (a WordPress website instance has to be running, at [localhost:8000]()).
+
+```bash
+make acceptance_test
+```
+
+
 # Installation
 <!-- If you want to install this plug-in, the easiest way is to use the WordPress plug-in directly from the WordPress plug-in directory here: -->
 

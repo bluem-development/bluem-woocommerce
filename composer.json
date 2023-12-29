@@ -3,7 +3,14 @@
     "license": "GPL-2.0-or-later",
     "description": "WordPress and WooCommerce plug-in for identity, payment and mandate services.",
     "keywords": [
-        "bluem", "payment", "identity", "emandates", "woocommerce", "idin","iban-name-check","iban"
+        "bluem",
+        "payment",
+        "identity",
+        "emandates",
+        "woocommerce",
+        "idin",
+        "iban-name-check",
+        "iban"
     ],
     "support": {
         "issues": "https://github.com/bluem-development/bluem-woocommerce"
@@ -23,7 +30,10 @@
     "require-dev": {
         "phpunit/phpunit": "^9.5",
         "yoast/phpunit-polyfills": "^1.0",
-        "vimeo/psalm": "^4.16"
+        "vimeo/psalm": "^4.16",
+        "codeception/codeception": "^5.0",
+        "codeception/module-phpbrowser": "*",
+        "codeception/module-asserts": "*"
     },
     "config": {
         "allow-plugins": {
