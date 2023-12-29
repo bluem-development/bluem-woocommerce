@@ -1377,12 +1377,9 @@ function bluem_error_report_email( $data = [] ): bool {
  * Registration reporting email functionality
  * @return bool
  */
-function bluem_registration_report_email( $data = [] ): bool {
-
-    $bluem = \get_plugin_data( WP_PLUGIN_DIR . '/bluem/bluem.php' );
-
+function bluem_registration_report_email( $data = [] ): bool
+{
     $bluem_options = get_option( 'bluem_woocommerce_options' );
-
     $bluem_registration = get_option( 'bluem_woocommerce_registration' );
 
     $dependency_bluem_php_version = get_composer_dependency_version('bluem-development/bluem-php');
@@ -1403,7 +1400,7 @@ function bluem_registration_report_email( $data = [] ): bool {
     $data->{'WooCommerce version'} = class_exists('WooCommerce') ? WC()->version : __('WooCommerce not installed', 'bluem');
     $data->{'WordPress version'} = get_bloginfo( 'version' );
     $data->{'Bluem PHP-library'} = $dependency_bluem_php_version;
-    $data->{'Plug-in version'} = $bluem['Version'];
+    $data->{'Plug-in version'} = $bluem_options['bluem_plugin_version'] ?? '0';
     $data->{'PHP version'} = phpversion();
 
     if ( is_null( $data ) ) {
@@ -1994,6 +1991,18 @@ function bluem_register_error_logging() {
     if ( ! isset( $settings['error_reporting_email'] )
         || ((int)$settings['error_reporting_email'] === 1)
     ) {
+        if ( is_admin() ) {
+            if( ! function_exists('get_plugin_data') ){
+                require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+            }
+            $bluem = get_plugin_data(plugin_dir_path( __FILE__ ).'bluem.php');
+
+            $bluem_options = get_option( 'bluem_woocommerce_options' );
+            $bluem_options['bluem_plugin_version'] = $bluem['Version'] ?? '0';
+            update_option('bluem_woocommerce_options', $bluem_options);
+        }
+
+
         $logger = new SentryLogger();
         $logger->initialize();
     }

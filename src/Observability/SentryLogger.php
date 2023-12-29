@@ -15,10 +15,8 @@ final class SentryLogger
 
     public function initialize(): void
     {
-
-        $bluem = get_plugin_data(WP_PLUGIN_DIR . '/bluem/bluem.php');
-        $plugin_version = $bluem['Version'];
-
+        $bluem_options = get_option( 'bluem_woocommerce_options' );
+        $plugin_version = $bluem_options['bluem_plugin_version'] ?? '0';
 
         \Sentry\init([
             'dsn' => 'https://'.self::KEY.'.ingest.sentry.io/'.self::PROJECT_ID,
