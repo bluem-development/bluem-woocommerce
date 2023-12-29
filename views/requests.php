@@ -9,7 +9,18 @@
     <div class="wrap payment-methods">
         <h2 class="nav-tab-wrapper">
             <?php foreach ($requests as $cat => $rs) { ?>
-                <a href="#" class="nav-tab" data-tab="<?php echo $cat; ?>"><?php echo bluem_render_requests_type($cat); ?></a>
+                <a href="#" class="nav-tab" data-tab="<?php echo $cat; ?> ">
+                    <?php echo bluem_render_requests_type($cat);
+
+                    if(!empty($rs)) {
+                        $count = count($rs);
+                        if ($count > 99) {
+                            $count = '99+';
+                        }
+                        echo sprintf("&nbsp;(%s)", count($rs));
+                    }
+                    ?>
+                </a>
             <?php } ?>
         </h2>
 
