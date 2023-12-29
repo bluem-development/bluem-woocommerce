@@ -105,6 +105,5 @@ clean-up:
 	@echo "$(GREEN)Cleaning up...$(NC)"
 	@rm -rf $(BUILD_DIR)
 
-send-email:
-	@echo "Release $(NEW_TAG) of $(PLUGIN_SLUG) has been completed." | mail -s "Release Completed" $(EMAIL)
-	@echo "$(GREEN)Notification email sent to $(EMAIL)$(NC)"
+#send-email:
+#	@./loadenv.sh
