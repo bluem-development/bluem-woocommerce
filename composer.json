@@ -16,7 +16,7 @@
         "issues": "https://github.com/bluem-development/bluem-woocommerce"
     },
     "require": {
-        "php": ">=7.4|>=8.0",
+        "php": ">=8.0",
         "bluem-development/bluem-php": "^2.2|^2.3",
         "symfony/polyfill-php72": "^1.22",
         "symfony/polyfill-mbstring": "v1.19.0",
