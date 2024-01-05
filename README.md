@@ -15,6 +15,9 @@ Our plug-in files or database tables structure may change during time.
 
 
 ## Development & testing
+Work on the dev-master branch. This branch is used for development and testing.
+The master branch is locked and should only be used for production-ready releases
+
 ### Before you start developing
 Run 
 ```bash
