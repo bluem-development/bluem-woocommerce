@@ -35,6 +35,11 @@
         "codeception/module-phpbrowser": "*",
         "codeception/module-asserts": "*"
     },
+    "autoload": {
+        "psr-4": {
+            "Bluem\\WooCommerce\\": "src"
+        }
+    },
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": false
