@@ -53,4 +53,11 @@ class FirstCest
         $I->fillField('input[name="pwd"]', 'wordpress');
         $I->click('Log In');
     }
+
+    public function visitBluemAdminPage(AcceptanceTester $I)
+    {
+        $this->ifIAmLoggedIn($I);
+        $I->amOnPage('/wp-admin/admin.php?page=bluem-admin');
+        $I->see('Maak betalen gemakkelijk!');
+    }
 }
