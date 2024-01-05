@@ -68,23 +68,23 @@ function display_wordpress_debug_log() {
  * @return string
  */
 function display_woocommerce_logs() {
-    if (!defined('WC_LOG_DIR')) {
-        return 'WooCommerce is not enabled.';
+    $woocommerce_logs = null;
+    if (defined('WC_LOG_DIR')) {
+        $woocommerce_logs = glob(WC_LOG_DIR . '*.log');
     }
-
-    $woocommerce_logs = glob(WC_LOG_DIR . '*.log');
 
     $content = '';
 
-    if (!empty($woocommerce_logs) && is_array($woocommerce_logs)) {
+    if (is_array($woocommerce_logs)) {
         foreach ($woocommerce_logs as $log) {
             $content .= '<h4>' . basename($log) . '</h4>';
             $content .= '<pre>' . esc_html(file_get_contents($log)) . '</pre>';
         }
-        return $content;
+    } else {
+        $content = 'Unable to access the WooCommerce logs. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.';
     }
 
-    return 'Unable to access the WooCommerce logs. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.';
+    return $content;
 }
 
 ?>
@@ -108,15 +108,15 @@ function display_woocommerce_logs() {
 
             <p>De volgende betaalmethoden zijn ingeschakeld:</p>
             <ul>
-            <?php if ( bluem_module_enabled( 'mandates' ) ) { ?>
-                <li>Incassomachtigen <span class="dashicons dashicons-yes" style="color: #4F800D;"></span></li>
-            <?php } ?>
-            <?php if ( bluem_module_enabled( 'payments' ) ) { ?>
-                <li>Betalingen <span class="dashicons dashicons-yes" style="color: #4F800D;"></span></li>
-            <?php } ?>
-            <?php if ( bluem_module_enabled( 'idin' ) ) { ?>
-                <li>Identiteit <span class="dashicons dashicons-yes" style="color: #4F800D;"></span></li>
-            <?php } ?>
+                <?php if ( bluem_module_enabled( 'mandates' ) ) { ?>
+                    <li>Incassomachtigen <span class="dashicons dashicons-yes" style="color: #4F800D;"></span></li>
+                <?php } ?>
+                <?php if ( bluem_module_enabled( 'payments' ) ) { ?>
+                    <li>Betalingen <span class="dashicons dashicons-yes" style="color: #4F800D;"></span></li>
+                <?php } ?>
+                <?php if ( bluem_module_enabled( 'idin' ) ) { ?>
+                    <li>Identiteit <span class="dashicons dashicons-yes" style="color: #4F800D;"></span></li>
+                <?php } ?>
             </ul>
         </div>
 
