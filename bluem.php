@@ -38,6 +38,7 @@ require_once __DIR__ . '/bluem-compatibility.php';
 require __DIR__ . '/vendor/autoload.php';
 
 use Bluem\BluemPHP\Bluem;
+use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\SentryLogger;
 
 
@@ -358,7 +359,8 @@ function bluem_plugin_activation() {
             $bluem_registration['tech_contact']['email'] = $tech_email;
 
             // Sent registration notify email
-            bluem_registration_report_email();
+            (new BluemActivationNotifier())->reportActivatedPlugin();
+
 
             // Update Bluem options
             update_option('bluem_woocommerce_options', $bluem_options);
@@ -1373,81 +1375,7 @@ function bluem_error_report_email( $data = [] ): bool {
     return false;
 }
 
-/**
- * Registration reporting email functionality
- * @return bool
- */
-function bluem_registration_report_email( $data = [] ): bool
-{
-    $bluem_options = get_option( 'bluem_woocommerce_options' );
-    $bluem_registration = get_option( 'bluem_woocommerce_registration' );
 
-    $dependency_bluem_php_version = get_composer_dependency_version('bluem-development/bluem-php');
-
-    $activation_report_id = date( "Ymdhis" ) . '_' . rand( 0, 512 );
-
-    $data = (object) $data;
-    $data->activation_report_id = $activation_report_id;
-    $data->{'Bluem SenderID'} = $bluem_options['senderID'] ?? '';
-    $data->{'Website name'} = get_bloginfo( 'name' );
-    $data->{'Website URL'} = get_bloginfo( 'url' );
-    $data->{'Company name'} = $bluem_registration['company']['name'];
-    $data->{'Company telephone'} = $bluem_registration['company']['telephone'];
-    $data->{'Company email'} = $bluem_registration['company']['email'];
-    $data->{'Tech name'} = $bluem_registration['tech_contact']['name'];
-    $data->{'Tech telephone'} = $bluem_registration['tech_contact']['telephone'];
-    $data->{'Tech email'} = $bluem_registration['tech_contact']['email'];
-    $data->{'WooCommerce version'} = class_exists('WooCommerce') ? WC()->version : __('WooCommerce not installed', 'bluem');
-    $data->{'WordPress version'} = get_bloginfo( 'version' );
-    $data->{'Bluem PHP-library'} = $dependency_bluem_php_version;
-    $data->{'Plug-in version'} = $bluem_options['bluem_plugin_version'] ?? '0';
-    $data->{'PHP version'} = phpversion();
-
-    if ( is_null( $data ) ) {
-        return false;
-    }
-
-    $author_name  = "Administratie van " . get_bloginfo( 'name' );
-    $author_email = esc_attr(
-        get_option( "admin_email" )
-    );
-
-    $to = "pluginsupport@bluem.nl";
-
-    $subject = "[" . get_bloginfo( 'name' ) . "] ";
-    $subject .= "WordPress plug-in activation";
-
-    $message = "<p>WordPress plug-in activation.<br />$author_name <$author_email>,</p>";
-    $message .= "<p>Data: <br>" . json_encode( $data ) . "</p>";
-
-    ob_start();
-    foreach ( $data as $k => $v ) {
-        if ( is_null( $v ) ) {
-            continue;
-        }
-
-        bluem_render_obj_row_recursive(
-            "<strong>" . ucfirst( $k ) . "</strong>",
-            $v
-        );
-    }
-    $message_p = ob_get_clean();
-
-    $message .= $message_p;
-    $message .= "</p>";
-
-    $message = nl2br( $message );
-
-    $headers = array( 'Content-Type: text/html; charset=UTF-8' );
-
-    $mailing = wp_mail( $to, $subject, $message, $headers );
-
-    if ( $mailing ) {
-        bluem_db_request_log( $activation_report_id, "Sent activation report mail to " . $to );
-    }
-
-    return $mailing;
-}
 
 function bluem_email_footer(): string {
     return "<p>Ga naar de site op " . home_url() . " om dit verzoek in detail te bekijken.</p>";
