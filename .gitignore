@@ -29,3 +29,5 @@ build
 tools
 tools/*
 .env
+svn-directory
+svn-directory/*
