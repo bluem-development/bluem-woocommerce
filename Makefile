@@ -42,6 +42,9 @@ add_git_hooks:
 	sh ./scripts/add-git-hooks.sh
 
 # Releasing a new version of a WordPress plugin
+
+# https://developer.wordpress.org/plugins/wordpress-org/how-to-use-subversion/#starting-a-new-plugin
+
 # ensure svn is installed
 # with brew install svn
 
