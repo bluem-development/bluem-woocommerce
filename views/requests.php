@@ -1,48 +1,53 @@
 <div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48);?>
-        Transacties
+        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php echo __('Transacties', 'bluem'); ?>
     </h1>
 
-    <?php bluem_render_nav_header('transactions');?>
+    <?php bluem_render_nav_header('transactions'); ?>
 
     <div class="wrap payment-methods">
         <h2 class="nav-tab-wrapper">
-            <?php foreach ($requests as $cat => $rs) { ?>
-                <a href="#" class="nav-tab" data-tab="<?php echo $cat; ?> ">
-                    <?php echo bluem_render_requests_type($cat);
+            <?php
+            if (isset($requests)) {
+                foreach ($requests as $cat => $rs) { ?>
+                    <a href="#" class="nav-tab" data-tab="<?php echo $cat; ?> ">
+                        <?php echo bluem_render_requests_type($cat);
 
-                    if(!empty($rs)) {
-                        $count = count($rs);
-                        if ($count > 99) {
-                            $count = '99+';
+                        if (!empty($rs)) {
+                            $count = count($rs);
+                            if ($count > 99) {
+                                $count = '99+';
+                            }
+                            echo sprintf("&nbsp;(%s)", count($rs));
                         }
-                        echo sprintf("&nbsp;(%s)", count($rs));
-                    }
-                    ?>
-                </a>
-            <?php } ?>
+                        ?>
+                    </a>
+                <?php }
+            } ?>
         </h2>
 
-        <?php foreach ($requests as $cat => $rs) { ?>
-            <div id="<?php echo $cat; ?>" class="tab-content">
-                <?php bluem_render_request_table($cat, $rs, $users_by_id); ?>
-            </div>
-        <?php } ?>
+        <?php if (isset($requests)) {
+            foreach ($requests as $cat => $rs) { ?>
+                <div id="<?php echo $cat; ?>" class="tab-content">
+                    <?php bluem_render_request_table($cat, $rs, $users_by_id ?? []); ?>
+                </div>
+            <?php }
+        } ?>
     </div>
 
-    <p>Klik op een transactie voor meer gedetailleerde informatie.</p>
-    <p>Bekijk nog meer informatie over alle transacties in het <a href='https://viamijnbank.net/' target='_blank'>viamijnbank.net dashboard</a>.</p>
+    <p><?php echo __('Klik op een transactie voor meer gedetailleerde informatie.', 'bluem'); ?></p>
+    <p><?php echo __('Bekijk nog meer informatie over alle transacties in het <a href="https://viamijnbank.net/" target="_blank">viamijnbank.net dashboard</a>.', 'bluem'); ?></p>
 
     <?php bluem_render_footer(); ?>
 </div>
 
 <script type="text/javascript">
 
-    (function($) {
-        $(document).ready(function() {
+    (function ($) {
+        $(document).ready(function () {
             // Handle tab click event
-            $('div.payment-methods .nav-tab').on('click', function(e) {
+            $('div.payment-methods .nav-tab').on('click', function (e) {
                 e.preventDefault();
 
                 // Get the clicked tab's identifier

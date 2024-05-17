@@ -1,36 +1,48 @@
 <div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48);?>
-        Instellingen
+        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php echo __('Instellingen', 'bluem'); ?>
     </h1>
 
-    <?php bluem_render_nav_header('settings');?>
+    <?php bluem_render_nav_header('settings'); ?>
 
     <div class="wrap payment-methods">
         <h2 class="nav-tab-wrapper">
-            <a href="#" class="nav-tab" data-tab="general">Algemeen</a>
-            <a href="#" class="nav-tab" data-tab="account">Account</a>
-            <?php if ( bluem_module_enabled( 'mandates' ) ) { ?>
-                <a href="#" class="nav-tab" data-tab="mandates">Incassomachtigen</a>
+            <a href="#" class="nav-tab" data-tab="general" title="<?php echo __('Algemeen', 'bluem'); ?>">
+                <?php echo __('Algemeen', 'bluem'); ?>
+            </a>
+            <a href="#" class="nav-tab" data-tab="account" title="<?php echo __('Account', 'bluem'); ?>">
+                <?php echo __('Account', 'bluem'); ?>
+            </a>
+            <?php if (bluem_module_enabled('mandates')) { ?>
+                <a href="#" class="nav-tab" data-tab="mandates" title="<?php echo __('Incassomachtigen', 'bluem'); ?>">
+                    <?php echo __('Incassomachtigen', 'bluem'); ?>
+                </a>
             <?php } ?>
-            <?php if ( bluem_module_enabled( 'payments' ) ) { ?>
-                <a href="#" class="nav-tab" data-tab="payments">Betalingen</a>
+            <?php if (bluem_module_enabled('payments')) { ?>
+                <a href="#" class="nav-tab" data-tab="payments" title="<?php echo __('Betalingen', 'bluem'); ?>">
+                    <?php echo __('Betalingen', 'bluem'); ?>
+                </a>
             <?php } ?>
-            <?php if ( bluem_module_enabled( 'idin' ) ) { ?>
-                <a href="#" class="nav-tab" data-tab="identity">Identiteit</a>
+            <?php if (bluem_module_enabled('idin')) { ?>
+                <a href="#" class="nav-tab" data-tab="identity" title="<?php echo __('Identiteit', 'bluem'); ?>">
+                    <?php echo __('Identiteit', 'bluem'); ?>
+                </a>
             <?php } ?>
-            <a href="#" class="nav-tab" data-tab="integrations">Integraties</a>
+            <a href="#" class="nav-tab" data-tab="integrations" title="<?php echo __('Integraties', 'bluem'); ?>">
+                <?php echo __('Integraties', 'bluem'); ?>
+            </a>
         </h2>
 
         <form action="options.php" method="post">
-            <?php settings_fields( 'bluem_woocommerce_modules_options' ); ?>
-            <?php do_settings_sections( 'bluem_woocommerce_modules' ); ?>
-            <?php settings_fields( 'bluem_woocommerce_options' ); ?>
+            <?php settings_fields('bluem_woocommerce_modules_options'); ?>
+            <?php do_settings_sections('bluem_woocommerce_modules'); ?>
+            <?php settings_fields('bluem_woocommerce_options'); ?>
 
             <div id="general" class="tab-content">
                 <table class="form-table">
                     <tbody>
-                        <?php do_settings_fields( 'bluem_woocommerce', 'bluem_woocommerce_modules_section' ); ?>
+                    <?php do_settings_fields('bluem_woocommerce', 'bluem_woocommerce_modules_section'); ?>
                     </tbody>
                 </table>
             </div>
@@ -38,7 +50,7 @@
             <div id="account" class="tab-content">
                 <table class="form-table">
                     <tbody>
-                        <?php do_settings_fields( 'bluem_woocommerce', 'bluem_woocommerce_general_section' ); ?>
+                    <?php do_settings_fields('bluem_woocommerce', 'bluem_woocommerce_general_section'); ?>
                     </tbody>
                 </table>
             </div>
@@ -46,7 +58,7 @@
             <div id="mandates" class="tab-content">
                 <table class="form-table">
                     <tbody>
-                        <?php do_settings_fields( 'bluem_woocommerce', 'bluem_woocommerce_mandates_section' ); ?>
+                    <?php do_settings_fields('bluem_woocommerce', 'bluem_woocommerce_mandates_section'); ?>
                     </tbody>
                 </table>
             </div>
@@ -54,7 +66,7 @@
             <div id="payments" class="tab-content">
                 <table class="form-table">
                     <tbody>
-                        <?php do_settings_fields( 'bluem_woocommerce', 'bluem_woocommerce_payments_section' ); ?>
+                    <?php do_settings_fields('bluem_woocommerce', 'bluem_woocommerce_payments_section'); ?>
                     </tbody>
                 </table>
             </div>
@@ -62,7 +74,7 @@
             <div id="identity" class="tab-content">
                 <table class="form-table">
                     <tbody>
-                        <?php do_settings_fields( 'bluem_woocommerce', 'bluem_woocommerce_idin_section' ); ?>
+                    <?php do_settings_fields('bluem_woocommerce', 'bluem_woocommerce_idin_section'); ?>
                     </tbody>
                 </table>
             </div>
@@ -70,13 +82,14 @@
             <div id="integrations" class="tab-content">
                 <table class="form-table">
                     <tbody>
-                        <?php do_settings_fields( 'bluem_woocommerce', 'bluem_woocommerce_integrations_section' ); ?>
+                    <?php do_settings_fields('bluem_woocommerce', 'bluem_woocommerce_integrations_section'); ?>
                     </tbody>
                 </table>
             </div>
 
             <div style="margin-top: 0; padding-top: 25px; border-top: 1px solid #2b4e6c;">
-                <input name="submit" class="button button-primary" type="submit" value="<?php esc_attr_e( 'Save changes', 'bluem' ); ?>" />
+                <input name="submit" class="button button-primary" type="submit"
+                       value="<?php echo __('Veranderingen opslaan', 'bluem'); ?>"/>
             </div>
         </form>
     </div>
@@ -86,10 +99,10 @@
 
 <script type="text/javascript">
 
-    (function($) {
-        $(document).ready(function() {
+    (function ($) {
+        $(document).ready(function () {
             // Handle tab click event
-            $('div.payment-methods .nav-tab').on('click', function(e) {
+            $('div.payment-methods .nav-tab').on('click', function (e) {
                 e.preventDefault();
 
                 // Get the clicked tab's identifier
@@ -136,6 +149,7 @@
         max-height: 500px;
         display: none;
     }
+
     div.payment-methods .tab-content table {
         border: 1px solid #2b4e6c;
         margin-top: 0;
