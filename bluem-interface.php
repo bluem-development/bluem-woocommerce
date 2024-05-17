@@ -21,7 +21,12 @@ function bluem_get_bluem_logo_html( $height = 64 ) {
 
 function bluem_render_request_table($categoryName,  $requests, $users_by_id = [] ) {
     if ( count( $requests ) == 0 ) {
-        echo "<p>" . __( "No transactions yet for $categoryName.", 'bluem' ) . "</p>";
+
+        printf(
+            /* translators: %s: Name of the category (Bluem service)   */
+            esc_html__( '<p>No transactions yet for %s</p>', 'bluemslug' ),
+            esc_html( $categoryName )
+        );
 
         return;
     } ?>
