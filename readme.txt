@@ -3,10 +3,10 @@ Contributors: bluempaymentservices
 Tags: Bluem,Payments,iDIN,iDEAL,Incassomachtigen,woocommerce, bluem, payment gateway, payments, ideal, paypal, mandates, identity, idin, age verification, iban-name check
 Requires at least: 5.0
 Tested up to: 6.5
-Requires PHP: 7.4
+Requires PHP: 8.0
 Stable tag: 1.3.19
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License: GPLv3
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 Connect your website to Bluem’s ePayments, eMandates, iDIN Identity services, Age 18+ verification and IBAN-Name check.
 
@@ -21,6 +21,7 @@ Concretely, the plug-in delivers:
 - a shortcode [bluem_identificatieformulier] that allows (guest) users to perform an iDIN eID request and store this information within the user profile metadata for further usage in third-party plugins or functions within your theme.
 - an extensive settings page that allows for enabling/disabling and configuration of specific services
 
+To use these features, you need to register as a Bluem customer. For more information, please visit https://www.bluem.nl
 
 == Installation ==
 
@@ -33,6 +34,8 @@ Installing this plugin can be done by using the following steps:
 
 == Usage ==
 **Be sure to enable the desired modules from the Bluem > Settings page!**
+
+Before you can start, you need to register as a Bluem customer. For more information, please visit https://www.bluem.nl
 
 Ensure that the required information is filled in within the settings page. The Access Token for testing, the SenderID and the brandID have to be set properly. These details are given by your Bluem account manager.
 
@@ -127,3 +130,5 @@ Note: Please deactivate and delete any previous versions of this plug-in prior t
 
 == Support ==
 If you have any questions, please reach out via email at pluginsupport@bluem.nl. We aim to respond within five working days.
+
+Find out more information in the [User Manual](https://codexology.notion.site/Bluem-voor-WordPress-en-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e) or on [bluem.nl](https://bluem.nl)
