@@ -38,11 +38,11 @@ function bluem_render_request_table($categoryName, $requests, $users_by_id = [])
         <table class="table widefat bluem-requests-table">
             <thead>
             <tr>
-                <th style="width:20%;"><?php echo __('Verzoek', 'bluem'); ?></th>
-                <th style="width:20%;"><?php echo __('Gebruiker', 'bluem'); ?></th>
-                <th style="width:15%;"><?php echo __('Datum', 'bluem'); ?></th>
-                <th style="width:20%;"><?php echo __('Extra informatie', 'bluem'); ?></th>
-                <th style="width:20%;"><?php echo __('Status', 'bluem'); ?></th>
+                <th style="width:20%;"><?php _e('Verzoek', 'bluem'); ?></th>
+                <th style="width:20%;"><?php _e('Gebruiker', 'bluem'); ?></th>
+                <th style="width:15%;"><?php _e('Datum', 'bluem'); ?></th>
+                <th style="width:20%;"><?php _e('Extra informatie', 'bluem'); ?></th>
+                <th style="width:20%;"><?php _e('Status', 'bluem'); ?></th>
                 <th style="width:5%;"></th>
             </tr>
             </thead>
@@ -78,7 +78,7 @@ function bluem_render_request_table($categoryName, $requests, $users_by_id = [])
                                 ?>
                             <a href="<?php echo admin_url("post.php?post={$r->order_id}&action=edit"); ?>"
                                target="_blank">
-                                <?php echo __('Bestelling', 'bluem'); ?><?php echo $order->get_order_number() ?>
+                                <?php _e('Bestelling', 'bluem'); ?><?php echo $order->get_order_number() ?>
                                 (<?php echo wc_price($order->get_total()); ?>)
                                 </a><?php
                             } else {
@@ -88,7 +88,7 @@ function bluem_render_request_table($categoryName, $requests, $users_by_id = [])
                         <?php if (isset($r->debtor_reference) && $r->debtor_reference !== "") {
                             ?>
 
-                            <span style="color:#aaa; font-size:9pt; display:block;"><?php echo __('Klantreferentie', 'bluem'); ?>:
+                            <span style="color:#aaa; font-size:9pt; display:block;"><?php _e('Klantreferentie', 'bluem'); ?>:
             <?php
             echo $r->debtor_reference; ?>
             </span>
@@ -211,7 +211,7 @@ function bluem_render_request_user($r, $users_by_id)
 
         <?php
     } else {
-        echo __("Gast/onbekend",'bluem');
+        _e("Gast/onbekend",'bluem');
     }
 }
 
@@ -225,17 +225,17 @@ function bluem_render_footer($align_right = true)
         echo 'text-align:right;';
     } ?>
             ">
-        <?php echo __('Hulp nodig?', 'bluem'); ?>
+        <?php _e('Hulp nodig?', 'bluem'); ?>
         <br>
         <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e"
            target="_blank" style="text-decoration:none;">
             <span class="dashicons dashicons-media-document"></span>
-            <?php echo __('Handleiding', 'bluem'); ?></a>
+            <?php _e('Handleiding', 'bluem'); ?></a>
         &middot;
         <a href="mailto:pluginsupport@bluem.nl?subject=Bluem+Wordpress+Plugin" target="_blank"
            style="text-decoration:none;">
             <span class="dashicons dashicons-editor-help"></span>
-            <?php echo __('E-mail support', 'bluem'); ?></a>
+            <?php _e('E-mail support', 'bluem'); ?></a>
 
     </p>
     <?php
@@ -274,7 +274,7 @@ function bluem_render_requests_list($requests)
                                     && $pl->report->CustomerIDResponse . "" != ""
                                 ) { ?>
                                     <span class="bluem-request-label">
-                    <?php echo __('CustomerID', 'bluem'); ?>:
+                    <?php _e('CustomerID', 'bluem'); ?>:
                 </span>
                                     <?php echo $pl->report->CustomerIDResponse; ?>
                                     <?php
@@ -284,7 +284,7 @@ function bluem_render_requests_list($requests)
                             <?php if (isset($pl->report->AddressResponse)) { ?>
                                 <div>
                 <span class="bluem-request-label">
-                <?php echo __('Adres','bluem'); ?>:
+                <?php _e('Adres','bluem'); ?>:
                 </span>
                                     <?php foreach ($pl->report->AddressResponse as $k => $v) {
                                         echo "{$v} ";
@@ -296,7 +296,7 @@ function bluem_render_requests_list($requests)
                             <?php if (isset($pl->report->BirthDateResponse)) { ?>
                                 <div>
                 <span class="bluem-request-label">
-                    <?php echo __('Geb.datum','bluem'); ?>:
+                    <?php _e('Geb.datum','bluem'); ?>:
                 </span>
                                     <?php echo $pl->report->BirthDateResponse; ?>
 
@@ -306,7 +306,7 @@ function bluem_render_requests_list($requests)
                             <?php if (isset($pl->report->EmailResponse)) { ?>
                                 <div>
                 <span class="bluem-request-label">
-                    <?php echo __('E-mail','bluem'); ?>:
+                    <?php _e('E-mail','bluem'); ?>:
                 </span>
                                     <?php echo $pl->report->EmailResponse; ?>
 
@@ -315,7 +315,7 @@ function bluem_render_requests_list($requests)
                             <?php if (isset($pl->report->TelephoneResponse1)) { ?>
                                 <div>
                 <span class="bluem-request-label">
-                    <?php echo __('Telefoonnr.','bluem'); ?>:
+                    <?php _e('Telefoonnr.','bluem'); ?>:
                 </span>
                                     <?php echo $pl->report->TelephoneResponse1; ?>
 
@@ -326,7 +326,7 @@ function bluem_render_requests_list($requests)
                             if (isset($pl->environment)) { ?>
                                 <div>
                 <span class="bluem-request-label">
-                <?php echo __('Bluem modus','bluem'); ?>:
+                <?php _e('Bluem modus','bluem'); ?>:
                 </span>
                                     <?php echo ucfirst($pl->environment); ?>
                                 </div>
@@ -347,7 +347,7 @@ function bluem_render_requests_list($requests)
                 <div class="bluem-request-list-item-row">
 
             <span class="bluem-request-label">
-                <?php echo __('Transactienummer','bluem'); ?>:
+                <?php _e('Transactienummer','bluem'); ?>:
 
             </span>
                     <?php echo $r->transaction_id; ?>
@@ -357,7 +357,7 @@ function bluem_render_requests_list($requests)
                     ?>
                     <div class="bluem-request-list-item-row">
             <span class="bluem-request-label">
-                <?php echo __('Klantreferentie','bluem'); ?>:
+                <?php _e('Klantreferentie','bluem'); ?>:
             </span>
                         <?php echo $r->debtor_reference; ?>
                     </div>
@@ -366,7 +366,7 @@ function bluem_render_requests_list($requests)
                 <div class="bluem-request-list-item-row">
 
             <span class="bluem-request-label">
-                <?php echo __('Tijdstip','bluem'); ?>
+                <?php _e('Tijdstip','bluem'); ?>
             </span>
                     <?php $rdate = new DateTimeImmutable($r->timestamp, new DateTimeZone("Europe/Amsterdam")); ?>
                     <?php echo $rdate->format("d-m-Y H:i:s"); ?>
@@ -376,7 +376,7 @@ function bluem_render_requests_list($requests)
                 <div class="bluem-request-list-item-row">
 
             <span class="bluem-request-label">
-                <?php echo __('Status','bluem'); ?>:
+                <?php _e('Status','bluem'); ?>:
             </span>
                     <?php bluem_render_request_status($r->status); ?>
                 </div>
@@ -565,7 +565,7 @@ function bluem_render_nav_header($active_page = '')
             }
             ?>>
             <span class="dashicons dashicons-admin-home"></span>
-            <?php echo __('Home', 'bluem'); ?>
+            <?php _e('Home', 'bluem'); ?>
         </a>
         <a href="<?php echo admin_url('admin.php?page=bluem-activate'); ?>"
             <?php if ($active_page === "activate") {
@@ -575,7 +575,7 @@ function bluem_render_nav_header($active_page = '')
             }
             ?>>
             <span class="dashicons dashicons-yes-alt"></span>
-            <?php echo __('Activatie', 'bluem'); ?>
+            <?php _e('Activatie', 'bluem'); ?>
         </a>
         <a href="<?php echo admin_url('admin.php?page=bluem-transactions'); ?>"
             <?php if ($active_page === "transactions") {
@@ -585,7 +585,7 @@ function bluem_render_nav_header($active_page = '')
             }
             ?>>
             <span class="dashicons dashicons-money"></span>
-            <?php echo __('Transacties', 'bluem'); ?>
+            <?php _e('Transacties', 'bluem'); ?>
         </a>
         <a href="<?php echo admin_url('admin.php?page=bluem-settings'); ?>"
             <?php if ($active_page === "settings") {
@@ -595,7 +595,7 @@ function bluem_render_nav_header($active_page = '')
             }
             ?>>
             <span class="dashicons dashicons-admin-settings"></span>
-            <?php echo __('Instellingen', 'bluem'); ?>
+            <?php _e('Instellingen', 'bluem'); ?>
         </a>
         <a href="<?php echo admin_url('admin.php?page=bluem-importexport'); ?>"
             <?php if ($active_page === "importexport") {
@@ -605,7 +605,7 @@ function bluem_render_nav_header($active_page = '')
             }
             ?>>
             <span class="dashicons dashicons-database"></span>
-            <?php echo __('Import / export', 'bluem'); ?>
+            <?php _e('Import / export', 'bluem'); ?>
         </a>
         <a href="<?php echo admin_url('admin.php?page=bluem-status'); ?>"
             <?php if ($active_page === "status") {
@@ -615,17 +615,17 @@ function bluem_render_nav_header($active_page = '')
             }
             ?>>
             <span class="dashicons dashicons-info"></span>
-            <?php echo __('Status', 'bluem'); ?>
+            <?php _e('Status', 'bluem'); ?>
         </a>
         <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e"
            target="_blank"
            class="nav-tab">
             <span class="dashicons dashicons-media-document"></span>
-            <?php echo __('Handleiding', 'bluem'); ?>
+            <?php _e('Handleiding', 'bluem'); ?>
         </a>
         <a href="mailto:pluginsupport@bluem.nl?subject=Bluem+Wordpress+Plugin" class="nav-tab" target="_blank">
             <span class="dashicons dashicons-editor-help"></span>
-            <?php echo __('E-mail support', 'bluem'); ?>
+            <?php _e('E-mail support', 'bluem'); ?>
         </a>
     </nav>
 

@@ -93,47 +93,47 @@ function display_woocommerce_logs(): string
 <div class="wrap">
     <h1>
         <?php echo bluem_get_bluem_logo_html(48); ?>
-        <?php echo __('Status', 'bluem'); ?>
+        <?php _e('Status', 'bluem'); ?>
     </h1>
 
     <?php bluem_render_nav_header('status'); ?>
 
     <div class="wrap payment-methods">
         <h2 class="nav-tab-wrapper">
-            <a href="#" class="nav-tab" data-tab="general"><?php echo __('Systeem', 'bluem'); ?></a>
-            <a href="#" class="nav-tab" data-tab="logs"><?php echo __('Logs', 'bluem'); ?></a>
+            <a href="#" class="nav-tab" data-tab="general"><?php _e('Systeem', 'bluem'); ?></a>
+            <a href="#" class="nav-tab" data-tab="logs"><?php _e('Logs', 'bluem'); ?></a>
         </h2>
 
         <div id="general" class="tab-content">
-            <h1><?php echo __('Systeem', 'bluem'); ?></h1>
+            <h1><?php _e('Systeem', 'bluem'); ?></h1>
 
-            <p><?php echo __('De volgende betaalmethoden zijn ingeschakeld', 'bluem'); ?>:</p>
+            <p><?php _e('De volgende betaalmethoden zijn ingeschakeld', 'bluem'); ?>:</p>
             <ul>
                 <?php if (bluem_module_enabled('mandates')) { ?>
-                    <li><?php echo __('Incassomachtigen', 'bluem'); ?> <span class="dashicons dashicons-yes"
+                    <li><?php _e('Incassomachtigen', 'bluem'); ?> <span class="dashicons dashicons-yes"
                                                                              style="color: #4F800D;"></span></li>
                 <?php } ?>
                 <?php if (bluem_module_enabled('payments')) { ?>
-                    <li><?php echo __('Betalingen', 'bluem'); ?> <span class="dashicons dashicons-yes"
+                    <li><?php _e('Betalingen', 'bluem'); ?> <span class="dashicons dashicons-yes"
                                                                        style="color: #4F800D;"></span></li>
                 <?php } ?>
                 <?php if (bluem_module_enabled('idin')) { ?>
-                    <li><?php echo __('Identiteit', 'bluem'); ?> <span class="dashicons dashicons-yes"
+                    <li><?php _e('Identiteit', 'bluem'); ?> <span class="dashicons dashicons-yes"
                                                                        style="color: #4F800D;"></span></li>
                 <?php } ?>
             </ul>
         </div>
 
         <div id="logs" class="tab-content">
-            <h1><?php echo __('Logs', 'bluem'); ?></h1>
+            <h1><?php _e('Logs', 'bluem'); ?></h1>
 
-            <h3><?php echo __('PHP errors', 'bluem'); ?></h3>
+            <h3><?php _e('PHP errors', 'bluem'); ?></h3>
             <?php echo display_php_errors(); ?>
 
-            <h3><?php echo __('WordPress debug log', 'bluem'); ?></h3>
+            <h3><?php _e('WordPress debug log', 'bluem'); ?></h3>
             <?php echo display_wordpress_debug_log(); ?>
 
-            <h3><?php echo __('WooCommerce error logs', 'bluem'); ?></h3>
+            <h3><?php _e('WooCommerce error logs', 'bluem'); ?></h3>
             <?php echo display_woocommerce_logs(); ?>
         </div>
     </div>

@@ -1,36 +1,36 @@
 <div class="wrap">
     <h1>
         <?php echo bluem_get_bluem_logo_html(48); ?>
-        <?php echo __('Instellingen', 'bluem'); ?>
+        <?php _e('Instellingen', 'bluem'); ?>
     </h1>
 
     <?php bluem_render_nav_header('settings'); ?>
 
     <div class="wrap payment-methods">
         <h2 class="nav-tab-wrapper">
-            <a href="#" class="nav-tab" data-tab="general" title="<?php echo __('Algemeen', 'bluem'); ?>">
-                <?php echo __('Algemeen', 'bluem'); ?>
+            <a href="#" class="nav-tab" data-tab="general" title="<?php _e('Algemeen', 'bluem'); ?>">
+                <?php _e('Algemeen', 'bluem'); ?>
             </a>
-            <a href="#" class="nav-tab" data-tab="account" title="<?php echo __('Account', 'bluem'); ?>">
-                <?php echo __('Account', 'bluem'); ?>
+            <a href="#" class="nav-tab" data-tab="account" title="<?php _e('Account', 'bluem'); ?>">
+                <?php _e('Account', 'bluem'); ?>
             </a>
             <?php if (bluem_module_enabled('mandates')) { ?>
-                <a href="#" class="nav-tab" data-tab="mandates" title="<?php echo __('Incassomachtigen', 'bluem'); ?>">
-                    <?php echo __('Incassomachtigen', 'bluem'); ?>
+                <a href="#" class="nav-tab" data-tab="mandates" title="<?php _e('Incassomachtigen', 'bluem'); ?>">
+                    <?php _e('Incassomachtigen', 'bluem'); ?>
                 </a>
             <?php } ?>
             <?php if (bluem_module_enabled('payments')) { ?>
-                <a href="#" class="nav-tab" data-tab="payments" title="<?php echo __('Betalingen', 'bluem'); ?>">
-                    <?php echo __('Betalingen', 'bluem'); ?>
+                <a href="#" class="nav-tab" data-tab="payments" title="<?php _e('Betalingen', 'bluem'); ?>">
+                    <?php _e('Betalingen', 'bluem'); ?>
                 </a>
             <?php } ?>
             <?php if (bluem_module_enabled('idin')) { ?>
-                <a href="#" class="nav-tab" data-tab="identity" title="<?php echo __('Identiteit', 'bluem'); ?>">
-                    <?php echo __('Identiteit', 'bluem'); ?>
+                <a href="#" class="nav-tab" data-tab="identity" title="<?php _e('Identiteit', 'bluem'); ?>">
+                    <?php _e('Identiteit', 'bluem'); ?>
                 </a>
             <?php } ?>
-            <a href="#" class="nav-tab" data-tab="integrations" title="<?php echo __('Integraties', 'bluem'); ?>">
-                <?php echo __('Integraties', 'bluem'); ?>
+            <a href="#" class="nav-tab" data-tab="integrations" title="<?php _e('Integraties', 'bluem'); ?>">
+                <?php _e('Integraties', 'bluem'); ?>
             </a>
         </h2>
 
@@ -89,7 +89,7 @@
 
             <div style="margin-top: 0; padding-top: 25px; border-top: 1px solid #2b4e6c;">
                 <input name="submit" class="button button-primary" type="submit"
-                       value="<?php echo __('Veranderingen opslaan', 'bluem'); ?>"/>
+                       value="<?php _e('Veranderingen opslaan', 'bluem'); ?>"/>
             </div>
         </form>
     </div>

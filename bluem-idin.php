@@ -1849,7 +1849,7 @@ Lees hier meer: <a href='https://bluem.nl/blog/2021/04/26/nieuwe-alcoholwet-per-
 
     if ( $validation_needed && bluem_checkout_check_idin_validated_filter() == false ) {
         echo bluem_idin_generate_notice( "Verifieer eerst je identiteit.", true );
-        // echo __(
+        // _e(
         //     "Verifieer eerst je identiteit via de mijn account pagina",
         //     "woocommerce"
         // );
