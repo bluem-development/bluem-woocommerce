@@ -11,13 +11,11 @@ use Bluem\BluemPHP\Helpers\BluemIdentityCategoryList;
  * Check if WooCommerce is activated
  */
 if ( ! function_exists( 'is_woocommerce_activated' ) ) {
-    function is_woocommerce_activated() {
+    function is_woocommerce_activated(): bool
+    {
         $active_plugins = get_option( 'active_plugins' );
 
-        if ( in_array('woocommerce/woocommerce.php', $active_plugins) ) {
-            return true;
-        }
-        return false;
+        return in_array('woocommerce/woocommerce.php', $active_plugins, true);
     }
 }
 
