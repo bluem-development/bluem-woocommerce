@@ -293,7 +293,7 @@ add_action('admin_menu', 'bluem_register_menu', 9);
 /**
  * Get composer dependency version.
  */
-function get_composer_dependency_version($dependency_name)
+function bluem_get_composer_dependency_version($dependency_name)
 {
     // Path to the composer.lock file
     $composer_lock_path = plugin_dir_path(__FILE__) . 'composer.lock';
@@ -307,9 +307,7 @@ function get_composer_dependency_version($dependency_name)
     });
 
     // Retrieve the version constraint of the specified dependency
-    $version_constraint = reset($package_entry)['version'];
-
-    return $version_constraint;
+    return reset($package_entry)['version'];
 }
 
 /**
@@ -317,7 +315,7 @@ function get_composer_dependency_version($dependency_name)
  */
 function bluem_home()
 {
-    $dependency_bluem_php_version = get_composer_dependency_version('bluem-development/bluem-php');
+    $dependency_bluem_php_version = bluem_get_composer_dependency_version('bluem-development/bluem-php');
 
     include_once 'views/home.php';
 }
@@ -403,12 +401,12 @@ function bluem_plugin_activation()
 function bluem_requests_view()
 {
     if (isset($_GET['request_id']) && $_GET['request_id'] !== "") {
-        if (isset($_GET['admin_action']) && $_GET['admin_action'] == "delete") {
+        if (isset($_GET['admin_action']) && $_GET['admin_action'] === "delete") {
             bluem_db_delete_request_by_id($_GET['request_id']);
             wp_redirect(
                 admin_url("admin.php?page=bluem-transactions")
             );
-        } elseif (isset($_GET['admin_action']) && $_GET['admin_action'] == "status-update") {
+        } elseif (isset($_GET['admin_action']) && $_GET['admin_action'] === "status-update") {
             bluem_update_request_by_id($_GET['request_id']);
 
             bluem_requests_view_request();
@@ -983,7 +981,7 @@ function bluem_woocommerce_register_settings()
         // Check if the form has already been filled
         $form_filled = get_option('bluem_plugin_registration', false);
         if (!$form_filled) {
-            if (empty($_GET) || !empty($_GET['page']) && $_GET['page'] !== "bluem-activate") {
+            if (empty($_GET) || (!empty($_GET['page']) && $_GET['page'] !== "bluem-activate")) {
                 wp_redirect(
                     admin_url("admin.php?page=bluem-activate")
                 );
