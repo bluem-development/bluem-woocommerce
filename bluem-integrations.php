@@ -1308,7 +1308,6 @@ function bluem_woocommerce_integration_gform_results_shortcode()
     $request_from_db = bluem_db_get_request_by_transaction_id_and_entrance_code(
         $_GET['mid'],
         $_GET['ec'],
-        "mandates"
     );
 
     if ($request_from_db !== false)
