@@ -11,7 +11,7 @@
     "require": {
         "php": ">=7.4|>=8.0",
         "nesbot/carbon": "^2.53",
-        "bluem-development/bluem-php": "^2.2|^2.3",
+        "bluem-development/bluem-php": "2.3.2.9b",
         "symfony/polyfill-php72": "^1.22",
         "symfony/polyfill-mbstring": "v1.19.0",
         "symfony/polyfill-php80": "^1.27",
