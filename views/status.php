@@ -12,6 +12,7 @@
         height: 250px;
         width: 100%;
     }
+
     .bluem_logo:before {
         background-image: url('<?php echo plugin_dir_url( '' ); ?>/bluem/assets/bluem/logo-hero.png');
         background-size: contain;
@@ -27,17 +28,15 @@
  * Display PHP error log (if accessible)
  * @return string
  */
-function display_php_errors() {
+function display_php_errors(): string
+{
     $error_log_path = ini_get('error_log');
 
-    if (!empty($error_log_path) && file_exists($error_log_path)) {
-        if ($log_contents = @file_get_contents($error_log_path)) {
-            $content = '<pre>' . esc_html($log_contents) . '</pre>';
-        } else {
-            $content = 'Unable to access the PHP error log. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.';
-        }
+    if (!empty($error_log_path) && file_exists($error_log_path)
+        && $log_contents = @file_get_contents($error_log_path)) {
+        $content = '<pre>' . esc_html($log_contents) . '</pre>';
     } else {
-        $content = 'Unable to access the PHP error log. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.';
+        $content = __('Unable to access the PHP error log. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.', 'bluem');
     }
     return $content;
 }
@@ -47,17 +46,18 @@ function display_php_errors() {
  *
  * @return string
  */
-function display_wordpress_debug_log() {
+function display_wordpress_debug_log()
+{
     $error_log_path = WP_CONTENT_DIR . '/debug.log';
 
     if (!empty($error_log_path) && file_exists($error_log_path)) {
         if ($log_contents = @file_get_contents($error_log_path)) {
             $content = '<pre>' . esc_html($log_contents) . '</pre>';
         } else {
-            $content = 'Unable to access the WordPress debug log. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.';
+            $content = __('Unable to access the WordPress debug log. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.', 'bluem');
         }
     } else {
-        $content = 'Unable to access the WordPress debug log. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.';
+        $content = __('Unable to access the WordPress debug log. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.', 'bluem');
     }
     return $content;
 }
@@ -67,7 +67,8 @@ function display_wordpress_debug_log() {
  *
  * @return string
  */
-function display_woocommerce_logs() {
+function display_woocommerce_logs(): string
+{
     $woocommerce_logs = null;
     if (defined('WC_LOG_DIR')) {
         $woocommerce_logs = glob(WC_LOG_DIR . '*.log');
@@ -81,7 +82,7 @@ function display_woocommerce_logs() {
             $content .= '<pre>' . esc_html(file_get_contents($log)) . '</pre>';
         }
     } else {
-        $content = 'Unable to access the WooCommerce logs. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.';
+        $content = __('Unable to access the WooCommerce logs. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.', 'bluem');
     }
 
     return $content;
@@ -91,45 +92,48 @@ function display_woocommerce_logs() {
 
 <div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48);?>
-        Status
+        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php _e('Status', 'bluem'); ?>
     </h1>
 
-    <?php bluem_render_nav_header('status');?>
+    <?php bluem_render_nav_header('status'); ?>
 
     <div class="wrap payment-methods">
         <h2 class="nav-tab-wrapper">
-            <a href="#" class="nav-tab" data-tab="general">Systeem</a>
-            <a href="#" class="nav-tab" data-tab="logs">Logs</a>
+            <a href="#" class="nav-tab" data-tab="general"><?php _e('Systeem', 'bluem'); ?></a>
+            <a href="#" class="nav-tab" data-tab="logs"><?php _e('Logs', 'bluem'); ?></a>
         </h2>
 
         <div id="general" class="tab-content">
-            <h1>Systeem</h1>
+            <h1><?php _e('Systeem', 'bluem'); ?></h1>
 
-            <p>De volgende betaalmethoden zijn ingeschakeld:</p>
+            <p><?php _e('De volgende betaalmethoden zijn ingeschakeld', 'bluem'); ?>:</p>
             <ul>
-                <?php if ( bluem_module_enabled( 'mandates' ) ) { ?>
-                    <li>Incassomachtigen <span class="dashicons dashicons-yes" style="color: #4F800D;"></span></li>
+                <?php if (bluem_module_enabled('mandates')) { ?>
+                    <li><?php _e('Incassomachtigen', 'bluem'); ?> <span class="dashicons dashicons-yes"
+                                                                             style="color: #4F800D;"></span></li>
                 <?php } ?>
-                <?php if ( bluem_module_enabled( 'payments' ) ) { ?>
-                    <li>Betalingen <span class="dashicons dashicons-yes" style="color: #4F800D;"></span></li>
+                <?php if (bluem_module_enabled('payments')) { ?>
+                    <li><?php _e('Betalingen', 'bluem'); ?> <span class="dashicons dashicons-yes"
+                                                                       style="color: #4F800D;"></span></li>
                 <?php } ?>
-                <?php if ( bluem_module_enabled( 'idin' ) ) { ?>
-                    <li>Identiteit <span class="dashicons dashicons-yes" style="color: #4F800D;"></span></li>
+                <?php if (bluem_module_enabled('idin')) { ?>
+                    <li><?php _e('Identiteit', 'bluem'); ?> <span class="dashicons dashicons-yes"
+                                                                       style="color: #4F800D;"></span></li>
                 <?php } ?>
             </ul>
         </div>
 
         <div id="logs" class="tab-content">
-            <h1>Logs</h1>
+            <h1><?php _e('Logs', 'bluem'); ?></h1>
 
-            <h3>PHP errors</h3>
+            <h3><?php _e('PHP errors', 'bluem'); ?></h3>
             <?php echo display_php_errors(); ?>
 
-            <h3>WordPress debug log</h3>
+            <h3><?php _e('WordPress debug log', 'bluem'); ?></h3>
             <?php echo display_wordpress_debug_log(); ?>
 
-            <h3>WooCommerce error logs</h3>
+            <h3><?php _e('WooCommerce error logs', 'bluem'); ?></h3>
             <?php echo display_woocommerce_logs(); ?>
         </div>
     </div>
@@ -139,10 +143,10 @@ function display_woocommerce_logs() {
 
 <script type="text/javascript">
 
-    (function($) {
-        $(document).ready(function() {
+    (function ($) {
+        $(document).ready(function () {
             // Handle tab click event
-            $('div.payment-methods .nav-tab').on('click', function(e) {
+            $('div.payment-methods .nav-tab').on('click', function (e) {
                 e.preventDefault();
 
                 // Get the clicked tab's identifier
@@ -185,6 +189,7 @@ function display_woocommerce_logs() {
         max-height: 500px;
         display: none;
     }
+
     div.payment-methods .tab-content table {
         border: 1px solid #2b4e6c;
         margin-top: 0;

@@ -14,19 +14,19 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
      */
     public function __construct()
     {
-        $methodDescription = 'eMandate Payment Gateway voor WordPress - WooCommerce.';
+        $methodDescription = __('eMandate Payment Gateway voor WordPress - WooCommerce.','bluem');
 
         parent::__construct(
             'bluem_mandates',
-            'Bluem Digitaal Incassomachtiging (eMandate)',
+            __('Bluem Digitaal Incassomachtiging (eMandate)','bluem'),
             $methodDescription,
             home_url('wc-api/bluem_mandates_callback')
         );
 
-        if (isset($this->bluem_config->localInstrumentCode) && $this->bluem_config->localInstrumentCode == "B2B") {
-            $this->method_title = 'Bluem Zakelijke Incassomachtiging (eMandate)';
+        if (isset($this->bluem_config->localInstrumentCode) && $this->bluem_config->localInstrumentCode === "B2B") {
+            $this->method_title = __('Bluem Zakelijke Incassomachtiging (eMandate)','bluem');
         } else {
-            $this->method_title = 'Bluem Particuliere Incassomachtiging (eMandate)';
+            $this->method_title = __('Bluem Particuliere Incassomachtiging (eMandate)','bluem');
         }
 
         $this->has_fields = true;
@@ -103,7 +103,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         $this->form_fields = apply_filters('wc_offline_form_fields', [
             'enabled'     => [
                 'title'       => 'Enable/Disable',
-                'label'       => 'Activeer de Bluem eMandate Gateway',
+                'label'       => __('Activeer de Bluem eMandate Gateway','bluem'),
                 'type'        => 'checkbox',
                 'description' => '',
                 'default'     => 'no'
@@ -111,14 +111,14 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             'title'       => [
                 'title'       => 'Titel van betaalmethode',
                 'type'        => 'text',
-                'description' => 'Dit bepaalt de titel die de gebruiker ziet tijdens het afrekenen.',
-                'default'     => 'Incasso machtiging voor zakelijke Rabobank, ING of ABN AMRO rekeningen',
+                'description' => __('Dit bepaalt de titel die de gebruiker ziet tijdens het afrekenen.','bluem'),
+                'default'     => __('Incasso machtiging voor zakelijke Rabobank, ING of ABN AMRO rekeningen','bluem'),
             ],
             'description' => [
                 'title'       => 'Description',
                 'type'        => 'textarea',
-                'description' => 'Dit bepaalt de beschrijving die de gebruiker ziet tijdens het afrekenen.					',
-                'default'     => 'Geef een B2B eMandate af voor een incasso voor je bestelling.',
+                'description' => __('Dit bepaalt de beschrijving die de gebruiker ziet tijdens het afrekenen.','bluem'),
+                'default'     => __('Geef een B2B eMandate af voor een incasso voor je bestelling.','bluem'),
             ]
         ]);
     }
@@ -191,7 +191,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             }
 
             if (!$existing_mandate_response->Status()) {
-                $reason = "No / invalid bluem response for existing mandate";
+                $reason = __("No / invalid bluem response for existing mandate",'bluem');
             // existing mandate response is not at all valid,
             // continue with actual mandate process
             } elseif (
@@ -221,8 +221,8 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                     if ($retrieved_request_from_db) {
                         bluem_db_request_log(
                             $request->id,
-                            "Utilized this request for a
-payment for another order {$order_id}"
+                            __("Utilized this request for a
+payment for another order {$order_id}",'bluem')
                         );
 
                         bluem_db_create_link(
@@ -250,12 +250,12 @@ payment for another order {$order_id}"
                     );
                 }
 
-                $reason = "Existing mandate found, but not valid";
+                $reason = __("Existing mandate found, but not valid",'bluem');
             } else {
-                $reason = "Existing mandate is not a successful mandate";
+                $reason = __("Existing mandate is not a successful mandate",'bluem');
             }
         } else {
-            $reason = "Not ready, no metadata";
+            $reason = __("Not ready, no metadata",'bluem');
         }
 
         return array(
@@ -293,7 +293,7 @@ payment for another order {$order_id}"
             woocommerce_form_field('bluem_mandates_bic', array(
                 'type' => 'select',
                 'required' => true,
-                'label' => 'Selecteer een bank:',
+                'label' => __('Selecteer een bank:','bluem'),
                 'options' => $options,
             ), '');
         }
@@ -325,7 +325,7 @@ payment for another order {$order_id}"
         if (!empty($this->bluem_config->eMandateReason)) {
             $this->bluem_config->eMandateReason = utf8_decode($this->bluem_config->eMandateReason);
         } else {
-            $this->bluem_config->eMandateReason = "Incasso machtiging";
+            $this->bluem_config->eMandateReason = __("Incasso machtiging",'bluem');
         }
 
         try {
@@ -440,7 +440,7 @@ payment for another order {$order_id}"
                 'transaction_url'  => $transactionURL,
                 'user_id'          => get_current_user_id(),
                 'timestamp'        => date("Y-m-d H:i:s"),
-                'description'      => "Mandate request {$order_id} {$user_id}",
+                'description'      => __("Mandate request").' '."{$order_id} {$user_id}",
                 'debtor_reference' => "",
                 'type'             => "mandates",
                 'order_id'         => $order_id,
@@ -499,15 +499,10 @@ payment for another order {$order_id}"
                 $order = $this->getOrder($mandateID);
                 if (is_null($order)) {
                     http_response_code(404);
-                    echo "Error: No order found";
+                    echo __("Error: No order found",'bluem');
                     exit;
                 }
                 $order_status = $order->get_status();
-
-                if (self::VERBOSE) {
-                    echo "order_status: $order_status" . PHP_EOL;
-                    echo "webhook_status: $webhook_status" . PHP_EOL;
-                }
 
                 $user_id = $user_id = $order->get_user_id();
 
@@ -559,11 +554,6 @@ payment for another order {$order_id}"
 
                         if ($mandate_amount >= $max_order_amount) {
                             $mandate_successful = true;
-                            if (self::VERBOSE) {
-                                echo "mandate is enough" . PHP_EOL;
-                            }
-                        } elseif (self::VERBOSE) {
-                            echo "mandate is too small" . PHP_EOL;
                         }
                     }
                 } else {
@@ -599,7 +589,7 @@ payment for another order {$order_id}"
             }
         } catch (Exception $e) {
             http_response_code(500);
-            echo "Error: Exception: " . $e->getMessage();
+            echo __("Error: Exception: ",'bluem') . $e->getMessage();
             exit;
         }
     }
@@ -635,7 +625,7 @@ payment for another order {$order_id}"
         // dont recreate it here, it should already exist in the gateway!
 
         if (!isset($_GET['mandateID'])) {
-            $errormessage = "Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.";
+            $errormessage = __("Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.",'bluem');
             bluem_error_report_email(
                 [
                     'service'  => 'mandates',
@@ -648,7 +638,7 @@ payment for another order {$order_id}"
         }
 
         if ($_GET['mandateID'] == "") {
-            $errormessage = "Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.";
+            $errormessage = __("Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.","bluem");
             bluem_error_report_email(
                 [
                     'service'  => 'mandates',
@@ -663,7 +653,7 @@ payment for another order {$order_id}"
 
         $order = $this->getOrder($mandateID);
         if (is_null($order)) {
-            $errormessage = "Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code {$mandateID} bij je gegevens.";
+            $errormessage = sprintf(__("Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code %s bij je gegevens.","bluem"),$mandateID);
             bluem_error_report_email(
                 [
                     'service'  => 'mandates',
@@ -691,7 +681,7 @@ payment for another order {$order_id}"
         try {
             $response = $this->bluem->MandateStatus($mandateID, $entranceCode);
         } catch (Exception $e) {
-            $errormessage = "Fout bij opvragen status: " . $e->getMessage() . "<br>Neem contact op met de webshop en vermeld deze status";
+            $errormessage = sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status","bluem"),$e->getMessage());
             bluem_error_report_email(
                 [
                     'service'  => 'mandates',
@@ -704,7 +694,7 @@ payment for another order {$order_id}"
         }
 
         if (!$response->Status()) {
-            $errormessage = "Fout bij opvragen status: " . $response->Error() . "<br>Neem contact op met de webshop en vermeld deze status";
+            $errormessage = sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status","bluem"),$response->Error());
             bluem_error_report_email(
                 [
                     'service'  => 'mandates',
@@ -765,18 +755,18 @@ payment for another order {$order_id}"
             );
         } elseif ($statusCode === "Pending") {
             bluem_dialogs_render_prompt(
-                "<p>Uw machtiging wacht op goedkeuring van
+                __("<p>Uw machtiging wacht op goedkeuring van
                     een andere ondertekenaar namens uw organisatie.<br>
                     Deze persoon dient in te loggen op internet bankieren
                     en deze machtiging ook goed te keuren.
                     Hierna is de machtiging goedgekeurd en zal dit
-                    reageren op deze site.</p>"
+                    reageren op deze site.</p>",'bluem')
             );
             exit;
         } elseif ($statusCode === "Cancelled") {
             $order->update_status(
                 'cancelled',
-                __('Authorization has been canceled', 'bluem')
+                __('Goedkeuring is afgebroken of geannuleerd', 'bluem')
             );
 
             bluem_transaction_notification_email(
@@ -793,7 +783,7 @@ payment for another order {$order_id}"
         } elseif ($statusCode === "Expired") {
             $order->update_status(
                 'failed',
-                __('Authorization has expired', 'bluem')
+                __('Verzoek is verlopen', 'bluem')
             );
 
             bluem_transaction_notification_email(
@@ -801,7 +791,7 @@ payment for another order {$order_id}"
             );
 
             bluem_dialogs_render_prompt(
-                "Fout: De mandaat of het verzoek daartoe is verlopen"
+                __("Fout: De mandaat of het verzoek daartoe is verlopen",'bluem')
             );
             exit;
         } else {
@@ -809,8 +799,8 @@ payment for another order {$order_id}"
                 'failed',
                 __('Authorization failed: error or unknown status', 'bluem')
             );
-            $errormessage = "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}
-                    <br>Neem contact op met de webshop en vermeld deze status";
+            $errormessage = sprintf(__("Fout: Onbekende of foutieve status teruggekregen: %s
+                    <br>Neem contact op met de webshop en vermeld deze status",'bluem'),$statusCode);
             bluem_error_report_email(
                 [
                     'service'  => 'mandates',
@@ -873,25 +863,25 @@ payment for another order {$order_id}"
             // NextDeli specific: estimate 10% markup on order total:
             $order_total_plus = (float) $order->get_total() * $maxAmountFactor;
 
-            if (self::VERBOSE) {
-                if ($maxAmountResponse->amount === 0.0) {
-                    echo "No max amount set";
-                } else {
-                    echo "MAX AMOUNT SET AT {$maxAmountResponse->amount} {$maxAmountResponse->currency}";
-                }
-                echo "<hr>";
-                echo "Totaalbedrag: ";
-                var_dump((float) $order->get_total());
-                echo " | totaalbedrag +10 procent: ";
-                var_dump($order_total_plus);
-                echo "<hr>";
-            }
+//            if (self::VERBOSE) {
+//                if ($maxAmountResponse->amount === 0.0) {
+//                    echo "No max amount set";
+//                } else {
+//                    echo "MAX AMOUNT SET AT {$maxAmountResponse->amount} {$maxAmountResponse->currency}";
+//                }
+//                echo "<hr>";
+//                echo "Totaalbedrag: ";
+//                var_dump((float) $order->get_total());
+//                echo " | totaalbedrag +10 procent: ";
+//                var_dump($order_total_plus);
+//                echo "<hr>";
+//            }
 
             if (isset($maxAmountResponse->amount) && $maxAmountResponse->amount !== 0.0) {
                 if ($update_metadata) {
-                    if (self::VERBOSE) {
-                        echo "<br>updating user meta: bluem_latest_mandate_amount to value {$maxAmountResponse->amount} - result: ";
-                    }
+//                    if (self::VERBOSE) {
+//                        echo "<br>updating user meta: bluem_latest_mandate_amount to value {$maxAmountResponse->amount} - result: ";
+//                    }
                     update_user_meta(
                         $user_id,
                         'bluem_latest_mandate_amount',
@@ -899,10 +889,10 @@ payment for another order {$order_id}"
                     );
                 }
                 $allowed_margin = ($order_total_plus <= $maxAmountResponse->amount);
-                if (self::VERBOSE) {
-                    echo "binnen machtiging marge?";
-                    var_dump($allowed_margin);
-                }
+//                if (self::VERBOSE) {
+//                    echo "binnen machtiging marge?";
+//                    var_dump($allowed_margin);
+//                }
 
                 if ($allowed_margin) {
                     $successful_mandate = true;
@@ -912,28 +902,38 @@ payment for another order {$order_id}"
                     $url = $order->get_checkout_payment_url();
                     $order_total_plus_string = str_replace(".", ",", ("" . round($order_total_plus, 2)));
                     bluem_dialogs_render_prompt(
+                        sprintf(__(
+
                         "<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
-<p>De geschatte factuurwaarde van jouw bestelling is EUR {$order_total_plus_string}. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor 'onbeperkt' te kiezen.</p>" .
-                        "<p><a href='{$url}' target='_self'>Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>",
+<p>De geschatte factuurwaarde van jouw bestelling is EUR %s. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor 'onbeperkt' te kiezen.</p>" .
+                        "<p><a href='%s' target='_self'>Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>",
+                        'bluem'),
+                            $order_total_plus_string,
+                            $url
+                        ),
                         false
                     );
 
                     bluem_db_request_log(
                         $request_id,
-                        "User tried to give use this mandate with maxamount
-&euro; {$maxAmountResponse->amount}, but the Order <a href='" .
-                        admin_url("post.php?post=" . $order->get_id() . "&action=edit") .
-                        "' target='_self'>ID " . $order->get_id() . "</a> grand
-total including correction is &euro; {$order_total_plus_string}.
-The user is prompted to create a new mandate to fulfill this order."
+                        sprintf(__("User tried to give use this mandate with maxamount
+&euro; %s, but the Order <a href='" .
+                        admin_url("post.php?post=%s&action=edit") .
+                        "' target='_self'>ID %s</a> grand total including correction is &euro; %s.
+                        The user is prompted to create a new mandate to fulfill this order.","bluem"),
+                            $maxAmountResponse->amount,
+                            $order->get_id(),
+                            $order->get_id(),
+                            $order_total_plus_string
+                        )
                     );
                     exit;
                 }
             } else {
                 if ($update_metadata) {
-                    if (self::VERBOSE) {
-                        echo "<br>updating user meta: bluem_latest_mandate_amount to value 0 - result: ";
-                    }
+//                    if (self::VERBOSE) {
+//                        echo "<br>updating user meta: bluem_latest_mandate_amount to value 0 - result: ";
+//                    }
                     update_user_meta($user_id, 'bluem_latest_mandate_amount', 0);
                 }
                 $successful_mandate = true;
@@ -944,9 +944,9 @@ The user is prompted to create a new mandate to fulfill this order."
         }
 
         if ($update_metadata) {
-            if (self::VERBOSE) {
-                echo "<br>updating user meta: bluem_latest_mandate_validated to value {$successful_mandate} - result: ";
-            }
+//            if (self::VERBOSE) {
+//                echo "<br>updating user meta: bluem_latest_mandate_validated to value {$successful_mandate} - result: ";
+//            }
             update_user_meta(
                 $user_id,
                 'bluem_latest_mandate_validated',
@@ -957,9 +957,9 @@ The user is prompted to create a new mandate to fulfill this order."
         if ($successful_mandate) {
             if ($update_metadata) {
                 if ($mandate_id !== "") {
-                    if (self::VERBOSE) {
-                        echo "<br>updating user meta: bluem_latest_mandate_id to value {$mandate_id} - result: ";
-                    }
+//                    if (self::VERBOSE) {
+//                        echo "<br>updating user meta: bluem_latest_mandate_id to value {$mandate_id} - result: ";
+//                    }
                     update_user_meta(
                         $user_id,
                         'bluem_latest_mandate_id',
@@ -967,9 +967,9 @@ The user is prompted to create a new mandate to fulfill this order."
                     );
                 }
                 if ($entrance_code !== "") {
-                    if (self::VERBOSE) {
-                        echo "<br>updating user meta: entranceCode to value {$entrance_code} - result: ";
-                    }
+//                    if (self::VERBOSE) {
+//                        echo "<br>updating user meta: entranceCode to value {$entrance_code} - result: ";
+//                    }
                     update_user_meta(
                         $user_id,
                         'bluem_latest_mandate_entrance_code',
@@ -978,9 +978,9 @@ The user is prompted to create a new mandate to fulfill this order."
                 }
             }
 
-            if (self::VERBOSE) {
-                echo "mandaat is succesvol, order kan worden aangepast naar machtiging_goedgekeurd";
-            }
+//            if (self::VERBOSE) {
+//                echo "mandaat is succesvol, order kan worden aangepast naar machtiging_goedgekeurd";
+//            }
 
             $order->update_status(
                 'processing',
