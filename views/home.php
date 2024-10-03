@@ -14,6 +14,7 @@
         height: 250px;
         width: 100%;
     }
+
     .bluem_logo:before {
         background-image: url('<?php echo plugin_dir_url( '' ); ?>/bluem/assets/bluem/logo-hero.png');
         background-size: contain;
@@ -25,22 +26,33 @@
 
 <div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48);?>
+        <?php echo bluem_get_bluem_logo_html(48); ?>
     </h1>
 
-    <?php bluem_render_nav_header('home');?>
+    <?php bluem_render_nav_header('home'); ?>
 
-    <div class="bluem_logo">Bluem Payments & Identity Services</div>
+    <div class="bluem_logo"><?php _e('Bluem Payments & Identity Services', 'bluem'); ?></div>
 
-    <h2 style="margin-top: 25px;">Maak betalen gemakkelijk!</h2>
+    <h2 style="margin-top: 25px;"><?php _e('Maak betalen gemakkelijk!', 'bluem'); ?></h2>
 
-    <p>Met de Bluem WordPress plug-in integreer je online betalingen, identificaties en leeftijdsverificaties gemakkelijk op je website.</p>
+    <p><?php _e('Met de Bluem WordPress plug-in integreer je online betalingen, identificaties en leeftijdsverificaties gemakkelijk op je website.', 'bluem'); ?></p>
 
-    <p><strong>Bluem Dashboard</strong><br />Alle transacties zijn ook zichtbaar in het <a href='https://viamijnbank.net/' target='_blank'>viamijnbank.net dashboard</a>.</p>
+    <p><strong><?php _e('Bluem Dashboard', 'bluem'); ?></strong><br/>
+        <?php _e('Alle transacties zijn ook zichtbaar in het <a href="https://viamijnbank.net/" target="_blank">viamijnbank.net dashboard</a>.', 'bluem'); ?>
+    </p>
 
-    <p><strong>Plugin versie</strong><br />Versie <?php $bluem = get_plugin_data( plugin_dir_path( __FILE__ ).'../bluem.php' ); echo $bluem['Version']; ?> (<a href="<?php echo admin_url($pluginDetailsLink); ?>" target="_blank">Details bekijken</a>)</p>
+    <p>
+        <strong><?php _e('Plugin versie', 'bluem'); ?></strong><br/><?php _e('Versie', 'bluem'); ?> <?php $bluem = get_plugin_data(plugin_dir_path(__FILE__) . '../bluem.php');
+        echo $bluem['Version']; ?> (<a href="<?php echo admin_url($pluginDetailsLink); ?>"
+                                       target="_blank"><?php _e('Details bekijken', 'bluem'); ?></a>)</p>
 
-    <p><strong>Technische informatie</strong><br />WordPress versie: <?php echo get_bloginfo('version'); ?><br />WooCommerce versie: <?php echo class_exists('WooCommerce') ? WC()->version : __('WooCommerce not installed', 'bluem'); ?><br />Bluem PHP-library versie: <?php echo $dependency_bluem_php_version; ?><br />PHP versie: <?php echo phpversion(); ?></p>
+    <p>
+        <strong><?php _e('Technische informatie', 'bluem'); ?></strong><br/><?php _e('WordPress versie:', 'bluem'); ?> <?php echo get_bloginfo('version'); ?>
+        <br/>
+        <?php _e('WooCommerce versie:', 'bluem'); ?> <?php echo class_exists('WooCommerce') ? WC()->version : __('WooCommerce not installed', 'bluem'); ?>
+        <br/>
+        <?php _e('Bluem PHP-library versie:', 'bluem'); ?> <?php echo $dependency_bluem_php_version ?? '-'; ?><br/>
+        <?php _e('PHP versie:', 'bluem'); ?> <?php echo PHP_VERSION; ?></p>
 
     <?php bluem_render_footer(); ?>
 </div>

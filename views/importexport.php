@@ -2,12 +2,11 @@
     .bluem_port_input {
         width: 90%;
         /* margin:0 auto; */
-        border:1px solid #aaa;
-        padding:5px;
-        display:block;
+        border: 1px solid #aaa;
+        padding: 5px;
+        display: block;
         white-space: pre-wrap;
         white-space: -moz-pre-wrap;
-        white-space: -pre-wrap;
         white-space: -o-pre-wrap;
         word-wrap: break-word;
     }
@@ -15,63 +14,61 @@
 
 <div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48);?>
-        Import / export
+        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php _e('Import / export'); ?>
     </h1>
 
-    <?php bluem_render_nav_header('importexport');?>
+    <?php bluem_render_nav_header('importexport'); ?>
 
-    <?php if (count($messages)>0) {
-    ?>
+    <?php if (isset($messages) && count($messages) > 0) {
+        ?>
         <div>
             <?php foreach ($messages as $m) {
-        ?>
-<div class="notice notice-info inline" style="padding:10pt;">
-    <?php
-                echo $m;
-
                 ?>
+                <div class="notice notice-info inline" style="padding:10pt;">
+                    <?php
+                    echo $m;
+
+                    ?>
                 </div>
                 <?php
-    } ?>
+            } ?>
         </div>
-    <?php
-} ?>
-
-
+        <?php
+    } ?>
 
 
     <div style="width: 45%; float:left;">
 
 
-
-    <h2><span class="dashicons dashicons-database-export"></span> Exporteren</h2>
-    <p>
-        Copy-paste de onderstaande informatie om je instellingen te exporteren.
-    </p>
-    <blockquote>
-        <pre class="bluem_port_input"><?php echo $options_json;?>
+        <h2><span class="dashicons dashicons-database-export"></span> <?php _e('Exporteren', 'bluem'); ?></h2>
+        <p>
+            <?php _e('Kopieer en plak de onderstaande informatie om je instellingen te exporteren.', 'bluem'); ?>
+        </p>
+        <blockquote>
+        <pre class="bluem_port_input"><?php echo $options_json ?? ''; ?>
             </pre>
         </blockquote>
-        </div>
+    </div>
 
 
-        <div style="width: 45%; float:left;">
-    <h2><span class="dashicons dashicons-database-import"></span> Importeren</h2>
+    <div style="width: 45%; float:left;">
+        <h2><span class="dashicons dashicons-database-import"></span> <?php _e('Importeren', 'bluem'); ?></h2>
 
-    <p>
-        Upload je instellingen hier.
+        <p>
+            <?php _e('Upload je instellingen hier.', 'bluem'); ?>
 
-        <form method="post" action="<?php echo admin_url('admin.php?page=bluem_admin_importexport&action=import');?>">
-<input type="hidden" name="action" value="import">
-<textarea class="bluem_port_input" name="import" id="import" rows="20"></textarea>
-<p><strong>Let op! Bestaande instellingen zullen worden overschreven.</strong></p>
-<button type="submit">Importeren</button>
+        <form method="post" action="<?php echo admin_url('admin.php?page=bluem_admin_importexport&action=import'); ?>">
+            <input type="hidden" name="action" value="import">
+            <textarea class="bluem_port_input" name="import" id="import" rows="20"></textarea>
+            <p><strong><?php _e('Let op! Bestaande instellingen zullen worden overschreven.', 'bluem'); ?></strong>
+            </p>
+            <button type="submit"><?php _e('Importeren', 'bluem'); ?></button>
         </form>
-    </p>
-        </div>
+        </p>
+    </div>
 
-        <div style="clear: both;"></div>
+    <div style="clear: both;"></div>
 
-        <?php bluem_render_footer(); ?>
+    <?php bluem_render_footer(); ?>
 </div>
