@@ -1,9 +1,5 @@
 <?php
 
-// @todo: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
-// @todo: Localize all error messages to english primarily
-// @todo: finish docblocking
-
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -22,7 +18,7 @@ add_action( 'parse_request', 'bluem_mandate_shortcode_execute' );
  */
 function bluem_mandate_shortcode_execute(): void
 {
-    if (substr($_SERVER["REQUEST_URI"], - 43) !== "bluem-woocommerce/mandate_shortcode_execute") {
+    if (substr(sanitize_url($_SERVER["REQUEST_URI"]), - 43) !== "bluem-woocommerce/mandate_shortcode_execute") {
         return;
     }
 
@@ -275,7 +271,7 @@ add_action( 'parse_request', 'bluem_mandate_mandate_shortcode_callback' );
  */
 function bluem_mandate_mandate_shortcode_callback(): void
 {
-    if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/mandate_shortcode_callback") === false) {
+    if (strpos(sanitize_url($_SERVER["REQUEST_URI"]), "bluem-woocommerce/mandate_shortcode_callback") === false) {
         return;
     }
 
@@ -337,8 +333,7 @@ function bluem_mandate_mandate_shortcode_callback(): void
     $response = $bluem->MandateStatus( $mandateID, $entranceCode );
 
     if (!$response->Status()) {
-        $errormessage = sprintf(__("Fout bij opvragen status: %s
-        <br>Neem contact op met de webshop en vermeld deze status",'bluem'), $response->Error());
+        $errormessage = sprintf(esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status",'bluem'), $response->Error());
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
@@ -436,7 +431,7 @@ function bluem_mandate_mandate_shortcode_callback(): void
             [
                 'service'  => 'mandates',
                 'function' => 'shortcode_callback',
-                'message'  => sprintf(__("Fout: Onbekende of foutieve status teruggekregen: %s<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site",'bluem'), $statusCode)
+                'message'  => wp_kses_post(sprintf(__("Fout: Onbekende of foutieve status teruggekregen: %s<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site",'bluem'), $statusCode))
             ]
         );
         wp_redirect( home_url( $bluem_config->thanksPageURL ) . "?result=false&reason=error" );

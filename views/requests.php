@@ -1,3 +1,5 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit;
+?>
 <div class="wrap">
     <h1>
         <?php echo bluem_get_bluem_logo_html(48); ?>
@@ -11,7 +13,7 @@
             <?php
             if (isset($requests)) {
                 foreach ($requests as $cat => $rs) { ?>
-                    <a href="#" class="nav-tab" data-tab="<?php echo $cat; ?> ">
+                    <a href="#" class="nav-tab" data-tab="<?php echo esc_attr($cat); ?> ">
                         <?php echo bluem_render_requests_type($cat);
 
                         if (!empty($rs)) {
@@ -29,7 +31,7 @@
 
         <?php if (isset($requests)) {
             foreach ($requests as $cat => $rs) { ?>
-                <div id="<?php echo $cat; ?>" class="tab-content">
+                <div id="<?php echo esc_attr($cat); ?>" class="tab-content">
                     <?php bluem_render_request_table($cat, $rs, $users_by_id ?? []); ?>
                 </div>
             <?php }

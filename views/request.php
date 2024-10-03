@@ -1,3 +1,5 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit;
+?>
 <div class="wrap">
     <h1>
         <?php echo bluem_get_bluem_logo_html(48); ?>
@@ -17,16 +19,16 @@
                 <tbody>
                 <tr>
                     <td width="35%"><?php _e('Omschrijving', 'bluem'); ?>:</td>
-                    <td><?php echo $request->description; ?></td>
+                    <td><?php echo esc_html($request->description); ?></td>
                 </tr>
                 <tr>
                     <td><?php _e('Transactienummer', 'bluem'); ?>:</td>
-                    <td><?php echo $request->transaction_id; ?></td>
+                    <td><?php echo esc_html($request->transaction_id); ?></td>
                 </tr>
                 <?php if (isset($request->debtor_reference) && $request->debtor_reference !== "") { ?>
                     <tr>
                         <td><?php _e('Klantreferentie', 'bluem'); ?>:</td>
-                        <td><?php echo $request->debtor_reference; ?></td>
+                        <td><?php echo esc_html($request->debtor_reference); ?></td>
                     </tr>
                 <?php } ?>
                 <?php
@@ -42,8 +44,8 @@
                             <td><?php _e('Bestelling', 'bluem'); ?>:</td>
                             <td><a href="<?php echo admin_url("post.php?post={$request->order_id}&action=edit"); ?>"
                                    title="Bestelling bekijken"
-                                   target="_blank">#<?php echo $order->get_order_number(); ?>
-                                    (<?php echo wc_price($order->get_total()); ?>)</a></td>
+                                   target="_blank">#<?php echo esc_html($order->get_order_number()); ?>
+                                    (<?php echo wp_kses_post(wc_price($order->get_total())); ?>)</a></td>
                         </tr>
                     <?php }
                 } ?>
@@ -51,14 +53,14 @@
                     <td><?php _e('Gebruiker', 'bluem'); ?>:</td>
                     <?php if (isset($request_author) && !is_null($request_author) && $request_author !== false && isset($request_author->user_nicename)) { ?>
                         <td><a href="<?php echo admin_url("user-edit.php?user_id=" . $request->user_id); ?>"
-                               target="_blank"><?php echo $request_author->user_nicename; ?></a></td>
+                               target="_blank"><?php echo esc_html($request_author->user_nicename); ?></a></td>
                     <?php } else { ?>
                         <td><?php _e('Gastgebruiker/onbekend', 'bluem'); ?></td>
                     <?php } ?>
                 </tr>
                 <tr>
                     <td><?php _e('Datum', 'bluem'); ?>:</td>
-                    <td><?php echo bluem_get_formattedDate($request->timestamp ?? '');
+                    <td><?php echo esc_html(bluem_get_formattedDate($request->timestamp ?? ''));
                         ?>
                     </td>
                 </tr>
@@ -100,14 +102,14 @@
                                 <td>
                                     <a href='<?php echo admin_url("post.php?post={$link->item_id}&action=edit"); ?>'
                                        target='_blank'><?php _e('Order', 'bluem'); ?>
-                                        #<?php echo $order->get_order_number(); ?></a>
+                                        #<?php echo esc_html($order->get_order_number()); ?></a>
                                 </td>
                                 <td>
-                                    <?php echo ucfirst($order->get_status()); ?>
+                                    <?php echo esc_html( ucfirst($order->get_status())); ?>
                                 </td>
                                 <td>
-                                    <?php echo $order_data['total'];
-                                    echo " " . $order->get_currency(); ?>
+                                    <?php echo esc_html($order_data['total']);
+                                    echo esc_html(" " . $order->get_currency()); ?>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -134,11 +136,11 @@
                     <span class="bluem-request-label">
                             <?php echo bluem_get_formattedDate($log->timestamp); ?>
                         </span>
-                    <?php echo $dparts[0]; ?><?php
+                    <?php echo wp_kses_post($dparts[0]); ?><?php
                     if (isset($dparts[1])) {
                         ?>&nbsp;
                     <abbr title="<?php
-                    echo str_replace('"', '', $dparts[1]);
+                    echo wp_kses_post(str_replace('"', '', $dparts[1]));
                     ?>" style="cursor: help;"><span class="dashicons dashicons-info-outline"></span>
                         </abbr><?php
                     } ?>
@@ -166,7 +168,11 @@
             } ?>
             <?php
 
-            $pl = json_decode($request->payload);
+            try {
+                $pl = json_decode($request->payload, false, 512, JSON_THROW_ON_ERROR);
+            } catch (Exception $e) {
+                $pl = null;
+            }
             if (!is_null($pl)) {
                 ?>
                 <h4>
@@ -199,14 +205,14 @@
             <p style="margin: 5px 0; padding: 0;"><span
                         class="bluem-request-label"><?php _e('Administratie', 'bluem'); ?>:</span></p>
             <p style="margin: 5px 0; padding: 0;"><a
-                        href="<?php echo admin_url("admin.php?page=bluem-transactions&request_id=" . $request->id . "&admin_action=delete"); ?>"
+                        href="<?php echo admin_url("admin.php?page=bluem-transactions&request_id=" . esc_attr($request->id) . "&admin_action=delete"); ?>"
                         class="button bluem-button-danger"
                         onclick="return confirm('<?php _e('Weet je zeker dat je de transactie wilt verwijderen?', 'bluem'); ?>');"
                         style="margin-top:5pt;"><?php _e('Verwijder dit verzoek direct', 'bluem'); ?></a></p>
             <p><?php _e('<i><strong>Let op</strong>: data wordt dan onherroepelijk verwijderd!</i>', 'bluem'); ?></p>
         </div>
         <?php
-        if ($request->type == "identity") {
+        if ($request->type === "identity") {
             ?>
             <div style="padding:10pt 0;">
             <h3>
@@ -238,8 +244,8 @@ border-radius:5px; margin:10pt 0 0 0; padding:5pt 15pt;">
                     <pre>if (function_exists('bluem_idin_retrieve_results')) {
         $results = bluem_idin_retrieve_results();
         // <?php _e('Geef de resultaten weer of sla ze elders op:', 'bluem'); ?>
-        echo $results->BirthDateResponse; // prints 1975-07-25
-        echo $results->NameResponse->LegalLastName; // prints Vries
+        $results->BirthDateResponse; // returns 1975-07-25
+        $results->NameResponse->LegalLastName; // returns Vries
     }</pre>
             </blockquote>
             </p>

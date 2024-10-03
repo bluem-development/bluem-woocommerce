@@ -1,3 +1,6 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit;
+?>
+
 <style>
     .bluem_port_input {
         width: 90%;
@@ -27,7 +30,7 @@
                 ?>
                 <div class="notice notice-info inline" style="padding:10pt;">
                     <?php
-                    echo $m;
+                    echo esc_html($m);
 
                     ?>
                 </div>
@@ -46,7 +49,7 @@
             <?php _e('Kopieer en plak de onderstaande informatie om je instellingen te exporteren.', 'bluem'); ?>
         </p>
         <blockquote>
-        <pre class="bluem_port_input"><?php echo $options_json ?? ''; ?>
+        <pre class="bluem_port_input"><?php echo esc_js($options_json ?? ''); ?>
             </pre>
         </blockquote>
     </div>
@@ -60,6 +63,9 @@
 
         <form method="post" action="<?php echo admin_url('admin.php?page=bluem_admin_importexport&action=import'); ?>">
             <input type="hidden" name="action" value="import">
+            <label for="import">
+            Input:
+            </label>
             <textarea class="bluem_port_input" name="import" id="import" rows="20"></textarea>
             <p><strong><?php _e('Let op! Bestaande instellingen zullen worden overschreven.', 'bluem'); ?></strong>
             </p>

@@ -1,3 +1,6 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit;
+?>
+
 <?php $pluginDetailsLink = 'plugin-install.php?tab=plugin-information&plugin=bluem&TB_iframe=true&width=600&height=550'; ?>
 
 <style type="text/css">
@@ -43,7 +46,7 @@
 
     <p>
         <strong><?php _e('Plugin versie', 'bluem'); ?></strong><br/><?php _e('Versie', 'bluem'); ?> <?php $bluem = get_plugin_data(plugin_dir_path(__FILE__) . '../bluem.php');
-        echo $bluem['Version']; ?> (<a href="<?php echo admin_url($pluginDetailsLink); ?>"
+        echo esc_html($bluem['Version']); ?> (<a href="<?php echo admin_url($pluginDetailsLink); ?>"
                                        target="_blank"><?php _e('Details bekijken', 'bluem'); ?></a>)</p>
 
     <p>
@@ -51,7 +54,7 @@
         <br/>
         <?php _e('WooCommerce versie:', 'bluem'); ?> <?php echo class_exists('WooCommerce') ? WC()->version : __('WooCommerce not installed', 'bluem'); ?>
         <br/>
-        <?php _e('Bluem PHP-library versie:', 'bluem'); ?> <?php echo $dependency_bluem_php_version ?? '-'; ?><br/>
+        <?php _e('Bluem PHP-library versie:', 'bluem'); ?> <?php echo esc_html($dependency_bluem_php_version ?? '-'); ?><br/>
         <?php _e('PHP versie:', 'bluem'); ?> <?php echo PHP_VERSION; ?></p>
 
     <?php bluem_render_footer(); ?>

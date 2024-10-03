@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 
@@ -534,10 +534,6 @@ payment for another order {$order_id}",'bluem')
                     $maxAmountEnabled = (isset($settings['maxAmountEnabled']) && $settings['maxAmountEnabled'] === "1");
                 }
 
-                if (self::VERBOSE) {
-                    echo "mandate_amount: {$mandate_amount}" . PHP_EOL;
-                }
-
                 if ($maxAmountEnabled) {
                     $maxAmountFactor =  isset($settings['maxAmountFactor'])
                         ? (float) ($settings['maxAmountFactor'])
@@ -548,9 +544,6 @@ payment for another order {$order_id}",'bluem')
                     if ($mandate_amount !== 0.0) {
                         $order_price = $order->get_total();
                         $max_order_amount = $order_price * $maxAmountFactor;
-                        if (self::VERBOSE) {
-                            echo "max_order_amount: {$max_order_amount}" . PHP_EOL;
-                        }
 
                         if ($mandate_amount >= $max_order_amount) {
                             $mandate_successful = true;
@@ -649,11 +642,11 @@ payment for another order {$order_id}",'bluem')
             bluem_dialogs_render_prompt($errormessage);
             exit;
         }
-        $mandateID = $_GET['mandateID'];
+        $mandateID = sanitize_text_field($_GET['mandateID']);
 
         $order = $this->getOrder($mandateID);
         if (is_null($order)) {
-            $errormessage = sprintf(__("Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code %s bij je gegevens.","bluem"),$mandateID);
+            $errormessage = sprintf(esc_html__("Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code %s bij je gegevens.","bluem"),$mandateID);
             bluem_error_report_email(
                 [
                     'service'  => 'mandates',
@@ -681,7 +674,7 @@ payment for another order {$order_id}",'bluem')
         try {
             $response = $this->bluem->MandateStatus($mandateID, $entranceCode);
         } catch (Exception $e) {
-            $errormessage = sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status","bluem"),$e->getMessage());
+            $errormessage = wp_kses_post(sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status","bluem"),$e->getMessage()));
             bluem_error_report_email(
                 [
                     'service'  => 'mandates',
@@ -694,7 +687,7 @@ payment for another order {$order_id}",'bluem')
         }
 
         if (!$response->Status()) {
-            $errormessage = sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status","bluem"),$response->Error());
+            $errormessage = wp_kses_post(sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status","bluem"),$response->Error()));
             bluem_error_report_email(
                 [
                     'service'  => 'mandates',
@@ -704,14 +697,6 @@ payment for another order {$order_id}",'bluem')
             );
             bluem_dialogs_render_prompt($errormessage);
             exit;
-        }
-
-        if (self::VERBOSE) {
-            var_dump("mandateid: " . $mandateID);
-            var_dump("entrancecode: " . $entranceCode);
-            echo "<hr>";
-            var_dump($response);
-            echo "<hr>";
         }
 
         $statusUpdateObject = $response->EMandateStatusUpdate;
@@ -799,8 +784,8 @@ payment for another order {$order_id}",'bluem')
                 'failed',
                 __('Authorization failed: error or unknown status', 'bluem')
             );
-            $errormessage = sprintf(__("Fout: Onbekende of foutieve status teruggekregen: %s
-                    <br>Neem contact op met de webshop en vermeld deze status",'bluem'),$statusCode);
+            $errormessage = wp_kses_post(sprintf(__("Fout: Onbekende of foutieve status teruggekregen: %s
+                    <br>Neem contact op met de webshop en vermeld deze status",'bluem'),$statusCode));
             bluem_error_report_email(
                 [
                     'service'  => 'mandates',
@@ -902,7 +887,7 @@ payment for another order {$order_id}",'bluem')
                     $url = $order->get_checkout_payment_url();
                     $order_total_plus_string = str_replace(".", ",", ("" . round($order_total_plus, 2)));
                     bluem_dialogs_render_prompt(
-                        sprintf(__(
+                        sprintf(esc_html__(
 
                         "<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
 <p>De geschatte factuurwaarde van jouw bestelling is EUR %s. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor 'onbeperkt' te kiezen.</p>" .
@@ -916,7 +901,7 @@ payment for another order {$order_id}",'bluem')
 
                     bluem_db_request_log(
                         $request_id,
-                        sprintf(__("User tried to give use this mandate with maxamount
+                        sprintf(esc_html__("User tried to give use this mandate with maxamount
 &euro; %s, but the Order <a href='" .
                         admin_url("post.php?post=%s&action=edit") .
                         "' target='_self'>ID %s</a> grand total including correction is &euro; %s.
@@ -984,7 +969,7 @@ payment for another order {$order_id}",'bluem')
 
             $order->update_status(
                 'processing',
-                printf(__('Authorization (Mandate ID %1$s, Request ID %2$s) has been obtained and approved', 'bluem'), $mandate_id, $request_id)
+                printf(esc_html__('Authorization (Mandate ID %1$s, Request ID %2$s) has been obtained and approved', 'bluem'), $mandate_id, $request_id)
             );
 
             bluem_transaction_notification_email(

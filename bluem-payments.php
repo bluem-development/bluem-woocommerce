@@ -201,11 +201,8 @@ function bluem_woocommerce_payments_show_extra_profile_fields( $user ) {
     $bluem_requests = bluem_db_get_requests_by_user_id_and_type( $user->ID, "payments" ); ?>
     <table class="form-table">
         <a id="user_payments"></a>
-        <?php
 
-        ?>
-
-        <?php if ( isset( $bluem_requests ) && count( $bluem_requests ) > 0 ) { ?>
+        printf(esc_html__if ( isset( $bluem_requests ) && count( $bluem_requests ) > 0 ) { ?>
             <tr>
                 <th>
                     ePayments transacties
@@ -219,33 +216,3 @@ function bluem_woocommerce_payments_show_extra_profile_fields( $user ) {
     </table>
     <?php
 }
-
-// $bluem_options = get_option( 'bluem_woocommerce_options' );
-
-// /**
-//  * Check for enabled ePayments debtorwallet
-//  */
-// if ( isset( $bluem_options['paymentsUseDebtorWallet'] ) && $bluem_options['paymentsUseDebtorWallet'] == "1" ) {
-//     add_action( "wp_ajax_bluem_retrieve_payments_bics_ajax", "bluem_retrieve_payments_bics_ajax" );
-
-//     // define the function to be fired for logged in users
-//     function bluem_retrieve_payments_bics_ajax() {
-//         // nonce check for an extra layer of security, the function will exit if it fails
-//         //    if ( !wp_verify_nonce( $_REQUEST['nonce'], "bluem_retrieve_bics_ajax_nonce")) {
-//         //       exit("Woof Woof Woof");
-//         //    }
-
-//         // switch()
-
-//         $bluem_config = bluem_woocommerce_get_config();
-//         $bluem = new Bluem( $bluem_config );
-//         $BICs = $bluem->retrieveBICsForContext( "Payments" );
-
-//         if ( ! empty( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) {
-//             echo json_encode( $BICs );
-//         } else {
-//             header( "Location: " . $_SERVER["HTTP_REFERER"] );
-//         }
-//         die();
-//     }
-// }

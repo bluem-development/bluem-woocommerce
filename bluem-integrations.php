@@ -180,11 +180,11 @@ function bluem_woocommerce_integration_wpcf7_ajax()
 {
     $bluem_config = bluem_woocommerce_get_config();
 
-    if (strpos($_SERVER["REQUEST_URI"], 'bluem-woocommerce/bluem-integrations/wpcf7_mandate') === false) {
+    if (strpos(sanitize_url($_SERVER["REQUEST_URI"]), 'bluem-woocommerce/bluem-integrations/wpcf7_mandate') === false) {
         return;
     }
 
-    $bluem_mandate_approve = !empty($_POST['bluem_mandate_approve']) ? $_POST['bluem_mandate_approve'] : '';
+    $bluem_mandate_approve = !empty($_POST['bluem_mandate_approve']) ? sanitize_text_field($_POST['bluem_mandate_approve']) : '';
 
     if ($bluem_config->wpcf7Active !== 'Y' || empty($bluem_mandate_approve)) {
         return;
@@ -200,20 +200,22 @@ function bluem_woocommerce_integration_wpcf7_ajax()
         {
             $debtorReference = sanitize_text_field( $debtorReference );
 
-            $contact_form_id = !empty($_POST['contact_form_id']) ? $_POST['contact_form_id'] : '';
-
-            $posted_data = [];
-
-            foreach ($_POST as $key => $value) {
-                if ($key !== 'contact_form_id') {
-                    $posted_data[$key] = $value;
-                }
-            }
-
             $db_results = bluem_db_get_requests_by_keyvalues([
                 'debtor_reference' => $debtorReference,
                 'status' => 'Success',
             ]);
+
+            $contact_form_id = !empty($_POST['contact_form_id']) ? sanitize_text_field($_POST['contact_form_id']) : '';
+
+            $posted_data = [];
+            // @todo: change this to only retrieve the fields relevant for the form
+            // $form = get_post_meta($contact_form_id, '_form', true);
+            // var_dump($form);
+            foreach ($_POST as $key => $value) {
+                if ($key !== 'contact_form_id') {
+                    $posted_data[sanitize_text_field($key)] = sanitize_text_field($value);
+                }
+            }
 
             // Check the sequence type or previous success results
             if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0)
@@ -225,9 +227,10 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                 $preferences = get_option( 'bluem_woocommerce_options' );
 
                 // Convert UTF-8 to ISO
-                if (!empty($bluem_mandate_reason)) {
-                    $bluem_config->eMandateReason = $bluem_mandate_reason . ' (' . $debtorReference . ')';
-                } elseif (!empty($bluem_config->eMandateReason)) {
+//                if (!empty($bluem_mandate_reason)) {
+//                    $bluem_config->eMandateReason = $bluem_mandate_reason . ' (' . $debtorReference . ')';
+//                } else
+                if (!empty($bluem_config->eMandateReason)) {
                     $bluem_config->eMandateReason = utf8_decode($bluem_config->eMandateReason);
                 } else {
                     $bluem_config->eMandateReason = "Incasso machtiging " . $debtorReference;
@@ -262,7 +265,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                         if ( isset( $response->EMandateTransactionResponse->Error->ErrorMessage ) ) {
                             $msg .= "<br>" .
                                 $response->EMandateTransactionResponse->Error->ErrorMessage;
-                        } elseif ( get_class( $response ) == "Bluem\BluemPHP\ErrorBluemResponse" ) {
+                        } elseif ($response instanceof \Bluem\BluemPHP\ErrorBluemResponse) {
                             $msg .= "<br>" .
                                 $response->Error();
                         } else {
@@ -276,7 +279,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                             ]
                         );
 
-                        echo json_encode([
+                        echo wp_json_encode([
                             'success' => false,
                         ]);
                         die;
@@ -321,13 +324,13 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                         ]
                     );
 
-                    echo json_encode([
+                    echo wp_json_encode([
                         'success' => true,
-                        'redirect_uri' => $transactionURL,
+                        'redirect_uri' => esc_url($transactionURL),
                     ]);
                     die;
                 } catch (Exception $e) {
-                    echo json_encode([
+                    echo wp_json_encode([
                         'success' => false,
                     ]);
                     die;
@@ -336,7 +339,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
         }
     }
 
-    echo json_encode([
+    echo wp_json_encode([
         'success' => false,
     ]);
     die;
@@ -438,7 +441,7 @@ function bluem_woocommerce_integration_wpcf7_submit() {
                         if ( isset( $response->EMandateTransactionResponse->Error->ErrorMessage ) ) {
                             $msg .= "<br>" .
                                 $response->EMandateTransactionResponse->Error->ErrorMessage;
-                        } elseif ( get_class( $response ) == "Bluem\BluemPHP\ErrorBluemResponse" ) {
+                        } elseif ($response instanceof \Bluem\BluemPHP\ErrorBluemResponse) {
                             $msg .= "<br>" .
                                 $response->Error();
                         } else {
@@ -527,7 +530,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
 
     $storage = bluem_db_get_storage();
 
-    if (strpos($_SERVER["REQUEST_URI"], 'bluem-woocommerce/bluem-integrations/wpcf7_callback') === false) {
+    if (strpos(sanitize_url($_SERVER["REQUEST_URI"]), 'bluem-woocommerce/bluem-integrations/wpcf7_callback') === false) {
         return;
     }
 
@@ -616,8 +619,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
     );
 
     // Handling the response.
-    if ($statusCode === "Success")
-    {
+    if ($statusCode === "Success") {
         if (!empty($request_from_db->payload)) {
             try {
                 $newPayload = json_decode( $request_from_db->payload );
@@ -661,8 +663,8 @@ function bluem_woocommerce_integration_wpcf7_callback()
         bluem_dialogs_render_prompt( $errormessage );
         return;
     }
-    elseif ($statusCode === "Cancelled")
-    {
+
+    if ($statusCode === "Cancelled") {
         // "Je hebt de mandaat ondertekening geannuleerd";
         if (!empty($bluem_config->wpcf7Resultpage)) {
             wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=cancelled" );
@@ -672,9 +674,9 @@ function bluem_woocommerce_integration_wpcf7_callback()
         bluem_dialogs_render_prompt( $errormessage );
         exit;
     }
-    elseif ($statusCode === "Open" || $statusCode == "Pending")
-    {
-        // "De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch."
+
+    if ($statusCode === "Open" || $statusCode === "Pending") {
+        // "De mandaatondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch."
         if (!empty($bluem_config->wpcf7Resultpage)) {
             wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=open" );
             exit;
@@ -683,8 +685,8 @@ function bluem_woocommerce_integration_wpcf7_callback()
         bluem_dialogs_render_prompt( $errormessage );
         exit;
     }
-    elseif ($statusCode === "Expired")
-    {
+
+    if ($statusCode === "Expired") {
         // "Fout: De mandaat of het verzoek daartoe is verlopen";
         if (!empty($bluem_config->wpcf7Resultpage)) {
             wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=expired" );
@@ -694,23 +696,21 @@ function bluem_woocommerce_integration_wpcf7_callback()
         bluem_dialogs_render_prompt( $errormessage );
         exit;
     }
-    else
-    {
-        bluem_error_report_email(
-            [
-                'service'  => 'mandates',
-                'function' => 'wpcf7_callback',
-                'message'  => "Fout: Onbekende of foutieve status teruggekregen: {$statusCode}<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site"
-            ]
-        );
-        if (!empty($bluem_config->wpcf7Resultpage)) {
-            wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=error" );
-            exit;
-        }
-        $errormessage = "Fout: er is een onbekende fout opgetreden. Probeer het opnieuw.";
-        bluem_dialogs_render_prompt( $errormessage );
+
+    bluem_error_report_email(
+        [
+            'service'  => 'mandates',
+            'function' => 'wpcf7_callback',
+            'message'  => "Fout: Onbekende of foutieve status teruggekregen: $statusCode<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site"
+        ]
+    );
+
+    if (!empty($bluem_config->wpcf7Resultpage)) {
+        wp_redirect( home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=error" );
         exit;
     }
+    $errormessage = "Fout: er is een onbekende fout opgetreden. Probeer het opnieuw.";
+    bluem_dialogs_render_prompt( $errormessage );
     exit;
 }
 
@@ -726,17 +726,17 @@ function bluem_woocommerce_integration_wpcf7_results_shortcode()
     $bluem_config = bluem_woocommerce_get_config();
 
     if ($bluem_config->wpcf7Active !== 'Y') {
-        return;
+        return '';
     }
 
     if (empty($_GET['form']) || empty($_GET['result'])) {
         return 'Er is een fout opgetreden. Ga terug en probeer het opnieuw.';
     }
 
-    $contact_form = WPCF7_ContactForm::get_instance($_GET['form']);
+    $contact_form = WPCF7_ContactForm::get_instance(sanitize_text_field($_GET['form']));
 
     if (!empty($contact_form)) {
-        if (!empty($_GET['result']) && $_GET['result'] == 'true') {
+        if (!empty($_GET['result']) && $_GET['result'] === 'true') {
             return '<p>' . $contact_form->pref( 'bluem_mandate_success' ) . '</p>';
         }
     }
@@ -968,7 +968,7 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
 
                 if ( is_wp_error( $result ) ) {
                     // Handle error
-                    var_dump( $result );
+//                    var_dump( $result );
                     die();
                 } else {
                     // Entry updated successfully
@@ -980,9 +980,9 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
 
                 if ($bluem_is_ajax === 'true')
                 {
-                    echo json_encode([
+                    echo wp_json_encode([
                         'success' => true,
-                        'redirect_url' => $transactionURL,
+                        'redirect_url' => esc_url($transactionURL),
                     ]);
                 } else {
                     ob_start();
@@ -990,7 +990,7 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
                 }
                 exit;
             } catch (Exception $e) {
-                var_dump($e->getMessage());
+//                var_dump($e->getMessage());
                 die();
             }
         }
@@ -1009,7 +1009,7 @@ function bluem_woocommerce_integration_gform_callback()
 
     $storage = bluem_db_get_storage();
 
-    if (strpos($_SERVER["REQUEST_URI"], 'bluem-woocommerce/bluem-integrations/gform_callback') === false) {
+    if (strpos(sanitize_url($_SERVER["REQUEST_URI"]), 'bluem-woocommerce/bluem-integrations/gform_callback') === false) {
         return;
     }
 
@@ -1306,8 +1306,8 @@ function bluem_woocommerce_integration_gform_results_shortcode()
     }
 
     $request_from_db = bluem_db_get_request_by_transaction_id_and_entrance_code(
-        $_GET['mid'],
-        $_GET['ec'],
+        sanitize_text_field($_GET['mid']),
+        sanitize_text_field($_GET['ec']),
     );
 
     if ($request_from_db !== false)

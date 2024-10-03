@@ -2,6 +2,8 @@
 
 namespace Bluem\Wordpress\Observability;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 use Exception;
 use stdClass;
 
@@ -50,7 +52,7 @@ class BluemActivationNotifier
         $bluem_options = get_option('bluem_woocommerce_options');
         $bluem_registration = get_option('bluem_woocommerce_registration');
 
-        $dependency_bluem_php_version = get_composer_dependency_version('bluem-development/bluem-php') ?? 'unknown';
+        $dependency_bluem_php_version = bluem_get_composer_dependency_version('bluem-development/bluem-php') ?? 'unknown';
 
         $activation_report_id = sprintf("%s_%s", date("Ymdhis"), random_int(0, 512));
 

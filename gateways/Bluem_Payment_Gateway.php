@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 require_once __DIR__ . '/Bluem_Payment_Gateway_Interface.php';
 
 use Bluem\BluemPHP\Bluem;

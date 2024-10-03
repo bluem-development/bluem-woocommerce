@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 include_once __DIR__ . '/Bluem_Bank_Based_Payment_Gateway.php';
 
 class Bluem_Sofort_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway

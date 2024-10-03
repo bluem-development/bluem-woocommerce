@@ -79,6 +79,7 @@ It is possible to programmatically block display and functionality on your site 
 == Changelog ==
 - 1.3.19: General stability and code improvements to adhere to the standards
 - 1.3.18.0: Improved observability, removed unnecessary dependencies
+- 1.3.17.15: Webhook certificate update (yearly refresh)
 - 1.3.17.14: Stability fixes.
 - 1.3.17.13: Stability fixes.
 - 1.3.17.12: Stability fixes and improvements.

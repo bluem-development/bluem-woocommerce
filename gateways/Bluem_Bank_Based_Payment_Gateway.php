@@ -1,4 +1,4 @@
-<?php
+<?php if ( ! defined( 'ABSPATH' ) ) exit;
 
 include_once __DIR__ . '/Bluem_Payment_Gateway.php';
 
@@ -130,7 +130,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         update_post_meta($order_id, 'bluem_entrancecode', $entranceCode);
         if (!is_null($customer_id) && $customer_id !== "" && (int)$customer_id !== 0) {
-            $description = sprintf(__("Klant %s Bestelling %s", 'bluem'), $customer_id, $order_id);
+            $description = sprintf(esc_html__("Klant %s Bestelling %s", 'bluem'), $customer_id, $order_id);
         } else {
             $description = __("Bestelling", 'bluem') . " " . $order_id;
         }
@@ -382,7 +382,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         $transactionID = $order->get_meta('bluem_transactionid');
         if ($transactionID == "") {
-            $errormessage = sprintf(__("Geen transactie ID gevonden. Neem contact op met de webshop en vermeld de code %s bij je gegevens.", 'bluem'), $entranceCode);
+            $errormessage = sprintf(esc_html__("Geen transactie ID gevonden. Neem contact op met de webshop en vermeld de code %s bij je gegevens.", 'bluem'), $entranceCode);
             bluem_error_report_email(
                 [
                     'service' => 'payments',
@@ -397,7 +397,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $response = $this->bluem->PaymentStatus($transactionID, $entranceCode);
 
         if (!$response->Status()) {
-            $errormessage = sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem'), $response->Error());
+            $errormessage = sprintf(esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem'), $response->Error());
             bluem_error_report_email(
                 [
                     'service' => 'payments',
