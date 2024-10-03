@@ -257,3 +257,4 @@ If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsu
 // @todo: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
 // @todo: Localize all error messages to english primarily
 // @todo: finish docblocking
+// deprecate function bluem_db_create_link soon

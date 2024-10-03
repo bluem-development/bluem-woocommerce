@@ -423,7 +423,13 @@ function bluem_update_request_by_id($request_id)
 {
     global $wpdb;
 
-    $request_query = $wpdb->get_results("SELECT * FROM `" . $wpdb->prefix . "bluem_requests` WHERE `id` = $request_id LIMIT 1");
+    $request_query = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM `" . $wpdb->prefix . "bluem_requests` WHERE `id` = %d LIMIT 1",
+            $request_id
+        )
+    );
+
     if (count($request_query) == 0) {
         bluem_requests_view_all();
 
@@ -722,7 +728,12 @@ function bluem_requests_view_request()
         return;
     }
 
-    $request_query = $wpdb->get_results("SELECT * FROM `" . $wpdb->prefix . "bluem_requests` WHERE `id` = $id LIMIT 1");
+    $request_query = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM `" . $wpdb->prefix . "bluem_requests` WHERE `id` = %d LIMIT 1",
+            $id
+        )
+    );
     if (count($request_query) == 0) {
         bluem_requests_view_all();
 
