@@ -1,7 +1,7 @@
 <?php
 
 namespace Bluem\Wordpress\Observability;
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 use Sentry\State\Scope;
 use function Sentry\configureScope;
 

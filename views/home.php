@@ -1,3 +1,6 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit;
+?>
+
 <?php $pluginDetailsLink = 'plugin-install.php?tab=plugin-information&plugin=bluem&TB_iframe=true&width=600&height=550'; ?>
 
 <style type="text/css">

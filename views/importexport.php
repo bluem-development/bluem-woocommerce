@@ -1,3 +1,6 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit;
+?>
+
 <style>
     .bluem_port_input {
         width: 90%;

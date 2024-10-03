@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 // @todo create a language file and consistently localize everything
 
 function bluem_get_idin_logo_html(): string

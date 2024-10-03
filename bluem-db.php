@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 register_activation_hook( __FILE__, 'bluem_db_create_requests_table' );
 // no need for a deactivation hook yet.
 

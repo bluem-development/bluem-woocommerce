@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 

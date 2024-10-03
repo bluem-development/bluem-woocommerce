@@ -1,3 +1,5 @@
+<?php if ( ! defined( 'ABSPATH' ) ) exit;
+?>
 <div class="wrap">
     <h1>
         <?php echo bluem_get_bluem_logo_html(48); ?>

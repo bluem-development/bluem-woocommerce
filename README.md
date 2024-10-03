@@ -249,3 +249,11 @@ docker run --rm -v $(pwd):/var/www my-php8-composer composer update --no-dev
 
 # Support
 If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsupport@bluem.nl).
+
+
+
+# Sketchpad for todo's
+
+// @todo: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
+// @todo: Localize all error messages to english primarily
+// @todo: finish docblocking

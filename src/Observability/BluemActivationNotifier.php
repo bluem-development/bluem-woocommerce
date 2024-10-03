@@ -2,6 +2,8 @@
 
 namespace Bluem\Wordpress\Observability;
 
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 use Exception;
 use stdClass;
 

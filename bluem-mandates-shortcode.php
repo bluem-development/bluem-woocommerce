@@ -1,9 +1,5 @@
 <?php
 
-// @todo: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
-// @todo: Localize all error messages to english primarily
-// @todo: finish docblocking
-
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
