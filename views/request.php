@@ -107,7 +107,7 @@
                                 </td>
                                 <td>
                                     <?php echo $order_data['total'];
-                                    echo " " . $order->get_currency(); ?>
+                                    echo " " . esc_html($order->get_currency()); ?>
                                 </td>
                             </tr>
                         <?php } ?>

@@ -1157,7 +1157,7 @@ function bluem_woocommerce_settings_render_input($field)
         ?>
         <textarea
     <?php foreach ($attrs as $akey => $aval) {
-        echo "$akey='$aval' ";
+        echo "$akey='".esc_attr($aval)."' ";
     } ?>><?php echo(isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?></textarea>
         <?php
     } else {
@@ -1176,7 +1176,7 @@ function bluem_woocommerce_settings_render_input($field)
                name='bluem_woocommerce_options[<?php echo $key; ?>]'
                value='<?php echo(isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?>'
             <?php foreach ($attrs as $akey => $aval) {
-                echo "$akey='$aval' ";
+                echo "$akey='".esc_attr($aval)."' ";
             } ?> />
         <?php
     } ?>
@@ -1804,7 +1804,7 @@ function bluem_display_module_notices($notices, $title = '', $btn_link = '', $bt
         <p><span class="dashicons dashicons-warning"></span> <strong>' . $title . ':</strong><br>
         ';
     foreach ($notices as $m) {
-        echo "* $m<br>";
+        echo "* ".esc_html($m)."<br>";
     }
     echo '
         </p>';

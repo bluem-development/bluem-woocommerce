@@ -375,7 +375,7 @@ function bluem_woocommerce_idin_settings_section(): void
         <?php _e('Deze gegevens vraag je op het moment op de volledige identiteitscontrole voor checkout:','bluem');?><br/>
         <code style="display:inline-block;">
             <?php foreach (bluem_idin_get_categories() as $cat) {
-                echo "&middot; " . str_replace("Request", "", $cat) . "<br>";
+                echo esc_html("&middot; " . str_replace("Request", "", $cat)) . "<br>";
             } ?>
         </code>
     </p>
@@ -384,7 +384,7 @@ function bluem_woocommerce_idin_settings_section(): void
 
     <h3>
         <span class="dashicons dashicons-welcome-write-blog"></span>
-        Zelf op een pagina een iDIN verzoek initiëren
+        <?php _e('Zelf op een pagina een iDIN verzoek initiëren','bluem'); ?>
     </h3>
     <p>
 <?php _e('Het iDIN formulier werkt ook een shortcode, welke je kan plaatsen op een pagina, post of in een template. De shortcode is als volgt:','bluem');?>
@@ -400,7 +400,7 @@ function bluem_woocommerce_idin_settings_section(): void
         <code>
             <?php
             if (isset($options['IDINPageURL'])) {
-                echo($options['IDINPageURL']);
+                echo esc_url($options['IDINPageURL']);
             } ?></code>).
     </p>
     <h3>
@@ -412,7 +412,7 @@ function bluem_woocommerce_idin_settings_section(): void
         je bij een gebruiker kijkt.','bluem');?>
         <?php _e('Kijk bijvoorbeeld bij','bluem');?>
         <a href="<?php echo admin_url('profile.php'); ?>" target="_blank">
-            <?php _e('je eigen profiel','bluem');?>
+            <?php _e('je eigen profiel', 'bluem');?>
         </a>.
     </p>
     <h3>
@@ -1236,7 +1236,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
             </th>
             <td>
                 <input type="text" name="bluem_idin_entrance_code" id="bluem_idin_entrance_code"
-                       value="<?php echo get_user_meta($user->ID, 'bluem_idin_entrance_code', true); ?>"
+                       value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_idin_entrance_code', true)); ?>"
                        class="regular-text"/><br/>
                 <label for="bluem_idin_entrance_code"><span class="description">
                         <?php _e('Recentste Entrance code voor Bluem iDIN requests', 'bluem'); ?>
@@ -1244,7 +1244,9 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
 
                 <br>
                 <input type="text" name="bluem_idin_transaction_id" id="bluem_idin_transaction_id"
-                       value="<?php echo get_user_meta($user->ID, 'bluem_idin_transaction_id', true); ?>"
+                       value="<?php echo esc_attr(
+                               get_user_meta($user->ID, 'bluem_idin_transaction_id', true)
+                       ); ?>"
                        class="regular-text"><br/>
                 <label for="bluem_idin_transaction_id">
                     <span class="description">
@@ -1253,7 +1255,9 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
 
                 <br>
                 <input type="text" name="bluem_idin_transaction_url" id="bluem_idin_transaction_url"
-                       value="<?php echo get_user_meta($user->ID, 'bluem_idin_transaction_url', true); ?>"
+                       value="<?php echo esc_attr(
+                               get_user_meta($user->ID, 'bluem_idin_transaction_url', true)
+                       ); ?>"
                        class="regular-text"><br/>
                 <label for="bluem_idin_transaction_url">
                     <span class="description"><?php _e('De meest recente transactie URL', 'bluem'); ?></span>
@@ -1261,7 +1265,9 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
                 <br>
                 <input type="text" name="bluem_idin_report_last_verification_timestamp"
                        id="bluem_idin_report_last_verification_timestamp"
-                       value="<?php echo get_user_meta($user->ID, 'bluem_idin_report_last_verification_timestamp', true); ?>"
+                       value="<?php echo esc_attr(
+                               get_user_meta($user->ID, 'bluem_idin_report_last_verification_timestamp', true)
+                       ); ?>"
                        class="regular-text"/><br/>
                 <label for="bluem_idin_report_last_verification_timestamp">
                     <span class="description"><?php _e('Laatste keer dat verificatie is uitgevoerd', 'bluem'); ?></span>
@@ -1319,7 +1325,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
 
                 <input type="text" name="bluem_idin_report_customeridresponse"
                        id="bluem_idin_report_customeridresponse"
-                       value="<?php echo get_user_meta($user->ID, 'bluem_idin_report_customeridresponse', true); ?>"
+                       value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_idin_report_customeridresponse', true)); ?>"
                        class="regular-text"/><br/>
                 <span class="description"></span>
             </td>

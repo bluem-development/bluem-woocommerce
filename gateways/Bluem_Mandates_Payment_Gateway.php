@@ -534,10 +534,6 @@ payment for another order {$order_id}",'bluem')
                     $maxAmountEnabled = (isset($settings['maxAmountEnabled']) && $settings['maxAmountEnabled'] === "1");
                 }
 
-                if (self::VERBOSE) {
-                    echo "mandate_amount: {$mandate_amount}" . PHP_EOL;
-                }
-
                 if ($maxAmountEnabled) {
                     $maxAmountFactor =  isset($settings['maxAmountFactor'])
                         ? (float) ($settings['maxAmountFactor'])
@@ -548,9 +544,6 @@ payment for another order {$order_id}",'bluem')
                     if ($mandate_amount !== 0.0) {
                         $order_price = $order->get_total();
                         $max_order_amount = $order_price * $maxAmountFactor;
-                        if (self::VERBOSE) {
-                            echo "max_order_amount: {$max_order_amount}" . PHP_EOL;
-                        }
 
                         if ($mandate_amount >= $max_order_amount) {
                             $mandate_successful = true;
@@ -704,14 +697,6 @@ payment for another order {$order_id}",'bluem')
             );
             bluem_dialogs_render_prompt($errormessage);
             exit;
-        }
-
-        if (self::VERBOSE) {
-            var_dump("mandateid: " . $mandateID);
-            var_dump("entrancecode: " . $entranceCode);
-            echo "<hr>";
-            var_dump($response);
-            echo "<hr>";
         }
 
         $statusUpdateObject = $response->EMandateStatusUpdate;

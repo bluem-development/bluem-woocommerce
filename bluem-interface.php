@@ -284,7 +284,7 @@ function bluem_render_requests_list($requests)
                 <?php _e('Adres', 'bluem'); ?>:
                 </span>
                                     <?php foreach ($pl->report->AddressResponse as $k => $v) {
-                                        echo "{$v} ";
+                                        echo esc_html($v . " ");
                                     } ?>
                                 </div>
                                 <?php
@@ -403,7 +403,7 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0): void
 
     if ($prettyKey !== "") {
         echo "<span class='bluem-request-label' title='$prettyKey'>
-            $prettyKey:
+            ".esc_html($prettyKey).":
         </span> ";
     }
 
@@ -582,7 +582,7 @@ function bluem_render_requests_table_title($cat): void
         $result .= __("Integraties", 'bluem');
     }
 
-    echo "<h2>" . $result . "</h2>";
+    echo "<h2>" . esc_html($result) . "</h2>";
 }
 
 
