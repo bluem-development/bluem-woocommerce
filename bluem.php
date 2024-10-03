@@ -27,7 +27,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-
 global $bluem_db_version;
 $bluem_db_version = 1.5;
 
@@ -1403,7 +1402,7 @@ function bluem_error_report_email($data = []): bool
         $subject .= __("Notificatie Error in Bluem ", 'bluem');
 
         $message = printf(esc_html__("<p>Error in Bluem plugin. %s <%s>,</p>", 'bluem'), $author_name, $author_email);
-        $message .= "<p>Data: <br>" . json_encode(wp_kses_post($data)) . "</p>";
+        $message .= "<p>Data: <br>" . wp_kses_post(json_encode($data)) . "</p>";
 
         ob_start();
         foreach ($data as $k => $v) {
@@ -1882,7 +1881,9 @@ function bluem_dialogs_get_simple_header(): string
     style='font-family:Arial,sans-serif;display:block;
     margin:40pt auto; padding:10pt 20pt; border:1px solid #eee;
     background:#fff; max-width:500px;'>" .
-        bluem_get_bluem_logo_html(48);
+        bluem_get_bluem_logo_html(48).
+        "<br/><br/>";
+
 }
 
 /**

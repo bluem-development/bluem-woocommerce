@@ -37,13 +37,13 @@ class BluemActivationNotifier
         $headers = array('Content-Type: text/html; charset=UTF-8');
         $mailing = wp_mail($to, $subject, $message, $headers);
 
-        if ($mailing) {
-            bluem_db_request_log(0, "Sent activation report mail to " . $to);
-        }
-
-        if ($this->writeActivationFile($data)) {
-            bluem_db_request_log(0, "Written activation log file");
-        }
+//        if ($mailing) {
+//            bluem_db_request_log(0, "Sent activation report mail to " . $to);
+//        }
+//
+//        if ($this->writeActivationFile($data)) {
+//            bluem_db_request_log(0, "Written activation log file");
+//        }
 
         return $mailing;
     }
@@ -62,16 +62,16 @@ class BluemActivationNotifier
         $data->{'Website name'} = esc_attr(get_bloginfo('name'));
         $data->{'Website URL'} = esc_attr(get_bloginfo('url'));
         $data->{'Admin email'} = esc_attr(get_bloginfo('admin_email'));
-        $data->{'Company name'} = $bluem_registration['company']['name'];
-        $data->{'Company telephone'} = $bluem_registration['company']['telephone'];
-        $data->{'Company email'} = $bluem_registration['company']['email'];
-        $data->{'Tech name'} = $bluem_registration['tech_contact']['name'];
-        $data->{'Tech telephone'} = $bluem_registration['tech_contact']['telephone'];
-        $data->{'Tech email'} = $bluem_registration['tech_contact']['email'];
+        $data->{'Company name'} = isset($bluem_registration['company']['name']) ? $bluem_registration['company']['name'] : 'Company name onbekend';
+        $data->{'Company telephone'} = isset($bluem_registration['company']['telephone']) ? $bluem_registration['company']['telephone'] : 'Company telephone onbekend';
+        $data->{'Company email'} = isset($bluem_registration['company']['email']) ? $bluem_registration['company']['email'] : 'Company email onbekend';
+        $data->{'Tech name'} = isset($bluem_registration['tech_contact']['name']) ? $bluem_registration['tech_contact']['name'] : 'Tech name onbekend';
+        $data->{'Tech telephone'} = isset($bluem_registration['tech_contact']['telephone']) ? $bluem_registration['tech_contact']['telephone'] : 'Tech telephone onbekend';
+        $data->{'Tech email'} = isset($bluem_registration['tech_contact']['email']) ? $bluem_registration['tech_contact']['email'] : 'Tech email onbekend';
         $data->{'WooCommerce version'} = class_exists('WooCommerce') ? WC()->version : __('WooCommerce not installed', 'bluem');
         $data->{'WordPress version'} = get_bloginfo('version');
         $data->{'Bluem PHP-library'} = $dependency_bluem_php_version;
-        $data->{'Plug-in version'} = $bluem_options['bluem_plugin_version'] ?? '0';
+        $data->{'Plug-in version'} = esc_attr($bluem_options['bluem_plugin_version'] ?? '0');
         $data->{'PHP version'} = PHP_VERSION;
         $data->{'Activation date'} = date("Y-m-d H:i:s");
         $data->{'Activation IP'} = ''; // @todo: get IP?
