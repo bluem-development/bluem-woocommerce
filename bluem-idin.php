@@ -70,7 +70,6 @@ function bluem_woocommerce_get_idin_options(): array
             'description' => '',
             'default' => ''
         ],
-
         'idin_scenario_active' => [
             'key' => 'idin_scenario_active',
             'title' => 'bluem_idin_scenario_active',
@@ -86,7 +85,6 @@ function bluem_woocommerce_get_idin_options(): array
 
             ],
         ],
-
         'idin_woocommerce_age_verification' => [
             'key' => 'idin_woocommerce_age_verification',
             'title' => 'bluem_idin_woocommerce_age_verification',
@@ -99,7 +97,6 @@ function bluem_woocommerce_get_idin_options(): array
                 '1' => __('Controle op leeftijd per product WEL uitvoeren','bluem'),
             ],
         ],
-
         'idin_check_age_minimum_age' => [
             'key' => 'idin_check_age_minimum_age',
             'title' => 'bluem_idin_check_age_minimum_age',
@@ -163,7 +160,6 @@ function bluem_woocommerce_get_idin_options(): array
             'type' => 'bool',
             'default' => '1',
         ],
-
         'IDINSuccessMessage' => [
             'key' => 'IDINSuccessMessage',
             'title' => 'bluem_IDINSuccessMessage',
@@ -194,7 +190,6 @@ function bluem_woocommerce_get_idin_options(): array
         //     'description' => 'Opties: CustomerIDRequest, NameRequest, AddressRequest, BirthDateRequest, AgeCheckRequest, GenderRequest, TelephoneRequest, EmailRequest',
         //     'default' => 'AddressRequest,BirthDateRequest'
         // ],
-
         'IDINShortcodeOnlyAfterLogin' => [
             'key' => 'IDINShortcodeOnlyAfterLogin',
             'title' => 'bluem_IDINShortcodeOnlyAfterLogin',
@@ -228,7 +223,6 @@ function bluem_woocommerce_get_idin_options(): array
                 $idinDescriptionCurrentValue . '</code><br>',
             'default' => __('Identificatie'). '{gebruikersnaam}',
         ],
-
         'idin_add_field_in_order_emails' => [
             'key' => 'idin_add_field_in_order_emails',
             'title' => 'bluem_idin_add_field_in_order_emails',
@@ -272,7 +266,6 @@ function bluem_woocommerce_get_idin_options(): array
             'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.','bluem'),
             'default' => __('Klik hier om je te identificeren','bluem'),
         ],
-
         'idin_identity_dialog_no_verification_text' => [
             'key' => 'idin_identity_dialog_no_verification_text',
             'title' => 'bluem_idin_identity_dialog_no_verification_text',
@@ -280,7 +273,6 @@ function bluem_woocommerce_get_idin_options(): array
             'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.','bluem'),
             'default' => __('Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.','bluem'),
         ],
-
         'idin_identity_topbar_no_verification_text' => [
             'key' => 'idin_identity_topbar_no_verification_text',
             'title' => 'bluem_idin_identity_topbar_no_verification_text',
@@ -288,7 +280,6 @@ function bluem_woocommerce_get_idin_options(): array
             'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.','bluem'),
             'default' => __('We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.','bluem'),
         ],
-
         'idin_identity_topbar_invalid_verification_text' => [
             'key' => 'idin_identity_topbar_invalid_verification_text',
             'title' => 'bluem_idin_identity_topbar_invalid_verification_text',
@@ -296,7 +287,6 @@ function bluem_woocommerce_get_idin_options(): array
             'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.','bluem'),
             'default' => __("Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden.",'bluem'),
         ],
-
         'idin_identity_dialog_thank_you_message' => [
             'key' => 'idin_identity_dialog_thank_you_message',
             'title' => 'bluem_idin_identity_dialog_thank_you_message',
@@ -304,7 +294,6 @@ function bluem_woocommerce_get_idin_options(): array
             'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.','bluem'),
             'default' => __("Je leeftijd is geverifieerd, bedankt.",'bluem'),
         ],
-
         'idin_identity_popup_thank_you_message' => [
             'key' => 'idin_identity_popup_thank_you_message',
             'title' => 'bluem_idin_identity_popup_thank_you_message',
@@ -312,7 +301,6 @@ function bluem_woocommerce_get_idin_options(): array
             'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.','bluem'),
             'default' => __("Je leeftijd is geverifieerd.",'bluem'),
         ],
-
         'idin_identity_more_information_popup' => [
             'key' => 'idin_identity_more_information_popup',
             'title' => 'bluem_idin_identity_more_information_popup',
@@ -323,7 +311,6 @@ function bluem_woocommerce_get_idin_options(): array
             
 De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDEAL.   Het duurt hoogstens twee minuten en het resultaat wordt opgeslagen voor vervolgtransacties als je ingelogd bent als terugkerende klant.','bluem'),
         ],
-
         'idin_enable_ip_country_filtering' => [
             'key' => 'idin_enable_ip_country_filtering',
             'title' => 'bluem_idin_enable_ip_country_filtering',
@@ -332,7 +319,6 @@ De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDEA
             'type' => 'bool',
             'default' => '1',
         ],
-
         'idin_show_notice_in_checkout' => [
             'key' => 'idin_show_notice_in_checkout',
             'title' => 'bluem_idin_show_notice_in_checkout',
@@ -897,7 +883,7 @@ function bluem_idin_shortcode_callback(): void
     $request_by_debtor_ref = false;
 
     if (isset($_GET['debtorReference']) && $_GET['debtorReference'] !== "") {
-        $debtorReference = $_GET['debtorReference'];
+        $debtorReference = sanitize_text_field($_GET['debtorReference']);
         $request_by_debtor_ref = bluem_db_get_request_by_debtor_reference($debtorReference);
     }
 

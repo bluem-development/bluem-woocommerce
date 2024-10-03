@@ -20,7 +20,7 @@ function bluem_mandates_instant_request(): void
 
     $bluem_config = bluem_woocommerce_get_config();
 
-    $debtorReference = !empty($_GET['debtorreference']) ? $_GET['debtorreference'] : '';
+    $debtorReference = !empty($_GET['debtorreference']) ? sanitize_text_field($_GET['debtorreference']) : '';
 
     if (!empty($debtorReference))
     {

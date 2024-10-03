@@ -184,7 +184,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
         return;
     }
 
-    $bluem_mandate_approve = !empty($_POST['bluem_mandate_approve']) ? $_POST['bluem_mandate_approve'] : '';
+    $bluem_mandate_approve = !empty($_POST['bluem_mandate_approve']) ? sanitize_text_field($_POST['bluem_mandate_approve']) : '';
 
     if ($bluem_config->wpcf7Active !== 'Y' || empty($bluem_mandate_approve)) {
         return;
@@ -200,13 +200,13 @@ function bluem_woocommerce_integration_wpcf7_ajax()
         {
             $debtorReference = sanitize_text_field( $debtorReference );
 
-            $contact_form_id = !empty($_POST['contact_form_id']) ? $_POST['contact_form_id'] : '';
+            $contact_form_id = !empty($_POST['contact_form_id']) ? sanitize_text_field($_POST['contact_form_id']) : '';
 
             $posted_data = [];
 
             foreach ($_POST as $key => $value) {
                 if ($key !== 'contact_form_id') {
-                    $posted_data[$key] = $value;
+                    $posted_data[sanitize_text_field($key)] = sanitize_text_field($value);
                 }
             }
 
@@ -733,7 +733,7 @@ function bluem_woocommerce_integration_wpcf7_results_shortcode()
         return 'Er is een fout opgetreden. Ga terug en probeer het opnieuw.';
     }
 
-    $contact_form = WPCF7_ContactForm::get_instance($_GET['form']);
+    $contact_form = WPCF7_ContactForm::get_instance(sanitize_text_field($_GET['form']));
 
     if (!empty($contact_form)) {
         if (!empty($_GET['result']) && $_GET['result'] == 'true') {
@@ -1306,8 +1306,8 @@ function bluem_woocommerce_integration_gform_results_shortcode()
     }
 
     $request_from_db = bluem_db_get_request_by_transaction_id_and_entrance_code(
-        $_GET['mid'],
-        $_GET['ec'],
+        sanitize_text_field($_GET['mid']),
+        sanitize_text_field($_GET['ec']),
     );
 
     if ($request_from_db !== false)

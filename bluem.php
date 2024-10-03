@@ -402,12 +402,12 @@ function bluem_requests_view()
 {
     if (isset($_GET['request_id']) && $_GET['request_id'] !== "") {
         if (isset($_GET['admin_action']) && $_GET['admin_action'] === "delete") {
-            bluem_db_delete_request_by_id($_GET['request_id']);
+            bluem_db_delete_request_by_id(sanitize_text_field($_GET['request_id']));
             wp_redirect(
                 admin_url("admin.php?page=bluem-transactions")
             );
         } elseif (isset($_GET['admin_action']) && $_GET['admin_action'] === "status-update") {
-            bluem_update_request_by_id($_GET['request_id']);
+            bluem_update_request_by_id(sanitize_text_field($_GET['request_id']));
 
             bluem_requests_view_request();
         } else {
@@ -714,10 +714,8 @@ function bluem_update_request_by_id($request_id)
 function bluem_requests_view_request()
 {
     global $wpdb;
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
 
-    $id = $_GET['request_id'];
+    $id = sanitize_text_field($_GET['request_id']);
 
     if (!is_numeric($id)) {
         return;

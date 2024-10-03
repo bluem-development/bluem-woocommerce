@@ -649,7 +649,7 @@ payment for another order {$order_id}",'bluem')
             bluem_dialogs_render_prompt($errormessage);
             exit;
         }
-        $mandateID = $_GET['mandateID'];
+        $mandateID = sanitize_text_field($_GET['mandateID']);
 
         $order = $this->getOrder($mandateID);
         if (is_null($order)) {
