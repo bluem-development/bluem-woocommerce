@@ -33,9 +33,6 @@ $bluem_db_version = 1.5;
 
 const BLUEM_WOOCOMMERCE_MANUAL_URL = "https://codexology.notion.site/Bluem-voor-WordPress-en-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e";
 
-// @todo require certain minimum php version before installing - force this before installing or updating the plugin
-require_once __DIR__ . '/bluem-compatibility.php';
-
 // get composer dependencies
 require __DIR__ . '/vendor/autoload.php';
 
@@ -77,8 +74,8 @@ require_once __DIR__ . '/bluem-integrations.php';
 /**
  * Check if WooCommerce is activated
  */
-if (!function_exists('is_woocommerce_activated')) {
-    function is_woocommerce_activated(): bool
+if (!function_exists('bluem_is_woocommerce_activated')) {
+    function bluem_is_woocommerce_activated(): bool
     {
         $active_plugins = get_option('active_plugins');
 
@@ -93,8 +90,8 @@ if (!function_exists('is_woocommerce_activated')) {
 /**
  * Check if Contact Form 7 is activated
  */
-if (!function_exists('is_contactform7_activated')) {
-    function is_contactform7_activated(): bool
+if (!function_exists('bluem_is_contactform7_activated')) {
+    function bluem_is_contactform7_activated(): bool
     {
         $active_plugins = get_option('active_plugins');
 
@@ -108,8 +105,8 @@ if (!function_exists('is_contactform7_activated')) {
 /**
  * Check if Gravity Forms is activated
  */
-if (!function_exists('is_gravityforms_activated')) {
-    function is_gravityforms_activated(): bool
+if (!function_exists('bluem_is_gravityforms_activated')) {
+    function bluem_is_gravityforms_activated(): bool
     {
         $active_plugins = get_option('active_plugins');
 
@@ -121,8 +118,8 @@ if (!function_exists('is_gravityforms_activated')) {
 /**
  * Check if Permalinks is enabled
  */
-if (!function_exists('is_permalinks_enabled')) {
-    function is_permalinks_enabled()
+if (!function_exists('bluem_is_permalinks_enabled')) {
+    function bluem_is_permalinks_enabled()
     {
         $structure = get_option('permalink_structure');
 
@@ -136,7 +133,7 @@ if (!function_exists('is_permalinks_enabled')) {
 /**
  * Check if WooCommerce is active
  **/
-if (!is_woocommerce_activated()) {
+if (!bluem_is_woocommerce_activated()) {
     // No WooCommerce module found!
     add_action('admin_notices', 'bluem_woocommerce_no_woocommerce_notice');
 }
@@ -144,7 +141,7 @@ if (!is_woocommerce_activated()) {
 /**
  * Check if Permalinks is enabled
  **/
-if (!is_permalinks_enabled()) {
+if (!bluem_is_permalinks_enabled()) {
     // No WooCommerce module found!
     add_action('admin_notices', 'bluem_woocommerce_no_permalinks_notice');
 }
@@ -299,7 +296,11 @@ function bluem_get_composer_dependency_version($dependency_name)
     $composer_lock_path = plugin_dir_path(__FILE__) . 'composer.lock';
 
     // Read and decode the contents of the composer.lock file
-    $composer_lock = json_decode(file_get_contents($composer_lock_path), true);
+    try {
+        $composer_lock = json_decode(file_get_contents($composer_lock_path), true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException $e) {
+        return false;
+    }
 
     // Find the package entry by the dependency name
     $package_entry = array_filter($composer_lock['packages'], function ($package) use ($dependency_name) {
@@ -1755,7 +1756,7 @@ function bluem_setup_incomplete()
         /**
          * Check if WooCommerce is active
          **/
-        if (is_woocommerce_activated()) {
+        if (bluem_is_woocommerce_activated()) {
             // Get WooCommerce payment gateways
             $installed_payment_methods = WC()->payment_gateways->payment_gateways();
 

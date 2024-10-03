@@ -28,7 +28,7 @@
  * Display PHP error log (if accessible)
  * @return string
  */
-function display_php_errors(): string
+function bluem_display_php_errors(): string
 {
     $error_log_path = ini_get('error_log');
 
@@ -46,7 +46,7 @@ function display_php_errors(): string
  *
  * @return string
  */
-function display_wordpress_debug_log()
+function bluem_display_wordpress_debug_log()
 {
     $error_log_path = WP_CONTENT_DIR . '/debug.log';
 
@@ -67,7 +67,7 @@ function display_wordpress_debug_log()
  *
  * @return string
  */
-function display_woocommerce_logs(): string
+function bluem_display_woocommerce_logs(): string
 {
     $woocommerce_logs = null;
     if (defined('WC_LOG_DIR')) {
@@ -128,13 +128,13 @@ function display_woocommerce_logs(): string
             <h1><?php _e('Logs', 'bluem'); ?></h1>
 
             <h3><?php _e('PHP errors', 'bluem'); ?></h3>
-            <?php echo display_php_errors(); ?>
+            <?php echo bluem_display_php_errors(); ?>
 
             <h3><?php _e('WordPress debug log', 'bluem'); ?></h3>
-            <?php echo display_wordpress_debug_log(); ?>
+            <?php echo bluem_display_wordpress_debug_log(); ?>
 
             <h3><?php _e('WooCommerce error logs', 'bluem'); ?></h3>
-            <?php echo display_woocommerce_logs(); ?>
+            <?php echo bluem_display_woocommerce_logs(); ?>
         </div>
     </div>
 
