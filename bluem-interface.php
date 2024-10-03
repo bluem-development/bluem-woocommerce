@@ -221,7 +221,7 @@ function bluem_render_footer($align_right = true)
             ">
         <?php _e('Hulp nodig?', 'bluem'); ?>
         <br>
-        <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e"
+        <a href="https://bluem-development.github.io/bluem-docs/wordpress-woo-handleiding.html"
            target="_blank" style="text-decoration:none;">
             <span class="dashicons dashicons-media-document"></span>
             <?php _e('Handleiding', 'bluem'); ?>
@@ -664,7 +664,7 @@ function bluem_render_nav_header($active_page = '')
             <span class="dashicons dashicons-info"></span>
             <?php _e('Status', 'bluem'); ?>
         </a>
-        <a href="https://www.notion.so/codexology/Bluem-voor-WordPress-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e"
+        <a href="https://bluem-development.github.io/bluem-docs/wordpress-woo-handleiding.html"
            target="_blank"
            class="nav-tab">
             <span class="dashicons dashicons-media-document"></span>
