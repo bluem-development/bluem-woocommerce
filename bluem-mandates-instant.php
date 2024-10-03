@@ -14,7 +14,7 @@ add_action( 'parse_request', 'bluem_mandates_instant_request' );
 
 function bluem_mandates_instant_request(): void
 {
-    if (!str_contains($_SERVER["REQUEST_URI"], "bluem-woocommerce/mandate_instant_request")) {
+    if (!str_contains(sanitize_url($_SERVER["REQUEST_URI"]), "bluem-woocommerce/mandate_instant_request")) {
         return;
     }
 
@@ -154,7 +154,7 @@ add_action( 'parse_request', 'bluem_mandates_instant_callback' );
  */
 function bluem_mandates_instant_callback()
 {
-    if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/mandates_instant_callback") === false) {
+    if (strpos(sanitize_url($_SERVER["REQUEST_URI"]), "bluem-woocommerce/mandates_instant_callback") === false) {
         return;
     }
 

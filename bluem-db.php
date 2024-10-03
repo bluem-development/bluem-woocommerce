@@ -250,8 +250,8 @@ function bluem_db_insert_storage( $object ) {
     if ( $db_result !== false )
     {
         // Set cookies for token and secret for
-        setcookie( 'bluem_storage_token', $token, 0, '/', $_SERVER['SERVER_NAME'], false, true );
-        setcookie( 'bluem_storage_secret', $secret, 0, '/', $_SERVER['SERVER_NAME'], false, true );
+        setcookie( 'bluem_storage_token', $token, 0, '/', sanitize_text_field($_SERVER['SERVER_NAME']), false, true );
+        setcookie( 'bluem_storage_secret', $secret, 0, '/', sanitize_text_field($_SERVER['SERVER_NAME']), false, true );
 
         return true;
     }

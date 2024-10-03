@@ -22,7 +22,7 @@ add_action( 'parse_request', 'bluem_mandate_shortcode_execute' );
  */
 function bluem_mandate_shortcode_execute(): void
 {
-    if (substr($_SERVER["REQUEST_URI"], - 43) !== "bluem-woocommerce/mandate_shortcode_execute") {
+    if (substr(sanitize_url($_SERVER["REQUEST_URI"]), - 43) !== "bluem-woocommerce/mandate_shortcode_execute") {
         return;
     }
 
@@ -275,7 +275,7 @@ add_action( 'parse_request', 'bluem_mandate_mandate_shortcode_callback' );
  */
 function bluem_mandate_mandate_shortcode_callback(): void
 {
-    if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/mandate_shortcode_callback") === false) {
+    if (strpos(sanitize_url($_SERVER["REQUEST_URI"]), "bluem-woocommerce/mandate_shortcode_callback") === false) {
         return;
     }
 

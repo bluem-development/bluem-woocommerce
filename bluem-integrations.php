@@ -180,7 +180,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
 {
     $bluem_config = bluem_woocommerce_get_config();
 
-    if (strpos($_SERVER["REQUEST_URI"], 'bluem-woocommerce/bluem-integrations/wpcf7_mandate') === false) {
+    if (strpos(sanitize_url($_SERVER["REQUEST_URI"]), 'bluem-woocommerce/bluem-integrations/wpcf7_mandate') === false) {
         return;
     }
 
@@ -527,7 +527,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
 
     $storage = bluem_db_get_storage();
 
-    if (strpos($_SERVER["REQUEST_URI"], 'bluem-woocommerce/bluem-integrations/wpcf7_callback') === false) {
+    if (strpos(sanitize_url($_SERVER["REQUEST_URI"]), 'bluem-woocommerce/bluem-integrations/wpcf7_callback') === false) {
         return;
     }
 
@@ -1009,7 +1009,7 @@ function bluem_woocommerce_integration_gform_callback()
 
     $storage = bluem_db_get_storage();
 
-    if (strpos($_SERVER["REQUEST_URI"], 'bluem-woocommerce/bluem-integrations/gform_callback') === false) {
+    if (strpos(sanitize_url($_SERVER["REQUEST_URI"]), 'bluem-woocommerce/bluem-integrations/gform_callback') === false) {
         return;
     }
 

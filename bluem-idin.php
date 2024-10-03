@@ -840,7 +840,7 @@ function bluem_idin_shortcode_idin_execute(): void
 {
     $shortcode_execution_url = "bluem-woocommerce/idin_execute";
 
-    if (!str_contains($_SERVER["REQUEST_URI"], $shortcode_execution_url)) {
+    if (!str_contains(sanitize_url($_SERVER["REQUEST_URI"]), $shortcode_execution_url)) {
         // any other request
         return;
     }
@@ -864,7 +864,7 @@ add_action('parse_request', 'bluem_idin_shortcode_callback');
  */
 function bluem_idin_shortcode_callback(): void
 {
-    if (!str_contains($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback")) {
+    if (!str_contains(sanitize_url($_SERVER["REQUEST_URI"]), "bluem-woocommerce/idin_shortcode_callback")) {
         return;
     }
 
@@ -996,7 +996,7 @@ function bluem_idin_shortcode_callback(): void
      */
     $goto = $bluem_config->IDINPageURL;
 
-    if (str_contains($_SERVER["REQUEST_URI"], "bluem-woocommerce/idin_shortcode_callback/go_to_cart")) {
+    if (str_contains(sanitize_url($_SERVER["REQUEST_URI"]), "bluem-woocommerce/idin_shortcode_callback/go_to_cart")) {
         $goto = wc_get_checkout_url();
     } elseif (!empty($goto)) {
         $goto = home_url($bluem_config->IDINPageURL);
@@ -1189,7 +1189,7 @@ add_action('parse_request', 'bluem_idin_webhook');
  */
 function bluem_idin_webhook(): void
 {
-    if (strpos($_SERVER["REQUEST_URI"], "bluem-woocommerce/bluem_idin_webhook") === false) {
+    if (strpos(sanitize_url($_SERVER["REQUEST_URI"]), "bluem-woocommerce/bluem_idin_webhook") === false) {
         return;
     }
     http_response_code(200);
