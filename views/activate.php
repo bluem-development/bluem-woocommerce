@@ -19,7 +19,7 @@
 
             <?php _e('Volgende stappen:', 'bluem'); ?>
             <ul>
-                <?php if (is_woocommerce_activated()) { ?>
+                <?php if (bluem_is_woocommerce_activated()) { ?>
 
                     <li>
                         ✓&nbsp;

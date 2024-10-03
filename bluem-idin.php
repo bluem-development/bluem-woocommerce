@@ -5,13 +5,14 @@ if (!defined('ABSPATH')) {
 }
 
 use Bluem\BluemPHP\Bluem;
+use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Bluem\BluemPHP\Helpers\BluemIdentityCategoryList;
 
 /**
  * Check if WooCommerce is activated
  */
-if (!function_exists('is_woocommerce_activated')) {
-    function is_woocommerce_activated(): bool
+if (!function_exists('bluem_is_woocommerce_activated')) {
+    function bluem_is_woocommerce_activated(): bool
     {
         $active_plugins = get_option('active_plugins');
 
@@ -1471,7 +1472,7 @@ function bluem_idin_validation_needed(): bool
      * Check if age verification is needed.
      */
     if (isset($options['idin_woocommerce_age_verification']) && $options['idin_woocommerce_age_verification'] === '1') {
-        if (is_woocommerce_activated() && !$age_verification_needed) {
+        if (bluem_is_woocommerce_activated() && !$age_verification_needed) {
             return false;
         }
     }
@@ -1561,19 +1562,28 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
     // fallback until this is corrected in bluem-php
     $bluem_config->brandID = $bluem_config->IDINBrandID;
 
-    $bluem = new Bluem($bluem_config);
+    try {
+        $bluem = new Bluem($bluem_config);
+    } catch (InvalidBluemConfigurationException $e) {
+        _e("Fout: De Bluem Plug-in is niet goed ingesteld. Neem contact op met je systeembeheerder.");
+        echo " ";
+        _e("Foutmelding:");
+        echo " ";
+        echo esc_html($e->getMessage());
+        exit;
+    }
 
     $cats = bluem_idin_get_categories();
 
     if (count($cats) == 0) {
         $errormessage = __("Geen juiste iDIN categories ingesteld", 'bluem');
-        bluem_error_report_email(
-            [
-                'service' => 'idin',
-                'function' => 'idin_execute',
-                'message' => $errormessage
-            ]
-        );
+//        bluem_error_report_email(
+//            [
+//                'service' => 'idin',
+//                'function' => 'idin_execute',
+//                'message' => $errormessage
+//            ]
+//        );
         bluem_dialogs_render_prompt($errormessage);
         exit();
     }
@@ -1603,7 +1613,11 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
     try {
         $response = $bluem->PerformRequest($request);
 
-        if ($response->ReceivedResponse()) {
+        if ($response->ReceivedResponse() && $response->Status() === true && !isset($response->IdentityTransactionResponse->Error)) {
+
+
+
+
             $entranceCode = $response->GetEntranceCode();
             $transactionID = $response->GetTransactionID();
             $transactionURL = $response->GetTransactionURL();
@@ -1673,13 +1687,13 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
                 $msg .= "<br>" . __("Algemene fout", 'bluem');
             }
 
-            bluem_error_report_email(
-                [
-                    'service' => 'idin',
-                    'function' => 'idin_execute',
-                    'message' => $msg
-                ]
-            );
+//            bluem_error_report_email(
+//                [
+//                    'service' => 'idin',
+//                    'function' => 'idin_execute',
+//                    'message' => $msg
+//                ]
+//            );
             bluem_dialogs_render_prompt($msg);
             exit;
         }
@@ -1692,14 +1706,14 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
         } else {
             $msg .= "<br>" . __("Algemene fout", 'bluem');
         }
-
-        bluem_error_report_email(
-            [
-                'service' => 'idin',
-                'function' => 'idin_execute',
-                'message' => $e->getMessage()
-            ]
-        );
+//
+//        bluem_error_report_email(
+//            [
+//                'service' => 'idin',
+//                'function' => 'idin_execute',
+//                'message' => $e->getMessage()
+//            ]
+//        );
         bluem_dialogs_render_prompt($msg);
         exit;
     }
