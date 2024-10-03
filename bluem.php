@@ -1104,15 +1104,16 @@ function bluem_woocommerce_settings_render_input($field)
         ?>
 
 
-        <select class='form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
-                name='bluem_woocommerce_options[<?php echo $key; ?>]'>
+        <select class='form-control' id='bluem_woocommerce_settings_<?php echo esc_attr($key); ?>'
+                name='bluem_woocommerce_options[<?php echo esc_attr($key); ?>]'>
             <?php
             foreach ($field['options'] as $option_value => $option_name) {
                 ?>
                 <option
-                        value="<?php echo $option_value; ?>" <?php if (isset($values[$key]) && $values[$key] !== "" && $option_value == $values[$key]) {
+                        value="<?php echo esc_attr($option_value); ?>" <?php if (isset($values[$key]) && $values[$key] !== ""
+                    && $option_value == $values[$key]) {
                     echo "selected='selected'";
-                } ?>><?php echo $option_name; ?></option>
+                } ?>><?php echo esc_html($option_name); ?></option>
                 <?php
             } ?>
         </select>
@@ -1120,13 +1121,11 @@ function bluem_woocommerce_settings_render_input($field)
     } elseif ($field['type'] == "bool") {
         ?>
         <div class="form-check form-check-inline">
-            <label class="form-check-label" for="<?php echo $key; ?>_1">
+            <label class="form-check-label" for="<?php echo esc_attr($key); ?>_1">
                 <input class="form-check-input" type="radio"
-                       name="bluem_woocommerce_options[<?php echo $key; ?>]"
-                       id="<?php echo $key; ?>_1" value="1"
-                    <?php if (isset($values[$key]) && $values[$key] == "1") {
-                        echo "checked";
-                    } elseif ($field['default'] == "1") {
+                       name="bluem_woocommerce_options[<?php echo esc_attr($key); ?>]"
+                       id="<?php echo esc_attr($key); ?>_1" value="1"
+                    <?php if ((isset($values[$key]) && $values[$key] == "1") || $field['default'] == "1") {
                         echo "checked";
                     } ?>
                 >
@@ -1134,13 +1133,11 @@ function bluem_woocommerce_settings_render_input($field)
             </label>
         </div>
         <div class="form-check form-check-inline">
-            <label class="form-check-label" for="<?php echo $key; ?>_0">
+            <label class="form-check-label" for="<?php echo esc_attr($key); ?>_0">
                 <input class="form-check-input" type="radio"
-                       name="bluem_woocommerce_options[<?php echo $key; ?>]"
-                       id="<?php echo $key; ?>_0" value="0"
-                    <?php if (isset($values[$key]) && $values[$key] == "0") {
-                        echo "checked";
-                    } elseif ($field['default'] == "0") {
+                       name="bluem_woocommerce_options[<?php echo esc_attr($key); ?>]"
+                       id="<?php echo esc_attr($key); ?>_0" value="0"
+                    <?php if ((isset($values[$key]) && $values[$key] == "0") || $field['default'] == "0") {
                         echo "checked";
                     } ?>
                 >
@@ -1148,7 +1145,7 @@ function bluem_woocommerce_settings_render_input($field)
             </label>
         </div>
         <?php
-    } elseif ($field['type'] == "textarea") {
+    } elseif ($field['type'] === "textarea") {
         $attrs = [
             'id' => "bluem_woocommerce_settings_$key",
             'class' => "bluem-form-control",
@@ -1162,9 +1159,9 @@ function bluem_woocommerce_settings_render_input($field)
         <?php
     } else {
         $attrs = [];
-        if ($field['type'] == "password") {
+        if ($field['type'] === "password") {
             $attrs['type'] = "password";
-        } elseif ($field['type'] == "number") {
+        } elseif ($field['type'] === "number") {
             $attrs['type'] = "number";
             if (isset($field['attrs'])) {
                 $attrs = array_merge($attrs, $field['attrs']);
@@ -1172,8 +1169,8 @@ function bluem_woocommerce_settings_render_input($field)
         } else {
             $attrs['type'] = "text";
         } ?>
-        <input class='bluem-form-control' id='bluem_woocommerce_settings_<?php echo $key; ?>'
-               name='bluem_woocommerce_options[<?php echo $key; ?>]'
+        <input class='bluem-form-control' id='bluem_woocommerce_settings_<?php echo esc_attr($key); ?>'
+               name='bluem_woocommerce_options[<?php echo esc_attr($key); ?>]'
                value='<?php echo(isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?>'
             <?php foreach ($attrs as $akey => $aval) {
                 echo "$akey='".esc_attr($aval)."' ";
@@ -1185,8 +1182,8 @@ function bluem_woocommerce_settings_render_input($field)
     ?>
 
     <br><label style='color:#333;'
-               for='bluem_woocommerce_settings_<?php echo $key; ?>'>
-        <?php echo $field['description']; ?>
+               for='bluem_woocommerce_settings_<?php echo esc_attr($key); ?>'>
+        <?php echo wp_kses_post($field['description']); ?>
     </label>
     <?php
 }
@@ -1394,7 +1391,7 @@ function bluem_error_report_email($data = []): bool
         $subject .= __("Notificatie Error in Bluem ", 'bluem');
 
         $message = printf(__("<p>Error in Bluem plugin. %s <%s>,</p>", 'bluem'), $author_name, $author_email);
-        $message .= "<p>Data: <br>" . json_encode(wp_kses($data)) . "</p>";
+        $message .= "<p>Data: <br>" . json_encode(wp_kses_post($data)) . "</p>";
 
         ob_start();
         foreach ($data as $k => $v) {
@@ -1661,21 +1658,21 @@ function bluem_generic_tabler($data)
     <?php
     $i = 0;
     foreach ($data as $row) {
-        if ($i == 0) {
+        if ($i === 0) {
             ?>
             <tr><?php
             foreach ($row as $row_key => $row_value) { ?>
                 <th>
-                <?php echo $row_key; ?>
+                <?php echo esc_html($row_key); ?>
                 </th><?php
             } ?>
             </tr><?php
         } ?>
         <tr>
         <?php
-        foreach ($row as $row_key => $row_value) { ?>
+        foreach ($row as $row_value) { ?>
             <td>
-            <?php echo $row_value; ?>
+            <?php echo wp_kses_post($row_value); ?>
             </td><?php
         } ?>
         </tr><?php
@@ -1903,7 +1900,7 @@ function bluem_dialogs_get_simple_footer(bool $include_link = true): string
 function bluem_dialogs_render_prompt(string $html, bool $include_link = true)
 {
     echo bluem_dialogs_get_simple_header();
-    echo $html;
+    echo wp_kses_post($html);
     echo bluem_dialogs_get_simple_footer($include_link);
 }
 
