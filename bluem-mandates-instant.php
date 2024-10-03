@@ -205,8 +205,7 @@ function bluem_mandates_instant_callback()
     $response = $bluem->MandateStatus( $mandateID, $entranceCode );
 
     if (!$response->Status()) {
-        $errormessage = sprintf(__("Fout bij opvragen status: %s
-        <br>Neem contact op met de webshop en vermeld deze status",'bluem'), $response->Error());
+        $errormessage = sprintf(esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status",'bluem'), $response->Error());
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
@@ -323,7 +322,7 @@ function bluem_mandates_instant_callback()
         [
             'service'  => 'mandates',
             'function' => 'shortcode_callback',
-            'message'  => sprintf(__("Fout: Onbekende of foutieve status teruggekregen: %s<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site",'bluem'), $statusCode)
+            'message'  => sprintf(esc_html__("Fout: Onbekende of foutieve status teruggekregen: %s<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site",'bluem'), $statusCode)
         ]
     );
     wp_redirect( $bluem_config->instantMandatesResponseURI . "?result=false&reason=error" );

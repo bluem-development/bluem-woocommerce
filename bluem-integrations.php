@@ -279,7 +279,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                             ]
                         );
 
-                        echo json_encode([
+                        echo wp_json_encode([
                             'success' => false,
                         ]);
                         die;
@@ -324,13 +324,13 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                         ]
                     );
 
-                    echo json_encode([
+                    echo wp_json_encode([
                         'success' => true,
-                        'redirect_uri' => $transactionURL,
+                        'redirect_uri' => esc_url($transactionURL),
                     ]);
                     die;
                 } catch (Exception $e) {
-                    echo json_encode([
+                    echo wp_json_encode([
                         'success' => false,
                     ]);
                     die;
@@ -339,7 +339,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
         }
     }
 
-    echo json_encode([
+    echo wp_json_encode([
         'success' => false,
     ]);
     die;
@@ -980,9 +980,9 @@ function bluem_woocommerce_integration_gform_submit( $entry, $form ) {
 
                 if ($bluem_is_ajax === 'true')
                 {
-                    echo json_encode([
+                    echo wp_json_encode([
                         'success' => true,
-                        'redirect_url' => $transactionURL,
+                        'redirect_url' => esc_url($transactionURL),
                     ]);
                 } else {
                     ob_start();

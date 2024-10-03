@@ -78,7 +78,7 @@ require_once __DIR__ . '/bluem-integrations.php';
  * Check if WooCommerce is activated
  */
 if (!function_exists('is_woocommerce_activated')) {
-    function is_woocommerce_activated()
+    function is_woocommerce_activated(): bool
     {
         $active_plugins = get_option('active_plugins');
 
@@ -94,7 +94,7 @@ if (!function_exists('is_woocommerce_activated')) {
  * Check if Contact Form 7 is activated
  */
 if (!function_exists('is_contactform7_activated')) {
-    function is_contactform7_activated()
+    function is_contactform7_activated(): bool
     {
         $active_plugins = get_option('active_plugins');
 
@@ -182,11 +182,11 @@ function bluem_woocommerce_no_woocommerce_notice()
 {
     if (is_admin()) {
         $bluem_options = get_option('bluem_woocommerce_options');
-        if (!isset($bluem_options['suppress_woo']) || $bluem_options['suppress_woo'] == "0") {
+        if (!isset($bluem_options['suppress_woo']) || $bluem_options['suppress_woo'] === "0") {
             echo '<div class="notice notice-warning is-dismissible">
             <p><span class="dashicons dashicons-warning"></span>';
             /* translators: %s: the link to settings page   */
-            printf(__('De Bluem integratie is grotendeels afhankelijk van WooCommerce - installeer en/of activeer deze plug-in.<br>
+            printf(esc_html__('De Bluem integratie is grotendeels afhankelijk van WooCommerce - installeer en/of activeer deze plug-in.<br>
             Gebruik je geen WooCommerce? Dan kan je deze melding en WooCommerce gerelateerde functionaliteiten uitzetten bij de %s.', 'bluem'),
                 '<a href="' . admin_url('admin.php?page=bluem-settings') . '">' . __('Instellingen', 'bluem') . '</a>');
             echo '</p>
@@ -759,7 +759,7 @@ function bluem_requests_view_all()
     // @todo Allow filtering on only one type
 
     foreach ($_requests as $_r) {
-        $requests[($_r->type == 'payments' ? 'ideal' : $_r->type)][] = $_r;
+        $requests[($_r->type === 'payments' ? 'ideal' : $_r->type)][] = $_r;
     }
 
     $users_by_id = [];
@@ -810,7 +810,7 @@ function bluem_woocommerce_general_settings_section()
     Heb je de plugin al geinstalleerd op een andere website?<br />
     Gebruik dan de import / export functie om dezelfde instellingen
     en voorkeuren in te laden.<br />', 'bluem');
-    printf(__('Ga naar <a href="%s" class="">instellingen importeren of exporteren</a>.</div>', 'bluem'), admin_url('admin.php?page=bluem-importexport'));
+    printf(esc_html__('Ga naar <a href="%s" class="">instellingen importeren of exporteren</a>.</div>', 'bluem'), admin_url('admin.php?page=bluem-importexport'));
     echo '</p>';
 }
 
@@ -1029,7 +1029,7 @@ function bluem_woocommerce_show_general_profile_fields()
             </th>
             <td>
                 <?php
-                printf(__('Ga naar de <a href="%s">
+                printf(esc_html__('Ga naar de <a href="%s">
                     instellingen</a> om het gedrag van elk Bluem onderdeel te wijzigen.', 'bluem'), home_url("wp-admin/admin.php?page=bluem-settings"));
                 ?>
             </td>
@@ -1098,7 +1098,7 @@ function bluem_woocommerce_settings_render_input($field)
         $field['type'] = "text";
     }
 
-    if ($field['type'] == "select") {
+    if ($field['type'] === "select") {
 
         // @todo stop using inline html and use a template engine here, like latte
         ?>
@@ -1118,7 +1118,7 @@ function bluem_woocommerce_settings_render_input($field)
             } ?>
         </select>
         <?php
-    } elseif ($field['type'] == "bool") {
+    } elseif ($field['type'] === "bool") {
         ?>
         <div class="form-check form-check-inline">
             <label class="form-check-label" for="<?php echo esc_attr($key); ?>_1">
@@ -1363,7 +1363,7 @@ add_action('save_post', 'bluem_woocommerce_save_age_verification_values');
  */
 function bluem_error_report_email($data = []): bool
 {
-    $error_report_id = date("Ymdhis") . '_' . rand(0, 512);
+    $error_report_id = date("Ymdhis") . '_' . random_int(0, 512);
 
     $data = (object)$data;
     $data->error_report_id = $error_report_id;
@@ -1380,7 +1380,7 @@ function bluem_error_report_email($data = []): bool
     if (!isset($settings['error_reporting_email'])
         || $settings['error_reporting_email'] == 1
     ) {
-        $author_name = sprintf(__("Administratie van %s", 'bluem'), get_bloginfo('name'));
+        $author_name = sprintf(esc_html__("Administratie van %s", 'bluem'), get_bloginfo('name'));
         $author_email = esc_attr(
             get_option("admin_email")
         );
@@ -1390,7 +1390,7 @@ function bluem_error_report_email($data = []): bool
         $subject = "[" . get_bloginfo('name') . "] ";
         $subject .= __("Notificatie Error in Bluem ", 'bluem');
 
-        $message = printf(__("<p>Error in Bluem plugin. %s <%s>,</p>", 'bluem'), $author_name, $author_email);
+        $message = printf(esc_html__("<p>Error in Bluem plugin. %s <%s>,</p>", 'bluem'), $author_name, $author_email);
         $message .= "<p>Data: <br>" . json_encode(wp_kses_post($data)) . "</p>";
 
         ob_start();
@@ -1417,7 +1417,7 @@ function bluem_error_report_email($data = []): bool
         $mailing = wp_mail($to, $subject, $message, $headers);
 
         if ($mailing) {
-            bluem_db_request_log($error_report_id, sprintf(__("Sent error report mail to %s", 'bluem'), $to));
+            bluem_db_request_log($error_report_id, sprintf(esc_html__("Sent error report mail to %s", 'bluem'), $to));
         }
 
         // or no mail sent
@@ -1431,7 +1431,7 @@ function bluem_error_report_email($data = []): bool
 
 function bluem_email_footer(): string
 {
-    return sprintf(__("<p>Ga naar de site op %s om dit verzoek in detail te bekijken.</p>", 'bluem'), home_url());
+    return sprintf(esc_html__("<p>Ga naar de site op %s om dit verzoek in detail te bekijken.</p>", 'bluem'), home_url());
 }
 
 /**
@@ -1456,7 +1456,7 @@ function bluem_transaction_notification_email(
 
     $pl = json_decode($data->payload);
 
-    if (isset($pl->sent_notification) && $pl->sent_notification == "true") {
+    if (isset($pl->sent_notification) && $pl->sent_notification === "true") {
         return false;
     }
 
@@ -1467,7 +1467,7 @@ function bluem_transaction_notification_email(
     if (!isset($settings['transaction_notification_email'])
         || $settings['transaction_notification_email'] == 1
     ) {
-        $author_name = sprintf(__("Administratie van %s", 'bluem'), get_bloginfo('name'));
+        $author_name = sprintf(esc_html__("Administratie van %s", 'bluem'), get_bloginfo('name'));
 
         $to = esc_attr(
             get_option("admin_email")
@@ -1479,12 +1479,12 @@ function bluem_transaction_notification_email(
             $subject .= " › status: $data->status ";
         }
 
-        $message = sprintf(__("<p>Beste %s,</p>", 'bluem'), $author_name);
-        $message .= sprintf(__("<p>Er is een nieuw Bluem %s verzoek verwerkt met de volgende gegevens:</p><p>", 'bluem'), ucfirst($data->type));
+        $message = wp_kses_post(sprintf(__("<p>Beste %s,</p>", 'bluem'), $author_name));
+        $message .= wp_kses_post(sprintf(__("<p>Er is een nieuw Bluem %s verzoek verwerkt met de volgende gegevens:</p><p>", 'bluem'), ucfirst($data->type)));
 
         ob_start();
         foreach ($data as $k => $v) {
-            if ($k == "payload") {
+            if ($k === "payload") {
                 echo "<br><strong>" . __('Meer details', 'bluem') . "</strong>:<br> " . __("Zie admin interface", 'bluem') . "<br>";
                 continue;
             }
@@ -1517,7 +1517,7 @@ function bluem_transaction_notification_email(
                 ]
             );
 
-            bluem_db_request_log($request_id, sprintf(__("Sent notification mail to %s", 'bluem'), $to));
+            bluem_db_request_log($request_id, sprintf(esc_html__("Sent notification mail to %s", 'bluem'), $to));
         }
 
         return $mailing;
@@ -1714,7 +1714,7 @@ function bluem_setup_incomplete()
         }
 
         if (isset($options['environment'])
-            && $options['environment'] == "prod"
+            && $options['environment'] === "prod"
             && (
                 !array_key_exists('production_accessToken', $options)
                 || $options['production_accessToken'] === ""
@@ -1934,7 +1934,7 @@ function bluem_admin_importexport(): void
     $import_data = null;
     $messages = [];
 
-    if (isset($_POST['action']) && $_POST['action'] == "import") {
+    if (isset($_POST['action']) && $_POST['action'] === "import") {
         $decoded = true;
 
         if (isset($_POST['import']) && $_POST['import'] !== "") {

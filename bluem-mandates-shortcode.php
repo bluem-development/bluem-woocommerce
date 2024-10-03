@@ -337,8 +337,7 @@ function bluem_mandate_mandate_shortcode_callback(): void
     $response = $bluem->MandateStatus( $mandateID, $entranceCode );
 
     if (!$response->Status()) {
-        $errormessage = sprintf(__("Fout bij opvragen status: %s
-        <br>Neem contact op met de webshop en vermeld deze status",'bluem'), $response->Error());
+        $errormessage = sprintf(esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status",'bluem'), $response->Error());
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
@@ -436,7 +435,7 @@ function bluem_mandate_mandate_shortcode_callback(): void
             [
                 'service'  => 'mandates',
                 'function' => 'shortcode_callback',
-                'message'  => sprintf(__("Fout: Onbekende of foutieve status teruggekregen: %s<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site",'bluem'), $statusCode)
+                'message'  => wp_kses_post(sprintf(__("Fout: Onbekende of foutieve status teruggekregen: %s<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site",'bluem'), $statusCode))
             ]
         );
         wp_redirect( home_url( $bluem_config->thanksPageURL ) . "?result=false&reason=error" );

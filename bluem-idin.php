@@ -954,7 +954,7 @@ function bluem_idin_shortcode_callback(): void
     }
 
     if (!$statusResponse || !$statusResponse->ReceivedResponse()) {
-        $errormessage = sprintf(__("Error: kon verzoek met %s en entrance %s niet vinden", 'bluem'), $transactionID, $entranceCode);
+        $errormessage = sprintf(esc_html__("Error: kon verzoek met %s en entrance %s niet vinden", 'bluem'), $transactionID, $entranceCode);
         bluem_error_report_email(
             [
                 'service' => 'idin',
