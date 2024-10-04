@@ -19,10 +19,6 @@
  * @author Bluem Payment Services
  */
 
-// @todo: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
-// @todo: Localize all error messages to english primarily
-// @todo: finish docblocking
-
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -32,7 +28,6 @@ $bluem_db_version = 1.5;
 
 const BLUEM_WOOCOMMERCE_MANUAL_URL = "https://codexology.notion.site/Bluem-voor-WordPress-en-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e";
 
-// get composer dependencies
 require __DIR__ . '/vendor/autoload.php';
 
 use Bluem\BluemPHP\Bluem;
