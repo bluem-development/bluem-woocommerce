@@ -52,7 +52,7 @@ add_git_hooks:
 
 PLUGIN_SLUG = bluem
 SVN_URL = https://plugins.svn.wordpress.org/$(PLUGIN_SLUG)
-SVN_DIR = svn-directory
+SVN_DIR = svn-directory/${PLUGIN_SLUG}
 CURRENT_DIR = $(shell pwd)
 BUILD_DIR = $(CURRENT_DIR)/build
 
@@ -61,12 +61,14 @@ EMAIL = pluginsupport@bluem.nl
 # Colors for terminal output
 RED = \033[0;31m
 GREEN = \033[0;32m
+BLUE   => \033[34m
 NC = \033[0m # No Color
 
 
 .PHONY: release
 
-release: check-tag confirm svn-check repo-check pre-deployment add-tag svn-commit clean-up send-email
+release: check-tag confirm svn-check repo-check pre-deployment add-tag add-tag-to-svn svn-commit update-trunk clean-up
+# send-email
 
 check-tag:
 	@if [ -z "$(NEW_TAG)" ]; then \
@@ -75,37 +77,67 @@ check-tag:
 	fi
 
 confirm:
-	@echo "$(GREEN)You are about to release a new version: $(NEW_TAG). Are you sure? [Y/n]$(NC)" && read ans && [ $${ans:-Y} = Y ]
+	@echo "$(BLUE)You are about to release a new version, namely \"$(NEW_TAG)\". Are you sure? [Y/n]$(NC)" && read ans && [ $${ans:-Y} = Y ]
 
 svn-check:
-	@echo "$(GREEN)Checking SVN availability...$(NC)"
-	@svn --version > /dev/null 2>&1 || (echo "$(RED)SVN not available. Please install SVN.$(NC)" && exit 1)
+	@#echo "$(BLUE)Checking SVN availability...$(NC)"
+	@#svn --version > /dev/null 2>&1 || (echo "$(RED)SVN not available. Please install SVN.$(NC)" && exit 1)
 
 repo-check:
-	@echo "$(GREEN)Checking SVN repository availability...$(NC)"
-	@svn info $(SVN_URL) > /dev/null 2>&1 || (echo "$(RED)Cannot access SVN repository. Check network or URL.$(NC)" && exit 1)
+	@#echo "$(BLUE)Checking SVN repository availability...$(NC)"
+	@#svn info $(SVN_URL) > /dev/null 2>&1 || (echo "$(RED)Cannot access SVN repository. Check network or URL.$(NC)" && exit 1)
 
 pre-deployment:
-	@echo "$(GREEN)Preparing build directory...$(NC)"
-	@mkdir -p $(BUILD_DIR)
-	@rsync -av --exclude='build/' $(CURRENT_DIR)/ $(BUILD_DIR)/
-	@echo "$(GREEN)Installing Composer dependencies in build directory...$(NC)"
-	@cd $(BUILD_DIR) && composer install --no-dev --optimize-autoloader
-	@echo "$(GREEN)Removing unnecessary files from build directory...$(NC)"
-	@cd $(BUILD_DIR) && rm -rf .git composer.* Makefile tools
+	@echo "$(BLUE)Preparing build directory...$(NC)"
+	if [ -d "$(BUILD_DIR)" ]; then \
+        if [ "$(BUILD_DIR)" != "/" ]; then \
+            rm -rf "$(BUILD_DIR)"/*; \
+        fi \
+    else \
+        mkdir -p "$(BUILD_DIR)"; \
+    fi
+	@rsync -av --exclude-from='.svnignore' $(CURRENT_DIR)/ $(BUILD_DIR)/
+	@echo "$(BLUE)Installing Composer dependencies in build directory...$(NC)"
+	@cd $(BUILD_DIR) && composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction || { echo "$(RED)Composer install failed!$(NC)"; exit 1; }
+	@cd $(BUILD_DIR) && composer clear-cache
+	@echo "$(BLUE)Removing unnecessary files from build directory...$(NC)"
+	@cd $(BUILD_DIR) && rm -rf README.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml codeception.yml Dockerfile loadenv.sh Makefile .php-cs-fixer.cache .phpunit.result.cache .travis.yml phpunit.xml psalm.xml
 
 add-tag:
-	@echo "$(GREEN)Copying files to SVN tag directory...$(NC)"
+	@echo "$(BLUE)Copying files to SVN tag directory...$(NC)"
+	@echo "Folder: $(SVN_DIR)/tags/$(NEW_TAG)"
+	if [ -d "$(SVN_DIR)/tags/$(NEW_TAG)" ]; then \
+		rm -rf "$(SVN_DIR)/tags/$(NEW_TAG)"/*; \
+	else \
+		mkdir -p "$(SVN_DIR)/tags/$(NEW_TAG)"; \
+	fi
 	@mkdir -p $(SVN_DIR)/tags/$(NEW_TAG)
 	@cp -R $(BUILD_DIR)/ $(SVN_DIR)/tags/$(NEW_TAG)/
-	@cd $(SVN_DIR)/tags/$(NEW_TAG) && svn add --force * --auto-props --parents --depth infinity -q
+
+add-tag-to-svn:
+	@echo "$(BLUE)Adding new tag $(NEW_TAG) to SVN repository...$(NC)"
+	@#cd $(SVN_DIR)/tags/$(NEW_TAG) && svn add --force * --auto-props --parents --depth infinity -q
 
 svn-commit:
-	@echo "$(GREEN)Committing new tag $(NEW_TAG) to SVN repository...$(NC)"
-	@cd $(SVN_DIR)/tags/$(NEW_TAG) && svn commit -m "Tagging version $(NEW_TAG)"
+	@echo "$(BLUE)Committing new tag $(NEW_TAG) to SVN repository...$(NC)"
+	@#cd $(SVN_DIR)/tags/$(NEW_TAG) && svn commit -m "Tagging version $(NEW_TAG)"
+
+update-trunk:
+	@echo "$(BLUE)Also updating trunk files to  latest tag $(NEW_TAG)...$(NC)"
+	if [ -d "$(SVN_DIR)/trunk" ]; then \
+		rm -rf "$(SVN_DIR)/trunk"/*; \
+	else \
+		mkdir -p "$(SVN_DIR)/trunk"; \
+	fi
+	@rm -rf $(SVN_DIR)/trunk/*
+	@cp -R $(BUILD_DIR)/* $(SVN_DIR)/trunk/.
+	@echo "$(BLUE)Commit trunk to SVN to this latest tag $(NEW_TAG)...$(NC)"
+	@echo "$(RED) Don't forget to actually commit to SVN now."
+#	@cd $(SVN_DIR)/trunk && svn add --force * --auto-props --parents --depth infinity -q
+#	@cd $(SVN_DIR)/trunk && svn commit -m "Updating trunk to version $(NEW_TAG)"
 
 clean-up:
-	@echo "$(GREEN)Cleaning up...$(NC)"
+	@echo "$(BLUE)Cleaning up...$(NC)"
 	@rm -rf $(BUILD_DIR)
 
 #send-email:

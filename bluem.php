@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.3.19
+ * Version: 1.3.20
  * Plugin URI: https://wordpress.org/plugins/bluem
  * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
  * Author: Bluem Payment Services
@@ -19,10 +19,6 @@
  * @author Bluem Payment Services
  */
 
-// @todo: add Woo Product update key if necessary, check https://docs.woocommerce.com/document/create-a-plugin/
-// @todo: Localize all error messages to english primarily
-// @todo: finish docblocking
-
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -32,13 +28,10 @@ $bluem_db_version = 1.5;
 
 const BLUEM_WOOCOMMERCE_MANUAL_URL = "https://codexology.notion.site/Bluem-voor-WordPress-en-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e";
 
-// get composer dependencies
 require __DIR__ . '/vendor/autoload.php';
 
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
-use Bluem\Wordpress\Observability\SentryLogger;
-
 
 if (!defined("BLUEM_LOCAL_DATE_FORMAT")) {
     define("BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s");
@@ -2023,8 +2016,7 @@ function bluem_register_error_logging()
             update_option('bluem_woocommerce_options', $bluem_options);
         }
 
-
-        $logger = new SentryLogger();
-        $logger->initialize();
+//        $logger = new SentryLogger();
+//        $logger->initialize();
     }
 }

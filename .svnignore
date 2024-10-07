@@ -1,0 +1,11 @@
+.DS_Store
+.env.sample
+.git/
+.github/
+.idea/
+build/
+scripts/
+svn-directory/
+tests/
+tools/
+vendor/
