@@ -67,7 +67,8 @@ NC = \033[0m # No Color
 
 .PHONY: release
 
-release: check-tag confirm svn-check repo-check pre-deployment add-tag add-tag-to-svn svn-commit update-trunk clean-up send-email
+release: check-tag confirm svn-check repo-check pre-deployment add-tag add-tag-to-svn svn-commit update-trunk clean-up
+# send-email
 
 check-tag:
 	@if [ -z "$(NEW_TAG)" ]; then \
@@ -79,12 +80,12 @@ confirm:
 	@echo "$(BLUE)You are about to release a new version, namely \"$(NEW_TAG)\". Are you sure? [Y/n]$(NC)" && read ans && [ $${ans:-Y} = Y ]
 
 svn-check:
-	@echo "$(BLUE)Checking SVN availability...$(NC)"
-	@svn --version > /dev/null 2>&1 || (echo "$(RED)SVN not available. Please install SVN.$(NC)" && exit 1)
+	@#echo "$(BLUE)Checking SVN availability...$(NC)"
+	@#svn --version > /dev/null 2>&1 || (echo "$(RED)SVN not available. Please install SVN.$(NC)" && exit 1)
 
 repo-check:
-	@echo "$(BLUE)Checking SVN repository availability...$(NC)"
-	@svn info $(SVN_URL) > /dev/null 2>&1 || (echo "$(RED)Cannot access SVN repository. Check network or URL.$(NC)" && exit 1)
+	@#echo "$(BLUE)Checking SVN repository availability...$(NC)"
+	@#svn info $(SVN_URL) > /dev/null 2>&1 || (echo "$(RED)Cannot access SVN repository. Check network or URL.$(NC)" && exit 1)
 
 pre-deployment:
 	@echo "$(BLUE)Preparing build directory...$(NC)"
@@ -131,6 +132,7 @@ update-trunk:
 	@rm -rf $(SVN_DIR)/trunk/*
 	@cp -R $(BUILD_DIR)/* $(SVN_DIR)/trunk/.
 	@echo "$(BLUE)Commit trunk to SVN to this latest tag $(NEW_TAG)...$(NC)"
+	@echo "$(RED) Don't forget to actually commit to SVN now."
 #	@cd $(SVN_DIR)/trunk && svn add --force * --auto-props --parents --depth infinity -q
 #	@cd $(SVN_DIR)/trunk && svn commit -m "Updating trunk to version $(NEW_TAG)"
 

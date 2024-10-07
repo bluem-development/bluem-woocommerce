@@ -8,3 +8,4 @@ scripts/
 svn-directory/
 tests/
 tools/
+vendor/

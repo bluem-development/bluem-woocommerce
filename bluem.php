@@ -32,8 +32,6 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
-use Bluem\Wordpress\Observability\SentryLogger;
-
 
 if (!defined("BLUEM_LOCAL_DATE_FORMAT")) {
     define("BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s");
@@ -2018,8 +2016,7 @@ function bluem_register_error_logging()
             update_option('bluem_woocommerce_options', $bluem_options);
         }
 
-
-        $logger = new SentryLogger();
-        $logger->initialize();
+//        $logger = new SentryLogger();
+//        $logger->initialize();
     }
 }

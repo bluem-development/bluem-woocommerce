@@ -18,8 +18,7 @@
     "require": {
         "php": ">=8.0",
         "bluem-development/bluem-php": "2.3.3",
-        "ext-json": "*",
-        "sentry/sdk": "^4.0"
+        "ext-json": "*"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
