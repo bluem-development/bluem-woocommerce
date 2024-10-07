@@ -38,7 +38,7 @@ function bluem_mandates_instant_request(): void
 
             // Convert UTF-8 to ISO
             if (!empty($bluem_config->eMandateReason)) {
-                $bluem_config->eMandateReason = utf8_decode($bluem_config->eMandateReason);
+                $bluem_config->eMandateReason = mb_convert_encoding($bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
             } else {
                 $bluem_config->eMandateReason = __("Incasso machtiging ",'bluem') . $debtorReference;
             }
