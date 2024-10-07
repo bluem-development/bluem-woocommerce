@@ -221,8 +221,11 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                     if ($retrieved_request_from_db) {
                         bluem_db_request_log(
                             $request->id,
-                            __("Utilized this request for a
-payment for another order {$order_id}",'bluem')
+                            sprintf(
+                                /* translators: %s: order id */
+                                esc_html__( 'Utilized this request for a payment for another order with ID %s', 'bluem' ),
+                                $order_id
+                            )
                         );
 
                         bluem_db_create_link(
@@ -230,16 +233,28 @@ payment for another order {$order_id}",'bluem')
                             $order_id
                         );
 
-                        $cur_payload = json_decode($request->payload, false);
-                        if (!isset($cur_payload->linked_orders)) {
+                        try {
+                            $cur_payload = json_decode($request->payload, false, 512, JSON_THROW_ON_ERROR);
+
+                            if (!isset($cur_payload->linked_orders)) {
+                                $cur_payload->linked_orders = [];
+                            }
+
+                            $cur_payload->linked_orders[] = $order_id;
+                        } catch (Exception $e) {
                             $cur_payload->linked_orders = [];
                         }
-                        $cur_payload->linked_orders[] = $order_id;
+
+                        try {
+                            $payload_string = json_encode($cur_payload, JSON_THROW_ON_ERROR);
+                        } catch (Exception $e) {
+                            $payload_string = '';
+                        }
 
                         bluem_db_update_request(
                             $request->id,
                             [
-                                'payload' => json_encode($cur_payload)
+                                'payload' => $payload_string
                             ]
                         );
                     }
@@ -398,14 +413,6 @@ payment for another order {$order_id}",'bluem')
             );
         }
 
-        if (self::VERBOSE) {
-            var_dump($order_id);
-            var_dump($user_id);
-            var_dump($mandate_id);
-            var_dump($response);
-            die();
-        }
-
         if ($response instanceof ErrorBluemResponse) {
             throw new RuntimeException("An error occurred in the payment method. Please contact the webshop owner with this message:  " . $response->error());
         }
@@ -477,15 +484,18 @@ payment for another order {$order_id}",'bluem')
      *
      * @return void
      */
-    public function bluem_mandates_webhook()
+    public function bluem_mandates_webhook(): void
     {
         try {
             $webhook = $this->bluem->Webhook();
 
-            if ($webhook->xmlObject ?? null !== null) {
+            if (($webhook->xmlObject ?? null) !== null) {
                 if (method_exists($webhook, 'getStatus')) {
                     $webhook_status = $webhook->getStatus();
+                } else {
+                    $webhook_status = null;
                 }
+
                 if (method_exists($webhook, 'getEntranceCode')) {
                     $entranceCode = $webhook->getEntranceCode();
                 }
@@ -521,10 +531,6 @@ payment for another order {$order_id}",'bluem')
                 } else {
                     $mandate_amount = 0.0;    // mandate amount is not set, so it is unlimited
                 }
-                if (self::VERBOSE) {
-                    var_dump($mandate_amount);
-                    echo PHP_EOL;
-                }
 
                 $settings = get_option('bluem_woocommerce_options');
 
@@ -556,16 +562,14 @@ payment for another order {$order_id}",'bluem')
                 if ($webhook_status === "Success") {
                     if ($order_status === "processing") {
                         // order is already marked as processing, nothing more is necessary
-                    } else {
-                        if (($order_status === "pending") && $mandate_successful) {
-                            $order->update_status(
-                                'processing',
-                                printf(
-                                    __('Authorization (Mandate ID %s) was successful and approved; via webhook', 'bluem'),
-                                    $mandateID
-                                )
-                            );
-                        }
+                    } else if ($order_status === "pending" && $mandate_successful) {
+                        $order->update_status(
+                            'processing',
+                            printf(
+                                __('Authorization (Mandate ID %s) was successful and approved; via webhook', 'bluem'),
+                                $mandateID
+                            )
+                        );
                     }
                 } elseif ($webhook_status === "Cancelled") {
                     $order->update_status('cancelled', __('Authorization has been canceled; via webhook', 'bluem'));
