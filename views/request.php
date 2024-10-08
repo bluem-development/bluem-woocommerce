@@ -51,7 +51,7 @@
                 } ?>
                 <tr>
                     <td><?php esc_html_e('Gebruiker', 'bluem'); ?>:</td>
-                    <?php if (isset($request_author) && !is_null($request_author) && $request_author !== false && isset($request_author->user_nicename)) { ?>
+                    <?php if (isset($request_author->user_nicename) && $request_author !== false) { ?>
                         <td><a href="<?php echo admin_url("user-edit.php?user_id=" . $request->user_id); ?>"
                                target="_blank"><?php echo esc_html($request_author->user_nicename); ?></a></td>
                     <?php } else { ?>
@@ -192,7 +192,7 @@
                 </span>
             <br>
 
-            <a href="http://viamijnbank.net" target="_blank" rel="noopener noreferrer">
+            <a href="https://viamijnbank.net" target="_blank" rel="noopener noreferrer">
                 <?php esc_html_e('op het viamijnbank.net dashboard', 'bluem'); ?>
                 <span class="dashicons dashicons-external" style="text-decoration: none;"></span>
             </a>
