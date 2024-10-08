@@ -202,7 +202,7 @@ function bluem_woocommerce_payments_show_extra_profile_fields( $user ) {
         if ( isset( $bluem_requests ) && count( $bluem_requests ) > 0 ) { ?>
             <tr>
                 <th>
-                    <?php _e('ePayments transacties','bluem');?>
+                    <?php esc_html_e('ePayments transacties','bluem');?>
                 </th>
                 <td>
                     <?php

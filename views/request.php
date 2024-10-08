@@ -3,7 +3,7 @@
 <div class="wrap">
     <h1>
         <?php echo bluem_get_bluem_logo_html(48); ?>
-        <?php _e('Transactiedetails', 'bluem'); ?>
+        <?php esc_html_e('Transactiedetails', 'bluem'); ?>
     </h1>
 
     <?php bluem_render_nav_header(); ?>
@@ -12,22 +12,22 @@
         <div class='bluem-column' style="width: 50%;">
             <h2>
                 <?php echo ucfirst($request->type); ?>
-                <?php _e('Transactie', 'bluem'); ?>
+                <?php esc_html_e('Transactie', 'bluem'); ?>
             </h2>
 
             <table width="100%">
                 <tbody>
                 <tr>
-                    <td width="35%"><?php _e('Omschrijving', 'bluem'); ?>:</td>
-                    <td><?php echo esc_html($request->description); ?></td>
+                    <td width="35%"><?php esc_html_e('Omschrijving', 'bluem'); ?>:</td>
+                    <td><?php echo esc_html($request->description ?? ''); ?></td>
                 </tr>
                 <tr>
-                    <td><?php _e('Transactienummer', 'bluem'); ?>:</td>
-                    <td><?php echo esc_html($request->transaction_id); ?></td>
+                    <td><?php esc_html_e('Transactienummer', 'bluem'); ?>:</td>
+                    <td><?php echo esc_html($request->transaction_id ?? ''); ?></td>
                 </tr>
                 <?php if (isset($request->debtor_reference) && $request->debtor_reference !== "") { ?>
                     <tr>
-                        <td><?php _e('Klantreferentie', 'bluem'); ?>:</td>
+                        <td><?php esc_html_e('Klantreferentie', 'bluem'); ?>:</td>
                         <td><?php echo esc_html($request->debtor_reference); ?></td>
                     </tr>
                 <?php } ?>
@@ -41,7 +41,7 @@
                     if ($order !== false) {
                         ?>
                         <tr>
-                            <td><?php _e('Bestelling', 'bluem'); ?>:</td>
+                            <td><?php esc_html_e('Bestelling', 'bluem'); ?>:</td>
                             <td><a href="<?php echo admin_url("post.php?post={$request->order_id}&action=edit"); ?>"
                                    title="Bestelling bekijken"
                                    target="_blank">#<?php echo esc_html($order->get_order_number()); ?>
@@ -50,26 +50,26 @@
                     <?php }
                 } ?>
                 <tr>
-                    <td><?php _e('Gebruiker', 'bluem'); ?>:</td>
+                    <td><?php esc_html_e('Gebruiker', 'bluem'); ?>:</td>
                     <?php if (isset($request_author) && !is_null($request_author) && $request_author !== false && isset($request_author->user_nicename)) { ?>
                         <td><a href="<?php echo admin_url("user-edit.php?user_id=" . $request->user_id); ?>"
                                target="_blank"><?php echo esc_html($request_author->user_nicename); ?></a></td>
                     <?php } else { ?>
-                        <td><?php _e('Gastgebruiker/onbekend', 'bluem'); ?></td>
+                        <td><?php esc_html_e('Gastgebruiker/onbekend', 'bluem'); ?></td>
                     <?php } ?>
                 </tr>
                 <tr>
-                    <td><?php _e('Datum', 'bluem'); ?>:</td>
+                    <td><?php esc_html_e('Datum', 'bluem'); ?>:</td>
                     <td><?php echo esc_html(bluem_get_formattedDate($request->timestamp ?? ''));
                         ?>
                     </td>
                 </tr>
                 <tr>
-                    <td><?php _e('Status', 'bluem'); ?>:</td>
+                    <td><?php esc_html_e('Status', 'bluem'); ?>:</td>
                     <td><?php bluem_render_request_status($request->status); ?>
                         (<a href="<?php echo admin_url("admin.php?page=bluem-transactions&request_id=" . $request->id . "&admin_action=status-update"); ?>"
                             title="Update status">
-                            <?php _e('Update status', 'bluem'); ?></a>
+                            <?php esc_html_e('Update status', 'bluem'); ?></a>
                         )
                     </td>
                 </tr>
@@ -77,14 +77,14 @@
             </table>
 
             <?php if (isset($links) && count($links) > 0) { ?>
-                <h4><?php _e('Gekoppelde orders', 'bluem'); ?>:</h4>
+                <h4><?php esc_html_e('Gekoppelde orders', 'bluem'); ?>:</h4>
                 <table class="widefat">
                     <thead>
                     <tr>
-                        <th><?php _e('Datum', 'bluem'); ?></th>
-                        <th><?php _e('Ordernummer', 'bluem'); ?></th>
-                        <th><?php _e('Status', 'bluem'); ?></th>
-                        <th><?php _e('Totaalbedrag', 'bluem'); ?></th>
+                        <th><?php esc_html_e('Datum', 'bluem'); ?></th>
+                        <th><?php esc_html_e('Ordernummer', 'bluem'); ?></th>
+                        <th><?php esc_html_e('Status', 'bluem'); ?></th>
+                        <th><?php esc_html_e('Totaalbedrag', 'bluem'); ?></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -101,7 +101,7 @@
                                 </td>
                                 <td>
                                     <a href='<?php echo admin_url("post.php?post={$link->item_id}&action=edit"); ?>'
-                                       target='_blank'><?php _e('Order', 'bluem'); ?>
+                                       target='_blank'><?php esc_html_e('Order', 'bluem'); ?>
                                         #<?php echo esc_html($order->get_order_number()); ?></a>
                                 </td>
                                 <td>
@@ -120,7 +120,7 @@
 
             <?php if (isset($logs) && count($logs) > 0) { ?>
                 <h4>
-                    <?php _e('Gebeurtenissen', 'bluem'); ?>:
+                    <?php esc_html_e('Gebeurtenissen', 'bluem'); ?>:
                 </h4>
                 <ul>
                 <?php
@@ -131,7 +131,7 @@
                         "",
                         $log->description
                     );
-                    $dparts = explode(__('Nieuwe data:', 'bluem'), $d, 2); ?>
+                    $dparts = explode(esc_html__('Nieuwe data:', 'bluem'), $d, 2); ?>
                     <li>
                     <span class="bluem-request-label">
                             <?php echo bluem_get_formattedDate($log->timestamp); ?>
@@ -155,11 +155,11 @@
                 <p>
 
                 <span class="bluem-request-label">
-                    <?php _e('Link naar transactie', 'bluem'); ?>:
+                    <?php esc_html_e('Link naar transactie', 'bluem'); ?>:
                 </span>
                     <br>
                     <a href="<?php echo $request->transaction_url; ?>" target="_blank" rel="noopener noreferrer">
-                        <?php _e('Transactie bekijken', 'bluem'); ?>
+                        <?php esc_html_e('Transactie bekijken', 'bluem'); ?>
                         <span class="dashicons dashicons-external" style="text-decoration: none;"></span>
                     </a>
                 </p>
@@ -176,7 +176,7 @@
             if (!is_null($pl)) {
                 ?>
                 <h4>
-                    <?php _e('Extra details', 'bluem'); ?>:
+                    <?php esc_html_e('Extra details', 'bluem'); ?>:
                 </h4>
                 <?php
                 foreach ($pl as $plk => $plv) {
@@ -188,12 +188,12 @@
             <p>
             <hr>
             <span class="bluem-request-label">
-                <?php _e('Meer informatie', 'bluem'); ?>:
+                <?php esc_html_e('Meer informatie', 'bluem'); ?>:
                 </span>
             <br>
 
             <a href="http://viamijnbank.net" target="_blank" rel="noopener noreferrer">
-                <?php _e('op het viamijnbank.net dashboard', 'bluem'); ?>
+                <?php esc_html_e('op het viamijnbank.net dashboard', 'bluem'); ?>
                 <span class="dashicons dashicons-external" style="text-decoration: none;"></span>
             </a>
             </p>
@@ -203,24 +203,24 @@
 
         <div style="clear:both; display:block; width:100%; border-top:1px solid #ddd; padding-top:5pt;  ">
             <p style="margin: 5px 0; padding: 0;"><span
-                        class="bluem-request-label"><?php _e('Administratie', 'bluem'); ?>:</span></p>
+                        class="bluem-request-label"><?php esc_html_e('Administratie', 'bluem'); ?>:</span></p>
             <p style="margin: 5px 0; padding: 0;"><a
                         href="<?php echo admin_url("admin.php?page=bluem-transactions&request_id=" . esc_attr($request->id) . "&admin_action=delete"); ?>"
                         class="button bluem-button-danger"
-                        onclick="return confirm('<?php _e('Weet je zeker dat je de transactie wilt verwijderen?', 'bluem'); ?>');"
-                        style="margin-top:5pt;"><?php _e('Verwijder dit verzoek direct', 'bluem'); ?></a></p>
-            <p><?php _e('<i><strong>Let op</strong>: data wordt dan onherroepelijk verwijderd!</i>', 'bluem'); ?></p>
+                        onclick="return confirm('<?php esc_html_e('Weet je zeker dat je de transactie wilt verwijderen?', 'bluem'); ?>');"
+                        style="margin-top:5pt;"><?php esc_html_e('Verwijder dit verzoek direct', 'bluem'); ?></a></p>
+            <p><?php wp_kses_post(__('<i><strong>Let op</strong>: data wordt dan onherroepelijk verwijderd!</i>', 'bluem')); ?></p>
         </div>
         <?php
         if ($request->type === "identity") {
             ?>
             <div style="padding:10pt 0;">
             <h3>
-                <?php _e('Extra opmerkingen aangaande programmatisch met iDIN resultaten werken:', 'bluem'); ?>
+                <?php esc_html_e('Extra opmerkingen aangaande programmatisch met iDIN resultaten werken:', 'bluem'); ?>
             </h3>
             <p>
 
-                <?php _e('Of de validatie is gelukt, kan je verkrijgen door in een plug-in of template de volgende PHP code te
+                <?php esc_html_e('Of de validatie is gelukt, kan je verkrijgen door in een plug-in of template de volgende PHP code te
                     gebruiken:', 'bluem'); ?>
             <blockquote style="border: 1px solid #aaa;
 border-radius:5px; margin:10pt 0 0 0; padding:5pt 15pt;">
@@ -236,14 +236,14 @@ border-radius:5px; margin:10pt 0 0 0; padding:5pt 15pt;">
             </blockquote>
             </p>
             <p>
-                <?php _e('Deze resultaten zijn als object te verkrijgen door in een plug-in of template de volgende PHP code te gebruiken:', 'bluem'); ?>
+                <?php esc_html_e('Deze resultaten zijn als object te verkrijgen door in een plug-in of template de volgende PHP code te gebruiken:', 'bluem'); ?>
             </p>
             <p>
             <blockquote style="border: 1px solid #aaa; border-radius:5px;
     margin:10pt 0 0 0; padding:5pt 15pt;">
                     <pre>if (function_exists('bluem_idin_retrieve_results')) {
         $results = bluem_idin_retrieve_results();
-        // <?php _e('Geef de resultaten weer of sla ze elders op:', 'bluem'); ?>
+        // <?php esc_html_e('Geef de resultaten weer of sla ze elders op:', 'bluem'); ?>
         $results->BirthDateResponse; // returns 1975-07-25
         $results->NameResponse->LegalLastName; // returns Vries
     }</pre>

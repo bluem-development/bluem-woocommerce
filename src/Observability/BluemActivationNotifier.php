@@ -68,7 +68,7 @@ class BluemActivationNotifier
         $data->{'Tech name'} = isset($bluem_registration['tech_contact']['name']) ? $bluem_registration['tech_contact']['name'] : 'Tech name onbekend';
         $data->{'Tech telephone'} = isset($bluem_registration['tech_contact']['telephone']) ? $bluem_registration['tech_contact']['telephone'] : 'Tech telephone onbekend';
         $data->{'Tech email'} = isset($bluem_registration['tech_contact']['email']) ? $bluem_registration['tech_contact']['email'] : 'Tech email onbekend';
-        $data->{'WooCommerce version'} = class_exists('WooCommerce') ? WC()->version : __('WooCommerce not installed', 'bluem');
+        $data->{'WooCommerce version'} = class_exists('WooCommerce') ? WC()->version : esc_html__('WooCommerce not installed', 'bluem');
         $data->{'WordPress version'} = get_bloginfo('version');
         $data->{'Bluem PHP-library'} = $dependency_bluem_php_version;
         $data->{'Plug-in version'} = esc_attr($bluem_options['bluem_plugin_version'] ?? '0');

@@ -74,43 +74,43 @@ function bluem_woocommerce_get_idin_options(): array
         'idin_scenario_active' => [
             'key' => 'idin_scenario_active',
             'title' => 'bluem_idin_scenario_active',
-            'name' => __('IDIN Scenario', 'bluem'),
-            'description' => __("Wil je een leeftijd- of volledige adrescontrole uitvoeren bij Checkout?", 'bluem'),
+            'name' => esc_html__('IDIN Scenario', 'bluem'),
+            'description' => esc_html__("Wil je een leeftijd- of volledige adrescontrole uitvoeren bij Checkout?", 'bluem'),
             'type' => 'select',
             'default' => '0',
             'options' => [
-                '0' => __('Voer geen identiteitscheck uit voor de checkout procedure', 'bluem'),
-                '1' => __('Check op de minimumleeftijd door middel van een AgeCheckRequest', 'bluem'),
-                '2' => __('Voer een volledige identiteitscontrole uit en sla dit op, maar blokkeer de checkout NIET indien minimumleeftijd niet bereikt is', 'bluem'),
-                '3' => __('Voer een volledige identiteitscontrole uit, sla dit op EN  blokkeer de checkout WEL indien minimumleeftijd niet bereikt is', 'bluem'),
+                '0' => esc_html__('Voer geen identiteitscheck uit voor de checkout procedure', 'bluem'),
+                '1' => esc_html__('Check op de minimumleeftijd door middel van een AgeCheckRequest', 'bluem'),
+                '2' => esc_html__('Voer een volledige identiteitscontrole uit en sla dit op, maar blokkeer de checkout NIET indien minimumleeftijd niet bereikt is', 'bluem'),
+                '3' => esc_html__('Voer een volledige identiteitscontrole uit, sla dit op EN  blokkeer de checkout WEL indien minimumleeftijd niet bereikt is', 'bluem'),
 
             ],
         ],
         'idin_woocommerce_age_verification' => [
             'key' => 'idin_woocommerce_age_verification',
             'title' => 'bluem_idin_woocommerce_age_verification',
-            'name' => __('Leeftijdsverificatie per product', 'bluem'),
-            'description' => __("Wil je de leeftijdsverificatie per product inschakelen? (WooCommerce vereist)", 'bluem'),
+            'name' => esc_html__('Leeftijdsverificatie per product', 'bluem'),
+            'description' => esc_html__("Wil je de leeftijdsverificatie per product inschakelen? (WooCommerce vereist)", 'bluem'),
             'type' => 'select',
             'default' => '0',
             'options' => [
-                '0' => __('Controle op leeftijd per product NIET uitvoeren', 'bluem'),
-                '1' => __('Controle op leeftijd per product WEL uitvoeren', 'bluem'),
+                '0' => esc_html__('Controle op leeftijd per product NIET uitvoeren', 'bluem'),
+                '1' => esc_html__('Controle op leeftijd per product WEL uitvoeren', 'bluem'),
             ],
         ],
         'idin_check_age_minimum_age' => [
             'key' => 'idin_check_age_minimum_age',
             'title' => 'bluem_idin_check_age_minimum_age',
-            'name' => __('Minimumleeftijd', 'bluem'),
-            'description' => __("Wat is de minimumleeftijd, in jaren? Indien de plugin checkt op leeftijd, wordt deze waarde gebruikt om de check uit te voeren.", 'bluem'),
+            'name' => esc_html__('Minimumleeftijd', 'bluem'),
+            'description' => esc_html__("Wat is de minimumleeftijd, in jaren? Indien de plugin checkt op leeftijd, wordt deze waarde gebruikt om de check uit te voeren.", 'bluem'),
             'type' => 'number',
             'default' => '18',
         ],
         'idin_request_name' => [
             'key' => 'idin_request_name',
             'title' => 'bluem_idin_request_name',
-            'name' => __('Naam opvragen?', 'bluem'),
-            'description' => __("Indien je een volledige identiteitscontrole uitvoert,
+            'name' => esc_html__('Naam opvragen?', 'bluem'),
+            'description' => esc_html__("Indien je een volledige identiteitscontrole uitvoert,
                 wil je dan de naam opvragen?", 'bluem'),
             'type' => 'bool',
             'default' => '1',
@@ -118,8 +118,8 @@ function bluem_woocommerce_get_idin_options(): array
         'idin_request_address' => [
             'key' => 'idin_request_address',
             'title' => 'bluem_idin_request_address',
-            'name' => __('Adres opvragen?', 'bluem'),
-            'description' => __("Indien je een volledige identiteitscontrole uitvoert,
+            'name' => esc_html__('Adres opvragen?', 'bluem'),
+            'description' => esc_html__("Indien je een volledige identiteitscontrole uitvoert,
                 wil je dan het woonadres opvragen?", 'bluem'),
             'type' => 'bool',
             'default' => '1',
@@ -127,8 +127,8 @@ function bluem_woocommerce_get_idin_options(): array
         'idin_request_birthdate' => [
             'key' => 'idin_request_birthdate',
             'title' => 'bluem_idin_request_birthdate',
-            'name' => __('Geboortedatum opvragen?', 'bluem'),
-            'description' => __("Indien je een volledige identiteitscontrole uitvoert,
+            'name' => esc_html__('Geboortedatum opvragen?', 'bluem'),
+            'description' => esc_html__("Indien je een volledige identiteitscontrole uitvoert,
                 wil je dan de geboortedatum opvragen? Dit gegeven wordt ALTIJD opgevraagd
                 indien je ook op de minimumleeftijd controleert", 'bluem'),
             'type' => 'bool',
@@ -137,8 +137,8 @@ function bluem_woocommerce_get_idin_options(): array
         'idin_request_gender' => [
             'key' => 'idin_request_gender',
             'title' => 'bluem_idin_request_gender',
-            'name' => __('Geslacht opvragen?', 'bluem'),
-            'description' => __("Indien je een volledige identiteitscontrole uitvoert,
+            'name' => esc_html__('Geslacht opvragen?', 'bluem'),
+            'description' => esc_html__("Indien je een volledige identiteitscontrole uitvoert,
                 wil je dan het geslacht opvragen?", 'bluem'),
             'type' => 'bool',
             'default' => '0',
@@ -146,8 +146,8 @@ function bluem_woocommerce_get_idin_options(): array
         'idin_request_telephone' => [
             'key' => 'idin_request_telephone',
             'title' => 'bluem_idin_request_telephone',
-            'name' => __('Telefoonnummer opvragen?', 'bluem'),
-            'description' => __("Indien je een volledige identiteitscontrole uitvoert,
+            'name' => esc_html__('Telefoonnummer opvragen?', 'bluem'),
+            'description' => esc_html__("Indien je een volledige identiteitscontrole uitvoert,
                 wil je dan het telefoonnummer opvragen?", 'bluem'),
             'type' => 'bool',
             'default' => '1',
@@ -155,8 +155,8 @@ function bluem_woocommerce_get_idin_options(): array
         'idin_request_email' => [
             'key' => 'idin_request_email',
             'title' => 'bluem_idin_request_email',
-            'name' => __('E-mailadres opvragen?', 'bluem'),
-            'description' => __("Indien je een volledige identiteitscontrole uitvoert,
+            'name' => esc_html__('E-mailadres opvragen?', 'bluem'),
+            'description' => esc_html__("Indien je een volledige identiteitscontrole uitvoert,
                 wil je dan het e-mailadres opvragen?", 'bluem'),
             'type' => 'bool',
             'default' => '1',
@@ -164,24 +164,24 @@ function bluem_woocommerce_get_idin_options(): array
         'IDINSuccessMessage' => [
             'key' => 'IDINSuccessMessage',
             'title' => 'bluem_IDINSuccessMessage',
-            'name' => __('Melding bij succesvolle Identificatie via shortcode', 'bluem'),
-            'description' => __('Een bondige beschrijving volstaat.', 'bluem'),
-            'default' => __('Uw identificatie is succesvol ontvangen. Hartelijk dank.', 'bluem'),
+            'name' => esc_html__('Melding bij succesvolle Identificatie via shortcode', 'bluem'),
+            'description' => esc_html__('Een bondige beschrijving volstaat.', 'bluem'),
+            'default' => esc_html__('Uw identificatie is succesvol ontvangen. Hartelijk dank.', 'bluem'),
         ],
         'IDINErrorMessage' => [
             'key' => 'IDINErrorMessage',
             'title' => 'bluem_IDINErrorMessage',
-            'name' => __('Melding bij gefaalde Identificatie via shortcode', 'bluem'),
-            'description' => __('Een bondige beschrijving volstaat.', 'bluem'),
-            'default' => __('Er is een fout opgetreden. De identificatie is geannuleerd.', 'bluem'),
+            'name' => esc_html__('Melding bij gefaalde Identificatie via shortcode', 'bluem'),
+            'description' => esc_html__('Een bondige beschrijving volstaat.', 'bluem'),
+            'default' => esc_html__('Er is een fout opgetreden. De identificatie is geannuleerd.', 'bluem'),
         ],
 
 
         'IDINPageURL' => [
             'key' => 'IDINPageURL',
             'title' => 'bluem_IDINPageURL',
-            'name' => __('URL vanwaar Identificatie gestart wordt', 'bluem'),
-            'description' => __('van pagina waar het Identificatie proces wordt weergegeven, bijvoorbeeld een accountpagina. De gebruiker komt op deze pagina terug na het proces', 'bluem'),
+            'name' => esc_html__('URL vanwaar Identificatie gestart wordt', 'bluem'),
+            'description' => esc_html__('van pagina waar het Identificatie proces wordt weergegeven, bijvoorbeeld een accountpagina. De gebruiker komt op deze pagina terug na het proces', 'bluem'),
             'default' => 'my-account'
         ],
         // 'IDINCategories' => [
@@ -194,43 +194,45 @@ function bluem_woocommerce_get_idin_options(): array
         'IDINShortcodeOnlyAfterLogin' => [
             'key' => 'IDINShortcodeOnlyAfterLogin',
             'title' => 'bluem_IDINShortcodeOnlyAfterLogin',
-            'name' => __('Shortcode beperken tot ingelogde gebruikers', 'bluem'),
-            'description' => __("Moet het iDIN formulier via shortcode zichtbaar zijn voor iedereen of alleen ingelogde gebruikers?", 'bluem'),
+            'name' => esc_html__('Shortcode beperken tot ingelogde gebruikers', 'bluem'),
+            'description' => esc_html__("Moet het iDIN formulier via shortcode zichtbaar zijn voor iedereen of alleen ingelogde gebruikers?", 'bluem'),
             'type' => 'select',
             'default' => '0',
             'options' => [
-                '0' => __('Voor iedereen', 'bluem'),
-                '1' => __('Alleen voor ingelogde bezoekers', 'bluem'),
+                '0' => esc_html__('Voor iedereen', 'bluem'),
+                '1' => esc_html__('Alleen voor ingelogde bezoekers', 'bluem'),
             ],
         ],
         'IDINDescription' => [
             'key' => 'IDINDescription',
             'title' => 'bluem_IDINDescription',
-            'name' => __('Formaat beschrijving request', 'bluem'),
+            'name' => esc_html__('Formaat beschrijving request', 'bluem'),
             'description' => '
 
         <div style="width:400px; float:right; margin:10px; font-size: 9pt;
         border: 1px solid #ddd;
         padding: 10pt;
         border-radius: 5pt;">
-        ' . __('Mogelijke invulvelden: ', 'bluem') .
+        ' . esc_html__('Mogelijke invulvelden: ', 'bluem') .
                 $idinDescriptionTable .
                 '<br>' .
-                __('Let op: maximaal 128 tekens. Toegestane karakters: <code>-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$</code></div>'
+                esc_html__('Let op: maximaal 128 tekens. Toegestane karakters:','bluem').
+                '<code>-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$</code>'
                     .
-                    'Geef het format waaraan de beschrijving van
-            een identificatie request moet voldoen, met automatisch ingevulde velden.<br>Dit gegeven wordt ook weergegeven in de Bluem portal als de \'Inzake\' tekst.', 'bluem') .
-                '<br>' . __('Voorbeeld huidige waarde', 'bluem') . ': <code style=\'display:inline-block;\'>' .
+                    esc_html__('Geef het format waaraan de beschrijving van
+            een identificatie request moet voldoen, met automatisch ingevulde velden. Dit gegeven wordt ook weergegeven in de Bluem portal als de \'Inzake\' tekst.',
+                        'bluem') .
+                '<br>' . esc_html__('Voorbeeld huidige waarde', 'bluem') . ': <code style=\'display:inline-block;\'>' .
                 $idinDescriptionCurrentValue . '</code><br>',
             'default' =>
             /* translators: %s: username tag template */
-                sprintf(__('Identificatie %s'), '{gebruikersnaam}'),
+                sprintf(esc_html__('Identificatie %s'), '{gebruikersnaam}'),
         ],
         'idin_add_field_in_order_emails' => [
             'key' => 'idin_add_field_in_order_emails',
             'title' => 'bluem_idin_add_field_in_order_emails',
-            'name' => __('Identificatie status in emails', 'bluem'),
-            'description' => __("Moet de status van identificatie worden weergegeven
+            'name' => esc_html__('Identificatie status in emails', 'bluem'),
+            'description' => esc_html__("Moet de status van identificatie worden weergegeven
             in de order notificatie email naar de klant en naar jezelf? <strong>Let op: dit werkt op het moment alleen voor ingelogde klanten</strong>", 'bluem'),
             'type' => 'bool',
             'default' => '1',
@@ -238,8 +240,8 @@ function bluem_woocommerce_get_idin_options(): array
         'idin_add_address_in_order_emails' => [
             'key' => 'idin_add_address_in_order_emails',
             'title' => 'bluem_idin_add_address_in_order_emails',
-            'name' => __('Identificatie adres in emails', 'bluem'),
-            'description' => __("Moet het adres van identificatie worden weergegeven
+            'name' => esc_html__('Identificatie adres in emails', 'bluem'),
+            'description' => esc_html__("Moet het adres van identificatie worden weergegeven
             in de order notificatie email naar de klant en naar jezelf? <strong>Let op: dit werkt op het moment alleen voor ingelogde klanten</strong>", 'bluem'),
             'type' => 'bool',
             'default' => '1',
@@ -247,8 +249,8 @@ function bluem_woocommerce_get_idin_options(): array
         'idin_add_name_in_order_emails' => [
             'key' => 'idin_add_name_in_order_emails',
             'title' => 'bluem_idin_add_name_in_order_emails',
-            'name' => __('Identificatie naam in emails', 'bluem'),
-            'description' => __("Moet de naam van identificatie worden weergegeven
+            'name' => esc_html__('Identificatie naam in emails', 'bluem'),
+            'description' => esc_html__("Moet de naam van identificatie worden weergegeven
             in de order notificatie email naar de klant en naar jezelf? <strong>Let op: dit werkt op het moment alleen voor ingelogde klanten</strong>", 'bluem'),
             'type' => 'bool',
             'default' => '1',
@@ -256,8 +258,8 @@ function bluem_woocommerce_get_idin_options(): array
         'idin_add_birthdate_in_order_emails' => [
             'key' => 'idin_add_birthdate_in_order_emails',
             'title' => 'bluem_idin_add_birthdate_in_order_emails',
-            'name' => __('Identificatie geboortedatum in emails', 'bluem'),
-            'description' => __("Moet de geboortedatum van identificatie worden weergegeven
+            'name' => esc_html__('Identificatie geboortedatum in emails', 'bluem'),
+            'description' => esc_html__("Moet de geboortedatum van identificatie worden weergegeven
             in de order notificatie email naar de klant en naar jezelf? <strong>Let op: dit werkt op het moment alleen voor ingelogde klanten</strong>", 'bluem'),
             'type' => 'bool',
             'default' => '1',
@@ -265,68 +267,68 @@ function bluem_woocommerce_get_idin_options(): array
         'idin_identify_button_inner' => [
             'key' => 'idin_identify_button_inner',
             'title' => 'bluem_idin_identify_button_inner',
-            'name' => __('Tekst op Identificeren knop', 'bluem'),
-            'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
-            'default' => __('Klik hier om je te identificeren', 'bluem'),
+            'name' => esc_html__('Tekst op Identificeren knop', 'bluem'),
+            'description' => esc_html__('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
+            'default' => esc_html__('Klik hier om je te identificeren', 'bluem'),
         ],
         'idin_identity_dialog_no_verification_text' => [
             'key' => 'idin_identity_dialog_no_verification_text',
             'title' => 'bluem_idin_identity_dialog_no_verification_text',
-            'name' => __('Tekst in kader Identificeren (onder checkout) als er nog GEEN geldige identificatie bekend is maar deze wel vereist is', 'bluem'),
-            'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
-            'default' => __('Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.', 'bluem'),
+            'name' => esc_html__('Tekst in kader Identificeren (onder checkout) als er nog GEEN geldige identificatie bekend is maar deze wel vereist is', 'bluem'),
+            'description' => esc_html__('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
+            'default' => esc_html__('Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.', 'bluem'),
         ],
         'idin_identity_topbar_no_verification_text' => [
             'key' => 'idin_identity_topbar_no_verification_text',
             'title' => 'bluem_idin_identity_topbar_no_verification_text',
-            'name' => __('Tekst in Pop-up boven checkout als er nog GEEN geldige identificatie bekend is maar deze wel vereist is', 'bluem'),
-            'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
-            'default' => __('We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.', 'bluem'),
+            'name' => esc_html__('Tekst in Pop-up boven checkout als er nog GEEN geldige identificatie bekend is maar deze wel vereist is', 'bluem'),
+            'description' => esc_html__('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
+            'default' => esc_html__('We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.', 'bluem'),
         ],
         'idin_identity_topbar_invalid_verification_text' => [
             'key' => 'idin_identity_topbar_invalid_verification_text',
             'title' => 'bluem_idin_identity_topbar_invalid_verification_text',
-            'name' => __('Tekst in Pop-up boven checkout als er een ongeldige identificatie terugkomt na opvragen hiervan', 'bluem'),
-            'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
-            'default' => __("Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden.", 'bluem'),
+            'name' => esc_html__('Tekst in Pop-up boven checkout als er een ongeldige identificatie terugkomt na opvragen hiervan', 'bluem'),
+            'description' => esc_html__('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
+            'default' => esc_html__("Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden.", 'bluem'),
         ],
         'idin_identity_dialog_thank_you_message' => [
             'key' => 'idin_identity_dialog_thank_you_message',
             'title' => 'bluem_idin_identity_dialog_thank_you_message',
-            'name' => __('Tekst in kader onder checkout zodra er een geldige identificatie procedure is voltooid', 'bluem'),
-            'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
-            'default' => __("Je leeftijd is geverifieerd, bedankt.", 'bluem'),
+            'name' => esc_html__('Tekst in kader onder checkout zodra er een geldige identificatie procedure is voltooid', 'bluem'),
+            'description' => esc_html__('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
+            'default' => esc_html__("Je leeftijd is geverifieerd, bedankt.", 'bluem'),
         ],
         'idin_identity_popup_thank_you_message' => [
             'key' => 'idin_identity_popup_thank_you_message',
             'title' => 'bluem_idin_identity_popup_thank_you_message',
-            'name' => __('Tekst in Pop-up boven checkout zodra er een geldige identificatie procedure is voltooid', 'bluem'),
-            'description' => __('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
-            'default' => __("Je leeftijd is geverifieerd.", 'bluem'),
+            'name' => esc_html__('Tekst in Pop-up boven checkout zodra er een geldige identificatie procedure is voltooid', 'bluem'),
+            'description' => esc_html__('Wat moet er op de knop staan in kaders waar de identificatie wordt vereist.', 'bluem'),
+            'default' => esc_html__("Je leeftijd is geverifieerd.", 'bluem'),
         ],
         'idin_identity_more_information_popup' => [
             'key' => 'idin_identity_more_information_popup',
             'title' => 'bluem_idin_identity_more_information_popup',
-            'name' => __('Uitleg kader over identificeren', 'bluem'),
+            'name' => esc_html__('Uitleg kader over identificeren', 'bluem'),
             'type' => 'textarea',
-            'description' => __('Schrijf hier een toelichting met eventuele doorklik links om klanten/gebruikers te vertellen over iDIN en het belang hiervan.', 'bluem'),
-            'default' => __('**Identificeren is per 1 juli 2021 verplicht in winkels waar producten verkocht worden met een identiteitsplicht van de klant.**
+            'description' => esc_html__('Schrijf hier een toelichting met eventuele doorklik links om klanten/gebruikers te vertellen over iDIN en het belang hiervan.', 'bluem'),
+            'default' => esc_html__('**Identificeren is per 1 juli 2021 verplicht in winkels waar producten verkocht worden met een identiteitsplicht van de klant.**
             
 De methode die hier gebruikt wordt is veilig, snel en makkelijk - net zoals iDEAL.   Het duurt hoogstens twee minuten en het resultaat wordt opgeslagen voor vervolgtransacties als je ingelogd bent als terugkerende klant.', 'bluem'),
         ],
         'idin_enable_ip_country_filtering' => [
             'key' => 'idin_enable_ip_country_filtering',
             'title' => 'bluem_idin_enable_ip_country_filtering',
-            'name' => __('Identificatie filteren om alleen in Nederland plaats te vinden', 'bluem'),
-            'description' => __("Indien dit gegeven op ja staat, wordt er bij afrekenen gekeken naar de locatie van de gebruiker (gebaseerd op IP) en alleen gecheckt voor iDIN gegevens voor Nederlandse IP's.", 'bluem'),
+            'name' => esc_html__('Identificatie filteren om alleen in Nederland plaats te vinden', 'bluem'),
+            'description' => esc_html__("Indien dit gegeven op ja staat, wordt er bij afrekenen gekeken naar de locatie van de gebruiker (gebaseerd op IP) en alleen gecheckt voor iDIN gegevens voor Nederlandse IP's.", 'bluem'),
             'type' => 'bool',
             'default' => '1',
         ],
         'idin_show_notice_in_checkout' => [
             'key' => 'idin_show_notice_in_checkout',
             'title' => 'bluem_idin_show_notice_in_checkout',
-            'name' => __('Wil je de identificatie melding bovenin de checkout weergeven?', 'bluem'),
-            'description' => __("Wil je de melding van identificatie nodig ook bovenaan de checkout als melding weergeven?", 'bluem'),
+            'name' => esc_html__('Wil je de identificatie melding bovenin de checkout weergeven?', 'bluem'),
+            'description' => esc_html__("Wil je de melding van identificatie nodig ook bovenaan de checkout als melding weergeven?", 'bluem'),
             'type' => 'bool',
             'default' => '1',
         ],
@@ -337,10 +339,10 @@ function bluem_woocommerce_idin_settings_section(): void
 {
     $options = function_exists('get_option') ? get_option('bluem_woocommerce_options') : []; ?>
     <p><a id="tab_idin"></a>
-        <?php _e('Hier kan je alle belangrijke gegevens instellen rondom iDIN (Identificatie).', 'bluem'); ?></p>
+        <?php esc_html_e('Hier kan je alle belangrijke gegevens instellen rondom iDIN (Identificatie).', 'bluem'); ?></p>
     <h3>
         <span class="dashicons dashicons-saved"></span>
-        <?php _e('Automatische check:', 'bluem'); ?>
+        <?php esc_html_e('Automatische check:', 'bluem'); ?>
     </h3>
     <p>
         <strong>
@@ -348,23 +350,23 @@ function bluem_woocommerce_idin_settings_section(): void
 
                 case 0:
                 {
-                    _e("Er wordt geen automatische check uitgevoerd", 'bluem');
+                    esc_html_e("Er wordt geen automatische check uitgevoerd", 'bluem');
                     break;
                 }
                 case 1:
                 {
-                    _e("Er wordt een check gedaan op minimum leeftijd bij checkout", 'bluem');
+                    esc_html_e("Er wordt een check gedaan op minimum leeftijd bij checkout", 'bluem');
                     break;
                 }
                 case 2:
                 {
-                    _e("Er wordt een volledige identiteitscheck gedaan voor de checkout beschikbaar wordt
+                    esc_html_e("Er wordt een volledige identiteitscheck gedaan voor de checkout beschikbaar wordt
                         ", 'bluem');
                     break;
                 }
                 case 3:
                 {
-                    _e("Er wordt een volledige identiteitscheck gedaan en op leeftijd gecontroleerd voor de checkout beschikbaar wordt", 'bluem');
+                    esc_html_e("Er wordt een volledige identiteitscheck gedaan en op leeftijd gecontroleerd voor de checkout beschikbaar wordt", 'bluem');
                     break;
                 }
             } ?>
@@ -375,7 +377,7 @@ function bluem_woocommerce_idin_settings_section(): void
     <?php if ($options['idin_scenario_active'] >= 1) {
     ?>
     <p>
-        <?php _e('Deze gegevens vraag je op het moment op de volledige identiteitscontrole voor checkout:', 'bluem'); ?>
+        <?php esc_html_e('Deze gegevens vraag je op het moment op de volledige identiteitscontrole voor checkout:', 'bluem'); ?>
         <br/>
         <code style="display:inline-block;">
             <?php foreach (bluem_idin_get_categories() as $cat) {
@@ -388,19 +390,19 @@ function bluem_woocommerce_idin_settings_section(): void
 
     <h3>
         <span class="dashicons dashicons-welcome-write-blog"></span>
-        <?php _e('Zelf op een pagina een iDIN verzoek initiëren', 'bluem'); ?>
+        <?php esc_html_e('Zelf op een pagina een iDIN verzoek initiëren', 'bluem'); ?>
     </h3>
     <p>
-        <?php _e('Het iDIN formulier werkt ook een shortcode, welke je kan plaatsen op een pagina, post of in een template. De shortcode is als volgt:', 'bluem'); ?>
+        <?php esc_html_e('Het iDIN formulier werkt ook een shortcode, welke je kan plaatsen op een pagina, post of in een template. De shortcode is als volgt:', 'bluem'); ?>
         <code>[bluem_identificatieformulier]</code>.
     </p>
     <p>
-        <?php _e('Zodra je deze hebt geplaatst, is op deze pagina een blok zichtbaar waarin de status van de identificatieprocedure staat. Indien geen identificatie is uitgevoerd, zal er een knop verschijnen om deze te starten.', 'bluem'); ?>
+        <?php esc_html_e('Zodra je deze hebt geplaatst, is op deze pagina een blok zichtbaar waarin de status van de identificatieprocedure staat. Indien geen identificatie is uitgevoerd, zal er een knop verschijnen om deze te starten.', 'bluem'); ?>
     </p>
     <p>
-        <?php _e('Bij succesvol uitvoeren van de identificatie via Bluem, komt men terug op de pagina die hieronder wordt
+        <?php esc_html_e('Bij succesvol uitvoeren van de identificatie via Bluem, komt men terug op de pagina die hieronder wordt
         aangemerkt als iDINPageURL', 'bluem'); ?>
-        <?php _e('huidige waarde:', 'bluem'); ?>
+        <?php esc_html_e('huidige waarde:', 'bluem'); ?>
         <code>
             <?php
             if (isset($options['IDINPageURL'])) {
@@ -409,19 +411,19 @@ function bluem_woocommerce_idin_settings_section(): void
     </p>
     <h3>
         <span class="dashicons dashicons-editor-help"></span>
-        <?php _e('Waar vind ik de gegevens?', 'bluem'); ?>
+        <?php esc_html_e('Waar vind ik de gegevens?', 'bluem'); ?>
     </h3>
     <p>
-        <?php _e('Gegevens worden na een identificatie opgeslagen bij het user profile als metadata. Je kan deze velden zien als
+        <?php esc_html_e('Gegevens worden na een identificatie opgeslagen bij het user profile als metadata. Je kan deze velden zien als
         je bij een gebruiker kijkt.', 'bluem'); ?>
-        <?php _e('Kijk bijvoorbeeld bij', 'bluem'); ?>
+        <?php esc_html_e('Kijk bijvoorbeeld bij', 'bluem'); ?>
         <a href="<?php echo admin_url('profile.php'); ?>" target="_blank">
-            <?php _e('je eigen profiel', 'bluem'); ?>
+            <?php esc_html_e('je eigen profiel', 'bluem'); ?>
         </a>.
     </p>
     <h3>
         <span class="dashicons dashicons-admin-settings"></span>
-        <?php _e('Identity instellingen en voorkeuren', 'bluem'); ?>
+        <?php esc_html_e('Identity instellingen en voorkeuren', 'bluem'); ?>
     </h3>
     <?php
 }
@@ -785,7 +787,7 @@ function bluem_idin_form(): string
         if (isset($bluem_config->IDINSuccessMessage)) {
             $html .= "<p>" . $bluem_config->IDINSuccessMessage . "</p>";
         } else {
-            $html .= sprintf("<p>%s</p>", __('Uw identificatieverzoek is ontvangen. Hartelijk dank.', 'bluem'));
+            $html .= sprintf("<p>%s</p>", esc_html__('Uw identificatieverzoek is ontvangen. Hartelijk dank.', 'bluem'));
         }
 
         // $html.= "Je hebt de identificatieprocedure eerder voltooid. Bedankt<br>";
@@ -814,21 +816,21 @@ function bluem_idin_form(): string
         if (isset($bluem_config->IDINErrorMessage)) {
             $html .= "<p>" . $bluem_config->IDINErrorMessage . "</p>";
         } else {
-            $html .= sprintf("<p>%s</p>", __('Er is een fout opgetreden. Uw verzoek is geannuleerd.', 'bluem'));
+            $html .= sprintf("<p>%s</p>", esc_html__('Er is een fout opgetreden. Uw verzoek is geannuleerd.', 'bluem'));
         }
 
         if (!empty($storage['bluem_idin_transaction_url'])) {
             $retryURL = $storage['bluem_idin_transaction_url'];
             $html .= sprintf("<p><a href='$retryURL' target='_self' alt='probeer opnieuw' class='button'>
-%s</a></p>", __('Probeer het opnieuw', 'bluem'));
+%s</a></p>", esc_html__('Probeer het opnieuw', 'bluem'));
         }
         $html .= '</div>';
     } else {
-        $html .= __("Je hebt de identificatieprocedure nog niet voltooid.", 'bluem') . "<br>";
+        $html .= esc_html__("Je hebt de identificatieprocedure nog niet voltooid.", 'bluem') . "<br>";
         $html .= '<form action="' . home_url('bluem-woocommerce/idin_execute') . '" method="post">';
         // @todo add custom fields
         $html .= '<p>';
-        $html .= '<p><input type="submit" name="bluem_idin_submitted" class="bluem-woocommerce-button bluem-woocommerce-button-idin" value="' . __('Identificeren', 'bluem') . '.."></p>';
+        $html .= '<p><input type="submit" name="bluem_idin_submitted" class="bluem-woocommerce-button bluem-woocommerce-button-idin" value="' . esc_html__('Identificeren', 'bluem') . '.."></p>';
         $html .= '</form>';
     }
     return $html;
@@ -907,7 +909,7 @@ function bluem_idin_shortcode_callback(): void
             ) {
                 $entranceCode = $request_by_debtor_ref->entrance_code;
             } else {
-                $errormessage = __('Fout: bluem_idin_entrance_code van gebruiker of Bluem-sessieopslag ontbreekt -”.
+                $errormessage = esc_html__('Fout: bluem_idin_entrance_code van gebruiker of Bluem-sessieopslag ontbreekt -”.
                 deze is nodig voordat u een identificatie kunt voltooien.
                 Ga terug naar de winkel en probeer het opnieuw.', 'bluem');
 
@@ -932,7 +934,7 @@ function bluem_idin_shortcode_callback(): void
             ) {
                 $transactionID = $request_by_debtor_ref->transaction_id;
             } else {
-                $errormessage = __('Fout: bluem_idin_transaction_id van gebruiker of Bluem-sessieopslag ontbreekt - dit is nodig voordat u een identificatie kunt voltooien. Ga terug naar de winkel en probeer het opnieuw.', 'bluem');
+                $errormessage = esc_html__('Fout: bluem_idin_transaction_id van gebruiker of Bluem-sessieopslag ontbreekt - dit is nodig voordat u een identificatie kunt voltooien. Ga terug naar de winkel en probeer het opnieuw.', 'bluem');
                 bluem_error_report_email(
                     [
                         'service' => 'idin',
@@ -1213,7 +1215,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
         <?php if (isset($bluem_requests) && count($bluem_requests) > 0) { ?>
             <tr>
                 <th>
-                    <?php _e('Identiteit', 'bluem'); ?>
+                    <?php esc_html_e('Identiteit', 'bluem'); ?>
                 </th>
                 <td>
                     <?php
@@ -1225,16 +1227,16 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
 
         <tr>
             <th>
-                <?php _e('Identiteit', 'bluem'); ?>
+                <?php esc_html_e('Identiteit', 'bluem'); ?>
             </th>
             <td>
-                <?php _e('Nog geen verzoeken uitgevoerd.', 'bluem'); ?>
+                <?php esc_html_e('Nog geen verzoeken uitgevoerd.', 'bluem'); ?>
             </td>
         </tr>
         <tr>
             <th>
                 <label for="bluem_idin_entrance_code">
-                    <?php _e('Bluem iDIN transactiegegevens', 'bluem'); ?>
+                    <?php esc_html_e('Bluem iDIN transactiegegevens', 'bluem'); ?>
 
                 </label>
             </th>
@@ -1243,7 +1245,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
                        value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_idin_entrance_code', true)); ?>"
                        class="regular-text"/><br/>
                 <label for="bluem_idin_entrance_code"><span class="description">
-                        <?php _e('Recentste Entrance code voor Bluem iDIN requests', 'bluem'); ?>
+                        <?php esc_html_e('Recentste Entrance code voor Bluem iDIN requests', 'bluem'); ?>
                     </span></label>
 
                 <br>
@@ -1254,7 +1256,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
                        class="regular-text"><br/>
                 <label for="bluem_idin_transaction_id">
                     <span class="description">
-                        <?php _e('De meest recente transaction ID: deze wordt gebruikt bij het doen van een volgende identificatie.', 'bluem'); ?></span>
+                        <?php esc_html_e('De meest recente transaction ID: deze wordt gebruikt bij het doen van een volgende identificatie.', 'bluem'); ?></span>
                 </label>
 
                 <br>
@@ -1264,7 +1266,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
                        ); ?>"
                        class="regular-text"><br/>
                 <label for="bluem_idin_transaction_url">
-                    <span class="description"><?php _e('De meest recente transactie URL', 'bluem'); ?></span>
+                    <span class="description"><?php esc_html_e('De meest recente transactie URL', 'bluem'); ?></span>
                 </label>
                 <br>
                 <input type="text" name="bluem_idin_report_last_verification_timestamp"
@@ -1274,7 +1276,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
                        ); ?>"
                        class="regular-text"/><br/>
                 <label for="bluem_idin_report_last_verification_timestamp">
-                    <span class="description"><?php _e('Laatste keer dat verificatie is uitgevoerd', 'bluem'); ?></span>
+                    <span class="description"><?php esc_html_e('Laatste keer dat verificatie is uitgevoerd', 'bluem'); ?></span>
                 </label>
             </td>
         </tr>
@@ -1286,7 +1288,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
 
             <th>
                 <label for="bluem_idin_report_agecheckresponse">
-                    <?php _e('Response van bank op leeftijdscontrole, indien van toepassing', 'bluem'); ?>
+                    <?php esc_html_e('Response van bank op leeftijdscontrole, indien van toepassing', 'bluem'); ?>
 
                 </label>
             </th>
@@ -1298,17 +1300,17 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
                         id="bluem_idin_report_agecheckresponse">
                     <option value="" <?php if ($ageCheckResponse == "") {
                         echo "selected='selected'";
-                    } ?>><?php _e('Leeftijdcheck nog niet uitgevoerd', 'bluem'); ?>
+                    } ?>><?php esc_html_e('Leeftijdcheck nog niet uitgevoerd', 'bluem'); ?>
                     </option>
                     <option value="false" <?php
                     if ($ageCheckResponse === "false") {
                         echo "selected='selected'";
-                    } ?>><?php _e('Leeftijd niet toereikend bevonden', 'bluem'); ?>
+                    } ?>><?php esc_html_e('Leeftijd niet toereikend bevonden', 'bluem'); ?>
                     </option>
                     <option value="true" <?php if ($ageCheckResponse === "true") {
                         echo "selected='selected'";
                     } ?>>
-                        <?php _e('Leeftijd toereikend bevonden', 'bluem'); ?>
+                        <?php esc_html_e('Leeftijd toereikend bevonden', 'bluem'); ?>
                     </option>
                 </select>
 
@@ -1320,7 +1322,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
         <tr>
             <th>
                 <label for="bluem_idin_report_customeridresponse">
-                    <?php _e('CustomerID dat terugkomt van de Bank', 'bluem'); ?>
+                    <?php esc_html_e('CustomerID dat terugkomt van de Bank', 'bluem'); ?>
                 </label>
             </th>
 
@@ -1338,7 +1340,7 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
 
         <tr>
             <th>
-                <label for="bluem_idin_validated"><?php _e('iDIN responses', 'bluem'); ?></label>
+                <label for="bluem_idin_validated"><?php esc_html_e('iDIN responses', 'bluem'); ?></label>
             </th>
 
             <td>
@@ -1346,16 +1348,16 @@ function bluem_woocommerce_idin_show_extra_profile_fields($user): void
                 <select class="form-control" name="bluem_idin_validated" id="bluem_idin_validated">
                     <option value="0" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true) == "0") {
                         echo "selected='selected'";
-                    } ?>><?php _e('Identificatie nog niet uitgevoerd', 'bluem'); ?>
+                    } ?>><?php esc_html_e('Identificatie nog niet uitgevoerd', 'bluem'); ?>
                     </option>
                     <option value="1" <?php if (get_user_meta($user->ID, 'bluem_idin_validated', true) == "1") {
                         echo "selected='selected'";
-                    } ?>><?php _e('Identificatie succesvol uitgevoerd', 'bluem'); ?>
+                    } ?>><?php esc_html_e('Identificatie succesvol uitgevoerd', 'bluem'); ?>
                     </option>
                 </select>
 
                 <span class="description" style="display:block;">
-                    <?php _e('Status en Resultaten van iDIN requests', 'bluem'); ?>
+                    <?php esc_html_e('Status en Resultaten van iDIN requests', 'bluem'); ?>
                 </span>
             </td>
         </tr>
@@ -1580,7 +1582,7 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
     $cats = bluem_idin_get_categories();
 
     if (count($cats) === 0) {
-        $errormessage = __("Geen juiste iDIN categories ingesteld", 'bluem');
+        $errormessage = esc_html__("Geen juiste iDIN categories ingesteld", 'bluem');
 //        bluem_error_report_email(
 //            [
 //                'service' => 'idin',
@@ -1679,14 +1681,13 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
                 return ['result' => true, 'url' => $transactionURL];
             }
         } else {
-            $msg = __("Er ging iets mis bij het aanmaken van de transactie.<br>
-            Vermeld onderstaande informatie aan het websitebeheer:", 'bluem');
+            $msg = esc_html__("Er ging iets mis bij het aanmaken van de transactie. Vermeld onderstaande informatie aan het websitebeheer:", 'bluem');
 
             if ($response->Error() !== "") {
                 $msg .= "<br>Response: " .
                     $response->Error();
             } else {
-                $msg .= "<br>" . __("Algemene fout", 'bluem');
+                $msg .= "<br>" . esc_html__("Algemene fout", 'bluem');
             }
 
 //            bluem_error_report_email(
@@ -1700,13 +1701,12 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
             exit;
         }
     } catch (\Exception $e) {
-        $msg = __("Er ging iets mis bij het aanmaken van de transactie.<br>
-        Vermeld onderstaande informatie aan het websitebeheer:", 'bluem');
+        $msg = esc_html__("Er ging iets mis bij het aanmaken van de transactie. Vermeld onderstaande informatie aan het websitebeheer:", 'bluem');
 
         if (!empty($e->getMessage())) {
-            $msg .= "<br>Response: " . $e->getMessage();
+            $msg .= "<br>Response: " . esc_html($e->getMessage());
         } else {
-            $msg .= "<br>" . __("Algemene fout", 'bluem');
+            $msg .= "<br>" . esc_html__("Algemene fout", 'bluem');
         }
 //
 //        bluem_error_report_email(
@@ -1791,23 +1791,23 @@ function bluem_checkout_idin_notice(): void
     if (isset($options['idin_identity_dialog_no_verification_text']) && $options['idin_identity_dialog_no_verification_text'] !== "") {
         $identity_dialog_no_verification_text = $options['idin_identity_dialog_no_verification_text'];
     } else {
-        $identity_dialog_no_verification_text = __("Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.", "bluem");
+        $identity_dialog_no_verification_text = esc_html__("Uw leeftijd is niet bekend of niet toereikend. U kan dus niet deze bestelling afronden. Neem bij vragen contact op met de webshop support.", "bluem");
     }
 
     if (isset($options['idin_identity_dialog_thank_you_message']) && $options['idin_identity_dialog_thank_you_message'] !== "") {
         $idin_identity_dialog_thank_you_message = $options['idin_identity_dialog_thank_you_message'];
     } else {
-        $idin_identity_dialog_thank_you_message = __("Je leeftijd is geverifieerd, bedankt.", "bluem");
+        $idin_identity_dialog_thank_you_message = esc_html__("Je leeftijd is geverifieerd, bedankt.", "bluem");
     }
 
     if (isset($options['idin_identity_topbar_no_verification_text']) && $options['idin_identity_topbar_no_verification_text'] !== "") {
         $idin_identity_topbar_no_verification_text = $options['idin_identity_topbar_no_verification_text'];
     } else {
-        $idin_identity_topbar_no_verification_text = __("We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.", "bluem");
+        $idin_identity_topbar_no_verification_text = esc_html__("We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.", "bluem");
     }
 
     if ($validation_needed && $scenario > 0) {
-        echo "<h3>" . __('Identificatie') . "</h3>";
+        echo "<h3>" . esc_html__('Identificatie') . "</h3>";
 
         $validated = bluem_idin_user_validated();
 
@@ -1905,7 +1905,7 @@ function bluem_checkout_idin_notice(): void
 
     if ($validation_needed && bluem_checkout_check_idin_validated_filter() == false) {
         echo bluem_idin_generate_notice("Verifieer eerst je identiteit.", true);
-        // _e(
+        // esc_html_e(
         //     "Verifieer eerst je identiteit via de mijn account pagina",
         //     "woocommerce"
         // );
@@ -1971,24 +1971,24 @@ function bluem_checkout_check_idin_validated(): bool
     if (isset($options['idin_identify_button_inner']) && $options['idin_identify_button_inner'] !== "") {
         $identify_button_inner = $options['idin_identify_button_inner'];
     } else {
-        $identify_button_inner = __("Klik hier om je te identificeren", "bluem");
+        $identify_button_inner = esc_html__("Klik hier om je te identificeren", "bluem");
     }
 
     if (isset($options['idin_identity_topbar_invalid_verification_text']) && $options['idin_identity_topbar_invalid_verification_text'] !== "") {
         $idin_identity_topbar_invalid_verification_text = $options['idin_identity_topbar_invalid_verification_text'];
     } else {
-        $idin_identity_topbar_invalid_verification_text = __("Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden.", "bluem");
+        $idin_identity_topbar_invalid_verification_text = esc_html__("Uw leeftijd is niet toereikend. U kan dus niet deze bestelling afronden.", "bluem");
     }
     if (isset($options['idin_identity_topbar_no_verification_text']) && $options['idin_identity_topbar_no_verification_text'] !== "") {
         $idin_identity_topbar_no_verification_text = $options['idin_identity_topbar_no_verification_text'];
     } else {
-        $idin_identity_topbar_no_verification_text = __("We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.", "bluem");
+        $idin_identity_topbar_no_verification_text = esc_html__("We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatie procedure.", "bluem");
     }
 
     if (isset($options['idin_identity_popup_thank_you_message']) && $options['idin_identity_popup_thank_you_message'] !== "") {
         $idin_identity_popup_thank_you_message = $options['idin_identity_popup_thank_you_message'];
     } else {
-        $idin_identity_popup_thank_you_message = __("Je leeftijd is geverifieerd.", "bluem");
+        $idin_identity_popup_thank_you_message = esc_html__("Je leeftijd is geverifieerd.", "bluem");
     }
 
     // @todo: implement this later to allow the notice to be hidden
@@ -2205,15 +2205,15 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order): 
         if (is_user_logged_in()) {
             $validation_text = "";
             if (get_user_meta($current_user->ID, 'bluem_idin_validated', true)) {
-                $validation_text = __('Ja', 'bluem');
+                $validation_text = esc_html__('Ja', 'bluem');
                 // $validation_text .= " (Transactie ". get_user_meta($current_user->ID, 'bluem_idin_transaction_id', true).")";
             } else {
-                $validation_text = __('Ja, als gastgebruiker', 'bluem');
+                $validation_text = esc_html__('Ja, als gastgebruiker', 'bluem');
             }
         }
 
         $fields['bluem_idin_validated'] = [
-            'label' => __('Identiteit geverifieerd', 'bluem'),
+            'label' => esc_html__('Identiteit geverifieerd', 'bluem'),
             'value' => $validation_text
         ];
     }
@@ -2243,13 +2243,13 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order): 
                 }
 
                 $fields['bluem_idin_address'] = [
-                    'label' => __('Adres afkomstig uit verificatie', 'bluem'),
+                    'label' => esc_html__('Adres afkomstig uit verificatie', 'bluem'),
                     'value' => $address_text
                 ];
             } else {
                 $fields['bluem_idin_address'] = [
-                    'label' => __('Adres afkomstig uit verificatie', 'bluem'),
-                    'value' => __('Onbekend', 'bluem')
+                    'label' => esc_html__('Adres afkomstig uit verificatie', 'bluem'),
+                    'value' => esc_html__('Onbekend', 'bluem')
                 ];
             }
         }
@@ -2278,13 +2278,13 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order): 
             }
 
             $fields['bluem_idin_name'] = [
-                'label' => __('Naam afkomstig van verificatie', 'bluem'),
+                'label' => esc_html__('Naam afkomstig van verificatie', 'bluem'),
                 'value' => $name_text
             ];
         } else {
             $fields['bluem_idin_name'] = [
-                'label' => __('Naam afkomstig uit verificatie', 'bluem'),
-                'value' => __('Onbekend', 'bluem')
+                'label' => esc_html__('Naam afkomstig uit verificatie', 'bluem'),
+                'value' => esc_html__('Onbekend', 'bluem')
             ];
         }
     }
@@ -2302,13 +2302,13 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order): 
             }
 
             $fields['bluem_idin_birthdate'] = [
-                'label' => __('Geboortedatum uit verificatie', 'bluem'),
+                'label' => esc_html__('Geboortedatum uit verificatie', 'bluem'),
                 'value' => $birthdate_text
             ];
         } else {
             $fields['bluem_idin_birthdate'] = [
-                'label' => __('Geboortedatum uit verificatie', 'bluem'),
-                'value' => __('Onbekend', 'bluem')
+                'label' => esc_html__('Geboortedatum uit verificatie', 'bluem'),
+                'value' => esc_html__('Onbekend', 'bluem')
             ];
         }
     }
@@ -2343,18 +2343,18 @@ function bluem_idin_generate_notice(string $message = "", bool $button = false, 
     if (isset($options['idin_identify_button_inner']) && $options['idin_identify_button_inner'] !== "") {
         $identify_button_inner = $options['idin_identify_button_inner'];
     } else {
-        $identify_button_inner = __("Klik hier om je te identificeren", 'bluem');
+        $identify_button_inner = esc_html__("Klik hier om je te identificeren", 'bluem');
     }
     if (isset($options['idin_identify_button_inner']) && $options['idin_identify_button_inner'] !== "") {
         $identify_button_inner = $options['idin_identify_button_inner'];
     } else {
-        $identify_button_inner = __("Klik hier om je te identificeren", 'bluem');
+        $identify_button_inner = esc_html__("Klik hier om je te identificeren", 'bluem');
     }
 
     if (isset($options['idin_identity_more_information_popup']) && $options['idin_identity_more_information_popup'] !== "") {
         $more_information_popup = $options['idin_identity_more_information_popup'];
     } else {
-        $more_information_popup = __("Toelichting op IDIN als essentieel onderdeel van het winkelproces", 'bluem');
+        $more_information_popup = esc_html__("Toelichting op IDIN als essentieel onderdeel van het winkelproces", 'bluem');
     }
 
     $html = "<div style='position:relative;" .
@@ -2374,18 +2374,18 @@ function bluem_idin_generate_notice(string $message = "", bool $button = false, 
     " . ($border ? "margin-left:100px; display:block; width:auto; height:auto;" : "") . "'>
         $message";
     if ($button) {
-        $html .= sprintf(
+        $html .="<div style='' class='bluem-idin-button'>".
+            sprintf(
                 /* translators:
                 %s: url  to more information
                 %s: button text */
-                __("<div style='' class='bluem-idin-button'>
-                    <a href='%s' target='_self' class='button bluem-identify-button' style='display:inline-block' title='%s'>
-                        %s
-                    </a>
-                </div>",'bluem'),
-            home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true'),
-            $identify_button_inner
-        );
+                wp_kses_post(
+                    __("<a href='%s' target='_self' class='button bluem-identify-button' style='display:inline-block' title='%s'>%s</a>",'bluem')
+                ),
+                home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true'),
+                $identify_button_inner
+            ) .
+        "</div>";
     }
 
     $checkout_url = wc_get_checkout_url();
@@ -2393,20 +2393,23 @@ function bluem_idin_generate_notice(string $message = "", bool $button = false, 
     <div class="bluem-idin-box">
 	<a class="bluem-idin-info-button" href="' . $checkout_url . '#idin_info_popup">
         <span class="dashicons dashicons-editor-help"></span>
-        ' . __('Wat is dit?', 'bluem') . '
+        ' . esc_html__('Wat is dit?', 'bluem') . '
     </a></div>';
 
-    $html .= sprintf(__('<div id="idin_info_popup" class="bluem-idin-overlay">
-            <div class="bluem-idin-popup">
-            <h4>Toelichting op vereiste identificatie</h4>
-            <a class="bluem-idin-popup-close bluem-idin-popup-close-icon" href="%s#">&times;</a>
-                <div class="bluem-idin-popup-content">
-                    %s
-                    <hr>
-                    <a class="bluem-idin-popup-close" href="%s#">Klik hier om dit kader te sluiten</a>
+    $html .= sprintf(
+        wp_kses_post(
+                __('<div id="idin_info_popup" class="bluem-idin-overlay">
+                <div class="bluem-idin-popup">
+                <h4>Toelichting op vereiste identificatie</h4>
+                <a class="bluem-idin-popup-close bluem-idin-popup-close-icon" href="%s#">&times;</a>
+                    <div class="bluem-idin-popup-content">
+                        %s
+                        <hr>
+                        <a class="bluem-idin-popup-close" href="%s#">Klik hier om dit kader te sluiten</a>
+                    </div>
                 </div>
-            </div>
-        </div></div></div>', 'bluem'),
+            </div></div></div>', 'bluem'),
+        ),
         esc_url($checkout_url),
         wp_kses_post($more_information_popup),
         esc_url($checkout_url)
@@ -2439,7 +2442,7 @@ function bluem_link_idin_request_to_sesh($user_id): void
             $req->id,
             ['user_id' => $user_id]
         );
-        bluem_db_request_log($req->id, __("Identiteit gekoppeld aan gebruiker door in te loggen", 'bluem'));
+        bluem_db_request_log($req->id, esc_html__("Identiteit gekoppeld aan gebruiker door in te loggen", 'bluem'));
 
         $pl = json_decode($req->payload);
 

@@ -157,7 +157,7 @@ function bluem_db_create_request( $request_object ): int
         }
         bluem_db_request_log(
             $request_id,
-            __("Verzoek aangemaakt",'bluem')
+            esc_html__("Verzoek aangemaakt",'bluem')
         );
 
         return $wpdb->insert_id;
@@ -351,7 +351,13 @@ function bluem_db_update_request( $request_id, $request_object ): bool
     if ( $update_result ) {
         bluem_db_request_log(
             $request_id,
-            __("Transactie bijgewerkt. Nieuwe data: ",'bluem') . json_encode( $request_object )
+            wp_kses_post(
+                sprintf(
+                    /* translators: %s: data in JSON */
+                    esc_html__("Transactie bijgewerkt. Nieuwe data: %s",'bluem'),
+                    esc_js(json_encode( $request_object ))
+                )
+            )
         );
 
         return true;

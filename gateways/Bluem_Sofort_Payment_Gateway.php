@@ -8,8 +8,8 @@ class Bluem_Sofort_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
     {
         parent::__construct(
             'bluem_payments_sofort',
-            __('Bluem payments via SOFORT', 'bluem'),
-            __('Pay easily, quickly and safely via SOFORT', 'bluem')
+            esc_html__('Bluem payments via SOFORT', 'bluem'),
+            esc_html__('Pay easily, quickly and safely via SOFORT', 'bluem')
         );
 
         $options = get_option('bluem_woocommerce_options');

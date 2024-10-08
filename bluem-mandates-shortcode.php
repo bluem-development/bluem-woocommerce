@@ -187,17 +187,17 @@ function bluem_mandate_shortcode_execute(): void
         $response = $bluem->PerformRequest( $request );
 
         if ( ! isset( $response->EMandateTransactionResponse->TransactionURL ) ) {
-            $msg = __("Er ging iets mis bij het aanmaken van de transactie.<br>
+            $msg = esc_html__("Er ging iets mis bij het aanmaken van de transactie.<br>
             Vermeld onderstaande informatie aan het websitebeheer:",'bluem');
 
             if ( isset( $response->EMandateTransactionResponse->Error->ErrorMessage ) ) {
                 $msg .= "<br>" .
-                        $response->EMandateTransactionResponse->Error->ErrorMessage;
+                        esc_html($response->EMandateTransactionResponse->Error->ErrorMessage);
             } elseif ( get_class( $response ) == "Bluem\BluemPHP\ErrorBluemResponse" ) {
                 $msg .= "<br>" .
-                        $response->Error();
+                        esc_html($response->Error());
             } else {
-                $msg .= "<br>Algemene fout";
+                $msg .= "<br>".esc_html("Algemene fout", "bluem");
             }
             bluem_error_report_email(
                 [
@@ -305,7 +305,7 @@ function bluem_mandate_mandate_shortcode_callback(): void
             // echo "<p>Er is een fout opgetreden. De incassomachtiging is geannuleerd.</p>";
             return;
         }
-        $errormessage = __("Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.",'bluem');
+        $errormessage = esc_html__("Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.",'bluem');
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
@@ -318,7 +318,7 @@ function bluem_mandate_mandate_shortcode_callback(): void
     }
 
     if (empty($entranceCode)) {
-        $errormessage = __("Fout: Entrancecode is niet set; kan dus geen mandaat opvragen",'bluem');
+        $errormessage = esc_html__("Fout: Entrancecode is niet set; kan dus geen mandaat opvragen",'bluem');
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
@@ -555,20 +555,20 @@ function bluem_mandateform(): string
      * Check if eMandate is valid..
      */
     if ($validated !== false) {
-        return "<p>".__("Bedankt voor je machtiging met machtiging ID:",'bluem')." <span class='bluem-mandate-id'>$mandateID</span></p>";
+        return "<p>".esc_html__("Bedankt voor je machtiging met machtiging ID:",'bluem')." <span class='bluem-mandate-id'>$mandateID</span></p>";
     } else {
         $html = '<form action="' . home_url( 'bluem-woocommerce/mandate_shortcode_execute' ) . '" method="post">';
-        $html .= '<p>'.__('Je moet nog een automatische incasso machtiging afgeven.','bluem').'</p>';
+        $html .= '<p>'.esc_html__('Je moet nog een automatische incasso machtiging afgeven.','bluem').'</p>';
 
         if (!empty($bluem_config->debtorReferenceFieldName)) {
-            $html .= '<p>' . $bluem_config->debtorReferenceFieldName . ' ('.__('verplicht','bluem').')<br/>';
+            $html .= '<p>' . $bluem_config->debtorReferenceFieldName . ' ('.esc_html__('verplicht','bluem').')<br/>';
             $html .= '<input type="text" name="bluem_debtorReference" required /></p>';
         } else {
             $html .= '<input type="hidden" name="bluem_debtorReference" value="' . (!empty($current_user->ID) ? $current_user->ID : 'visitor-' . time()) . '"  />';
         }
 
         $html .= '<p><input type="submit" name="bluem-submitted" class="bluem-woocommerce-button bluem-woocommerce-button-mandates" 
-            value="'.__('Machtiging proces starten','bluem').'.."></p>';
+            value="'.esc_html__('Machtiging proces starten','bluem').'.."></p>';
         $html .= '</form>';
 
         return $html;
