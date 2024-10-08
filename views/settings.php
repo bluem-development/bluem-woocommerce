@@ -1,38 +1,40 @@
-<?php if ( ! defined( 'ABSPATH' ) ) exit;
+<?php if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 ?>
 <div class="wrap">
     <h1>
         <?php echo bluem_get_bluem_logo_html(48); ?>
-        <?php _e('Instellingen', 'bluem'); ?>
+        <?php echo esc_html__('Instellingen', 'bluem'); ?>
     </h1>
 
     <?php bluem_render_nav_header('settings'); ?>
 
     <div class="wrap payment-methods">
         <h2 class="nav-tab-wrapper">
-            <a href="#" class="nav-tab" data-tab="general" title="<?php _e('Algemeen', 'bluem'); ?>">
-                <?php _e('Algemeen', 'bluem'); ?>
+            <a href="#" class="nav-tab" data-tab="general" title="<?php echo esc_html__('Algemeen', 'bluem');?>">
+                <?php echo esc_html__('Algemeen', 'bluem'); ?>
             </a>
-            <a href="#" class="nav-tab" data-tab="account" title="<?php _e('Account', 'bluem'); ?>">
-                <?php _e('Account', 'bluem'); ?>
+            <a href="#" class="nav-tab" data-tab="account" title="<?php echo esc_html__('Account', 'bluem');?>">
+                <?php echo esc_html__('Account', 'bluem'); ?>
             </a>
             <?php if (bluem_module_enabled('mandates')) { ?>
-                <a href="#" class="nav-tab" data-tab="mandates" title="<?php _e('Incassomachtigen', 'bluem'); ?>">
-                    <?php _e('Incassomachtigen', 'bluem'); ?>
+                <a href="#" class="nav-tab" data-tab="mandates" title="<?php echo esc_html__('Incassomachtigen', 'bluem');?>">
+                    <?php echo esc_html__('Incassomachtigen', 'bluem'); ?>
                 </a>
             <?php } ?>
             <?php if (bluem_module_enabled('payments')) { ?>
-                <a href="#" class="nav-tab" data-tab="payments" title="<?php _e('Betalingen', 'bluem'); ?>">
-                    <?php _e('Betalingen', 'bluem'); ?>
+                <a href="#" class="nav-tab" data-tab="payments" title="<?php echo esc_html__('Betalingen', 'bluem');?>">
+                    <?php echo esc_html__('Betalingen', 'bluem'); ?>
                 </a>
             <?php } ?>
             <?php if (bluem_module_enabled('idin')) { ?>
-                <a href="#" class="nav-tab" data-tab="identity" title="<?php _e('Identiteit', 'bluem'); ?>">
-                    <?php _e('Identiteit', 'bluem'); ?>
+                <a href="#" class="nav-tab" data-tab="identity" title="<?php echo esc_html__('Identiteit', 'bluem');?>">
+                    <?php echo esc_html__('Identiteit', 'bluem'); ?>
                 </a>
             <?php } ?>
-            <a href="#" class="nav-tab" data-tab="integrations" title="<?php _e('Integraties', 'bluem'); ?>">
-                <?php _e('Integraties', 'bluem'); ?>
+            <a href="#" class="nav-tab" data-tab="integrations" title="<?php echo esc_html__('Integraties', 'bluem');?>">
+                <?php echo esc_html__('Integraties', 'bluem'); ?>
             </a>
         </h2>
 
@@ -91,7 +93,7 @@
 
             <div style="margin-top: 0; padding-top: 25px; border-top: 1px solid #2b4e6c;">
                 <input name="submit" class="button button-primary" type="submit"
-                       value="<?php _e('Veranderingen opslaan', 'bluem'); ?>"/>
+                       value="<?php echo esc_html__('Veranderingen opslaan', 'bluem'); ?>"/>
             </div>
         </form>
     </div>
@@ -124,7 +126,7 @@
 
 </script>
 
-<style type="text/css">
+<style>
 
     .form-table th {
         padding: 20px 10px !important;

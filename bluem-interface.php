@@ -13,12 +13,8 @@ function bluem_get_idin_logo_html(): string
 
 function bluem_get_bluem_logo_html($height = 64): string
 {
-    return '<img src="' .
-        plugin_dir_url(__FILE__) . 'assets/bluem/logo.png' .
-        '" class="bluem-bluem-logo" style="' .
-        "max-height:{$height}px; margin:10pt;  margin-bottom:0; " .
-        ' alt="Bluem logo"
-        "/>';
+    return sprintf("<img src=\"%sassets/bluem/logo.png\" class=\"bluem-bluem-logo\" style=\"max-height:{$height}px; margin:10pt;  margin-bottom:0;  alt=\"Bluem logo\"
+        \"/>", plugin_dir_url(__FILE__));
 }
 
 
@@ -209,7 +205,7 @@ function bluem_render_request_user(object $r, array $users_by_id): void
     }
 }
 
-function bluem_render_footer($align_right = true)
+function bluem_render_footer($align_right = true): void
 {
     ?>
 

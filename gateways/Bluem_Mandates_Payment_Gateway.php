@@ -447,7 +447,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 'transaction_url'  => $transactionURL,
                 'user_id'          => get_current_user_id(),
                 'timestamp'        => date("Y-m-d H:i:s"),
-                'description'      => __("Mandate request").' '."{$order_id} {$user_id}",
+                'description'      => esc_attr__(sprintf("Mandate request %s %s", $order_id,$user_id), 'bluem'),
                 'debtor_reference' => "",
                 'type'             => "mandates",
                 'order_id'         => $order_id,

@@ -16,10 +16,12 @@
 </style>
 
 <div class="wrap">
-    <h1>
-        <?php echo bluem_get_bluem_logo_html(48); ?>
-        <?php _e('Import / export'); ?>
-    </h1>
+
+    <?php _e(sprintf(
+        '<h1>%s Import / export</h1>',
+        bluem_get_bluem_logo_html(48)), 'bluem'
+    ); ?>
+
 
     <?php bluem_render_nav_header('importexport'); ?>
 
