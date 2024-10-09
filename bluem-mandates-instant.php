@@ -38,9 +38,9 @@ function bluem_mandates_instant_request(): void
 
             // Convert UTF-8 to ISO
             if (!empty($bluem_config->eMandateReason)) {
-                $bluem_config->eMandateReason = utf8_decode($bluem_config->eMandateReason);
+                $bluem_config->eMandateReason = mb_convert_encoding($bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
             } else {
-                $bluem_config->eMandateReason = __("Incasso machtiging ",'bluem') . $debtorReference;
+                $bluem_config->eMandateReason = esc_html__("Incasso machtiging ",'bluem') . $debtorReference;
             }
 
             $bluem = new Bluem( $bluem_config );
@@ -66,7 +66,7 @@ function bluem_mandates_instant_request(): void
                 $response = $bluem->PerformRequest( $request );
 
                 if ( ! isset( $response->EMandateTransactionResponse->TransactionURL ) ) {
-                    $msg = __("Er ging iets mis bij het aanmaken van de transactie.<br>
+                    $msg = esc_html__("Er ging iets mis bij het aanmaken van de transactie.<br>
                     Vermeld onderstaande informatie aan het websitebeheer:",'bluem');
 
                     if ( isset( $response->EMandateTransactionResponse->Error->ErrorMessage ) ) {
@@ -173,7 +173,7 @@ function bluem_mandates_instant_callback()
             wp_redirect( $bluem_config->instantMandatesResponseURI . "?result=false&reason=error" );
             exit;
         }
-        $errormessage = __("Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.",'bluem');
+        $errormessage = esc_html__("Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.",'bluem');
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
@@ -186,7 +186,7 @@ function bluem_mandates_instant_callback()
     }
 
     if (empty($entranceCode)) {
-        $errormessage = __("Fout: Entrancecode is niet set; kan dus geen mandaat opvragen",'bluem');
+        $errormessage = esc_html__("Fout: Entrancecode is niet set; kan dus geen mandaat opvragen",'bluem');
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
@@ -269,7 +269,7 @@ function bluem_mandates_instant_callback()
             wp_redirect( $bluem_config->instantMandatesResponseURI . "?result=true" );
             exit;
         }
-        $errormessage = __("Fout: de ondertekening is geslaagd maar er is geen response URI opgegeven. Neem contact op met de website om dit technisch probleem aan te geven.",'bluem');
+        $errormessage = esc_html__("Fout: de ondertekening is geslaagd maar er is geen response URI opgegeven. Neem contact op met de website om dit technisch probleem aan te geven.",'bluem');
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
@@ -287,7 +287,7 @@ function bluem_mandates_instant_callback()
             wp_redirect( $bluem_config->instantMandatesResponseURI . "?result=false&reason=cancelled" );
             exit;
         }
-        $errormessage = __("Fout: de transactie is geannuleerd. Probeer het opnieuw.",'bluem');
+        $errormessage = esc_html__("Fout: de transactie is geannuleerd. Probeer het opnieuw.",'bluem');
         bluem_dialogs_render_prompt( $errormessage );
         exit;
     }
@@ -298,7 +298,7 @@ function bluem_mandates_instant_callback()
             wp_redirect( $bluem_config->instantMandatesResponseURI . "?result=false&reason=open" );
             exit;
         }
-        $errormessage = __("Fout: de transactie staat nog open. Dit kan even duren. Vernieuw deze pagina regelmatig voor de status.",'bluem');
+        $errormessage = esc_html__("Fout: de transactie staat nog open. Dit kan even duren. Vernieuw deze pagina regelmatig voor de status.",'bluem');
         bluem_dialogs_render_prompt( $errormessage );
         exit;
     }
@@ -309,7 +309,7 @@ function bluem_mandates_instant_callback()
             wp_redirect( $bluem_config->instantMandatesResponseURI . "?result=false&reason=expired" );
             exit;
         }
-        $errormessage = __("Fout: de transactie is verlopen. Probeer het opnieuw.",'bluem');
+        $errormessage = esc_html__("Fout: de transactie is verlopen. Probeer het opnieuw.",'bluem');
         bluem_dialogs_render_prompt( $errormessage );
         exit;
     }

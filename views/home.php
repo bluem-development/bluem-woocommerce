@@ -34,28 +34,28 @@
 
     <?php bluem_render_nav_header('home'); ?>
 
-    <div class="bluem_logo"><?php _e('Bluem Payments & Identity Services', 'bluem'); ?></div>
+    <div class="bluem_logo"><?php esc_html_e('Bluem Payments & Identity Services', 'bluem'); ?></div>
 
-    <h2 style="margin-top: 25px;"><?php _e('Maak betalen gemakkelijk!', 'bluem'); ?></h2>
+    <h2 style="margin-top: 25px;"><?php esc_html_e('Maak betalen gemakkelijk!', 'bluem'); ?></h2>
 
-    <p><?php _e('Met de Bluem WordPress plug-in integreer je online betalingen, identificaties en leeftijdsverificaties gemakkelijk op je website.', 'bluem'); ?></p>
+    <p><?php esc_html_e('Met de Bluem WordPress plug-in integreer je online betalingen, identificaties en leeftijdsverificaties gemakkelijk op je website.', 'bluem'); ?></p>
 
-    <p><strong><?php _e('Bluem Dashboard', 'bluem'); ?></strong><br/>
-        <?php _e('Alle transacties zijn ook zichtbaar in het <a href="https://viamijnbank.net/" target="_blank">viamijnbank.net dashboard</a>.', 'bluem'); ?>
+    <p><strong><?php esc_html_e('Bluem Dashboard', 'bluem'); ?></strong><br/>
+        <?php wp_kses_post(__('Alle transacties zijn ook zichtbaar in het <a href="https://viamijnbank.net/" target="_blank">viamijnbank.net dashboard</a>.', 'bluem')); ?>
     </p>
 
     <p>
-        <strong><?php _e('Plugin versie', 'bluem'); ?></strong><br/><?php _e('Versie', 'bluem'); ?> <?php $bluem = get_plugin_data(plugin_dir_path(__FILE__) . '../bluem.php');
+        <strong><?php esc_html_e('Plugin versie', 'bluem'); ?></strong><br/><?php esc_html_e('Versie', 'bluem'); ?> <?php $bluem = get_plugin_data(plugin_dir_path(__FILE__) . '../bluem.php');
         echo esc_html($bluem['Version']); ?> (<a href="<?php echo admin_url($pluginDetailsLink); ?>"
-                                       target="_blank"><?php _e('Details bekijken', 'bluem'); ?></a>)</p>
+                                       target="_blank"><?php esc_html_e('Details bekijken', 'bluem'); ?></a>)</p>
 
     <p>
-        <strong><?php _e('Technische informatie', 'bluem'); ?></strong><br/><?php _e('WordPress versie:', 'bluem'); ?> <?php echo get_bloginfo('version'); ?>
+        <strong><?php esc_html_e('Technische informatie', 'bluem'); ?></strong><br/><?php esc_html_e('WordPress versie:', 'bluem'); ?> <?php echo get_bloginfo('version'); ?>
         <br/>
-        <?php _e('WooCommerce versie:', 'bluem'); ?> <?php echo class_exists('WooCommerce') ? WC()->version : __('WooCommerce not installed', 'bluem'); ?>
+        <?php esc_html_e('WooCommerce versie:', 'bluem'); ?> <?php echo class_exists('WooCommerce') ? WC()->version : esc_html__('WooCommerce not installed', 'bluem'); ?>
         <br/>
-        <?php _e('Bluem PHP-library versie:', 'bluem'); ?> <?php echo esc_html($dependency_bluem_php_version ?? '-'); ?><br/>
-        <?php _e('PHP versie:', 'bluem'); ?> <?php echo PHP_VERSION; ?></p>
+        <?php esc_html_e('Bluem PHP-library versie:', 'bluem'); ?> <?php echo esc_html($dependency_bluem_php_version ?? '-'); ?><br/>
+        <?php esc_html_e('PHP versie:', 'bluem'); ?> <?php echo PHP_VERSION; ?></p>
 
     <?php bluem_render_footer(); ?>
 </div>

@@ -126,22 +126,22 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
     {
         $this->form_fields = apply_filters('wc_offline_form_fields', [
             'enabled'     => [
-                'title'       => __('Enable/disable', 'bluem'),
+                'title'       => esc_html__('Enable/disable', 'bluem'),
                 'label'       => 'Enable '.$this->method_title,
                 'type'        => 'checkbox',
                 'description' => '',
                 'default'     => 'no'
             ],
             'title'       => [
-                'title'       => __('Displayed title', 'bluem'),
+                'title'       => esc_html__('Displayed title', 'bluem'),
                 'type'        => 'text',
-                'description' => __('This is the title the user sees during checkout.', 'bluem'),
+                'description' => esc_html__('This is the title the user sees during checkout.', 'bluem'),
                 'default'     => $this->method_title,
             ],
             'description' => [
-                'title'       => __('Description', 'bluem'),
+                'title'       => esc_html__('Description', 'bluem'),
                 'type'        => 'textarea',
-                'description' => __('This is the description the user sees during checkout.', 'bluem'),
+                'description' => esc_html__('This is the description the user sees during checkout.', 'bluem'),
                 'default'     => $this->description
             ]
         ]);

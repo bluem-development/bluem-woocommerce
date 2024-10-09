@@ -3,7 +3,7 @@
 <div class="wrap">
     <h1>
         <?php echo bluem_get_bluem_logo_html(48); ?>
-        <?php _e('Transacties', 'bluem'); ?>
+        <?php esc_html_e('Transacties', 'bluem'); ?>
     </h1>
 
     <?php bluem_render_nav_header('transactions'); ?>
@@ -38,8 +38,8 @@
         } ?>
     </div>
 
-    <p><?php _e('Klik op een transactie voor meer gedetailleerde informatie.', 'bluem'); ?></p>
-    <p><?php _e('Bekijk nog meer informatie over alle transacties in het <a href="https://viamijnbank.net/" target="_blank">viamijnbank.net dashboard</a>.', 'bluem'); ?></p>
+    <p><?php esc_html_e('Klik op een transactie voor meer gedetailleerde informatie.', 'bluem'); ?></p>
+    <p><?php wp_kses_post(__('Bekijk nog meer informatie over alle transacties in het <a href="https://viamijnbank.net/" target="_blank">viamijnbank.net dashboard</a>.', 'bluem')); ?></p>
 
     <?php bluem_render_footer(); ?>
 </div>
