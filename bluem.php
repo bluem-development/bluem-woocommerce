@@ -176,7 +176,7 @@ function bluem_woocommerce_no_woocommerce_notice()
             echo '<div class="notice notice-warning is-dismissible">
             <p><span class="dashicons dashicons-warning"></span>';
             /* translators: %s: the link to settings page   */
-            printf(esc_html__('De Bluem integratie is grotendeels afhankelijk van WooCommerce - installeer en/of activeer deze plug-in.<br>
+            printf(wp_kses_post('De Bluem integratie is grotendeels afhankelijk van WooCommerce - installeer en/of activeer deze plug-in. <br/>
             Gebruik je geen WooCommerce? Dan kan je deze melding en WooCommerce gerelateerde functionaliteiten uitzetten bij de %s.', 'bluem'),
                 '<a href="' . admin_url('admin.php?page=bluem-settings') . '">' . esc_html__('Instellingen', 'bluem') . '</a>');
             echo '</p>

@@ -52,7 +52,7 @@ add_git_hooks:
 
 PLUGIN_SLUG = bluem
 SVN_URL = https://plugins.svn.wordpress.org/$(PLUGIN_SLUG)
-SVN_DIR = svn-directory/${PLUGIN_SLUG}
+SVN_DIR = svn-directory
 CURRENT_DIR = $(shell pwd)
 BUILD_DIR = $(CURRENT_DIR)/build
 
@@ -65,9 +65,8 @@ BLUE   => \033[34m
 NC = \033[0m # No Color
 
 
-.PHONY: release
-
-release: check-tag confirm svn-check repo-check pre-deployment add-tag add-tag-to-svn svn-commit update-trunk clean-up
+.PHONY: prepare-release
+prepare-release: check-tag confirm svn-check repo-check pre-deployment add-tag update-trunk clean-up
 # send-email
 
 check-tag:
@@ -114,13 +113,13 @@ add-tag:
 	@mkdir -p $(SVN_DIR)/tags/$(NEW_TAG)
 	@cp -R $(BUILD_DIR)/ $(SVN_DIR)/tags/$(NEW_TAG)/
 
-add-tag-to-svn:
-	@echo "$(BLUE)Adding new tag $(NEW_TAG) to SVN repository...$(NC)"
-	@#cd $(SVN_DIR)/tags/$(NEW_TAG) && svn add --force * --auto-props --parents --depth infinity -q
+#add-tag-to-svn:
+#	@echo "$(BLUE)Adding new tag $(NEW_TAG) to SVN repository...$(NC)"
+#	@#cd $(SVN_DIR)/tags/$(NEW_TAG) && svn add --force * --auto-props --parents --depth infinity -q
 
-svn-commit:
-	@echo "$(BLUE)Committing new tag $(NEW_TAG) to SVN repository...$(NC)"
-	@#cd $(SVN_DIR)/tags/$(NEW_TAG) && svn commit -m "Tagging version $(NEW_TAG)"
+#svn-commit:
+#	@echo "$(BLUE)Committing new tag $(NEW_TAG) to SVN repository...$(NC)"
+#	@#cd $(SVN_DIR)/tags/$(NEW_TAG) && svn commit -m "Tagging version $(NEW_TAG)"
 
 update-trunk:
 	@echo "$(BLUE)Also updating trunk files to  latest tag $(NEW_TAG)...$(NC)"
@@ -133,12 +132,30 @@ update-trunk:
 	@cp -R $(BUILD_DIR)/* $(SVN_DIR)/trunk/.
 	@echo "$(BLUE)Commit trunk to SVN to this latest tag $(NEW_TAG)...$(NC)"
 	@echo "$(RED) Don't forget to actually commit to SVN now."
+
 #	@cd $(SVN_DIR)/trunk && svn add --force * --auto-props --parents --depth infinity -q
 #	@cd $(SVN_DIR)/trunk && svn commit -m "Updating trunk to version $(NEW_TAG)"
 
+commit-to-svn:
+	svn add tags/$(NEW_TAG)
+	svn commit -m "Added tags/$(NEW_TAG)"
+	svn delete trunk
+	svn add trunk --force
+	svn commit -m "Replaced trunk folder with version $(NEW_TAG)"
+
+get-fresh-svn:
+	svn checkout $(SVN_URL) svn-directory
+	# https://plugins.svn.wordpress.org/bluem
+
+.PHONY: release
+release: commit-to-svn
+
 clean-up:
 	@echo "$(BLUE)Cleaning up...$(NC)"
-	@rm -rf $(BUILD_DIR)
+	@#rm -rf $(BUILD_DIR)
+
+copy-to-docker:
+	make pre-deployment; cp -r build/* ../plugins/bluem/.
 
 #send-email:
 #	@./loadenv.sh
