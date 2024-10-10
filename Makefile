@@ -87,6 +87,7 @@ repo-check:
 	@#svn info $(SVN_URL) > /dev/null 2>&1 || (echo "$(RED)Cannot access SVN repository. Check network or URL.$(NC)" && exit 1)
 
 pre-deployment:
+	#make run-phpcbf
 	@echo "$(BLUE)Preparing build directory...$(NC)"
 	if [ -d "$(BUILD_DIR)" ]; then \
         if [ "$(BUILD_DIR)" != "/" ]; then \
@@ -100,7 +101,7 @@ pre-deployment:
 	@cd $(BUILD_DIR) && composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction || { echo "$(RED)Composer install failed!$(NC)"; exit 1; }
 	@cd $(BUILD_DIR) && composer clear-cache
 	@echo "$(BLUE)Removing unnecessary files from build directory...$(NC)"
-	@cd $(BUILD_DIR) && rm -rf README.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml codeception.yml Dockerfile loadenv.sh Makefile .php-cs-fixer.cache .phpunit.result.cache .travis.yml phpunit.xml psalm.xml
+	@cd $(BUILD_DIR) && rm -rf README.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml codeception.yml Dockerfile loadenv.sh Makefile .php-cs-fixer.cache .phpunit.result.cache .travis.yml phpunit.xml psalm.xml .DS_STORE
 
 add-tag:
 	@echo "$(BLUE)Copying files to SVN tag directory...$(NC)"
@@ -156,6 +157,13 @@ clean-up:
 
 copy-to-docker:
 	make pre-deployment; cp -r build/* ../plugins/bluem/.
+
+
+run-phpcs:
+	vendor/bin/phpcs --standard=WordPress ./src bluem-*.php
+
+run-phpcbf:
+	vendor/bin/phpcbf --standard=WordPress ./src bluem-*.php
 
 #send-email:
 #	@./loadenv.sh

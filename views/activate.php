@@ -4,7 +4,7 @@
 ?>
 <div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php echo wp_kses_post(bluem_get_bluem_logo_html(48)); ?>
     </h1>
 
     <?php bluem_render_nav_header('activate'); ?>
@@ -16,7 +16,8 @@
 
     <?php if (isset($bluem_plugin_registration) && ((int)$bluem_plugin_registration) === 1) { ?>
         <div class="notice notice-success is-dismissible">
-            <p><span class="dashicons dashicons-yes-alt"></span> <?php esc_html_e('De plug-in is geactiveerd', 'bluem'); ?>
+            <p>
+                <span class="dashicons dashicons-yes-alt"></span> <?php esc_html_e('De plug-in is geactiveerd', 'bluem'); ?>
             </p>
 
             <?php esc_html_e('Volgende stappen:', 'bluem'); ?>
@@ -25,7 +26,7 @@
 
                     <li>
                         ✓&nbsp;
-                        <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout'); ?>"
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=wc-settings&tab=checkout')); ?>"
                            title="<?php esc_html_e('WooCommerce betaalmethoden', 'bluem'); ?>"
                         >
                             <?php esc_html_e('Activeer en beheer de betaalmethoden in WooCommerce instellingen', 'bluem'); ?>
@@ -34,7 +35,7 @@
                 <?php } ?>
                 <li>
                     ✓&nbsp;
-                    <a href="<?php echo admin_url('admin.php?page=bluem-transactions', 'bluem'); ?>"
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=bluem-transactions', 'bluem')); ?>"
                        title="<?php esc_html_e('WooCommerce instellingen', 'bluem'); ?>"
                     >
                         <?php esc_html_e('Bekijk de transactieweergave', 'bluem'); ?>

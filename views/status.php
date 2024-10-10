@@ -1,5 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) exit;
 ?>
 <style type="text/css">
 
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
     }
 
     .bluem_logo:before {
-        background-image: url('<?php echo plugin_dir_url( '' ); ?>/bluem/assets/bluem/logo-hero.png');
+        background-image: url('<?php echo esc_url(plugin_dir_url( '' )); ?>/bluem/assets/bluem/logo-hero.png');
         background-size: contain;
         background-repeat: no-repeat;
         content: '';
@@ -95,7 +95,7 @@ function bluem_display_woocommerce_logs(): string
 
 <div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php echo wp_kses(bluem_get_bluem_logo_html(48), ['img']); ?>
         <?php esc_html_e('Status', 'bluem'); ?>
     </h1>
 
@@ -114,15 +114,15 @@ function bluem_display_woocommerce_logs(): string
             <ul>
                 <?php if (bluem_module_enabled('mandates')) { ?>
                     <li><?php esc_html_e('Incassomachtigen', 'bluem'); ?> <span class="dashicons dashicons-yes"
-                                                                             style="color: #4F800D;"></span></li>
+                                                                                style="color: #4F800D;"></span></li>
                 <?php } ?>
                 <?php if (bluem_module_enabled('payments')) { ?>
                     <li><?php esc_html_e('Betalingen', 'bluem'); ?> <span class="dashicons dashicons-yes"
-                                                                       style="color: #4F800D;"></span></li>
+                                                                          style="color: #4F800D;"></span></li>
                 <?php } ?>
                 <?php if (bluem_module_enabled('idin')) { ?>
                     <li><?php esc_html_e('Identiteit', 'bluem'); ?> <span class="dashicons dashicons-yes"
-                                                                       style="color: #4F800D;"></span></li>
+                                                                          style="color: #4F800D;"></span></li>
                 <?php } ?>
             </ul>
         </div>
@@ -131,13 +131,13 @@ function bluem_display_woocommerce_logs(): string
             <h1><?php esc_html_e('Logs', 'bluem'); ?></h1>
 
             <h3><?php esc_html_e('PHP errors', 'bluem'); ?></h3>
-            <?php echo bluem_display_php_errors(); ?>
+            <?php echo wp_kses_post(bluem_display_php_errors()); ?>
 
             <h3><?php esc_html_e('WordPress debug log', 'bluem'); ?></h3>
-            <?php echo bluem_display_wordpress_debug_log(); ?>
+            <?php echo wp_kses_post(bluem_display_wordpress_debug_log()); ?>
 
             <h3><?php esc_html_e('WooCommerce error logs', 'bluem'); ?></h3>
-            <?php echo bluem_display_woocommerce_logs(); ?>
+            <?php echo wp_kses_post(bluem_display_woocommerce_logs()); ?>
         </div>
     </div>
 

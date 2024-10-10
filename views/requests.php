@@ -1,8 +1,8 @@
-<?php if ( ! defined( 'ABSPATH' ) ) exit;
+<?php if (!defined('ABSPATH')) exit;
 ?>
 <div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php echo wp_kses_post(bluem_get_bluem_logo_html(48)); ?>
         <?php esc_html_e('Transacties', 'bluem'); ?>
     </h1>
 
@@ -14,7 +14,7 @@
             if (isset($requests)) {
                 foreach ($requests as $cat => $rs) { ?>
                     <a href="#" class="nav-tab" data-tab="<?php echo esc_attr($cat); ?> ">
-                        <?php echo bluem_render_requests_type($cat);
+                        <?php echo wp_kses_post(bluem_render_requests_type($cat));
 
                         if (!empty($rs)) {
                             $count = count($rs);

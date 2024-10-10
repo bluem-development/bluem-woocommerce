@@ -28,11 +28,14 @@
         "vimeo/psalm": "^4.16",
         "codeception/codeception": "^5.0",
         "codeception/module-phpbrowser": "*",
-        "codeception/module-asserts": "*"
+        "codeception/module-asserts": "*",
+        "wp-coding-standards/wpcs": "^3.0",
+        "squizlabs/php_codesniffer": "^3.10"
     },
     "config": {
         "allow-plugins": {
-            "composer/package-versions-deprecated": false
+            "composer/package-versions-deprecated": false,
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
     "autoload": {
