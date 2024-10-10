@@ -1,5 +1,6 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) exit;
+
 use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 
@@ -14,19 +15,19 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
      */
     public function __construct()
     {
-        $methodDescription = esc_html__('eMandate Payment Gateway voor WordPress - WooCommerce.','bluem');
+        $methodDescription = esc_html__('eMandate Payment Gateway voor WordPress - WooCommerce.', 'bluem');
 
         parent::__construct(
             'bluem_mandates',
-            esc_html__('Bluem Digitaal Incassomachtiging (eMandate)','bluem'),
+            esc_html__('Bluem Digitaal Incassomachtiging (eMandate)', 'bluem'),
             $methodDescription,
             home_url('wc-api/bluem_mandates_callback')
         );
 
         if (isset($this->bluem_config->localInstrumentCode) && $this->bluem_config->localInstrumentCode === "B2B") {
-            $this->method_title = esc_html__('Bluem Zakelijke Incassomachtiging (eMandate)','bluem');
+            $this->method_title = esc_html__('Bluem Zakelijke Incassomachtiging (eMandate)', 'bluem');
         } else {
-            $this->method_title = esc_html__('Bluem Particuliere Incassomachtiging (eMandate)','bluem');
+            $this->method_title = esc_html__('Bluem Particuliere Incassomachtiging (eMandate)', 'bluem');
         }
 
         $this->has_fields = true;
@@ -40,18 +41,18 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         // This action hook saves the settings
         add_action(
             'woocommerce_update_options_payment_gateways_' . $this->id,
-            array( $this, 'process_admin_options' )
+            array($this, 'process_admin_options')
         );
 
         // ********** CREATING plugin URLs for specific functions **********
         add_action(
             'woocommerce_api_bluem_mandates_webhook',
-            array( $this, 'bluem_mandates_webhook' ),
+            array($this, 'bluem_mandates_webhook'),
             5
         );
         add_action(
             'woocommerce_api_bluem_mandates_callback',
-            array( $this, 'bluem_mandates_callback' )
+            array($this, 'bluem_mandates_callback')
         );
 
         // ********** Allow filtering Orders based on MandateID **********
@@ -60,7 +61,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             function ($query, $query_vars) {
                 if (!empty($query_vars['bluem_mandateid'])) {
                     $query['meta_query'][] = array(
-                        'key'   => 'bluem_mandateid',
+                        'key' => 'bluem_mandateid',
                         'value' => esc_attr($query_vars['bluem_mandateid']),
                     );
                 }
@@ -101,24 +102,24 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
     public function init_form_fields()
     {
         $this->form_fields = apply_filters('wc_offline_form_fields', [
-            'enabled'     => [
-                'title'       => 'Enable/Disable',
-                'label'       => esc_html__('Activeer de Bluem eMandate Gateway','bluem'),
-                'type'        => 'checkbox',
+            'enabled' => [
+                'title' => 'Enable/Disable',
+                'label' => esc_html__('Activeer de Bluem eMandate Gateway', 'bluem'),
+                'type' => 'checkbox',
                 'description' => '',
-                'default'     => 'no'
+                'default' => 'no'
             ],
-            'title'       => [
-                'title'       => 'Titel van betaalmethode',
-                'type'        => 'text',
-                'description' => esc_html__('Dit bepaalt de titel die de gebruiker ziet tijdens het afrekenen.','bluem'),
-                'default'     => esc_html__('Incasso machtiging voor zakelijke Rabobank, ING of ABN AMRO rekeningen','bluem'),
+            'title' => [
+                'title' => 'Titel van betaalmethode',
+                'type' => 'text',
+                'description' => esc_html__('Dit bepaalt de titel die de gebruiker ziet tijdens het afrekenen.', 'bluem'),
+                'default' => esc_html__('Incasso machtiging voor zakelijke Rabobank, ING of ABN AMRO rekeningen', 'bluem'),
             ],
             'description' => [
-                'title'       => 'Description',
-                'type'        => 'textarea',
-                'description' => esc_html__('Dit bepaalt de beschrijving die de gebruiker ziet tijdens het afrekenen.','bluem'),
-                'default'     => esc_html__('Geef een B2B eMandate af voor een incasso voor je bestelling.','bluem'),
+                'title' => 'Description',
+                'type' => 'textarea',
+                'description' => esc_html__('Dit bepaalt de beschrijving die de gebruiker ziet tijdens het afrekenen.', 'bluem'),
+                'default' => esc_html__('Geef een B2B eMandate af voor een incasso voor je bestelling.', 'bluem'),
             ]
         ]);
     }
@@ -147,7 +148,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 
             if ($request !== false) {
                 $bluem_latest_mandate_entrance_code = $request->entrance_code;
-                $bluem_latest_mandate_id            = $request->transaction_id;
+                $bluem_latest_mandate_id = $request->transaction_id;
 
                 $retrieved_request_from_db = true;
 
@@ -191,9 +192,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             }
 
             if (!$existing_mandate_response->Status()) {
-                $reason = esc_html__("No / invalid bluem response for existing mandate",'bluem');
-            // existing mandate response is not at all valid,
-            // continue with actual mandate process
+                $reason = esc_html__("No / invalid bluem response for existing mandate", 'bluem');
+                // existing mandate response is not at all valid,
+                // continue with actual mandate process
             } elseif (
                 $existing_mandate_response->EMandateStatusUpdate->EMandateStatus->Status . "" === "Success"
             ) {
@@ -222,8 +223,8 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                         bluem_db_request_log(
                             $request->id,
                             sprintf(
-                                /* translators: %s: order id */
-                                esc_html__( 'Utilized this request for a payment for another order with ID %s', 'bluem' ),
+                            /* translators: %s: order id */
+                                esc_html__('Utilized this request for a payment for another order with ID %s', 'bluem'),
                                 $order_id
                             )
                         );
@@ -246,7 +247,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                         }
 
                         try {
-                            $payload_string = json_encode($cur_payload, JSON_THROW_ON_ERROR);
+                            $payload_string = wp_json_encode($cur_payload, JSON_THROW_ON_ERROR);
                         } catch (Exception $e) {
                             $payload_string = '';
                         }
@@ -260,21 +261,21 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                     }
 
                     return array(
-                        'result'   => 'success',
+                        'result' => 'success',
                         'redirect' => $order->get_checkout_order_received_url()
                     );
                 }
 
-                $reason = esc_html__("Existing mandate found, but not valid",'bluem');
+                $reason = esc_html__("Existing mandate found, but not valid", 'bluem');
             } else {
-                $reason = esc_html__("Existing mandate is not a successful mandate",'bluem');
+                $reason = esc_html__("Existing mandate is not a successful mandate", 'bluem');
             }
         } else {
-            $reason = esc_html__("Not ready, no metadata",'bluem');
+            $reason = esc_html__("Not ready, no metadata", 'bluem');
         }
 
         return array(
-            'result'  => 'fail',
+            'result' => 'fail',
             'message' => $reason
         );
     }
@@ -284,11 +285,11 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
      */
     public function payment_fields()
     {
-        if($this->bluem === null) {
+        if ($this->bluem === null) {
             return;
         }
 
-        $BICs = $this->bluem->retrieveBICsForContext( "Mandates" );
+        $BICs = $this->bluem->retrieveBICsForContext("Mandates");
 
         $description = $this->get_description();
 
@@ -300,7 +301,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 
         // Loop through BICS
         foreach ($BICs as $BIC) {
-            $options[ $BIC->issuerID ] = $BIC->issuerName;
+            $options[$BIC->issuerID] = $BIC->issuerName;
         }
 
         // Check for options
@@ -308,7 +309,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             woocommerce_form_field('bluem_mandates_bic', array(
                 'type' => 'select',
                 'required' => true,
-                'label' => esc_html__('Selecteer een bank:','bluem'),
+                'label' => esc_html__('Selecteer een bank:', 'bluem'),
                 'options' => $options,
             ), '');
         }
@@ -340,7 +341,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         if (!empty($this->bluem_config->eMandateReason)) {
             $this->bluem_config->eMandateReason = mb_convert_encoding($bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
         } else {
-            $this->bluem_config->eMandateReason = esc_html__("Incasso machtiging",'bluem');
+            $this->bluem_config->eMandateReason = esc_html__("Incasso machtiging", 'bluem');
         }
 
         try {
@@ -365,7 +366,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 
         if (isset($check['result']) && $check['result'] === "success") {
             return array(
-                'result'   => 'success',
+                'result' => 'success',
                 'redirect' => $order->get_checkout_order_received_url()
             );
             // @todo Possibly allow different redirect after fast checkout with existing, valid, mandate.
@@ -375,7 +376,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 
         $order_id = $order->get_id();
         // update: added prefixed order ID for retries of mandate requests
-        $prefixed_order_id = date("His") . $order_id;
+        $prefixed_order_id = gmdate("His") . $order_id;
         $mandate_id = $this->bluem->CreateMandateId(
             $prefixed_order_id,
             $user_id
@@ -442,24 +443,34 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 
             // Logging transaction
             $raw_request_object = [
-                'entrance_code'    => $entranceCode,
-                'transaction_id'   => $mandate_id,
-                'transaction_url'  => $transactionURL,
-                'user_id'          => get_current_user_id(),
-                'timestamp'        => date("Y-m-d H:i:s"),
-                'description'      => esc_attr__(sprintf("Mandate request %s %s", $order_id,$user_id), 'bluem'),
+                'entrance_code' => $entranceCode,
+                'transaction_id' => $mandate_id,
+                'transaction_url' => $transactionURL,
+                'user_id' => get_current_user_id(),
+                'timestamp' => gmdate("Y-m-d H:i:s"),
+                'description' =>
+                    sprintf(
+                    /**
+                     * translators:
+                     * %1/$s: order id
+                     * %2/$s: user id
+                     */
+                        esc_html__("Mandate request for order %1$s by user %2$s", 'bluem'),
+                        $order_id,
+                        $user_id
+                    ),
                 'debtor_reference' => "",
-                'type'             => "mandates",
-                'order_id'         => $order_id,
-                'payload'          => json_encode(
+                'type' => "mandates",
+                'order_id' => $order_id,
+                'payload' => wp_json_encode(
                     [
-                        'environment'           => $this->bluem_config->environment,
-                        'order_amount'          => $order->get_total(),
-                        'created_mandate_id'    => $mandate_id,
+                        'environment' => $this->bluem_config->environment,
+                        'order_amount' => $order->get_total(),
+                        'created_mandate_id' => $mandate_id,
                         'local_instrument_code' => $this->bluem_config->localInstrumentCode,
-                        'issuing_type'          => $this->bluem_config->requestType,
-                        'sequence_type'         => $this->bluem_config->sequenceType,
-                        'linked_orders'         => [ $order_id ]
+                        'issuing_type' => $this->bluem_config->requestType,
+                        'sequence_type' => $this->bluem_config->sequenceType,
+                        'linked_orders' => [$order_id]
                     ]
                 )
             ];
@@ -469,7 +480,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             );
 
             return array(
-                'result'   => 'success',
+                'result' => 'success',
                 'redirect' => $transactionURL
             );
         }
@@ -509,7 +520,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 $order = $this->getOrder($mandateID);
                 if (is_null($order)) {
                     http_response_code(404);
-                    esc_html_e("Error: No order found",'bluem');
+                    esc_html_e("Error: No order found", 'bluem');
                     exit;
                 }
                 $order_status = $order->get_status();
@@ -527,7 +538,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 $acceptanceReport = $webhook->getAcceptanceReportArray();
 
                 if (!empty($acceptanceReport['MaxAmount'])) {
-                    $mandate_amount = (float) ($acceptanceReport['MaxAmount'] . "");
+                    $mandate_amount = (float)($acceptanceReport['MaxAmount'] . "");
                 } else {
                     $mandate_amount = 0.0;    // mandate amount is not set, so it is unlimited
                 }
@@ -541,9 +552,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 }
 
                 if ($maxAmountEnabled) {
-                    $maxAmountFactor =  isset($settings['maxAmountFactor'])
-                        ? (float) ($settings['maxAmountFactor'])
-                        : 1.0 ;
+                    $maxAmountFactor = isset($settings['maxAmountFactor'])
+                        ? (float)($settings['maxAmountFactor'])
+                        : 1.0;
 
                     $mandate_successful = false;
 
@@ -587,8 +598,8 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         } catch (Exception $e) {
             http_response_code(500);
             printf(
-                /* translators: %s: exception message */
-                esc_html__("Error: Exception: %s",'bluem'),
+            /* translators: %s: exception message */
+                esc_html__("Error: Exception: %s", 'bluem'),
                 $e->getMessage()
             );
             exit;
@@ -605,8 +616,8 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
     private function getOrder(string $mandateID)
     {
         $orders = wc_get_orders(array(
-            'orderby'         => 'date',
-            'order'           => 'DESC',
+            'orderby' => 'date',
+            'order' => 'DESC',
             'bluem_mandateid' => $mandateID
         ));
         if (count($orders) == 0) {
@@ -626,12 +637,12 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         // dont recreate it here, it should already exist in the gateway!
 
         if (!isset($_GET['mandateID'])) {
-            $errormessage = esc_html__("Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.",'bluem');
+            $errormessage = esc_html__("Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.", 'bluem');
             bluem_error_report_email(
                 [
-                    'service'  => 'mandates',
+                    'service' => 'mandates',
                     'function' => 'mandates_callback',
-                    'message'  => $errormessage
+                    'message' => $errormessage
                 ]
             );
             bluem_dialogs_render_prompt($errormessage);
@@ -639,12 +650,12 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         }
 
         if ($_GET['mandateID'] == "") {
-            $errormessage = esc_html__("Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.","bluem");
+            $errormessage = esc_html__("Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.", "bluem");
             bluem_error_report_email(
                 [
-                    'service'  => 'mandates',
+                    'service' => 'mandates',
                     'function' => 'mandates_callback',
-                    'message'  => $errormessage
+                    'message' => $errormessage
                 ]
             );
             bluem_dialogs_render_prompt($errormessage);
@@ -654,12 +665,14 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 
         $order = $this->getOrder($mandateID);
         if (is_null($order)) {
-            $errormessage = sprintf(esc_html__("Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code %s bij je gegevens.","bluem"),$mandateID);
+            $errormessage = sprintf(
+            /* translators: %s: error code */
+                esc_html__("Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code %s bij je gegevens.", "bluem"), $mandateID);
             bluem_error_report_email(
                 [
-                    'service'  => 'mandates',
+                    'service' => 'mandates',
                     'function' => 'mandates_callback',
-                    'message'  => $errormessage
+                    'message' => $errormessage
                 ]
             );
             bluem_dialogs_render_prompt($errormessage);
@@ -682,12 +695,12 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         try {
             $response = $this->bluem->MandateStatus($mandateID, $entranceCode);
         } catch (Exception $e) {
-            $errormessage = wp_kses_post(sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status","bluem"),$e->getMessage()));
+            $errormessage = wp_kses_post(sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", "bluem"), $e->getMessage()));
             bluem_error_report_email(
                 [
-                    'service'  => 'mandates',
+                    'service' => 'mandates',
                     'function' => 'mandates_callback',
-                    'message'  => $errormessage
+                    'message' => $errormessage
                 ]
             );
             bluem_dialogs_render_prompt($errormessage);
@@ -695,12 +708,12 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         }
 
         if (!$response->Status()) {
-            $errormessage = wp_kses_post(sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status","bluem"),$response->Error()));
+            $errormessage = wp_kses_post(sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", "bluem"), $response->Error()));
             bluem_error_report_email(
                 [
-                    'service'  => 'mandates',
+                    'service' => 'mandates',
                     'function' => 'mandates_callback',
-                    'message'  => $errormessage
+                    'message' => $errormessage
                 ]
             );
             bluem_dialogs_render_prompt($errormessage);
@@ -708,7 +721,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         }
 
         $statusUpdateObject = $response->EMandateStatusUpdate;
-        $statusCode         = $statusUpdateObject->EMandateStatus->Status . "";
+        $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
 
         // $request_from_db = bluem_db_get_request_by_transaction_id($mandateID);
         if ($statusCode !== $request_from_db->status) {
@@ -753,7 +766,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                     Deze persoon dient in te loggen op internet bankieren
                     en deze machtiging ook goed te keuren.
                     Hierna is de machtiging goedgekeurd en zal dit
-                    reageren op deze site.",'bluem')
+                    reageren op deze site.", 'bluem')
             );
             exit;
         } elseif ($statusCode === "Cancelled") {
@@ -784,7 +797,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             );
 
             bluem_dialogs_render_prompt(
-                esc_html__("Fout: De mandaat of het verzoek daartoe is verlopen",'bluem')
+                esc_html__("Fout: De mandaat of het verzoek daartoe is verlopen", 'bluem')
             );
             exit;
         } else {
@@ -793,13 +806,13 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 esc_html__('Authorization failed: error or unknown status', 'bluem')
             );
             $errormessage = sprintf(
-                /** translators: %s: error status code */
-                esc_html__("Fout: Onbekende of foutieve status teruggekregen: %s. Neem contact op met de webshop en vermeld deze status",'bluem'),$statusCode);
+            /* translators: %s: error status code */
+                esc_html__("Fout: Onbekende of foutieve status teruggekregen: %s. Neem contact op met de webshop en vermeld deze status", 'bluem'), $statusCode);
             bluem_error_report_email(
                 [
-                    'service'  => 'mandates',
+                    'service' => 'mandates',
                     'function' => 'mandates_callback',
-                    'message'  => $errormessage
+                    'message' => $errormessage
                 ]
             );
 
@@ -826,22 +839,22 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
     private function validateMandate($response, $order, $block_processing = false, $update_metadata = true, $redirect = true, $mandate_id = null, $entrance_code = null)
     {
         $maxAmountResponse = $this->bluem->GetMaximumAmountFromTransactionResponse($response);
-        $user_id           = $order->get_user_id();
+        $user_id = $order->get_user_id();
 
         // @todo: remove mandate ID from parameters and get it here:
         $mandate_id = $response->EMandateStatusUpdate->EMandateStatus->MandateID . "";
 
-        $settings         = get_option('bluem_woocommerce_options');
+        $settings = get_option('bluem_woocommerce_options');
         $maxAmountEnabled = (isset($settings['maxAmountEnabled']) && $settings['maxAmountEnabled'] === "1");
         if ($maxAmountEnabled) {
-            $maxAmountFactor = (isset($settings['maxAmountFactor']) ? (float) ($settings['maxAmountFactor']) : false);
+            $maxAmountFactor = (isset($settings['maxAmountFactor']) ? (float)($settings['maxAmountFactor']) : false);
         } else {
             $maxAmountFactor = 1.0;
         }
 
         $successful_mandate = false;
 
-        $request_id      = "";
+        $request_id = "";
         $request_from_db = false;
         if (!empty($mandate_id)) {
             $request_from_db = bluem_db_get_request_by_transaction_id_and_type(
@@ -855,7 +868,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         if ($maxAmountEnabled) {
 
             // NextDeli specific: estimate 10% markup on order total:
-            $order_total_plus = (float) $order->get_total() * $maxAmountFactor;
+            $order_total_plus = (float)$order->get_total() * $maxAmountFactor;
 
 //            if (self::VERBOSE) {
 //                if ($maxAmountResponse->amount === 0.0) {
@@ -896,25 +909,29 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                     $url = $order->get_checkout_payment_url();
                     $order_total_plus_string = str_replace(".", ",", ("" . round($order_total_plus, 2)));
                     bluem_dialogs_render_prompt(
-                        sprintf(esc_html__(
-
-                        "<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
-<p>De geschatte factuurwaarde van jouw bestelling is EUR %s. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor 'onbeperkt' te kiezen.</p>" .
-                        "<p><a href='%s' target='_self'>Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>",
-                        'bluem'),
-                            $order_total_plus_string,
-                            $url
+                        wp_kses_post(
+                            sprintf(
+                                __(
+                                /* translators: %1$s: order total plus 10%, %2$s: URL to payment page */
+                                    '<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
+<p>De geschatte factuurwaarde van jouw bestelling is EUR %1$s. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor "onbeperkt" te kiezen.</p>'
+                                    .
+                                    '<p><a href="%2$s" target="_self">Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>',
+                                    'bluem'),
+                                $order_total_plus_string,
+                                $url
+                            )
                         ),
                         false
                     );
 
                     bluem_db_request_log(
                         $request_id,
-                        sprintf(esc_html__("User tried to give use this mandate with maxamount
+                        sprintf(__("User tried to give use this mandate with maxamount
 &euro; %s, but the Order <a href='" .
-                        admin_url("post.php?post=%s&action=edit") .
-                        "' target='_self'>ID %s</a> grand total including correction is &euro; %s.
-                        The user is prompted to create a new mandate to fulfill this order.","bluem"),
+                            esc_url(admin_url("post.php?post=%s&action=edit")) .
+                            "' target='_self'>ID %s</a> grand total including correction is &euro; %s.
+                        The user is prompted to create a new mandate to fulfill this order.", "bluem"),
                             $maxAmountResponse->amount,
                             $order->get_id(),
                             $order->get_id(),
@@ -978,7 +995,11 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 
             $order->update_status(
                 'processing',
-                printf(esc_html__('Authorization (Mandate ID %1$s, Request ID %2$s) has been obtained and approved', 'bluem'), $mandate_id, $request_id)
+                printf(
+                /* translators: %1$s: mandate id, %2$s: request id */
+                    esc_html__('Authorization (Mandate ID %1$s, Request ID %2$s) has been obtained and approved', 'bluem'),
+                    $mandate_id, $request_id
+                )
             );
 
             bluem_transaction_notification_email(

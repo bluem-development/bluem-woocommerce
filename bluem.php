@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name: Bluem ePayments, iDIN, eMandates and WooCommerce
+ * Plugin Name: Bluem ePayments, iDIN, eMandates services and integration for WooCommerce
  * Version: 1.3.21
  * Plugin URI: https://bluem.nl/en/
  * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and more
@@ -459,6 +459,7 @@ function bluem_update_request_by_id($request_id)
 
             if (!$response->ReceivedResponse()) {
                 $errormessage = printf(
+                /* translators: %s: error status */
                     esc_html__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem'),
                     $response->Error()
                 );
@@ -520,6 +521,7 @@ function bluem_update_request_by_id($request_id)
             }
         } catch (Exception $e) {
             $errormessage = printf(
+            /* translators: %s: error status */
                 esc_html__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem'),
                 $response->Error()
             );
@@ -539,6 +541,7 @@ function bluem_update_request_by_id($request_id)
 
             if (!$response->Status()) {
                 $errormessage = printf(
+                /* translators: %s: error status */
                     esc_html__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem'),
                     $response->Error()
                 );
@@ -617,7 +620,8 @@ function bluem_update_request_by_id($request_id)
             }
         } catch (Exception $e) {
             $errormessage = printf(
-                esc_html__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem'),
+            /* translators: %s: error status */
+                esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem'),
                 $response->Error()
             );
             bluem_error_report_email(
@@ -636,7 +640,8 @@ function bluem_update_request_by_id($request_id)
 
             if (!$response->Status()) {
                 $errormessage = printf(
-                    esc_html__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem'),
+                /* translators: %s: error status */
+                    esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem'),
                     $response->Error()
                 );
                 bluem_error_report_email(
@@ -695,7 +700,8 @@ function bluem_update_request_by_id($request_id)
             }
         } catch (Exception $e) {
             $errormessage = printf(
-                esc_html__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem'),
+            /* translators: %s: error status */
+                esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem'),
                 $response->Error()
             );
             bluem_error_report_email(
@@ -818,7 +824,7 @@ function bluem_woocommerce_general_settings_section()
 
     printf(
         wp_kses_post(
-        /** translators: %s: url to import/export page */
+        /* translators: %s: url to import/export page */
             __('Ga naar <a href="%s" class="">instellingen importeren of exporteren</a>.</div>', 'bluem')
         ),
         admin_url('admin.php?page=bluem-importexport')
@@ -904,7 +910,12 @@ function bluem_woocommerce_register_settings()
             'bluem_woocommerce'
         );
 
-        $mandates_settings = bluem_woocommerce_get_mandates_options();
+        if (function_exists('bluem_woocommerce_get_mandates_options')) {
+            $mandates_settings = bluem_woocommerce_get_mandates_options();
+        } else {
+            $mandates_settings = [];
+        }
+
         if (is_array($mandates_settings) && count($mandates_settings) > 0) {
             foreach ($mandates_settings as $key => $ms) {
                 add_settings_field(
@@ -1042,7 +1053,9 @@ function bluem_woocommerce_show_general_profile_fields()
             </th>
             <td>
                 <?php
-                printf(esc_html__('Ga naar de <a href="%s">
+                printf(
+                /* translators: %s: link to bluem settings */
+                    esc_html__('Ga naar de <a href="%s">
                     instellingen</a> om het gedrag van elk Bluem onderdeel te wijzigen.', 'bluem'), home_url("wp-admin/admin.php?page=bluem-settings"));
                 ?>
             </td>
@@ -1376,7 +1389,7 @@ add_action('save_post', 'bluem_woocommerce_save_age_verification_values');
  */
 function bluem_error_report_email($data = []): bool
 {
-    $error_report_id = date("Ymdhis") . '_' . random_int(0, 512);
+    $error_report_id = gmdate("Ymdhis") . '_' . random_int(0, 512);
 
     $data = (object)$data;
     $data->error_report_id = $error_report_id;
@@ -1405,7 +1418,14 @@ function bluem_error_report_email($data = []): bool
         $subject = "[" . get_bloginfo('name') . "] ";
         $subject .= esc_html__("Notificatie Error in Bluem ", 'bluem');
 
-        $message = printf(esc_html__("<p>Error in Bluem plugin. %s <%s>,</p>", 'bluem'), $author_name, $author_email);
+        $message = printf(
+        /* translators:
+        %1$s: admin name
+        %2$s: admin email address
+         */
+            esc_html__('Error in Bluem plugin. %1$s <%2$s>,', 'bluem'),
+            $author_name, $author_email
+        );
         $message .= "<p>Data: <br>" . wp_kses_post(json_encode($data)) . "</p>";
 
         ob_start();
@@ -1450,7 +1470,7 @@ function bluem_email_footer(): string
 {
     return sprintf(
     /* translators: %s: website url */
-        esc_html__("<p>Ga naar de site op %s om dit verzoek in detail te bekijken.</p>", 'bluem'), home_url());
+        esc_html__("Ga naar de site op %s om dit verzoek in detail te bekijken.", 'bluem'), home_url());
 }
 
 /**
@@ -1488,7 +1508,9 @@ function bluem_transaction_notification_email(
     ) {
         $author_name = sprintf(
         /* translators: %s: website name */
-            esc_html__("Administratie van %s", 'bluem'), get_bloginfo('name'));
+            esc_html__("Administratie van %s", 'bluem'),
+            get_bloginfo('name')
+        );
 
         $to = esc_attr(
             get_option("admin_email")
@@ -1985,6 +2007,7 @@ function bluem_admin_importexport(): void
                 }
             }
             $messages[] = sprintf(
+            /* translators: %s: number of settings */
                 esc_html__("Importeren is uitgevoerd: %s instellingen aangepast.", 'bluem'),
                 $sett_count
             );
@@ -1995,7 +2018,7 @@ function bluem_admin_importexport(): void
 
     $options_json = "";
     if ($options !== false) {
-        $options_json = json_encode($options);
+        $options_json = wp_json_encode($options);
     }
 
     // @todo: improve this by creating a renderer function and passing the renderdata

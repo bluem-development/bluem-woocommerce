@@ -1,4 +1,6 @@
-<?php if ( ! defined( 'ABSPATH' ) ) exit;
+<?php if (!defined('ABSPATH')) {
+    exit;
+}
 
 include_once __DIR__ . '/Bluem_Payment_Gateway.php';
 
@@ -47,7 +49,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
     /**
      * Get bank specific brandID.
      */
-    protected function getBankSpecificBrandID()
+    protected function getBankSpecificBrandID(): ?string
     {
         return $this->bankSpecificBrandID;
     }
@@ -57,8 +59,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      */
     protected function getPaymentIdentifier()
     {
-        $identifier = str_replace('bluem_', '', $this->paymentIdentifier);
-        $identifier = str_replace('payments_', '', $identifier);
+        $identifier = str_replace(array('bluem_', 'payments_'), '', $this->paymentIdentifier);
 
         return $identifier;
     }
@@ -66,7 +67,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
     /**
      * Define bank specific brandID.
      */
-    protected function setBankSpecificBrandID($brandID)
+    protected function setBankSpecificBrandID($brandID): void
     {
         $this->bankSpecificBrandID = $brandID;
     }
@@ -74,7 +75,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
     /**
      * Define payment identifier.
      */
-    protected function setPaymentIdentifier($identifier)
+    protected function setPaymentIdentifier($identifier): void
     {
         $this->paymentIdentifier = $identifier;
     }
@@ -130,7 +131,12 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         update_post_meta($order_id, 'bluem_entrancecode', $entranceCode);
         if (!is_null($customer_id) && $customer_id !== "" && (int)$customer_id !== 0) {
-            $description = sprintf(esc_html__("Klant %s Bestelling %s", 'bluem'), $customer_id, $order_id);
+            $description = sprintf(
+            /* translators:
+            %1\$s: customer id
+            %2\$s: order id
+            */
+                esc_html__("Klant %1\$s, Bestelling %2\$s", 'bluem'), $customer_id, $order_id);
         } else {
             $description = esc_html__("Bestelling", 'bluem') . " " . $order_id;
         }
@@ -181,7 +187,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $request->dueDateTime = $dueDateTime->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
         $request->debtorReturnURL = home_url(sprintf('wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode));
 
-        $payload = json_encode([
+        $payload = wp_json_encode([
             'environment' => $this->bluem_config->environment,
             'amount' => $amount,
             'method' => $this->bankSpecificBrandID,
@@ -227,7 +233,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                     'transaction_id' => $transactionID,
                     'transaction_url' => $transactionURL,
                     'user_id' => get_current_user_id(),
-                    'timestamp' => date("Y-m-d H:i:s"),
+                    'timestamp' => gmdate("Y-m-d H:i:s"),
                     'description' => $description,
                     'debtor_reference' => $debtorReference,
                     'type' => $this->getPaymentIdentifier(),
@@ -252,7 +258,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      *
      * @return void
      */
-    public function bluem_bank_payments_webhook()
+    public function bluem_bank_payments_webhook(): void
     {
         try {
             $webhook = $this->bluem->Webhook();
@@ -346,7 +352,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      * @return void
      * @throws Exception
      */
-    public function bluem_bank_payments_callback()
+    public function bluem_bank_payments_callback(): void
     {
         if (!isset($_GET['entranceCode'])) {
             $errormessage = esc_html__("Fout: geen juiste entranceCode teruggekregen bij payment_callback. Neem contact op met de webshop en vermeld je contactgegevens.", 'bluem');
@@ -367,7 +373,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         if (is_null($order)) {
             $errormessage = sprintf(
-                /* translators: %s entrancecode */
+            /* translators: %s entrancecode */
                 esc_html__("Fout: order niet gevonden in webshop.
             Neem contact op met de webshop en vermeld de code %s bij je gegevens.", 'bluem'),
                 $entranceCode);
@@ -384,8 +390,10 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $user_id = $order->get_user_id();
 
         $transactionID = $order->get_meta('bluem_transactionid');
-        if ($transactionID == "") {
-            $errormessage = sprintf(esc_html__("Geen transactie ID gevonden. Neem contact op met de webshop en vermeld de code %s bij je gegevens.", 'bluem'), $entranceCode);
+        if (empty($transactionID)) {
+            $errormessage = sprintf(
+            /* translators: %s: entranceCode */
+                esc_html__("Geen transactie ID gevonden. Neem contact op met de webshop en vermeld de code %s bij je gegevens.", 'bluem'), $entranceCode);
             bluem_error_report_email(
                 [
                     'service' => 'payments',
@@ -400,7 +408,9 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $response = $this->bluem->PaymentStatus($transactionID, $entranceCode);
 
         if (!$response->Status()) {
-            $errormessage = sprintf(esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem'), $response->Error());
+            $errormessage = sprintf(
+            /* translators: %s: error status */
+                esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem'), $response->Error());
             bluem_error_report_email(
                 [
                     'service' => 'payments',
@@ -497,11 +507,12 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             );
             bluem_dialogs_render_prompt(
                 sprintf(
-                    wp_kses_post(__(
-                        "Fout: Onbekende of foutieve status teruggekregen: %s<br>
+                /* translators: %s: status code */
+                    esc_html__(
+                        "Fout: Onbekende of foutieve status teruggekregen: %s.
                         Neem contact op met de webshop en vermeld deze status",
                         'bluem'
-                    )),
+                    ),
                     $statusCode
                 )
             );

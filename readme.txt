@@ -1,8 +1,8 @@
-=== Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout ===
+=== Bluem ePayments, iDIN, eMandates services and integration for WooCommerce ===
 Contributors: bluempaymentservices
 Tags: Bluem,Payments,iDIN,iDEAL,eMandates
 Requires at least: 5.0
-Tested up to: 6.5
+Tested up to: 6.6
 Requires PHP: 8.0
 Stable tag: 1.3.21
 License: GPLv3
