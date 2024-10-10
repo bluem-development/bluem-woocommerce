@@ -1,5 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) exit;
 // @todo create a language file and consistently localize everything
 
 function bluem_get_idin_logo_html(): string
@@ -13,7 +13,7 @@ function bluem_get_idin_logo_html(): string
 
 function bluem_get_bluem_logo_html($height = 64): string
 {
-    return sprintf("<img src=\"%sassets/bluem/logo.png\" class=\"bluem-bluem-logo\" style=\"max-height:{$height}px; margin:10pt;  margin-bottom:0;  alt=\"Bluem logo\"
+    return sprintf("<img src=\"%sassets/bluem/logo.png\" class=\"bluem-bluem-logo\" height=\"" . esc_attr($height) . "\" style=\"max-height:" . esc_attr($height) . "px; margin:10pt;  margin-bottom:0;  alt=\"Bluem logo\"
         \"/>", plugin_dir_url(__FILE__));
 }
 
@@ -25,7 +25,7 @@ function bluem_render_request_table($categoryName, $requests, $users_by_id = [])
         printf(
         /* translators: %s: Name of the category (Bluem service)   */
             esc_html__('No transactions yet for %s', 'bluem'),
-            $categoryName
+            esc_attr($categoryName)
         );
         echo "</p>";
 
@@ -50,7 +50,7 @@ function bluem_render_request_table($categoryName, $requests, $users_by_id = [])
                 ?>
                 <tr>
                     <td width="20%">
-                        <a href="<?php echo admin_url("admin.php?page=bluem-transactions&request_id=" . $r->id); ?>"
+                        <a href="<?php echo esc_url(admin_url("admin.php?page=bluem-transactions&request_id=" . $r->id)); ?>"
                            target="_self">
                             <?php echo esc_html($r->description); ?>
                         </a>
@@ -73,7 +73,7 @@ function bluem_render_request_table($categoryName, $requests, $users_by_id = [])
                             }
                             if ($order !== false) {
                                 ?>
-                            <a href="<?php echo admin_url("post.php?post={$r->order_id}&action=edit"); ?>"
+                            <a href="<?php echo esc_url(admin_url("post.php?post={$r->order_id}&action=edit")); ?>"
                                target="_blank">
                                 <?php esc_html_e('Bestelling', 'bluem'); ?><?php echo esc_html($order->get_order_number()); ?>
                                 (<?php echo esc_html(wc_price($order->get_total())); ?>)
@@ -184,7 +184,7 @@ function bluem_render_request_status(string $status): void
         }
         default:
         {
-            echo "Status:". esc_html($status);
+            echo "Status:" . esc_html($status);
             break;
         }
     }
@@ -194,7 +194,7 @@ function bluem_render_request_user(object $r, array $users_by_id): void
 {
     if (isset($users_by_id[(int)$r->user_id])) {
         ?>
-        <a href="<?php echo admin_url("user-edit.php?user_id=" . $r->user_id . "#user_" . $r->type); ?>"
+        <a href="<?php echo esc_url(admin_url("user-edit.php?user_id=" . $r->user_id . "#user_" . $r->type)); ?>"
            target="_blank">
             <?php echo esc_html($users_by_id[(int)$r->user_id]->user_nicename); ?>
         </a>
@@ -222,7 +222,7 @@ function bluem_render_footer($align_right = true): void
             <span class="dashicons dashicons-media-document"></span>
             <?php esc_html_e('Handleiding', 'bluem'); ?>
             <small>
-            <span class="dashicons dashicons-external"></span>
+                <span class="dashicons dashicons-external"></span>
             </small>
         </a>
         &middot;
@@ -321,7 +321,7 @@ function bluem_render_requests_list($requests)
                 <span class="bluem-request-label">
                 <?php esc_html_e('Bluem modus', 'bluem'); ?>:
                 </span>
-                                    <?php echo ucfirst($pl->environment); ?>
+                                    <?php echo esc_attr(ucfirst($pl->environment)); ?>
                                 </div>
                                 <?php
                             } ?>
@@ -332,7 +332,7 @@ function bluem_render_requests_list($requests)
                 } ?>
 
                 <div class="bluem-request-list-item-row bluem-request-list-item-row-title">
-                    <a href="<?php echo admin_url("admin.php?page=bluem-transactions&request_id=" . $r->id); ?>"
+                    <a href="<?php echo esc_url(admin_url("admin.php?page=bluem-transactions&request_id=" . $r->id)); ?>"
                        target="_self">
                         <?php echo esc_html($r->description); ?>
                     </a>
@@ -398,9 +398,9 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0): void
     }
 
     if ($prettyKey !== "") {
-        echo "<span class='bluem-request-label' title='$prettyKey'>
-            ".esc_html($prettyKey).":
-        </span> ";
+        echo wp_kses_post("<span class='bluem-request-label' title='" . esc_attr($prettyKey) . "'>
+            " . esc_html($prettyKey) . ":
+        </span>&nbsp;");
     }
 
     if (is_string($value)) {
@@ -421,13 +421,14 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0): void
             bluem_render_obj_row_recursive($valuekey, $valuevalue, $level + 1);
         }
     } elseif (is_bool($value)) {
-        echo " " . ($value ? esc_html__("Ja",'bluem') : esc_html__("Nee",'bluem'));
+        echo " " . ($value ? esc_html__("Ja", 'bluem') : esc_html__("Nee", 'bluem'));
     }
 
     echo "<br>";
 }
 
-function bluem_woocommerce_render_details_table(string $value): void {
+function bluem_woocommerce_render_details_table(string $value): void
+{
     $additional_details = json_decode($value);
 
     if (!empty($additional_details)) {
@@ -437,8 +438,8 @@ function bluem_woocommerce_render_details_table(string $value): void {
             $formHTML = '<table style="padding:5pt; border:1px solid #ddd; margin:10px 0; display: inline-block; vertical-align: inherit;">
 <thead>
     <tr>
-        <th style="text-align: left;">'.esc_html__('Naam','bluem').'</th>
-        <th style="text-align: left;">'.esc_html__('Waarde','bluem').'</th>
+        <th style="text-align: left;">' . esc_html__('Naam', 'bluem') . '</th>
+        <th style="text-align: left;">' . esc_html__('Waarde', 'bluem') . '</th>
     </tr>
 </thead>
 <tbody>';
@@ -484,6 +485,7 @@ function bluem_woocommerce_render_details_table(string $value): void {
         }
     }
 }
+
 function bluem_woocommerce_render_contactform7_table(string $value): void
 {
     try {
@@ -600,7 +602,7 @@ function bluem_render_nav_header($active_page = '')
 {
     ?>
     <nav class="nav-tab-wrapper">
-        <a href="<?php echo admin_url('admin.php?page=bluem-admin'); ?>"
+        <a href="<?php echo esc_url(admin_url('admin.php?page=bluem-admin')); ?>"
             <?php if ($active_page === "home") {
                 echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
             } else {
@@ -610,7 +612,7 @@ function bluem_render_nav_header($active_page = '')
             <span class="dashicons dashicons-admin-home"></span>
             <?php esc_html_e('Home', 'bluem'); ?>
         </a>
-        <a href="<?php echo admin_url('admin.php?page=bluem-activate'); ?>"
+        <a href="<?php echo esc_url(admin_url('admin.php?page=bluem-activate')); ?>"
             <?php if ($active_page === "activate") {
                 echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
             } else {
@@ -620,7 +622,7 @@ function bluem_render_nav_header($active_page = '')
             <span class="dashicons dashicons-yes-alt"></span>
             <?php esc_html_e('Activatie', 'bluem'); ?>
         </a>
-        <a href="<?php echo admin_url('admin.php?page=bluem-transactions'); ?>"
+        <a href="<?php echo esc_url(admin_url('admin.php?page=bluem-transactions')); ?>"
             <?php if ($active_page === "transactions") {
                 echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
             } else {
@@ -630,7 +632,7 @@ function bluem_render_nav_header($active_page = '')
             <span class="dashicons dashicons-money"></span>
             <?php esc_html_e('Transacties', 'bluem'); ?>
         </a>
-        <a href="<?php echo admin_url('admin.php?page=bluem-settings'); ?>"
+        <a href="<?php echo esc_url(admin_url('admin.php?page=bluem-settings')); ?>"
             <?php if ($active_page === "settings") {
                 echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
             } else {
@@ -640,7 +642,7 @@ function bluem_render_nav_header($active_page = '')
             <span class="dashicons dashicons-admin-settings"></span>
             <?php esc_html_e('Instellingen', 'bluem'); ?>
         </a>
-        <a href="<?php echo admin_url('admin.php?page=bluem-importexport'); ?>"
+        <a href="<?php echo esc_url(admin_url('admin.php?page=bluem-importexport')); ?>"
             <?php if ($active_page === "importexport") {
                 echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
             } else {
@@ -650,7 +652,7 @@ function bluem_render_nav_header($active_page = '')
             <span class="dashicons dashicons-database"></span>
             <?php esc_html_e('Import / export', 'bluem'); ?>
         </a>
-        <a href="<?php echo admin_url('admin.php?page=bluem-status'); ?>"
+        <a href="<?php echo esc_url(admin_url('admin.php?page=bluem-status')); ?>"
             <?php if ($active_page === "status") {
                 echo 'class="nav-tab nav-active tab-active active"  style="background-color: #fff;"';
             } else {

@@ -226,7 +226,7 @@ function bluem_woocommerce_get_idin_options(): array
                 $idinDescriptionCurrentValue . '</code><br>',
             'default' =>
             /* translators: %s: username tag template */
-                sprintf(esc_html__('Identificatie %s'), '{gebruikersnaam}'),
+                sprintf(esc_html__('Identificatie %s', 'bluem'), '{gebruikersnaam}'),
         ],
         'idin_add_field_in_order_emails' => [
             'key' => 'idin_add_field_in_order_emails',
@@ -381,7 +381,10 @@ function bluem_woocommerce_idin_settings_section(): void
         <br/>
         <code style="display:inline-block;">
             <?php foreach (bluem_idin_get_categories() as $cat) {
-                echo esc_html__(sprintf("&middot; %s", esc_attr(str_replace("Request", "", $cat))), 'bluem') . "<br>";
+                echo sprintf(
+                        /* translators: %s: Request category */
+                        esc_html__("%s", 'bluem'),esc_attr(str_replace("Request", "", $cat))
+                    ) . "<br>";
             } ?>
         </code>
     </p>
@@ -960,7 +963,12 @@ function bluem_idin_shortcode_callback(): void
     }
 
     if (!$statusResponse || !$statusResponse->ReceivedResponse()) {
-        $errormessage = sprintf(esc_html__("Error: kon verzoek met %s en entrance %s niet vinden", 'bluem'), $transactionID, $entranceCode);
+        $errormessage = sprintf(
+                /* translators: %s: transaction ID
+                %s: entranceCode */
+                esc_html__("Error: kon verzoek met %s en entranceCode %s niet vinden", 'bluem'),
+                $transactionID, $entranceCode
+        );
         bluem_error_report_email(
             [
                 'service' => 'idin',

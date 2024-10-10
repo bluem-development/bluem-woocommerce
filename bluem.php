@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Plugin Name: Bluem ePayments, iDIN and eMandates integration for shortcodes and WooCommerce checkout
- * Version: 1.3.20
- * Plugin URI: https://wordpress.org/plugins/bluem
- * Description: Bluem integration for WordPress and WooCommerce to facilitate Bluem services inside your site. Payments and eMandates payment gateway and iDIN identity verification
+ * Plugin Name: Bluem ePayments, iDIN, eMandates and WooCommerce
+ * Version: 1.3.21
+ * Plugin URI: https://bluem.nl/en/
+ * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and more
  * Author: Bluem Payment Services
  * Author URI: https://bluem.nl
  * Requires at least: 5.0
@@ -818,7 +818,7 @@ function bluem_woocommerce_general_settings_section()
 
     printf(
         wp_kses_post(
-            /** translators: %s: url to import/export page */
+        /** translators: %s: url to import/export page */
             __('Ga naar <a href="%s" class="">instellingen importeren of exporteren</a>.</div>', 'bluem')
         ),
         admin_url('admin.php?page=bluem-importexport')
@@ -1393,7 +1393,9 @@ function bluem_error_report_email($data = []): bool
     if (!isset($settings['error_reporting_email'])
         || $settings['error_reporting_email'] == 1
     ) {
-        $author_name = sprintf(esc_html__("Administratie van %s", 'bluem'), get_bloginfo('name'));
+        $author_name = sprintf(
+        /* translators: %s: website name */
+            esc_html__("Administratie van %s", 'bluem'), get_bloginfo('name'));
         $author_email = esc_attr(
             get_option("admin_email")
         );
@@ -1430,7 +1432,9 @@ function bluem_error_report_email($data = []): bool
         $mailing = wp_mail($to, $subject, $message, $headers);
 
         if ($mailing) {
-            bluem_db_request_log($error_report_id, sprintf(esc_html__("Sent error report mail to %s", 'bluem'), $to));
+            bluem_db_request_log($error_report_id, sprintf(
+            /* translators: %s: admin email address */
+                esc_html__("Sent error report mail to %s", 'bluem'), $to));
         }
 
         // or no mail sent
@@ -1444,7 +1448,9 @@ function bluem_error_report_email($data = []): bool
 
 function bluem_email_footer(): string
 {
-    return sprintf(esc_html__("<p>Ga naar de site op %s om dit verzoek in detail te bekijken.</p>", 'bluem'), home_url());
+    return sprintf(
+    /* translators: %s: website url */
+        esc_html__("<p>Ga naar de site op %s om dit verzoek in detail te bekijken.</p>", 'bluem'), home_url());
 }
 
 /**
@@ -1480,7 +1486,9 @@ function bluem_transaction_notification_email(
     if (!isset($settings['transaction_notification_email'])
         || $settings['transaction_notification_email'] == 1
     ) {
-        $author_name = sprintf(esc_html__("Administratie van %s", 'bluem'), get_bloginfo('name'));
+        $author_name = sprintf(
+        /* translators: %s: website name */
+            esc_html__("Administratie van %s", 'bluem'), get_bloginfo('name'));
 
         $to = esc_attr(
             get_option("admin_email")
@@ -1530,7 +1538,9 @@ function bluem_transaction_notification_email(
                 ]
             );
 
-            bluem_db_request_log($request_id, sprintf(esc_html__("Sent notification mail to %s", 'bluem'), $to));
+            bluem_db_request_log($request_id, sprintf(
+            /* translators: %s: email of admin */
+                esc_html__("Sent notification mail to %s", 'bluem'), $to));
         }
 
         return $mailing;

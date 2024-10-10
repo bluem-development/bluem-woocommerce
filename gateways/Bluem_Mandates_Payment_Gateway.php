@@ -792,8 +792,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 'failed',
                 esc_html__('Authorization failed: error or unknown status', 'bluem')
             );
-            $errormessage = wp_kses_post(sprintf(__("Fout: Onbekende of foutieve status teruggekregen: %s
-                    <br>Neem contact op met de webshop en vermeld deze status",'bluem'),$statusCode));
+            $errormessage = sprintf(
+                /** translators: %s: error status code */
+                esc_html__("Fout: Onbekende of foutieve status teruggekregen: %s. Neem contact op met de webshop en vermeld deze status",'bluem'),$statusCode);
             bluem_error_report_email(
                 [
                     'service'  => 'mandates',
