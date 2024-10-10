@@ -890,15 +890,18 @@ function bluem_woocommerce_register_settings()
             'bluem_woocommerce_general_settings_section',
             'bluem_woocommerce'
         );
-        $general_settings = bluem_woocommerce_get_core_options();
-        foreach ($general_settings as $key => $ms) {
-            add_settings_field(
-                $key,
-                $ms['name'],
-                "bluem_woocommerce_settings_render_" . $key,
-                "bluem_woocommerce",
-                "bluem_woocommerce_general_section"
-            );
+
+        if (function_exists('bluem_woocommerce_get_core_options')) {
+            $general_settings = bluem_woocommerce_get_core_options();
+            foreach ($general_settings as $key => $ms) {
+                add_settings_field(
+                    $key,
+                    $ms['name'],
+                    "bluem_woocommerce_settings_render_" . $key,
+                    "bluem_woocommerce",
+                    "bluem_woocommerce_general_section"
+                );
+            }
         }
     }
 
@@ -912,19 +915,17 @@ function bluem_woocommerce_register_settings()
 
         if (function_exists('bluem_woocommerce_get_mandates_options')) {
             $mandates_settings = bluem_woocommerce_get_mandates_options();
-        } else {
-            $mandates_settings = [];
-        }
 
-        if (is_array($mandates_settings) && count($mandates_settings) > 0) {
-            foreach ($mandates_settings as $key => $ms) {
-                add_settings_field(
-                    $key,
-                    $ms['name'],
-                    "bluem_woocommerce_settings_render_" . $key,
-                    "bluem_woocommerce",
-                    "bluem_woocommerce_mandates_section"
-                );
+            if (is_array($mandates_settings) && count($mandates_settings) > 0) {
+                foreach ($mandates_settings as $key => $ms) {
+                    add_settings_field(
+                        $key,
+                        $ms['name'],
+                        "bluem_woocommerce_settings_render_" . $key,
+                        "bluem_woocommerce",
+                        "bluem_woocommerce_mandates_section"
+                    );
+                }
             }
         }
     }
@@ -937,17 +938,20 @@ function bluem_woocommerce_register_settings()
             'bluem_woocommerce'
         );
 
-        $payments_settings = bluem_woocommerce_get_payments_options();
-        if (is_array($payments_settings) && count($payments_settings) > 0) {
-            foreach ($payments_settings as $key => $ms) {
-                $key_name = "bluem_woocommerce_settings_render_" . $key;
-                add_settings_field(
-                    $key,
-                    $ms['name'],
-                    $key_name,
-                    "bluem_woocommerce",
-                    "bluem_woocommerce_payments_section"
-                );
+        if (function_exists('bluem_woocommerce_get_payments_options')) {
+
+            $payments_settings = bluem_woocommerce_get_payments_options();
+            if (is_array($payments_settings) && count($payments_settings) > 0) {
+                foreach ($payments_settings as $key => $ms) {
+                    $key_name = "bluem_woocommerce_settings_render_" . $key;
+                    add_settings_field(
+                        $key,
+                        $ms['name'],
+                        $key_name,
+                        "bluem_woocommerce",
+                        "bluem_woocommerce_payments_section"
+                    );
+                }
             }
         }
     }
@@ -960,17 +964,20 @@ function bluem_woocommerce_register_settings()
             'bluem_woocommerce'
         );
 
-        $idin_settings = bluem_woocommerce_get_idin_options();
-        if (is_array($idin_settings) && count($idin_settings) > 0) {
-            foreach ($idin_settings as $key => $ms) {
-                $key_name = "bluem_woocommerce_settings_render_" . $key;
-                add_settings_field(
-                    $key,
-                    $ms['name'],
-                    $key_name,
-                    "bluem_woocommerce",
-                    "bluem_woocommerce_idin_section"
-                );
+        if (function_exists('bluem_woocommerce_get_idin_options')) {
+
+            $idin_settings = bluem_woocommerce_get_idin_options();
+            if (is_array($idin_settings) && count($idin_settings) > 0) {
+                foreach ($idin_settings as $key => $ms) {
+                    $key_name = "bluem_woocommerce_settings_render_" . $key;
+                    add_settings_field(
+                        $key,
+                        $ms['name'],
+                        $key_name,
+                        "bluem_woocommerce",
+                        "bluem_woocommerce_idin_section"
+                    );
+                }
             }
         }
     }
@@ -982,17 +989,20 @@ function bluem_woocommerce_register_settings()
         'bluem_woocommerce'
     );
 
-    $integrations_settings = bluem_woocommerce_get_integrations_options();
-    if (is_array($integrations_settings) && count($integrations_settings) > 0) {
-        foreach ($integrations_settings as $key => $ms) {
-            $key_name = "bluem_woocommerce_settings_render_" . $key;
-            add_settings_field(
-                $key,
-                $ms['name'],
-                $key_name,
-                "bluem_woocommerce",
-                "bluem_woocommerce_integrations_section"
-            );
+    if (function_exists('bluem_woocommerce_get_integrations_options')) {
+
+        $integrations_settings = bluem_woocommerce_get_integrations_options();
+        if (is_array($integrations_settings) && count($integrations_settings) > 0) {
+            foreach ($integrations_settings as $key => $ms) {
+                $key_name = "bluem_woocommerce_settings_render_" . $key;
+                add_settings_field(
+                    $key,
+                    $ms['name'],
+                    $key_name,
+                    "bluem_woocommerce",
+                    "bluem_woocommerce_integrations_section"
+                );
+            }
         }
     }
 
