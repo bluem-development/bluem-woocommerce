@@ -335,8 +335,6 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
     {
         global $current_user;
 
-        $verbose = false;
-
         // Convert UTF-8 to ISO
         if (!empty($this->bluem_config->eMandateReason)) {
             $this->bluem_config->eMandateReason = mb_convert_encoding($bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
@@ -452,12 +450,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 'timestamp' => gmdate("Y-m-d H:i:s"),
                 'description' =>
                     sprintf(
-                    /**
-                     * translators:
-                     * %1/$s: order id
-                     * %2/$s: user id
+                    /* translators: %1/$s: order id, %2/$s: user id
                      */
-                        esc_html__("Mandate request for order %1$s by user %2$s", 'bluem'),
+                        esc_html__('Mandate request for order %1$s by user %2$s', 'bluem'),
                         $order_id,
                         $user_id
                     ),
@@ -579,6 +574,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                         $order->update_status(
                             'processing',
                             printf(
+                            /* translators: %s: mandate id */
                                 esc_html__('Authorization (Mandate ID %s) was successful and approved; via webhook', 'bluem'),
                                 esc_attr($mandateID)
                             )
@@ -697,12 +693,16 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         try {
             $response = $this->bluem->MandateStatus($mandateID, $entranceCode);
         } catch (Exception $e) {
-            $errormessage = wp_kses_post(sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", "bluem"), $e->getMessage()));
+            $errormessage = sprintf(
+            /* translators: %s: error message */
+                esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", "bluem"), $e->getMessage()
+            );
+
             bluem_error_report_email(
                 [
                     'service' => 'mandates',
                     'function' => 'mandates_callback',
-                    'message' => $errormessage
+                    'message' => esc_html($errormessage)
                 ]
             );
             bluem_dialogs_render_prompt($errormessage);
@@ -710,12 +710,16 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         }
 
         if (!$response->Status()) {
-            $errormessage = wp_kses_post(sprintf(__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", "bluem"), $response->Error()));
+            $errormessage = sprintf(
+            /* translators: %s: error message */
+                esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", "bluem"),
+                esc_html($response->Error())
+            );
             bluem_error_report_email(
                 [
                     'service' => 'mandates',
                     'function' => 'mandates_callback',
-                    'message' => $errormessage
+                    'message' => esc_html($errormessage)
                 ]
             );
             bluem_dialogs_render_prompt($errormessage);
@@ -913,13 +917,13 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                     bluem_dialogs_render_prompt(
                         wp_kses_post(
                             sprintf(
+                            /* translators: %1$s: order total plus 10%, %3$s: max allowed amount, %3$s: URL to payment page */
                                 __(
-                                /* translators: %1$s: order total plus 10%, %2$s: URL to payment page */
                                     '<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
-<p>De geschatte factuurwaarde van jouw bestelling is EUR %1$s. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor "onbeperkt" te kiezen.</p>'
-                                    . '<p><a href="%2$s" target="_self">Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>',
+<p>De geschatte factuurwaarde van jouw bestelling is EUR %1$s. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR %2$s. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor "onbeperkt" te kiezen.</p><p><a href="%3$s" target="_self">Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>',
                                     'bluem'),
                                 $order_total_plus_string,
+                                $maxAmountResponse->amount,
                                 esc_url($url)
                             )
                         ),
@@ -928,13 +932,11 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 
                     bluem_db_request_log(
                         $request_id,
-                        sprintf(__("User tried to give use this mandate with maxamount
-&euro; %s, but the Order <a href='" .
-                            esc_url(admin_url("post.php?post=%s&action=edit")) .
-                            "' target='_self'>ID %s</a> grand total including correction is &euro; %s.
-                        The user is prompted to create a new mandate to fulfill this order.", "bluem"),
+                        sprintf(
+                        /* translators: %1$s: order max amount, %2$s: order link, %3$s: order id, %4$s: order amount, */
+                            wp_kses_post(__('User tried to give use this mandate with maxamount &euro; %1$s, but the Order <a href="%2$s" target="_self">ID %3$s</a> grand total including correction is &euro; %4$s. The user is prompted to create a new mandate to fulfill this order.', 'bluem')),
                             $maxAmountResponse->amount,
-                            $order->get_id(),
+                            esc_url(admin_url("post.php?post=" . $order->get_id() . "&action=edit")),
                             $order->get_id(),
                             $order_total_plus_string
                         )

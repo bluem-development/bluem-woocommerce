@@ -1686,7 +1686,7 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
         printf(
         /* translators: %s: Error message */
             esc_html__('Fout: De Bluem Plug-in is niet goed ingesteld. Neem contact op met je systeembeheerder. Foutmelding: %s', 'bluem'),
-            $e->getMessage()
+            esc_html($e->getMessage())
         );
 
         exit;
@@ -2007,9 +2007,9 @@ function bluem_checkout_idin_notice(): void
             // }
 
             if (!$age_valid) {
-                echo bluem_idin_generate_notice($validation_message, true);
+                echo wp_kses_post(bluem_idin_generate_notice($validation_message, true));
             } else {
-                echo bluem_idin_generate_notice($idin_identity_dialog_thank_you_message);
+                echo wp_kses_post(bluem_idin_generate_notice($idin_identity_dialog_thank_you_message));
             }
 
             return;
@@ -2019,7 +2019,7 @@ function bluem_checkout_idin_notice(): void
     // <p>Identificatie is vereist alvorens je deze bestelling kan plaatsen</p>";
 
     if ($validation_needed && bluem_checkout_check_idin_validated_filter() == false) {
-        echo bluem_idin_generate_notice('Verifieer eerst je identiteit.', true);
+        echo wp_kses_post(bluem_idin_generate_notice('Verifieer eerst je identiteit.', true));
         // esc_html_e(
         // "Verifieer eerst je identiteit via de mijn account pagina",
         // "woocommerce"

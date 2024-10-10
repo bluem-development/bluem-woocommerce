@@ -178,7 +178,7 @@ function bluem_woocommerce_no_woocommerce_notice()
             /* translators: %s: the link to settings page   */
             printf(wp_kses_post('De Bluem integratie is grotendeels afhankelijk van WooCommerce - installeer en/of activeer deze plug-in. <br/>
             Gebruik je geen WooCommerce? Dan kan je deze melding en WooCommerce gerelateerde functionaliteiten uitzetten bij de %s.', 'bluem'),
-                '<a href="' . admin_url('admin.php?page=bluem-settings') . '">' . esc_html__('Instellingen', 'bluem') . '</a>');
+                '<a href="' . esc_url(admin_url('admin.php?page=)bluem-settings')) . '">' . esc_html__('Instellingen', 'bluem') . '</a>');
             echo '</p>
             </div>';
         }
@@ -192,7 +192,7 @@ function bluem_woocommerce_no_permalinks_notice()
         <p><span class="dashicons dashicons-warning"></span>';
         esc_html_e("De Bluem integratie is vanwege de routing afhankelijk van de WordPress Permalink instelling.<br>
         Selecteer een optie BEHALVE \'Eenvoudig\' bij de Permalink", 'bluem');
-        echo '<a href="' . admin_url('options-permalink.php') . '">' . esc_html__('Instellingen', 'bluem') . '</a>.</p>
+        echo '<a href="' . esc_url(admin_url('options-permalink.php')) . '">' . esc_html__('Instellingen', 'bluem') . '</a>.</p>
         </div>';
     }
 }
@@ -383,7 +383,7 @@ function bluem_plugin_activation()
             update_option('bluem_plugin_registration', true);
 
             wp_redirect(
-                admin_url("admin.php?page=bluem-activate")
+                esc_url(admin_url("admin.php?page=bluem-activate"))
             );
         }
     }
@@ -398,7 +398,7 @@ function bluem_requests_view()
         if (isset($_GET['admin_action']) && $_GET['admin_action'] === "delete") {
             bluem_db_delete_request_by_id(sanitize_text_field($_GET['request_id']));
             wp_redirect(
-                admin_url("admin.php?page=bluem-transactions")
+                esc_url(admin_url("admin.php?page=bluem-transactions"))
             );
         } elseif (isset($_GET['admin_action']) && $_GET['admin_action'] === "status-update") {
             bluem_update_request_by_id(sanitize_text_field($_GET['request_id']));
@@ -461,7 +461,7 @@ function bluem_update_request_by_id($request_id)
                 $errormessage = printf(
                 /* translators: %s: error status */
                     esc_html__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem'),
-                    $response->Error()
+                    esc_html($response->Error())
                 );
                 bluem_error_report_email(
                     [
@@ -523,7 +523,7 @@ function bluem_update_request_by_id($request_id)
             $errormessage = printf(
             /* translators: %s: error status */
                 esc_html__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem'),
-                $response->Error()
+                esc_html($response->Error())
             );
             bluem_error_report_email(
                 [
@@ -543,7 +543,7 @@ function bluem_update_request_by_id($request_id)
                 $errormessage = printf(
                 /* translators: %s: error status */
                     esc_html__("Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem'),
-                    $response->Error()
+                    esc_html($response->Error())
                 );
                 bluem_error_report_email(
                     [
@@ -622,7 +622,7 @@ function bluem_update_request_by_id($request_id)
             $errormessage = printf(
             /* translators: %s: error status */
                 esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem'),
-                $response->Error()
+                esc_html($response->Error())
             );
             bluem_error_report_email(
                 [
@@ -642,7 +642,7 @@ function bluem_update_request_by_id($request_id)
                 $errormessage = printf(
                 /* translators: %s: error status */
                     esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem'),
-                    $response->Error()
+                    esc_html($response->Error())
                 );
                 bluem_error_report_email(
                     [
@@ -702,7 +702,7 @@ function bluem_update_request_by_id($request_id)
             $errormessage = printf(
             /* translators: %s: error status */
                 esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem'),
-                $response->Error()
+                esc_html($response->Error())
             );
             bluem_error_report_email(
                 [
@@ -827,7 +827,7 @@ function bluem_woocommerce_general_settings_section()
         /* translators: %s: url to import/export page */
             __('Ga naar <a href="%s" class="">instellingen importeren of exporteren</a>.</div>', 'bluem')
         ),
-        admin_url('admin.php?page=bluem-importexport')
+        esc_url(admin_url('admin.php?page=bluem-importexport'))
     );
 
     echo '</p>';
@@ -1005,7 +1005,7 @@ function bluem_woocommerce_register_settings()
         if (!$form_filled) {
             if (empty($_GET) || (!empty($_GET['page']) && $_GET['page'] !== "bluem-activate")) {
                 wp_redirect(
-                    admin_url("admin.php?page=bluem-activate")
+                    esc_url(admin_url("admin.php?page=bluem-activate"))
                 );
             }
         }
@@ -1041,7 +1041,7 @@ function bluem_woocommerce_show_general_profile_fields()
     // @todo: create template
     ?>
     <h2>
-        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php echo wp_kses_post(bluem_get_bluem_logo_html(48)); ?>
         <!-- Identiteit verificatie via Bluem -->
         <?php esc_html_e('Bluem onderdelen', 'bluem'); ?>
     </h2>
@@ -1056,7 +1056,7 @@ function bluem_woocommerce_show_general_profile_fields()
                 printf(
                 /* translators: %s: link to bluem settings */
                     esc_html__('Ga naar de <a href="%s">
-                    instellingen</a> om het gedrag van elk Bluem onderdeel te wijzigen.', 'bluem'), home_url("wp-admin/admin.php?page=bluem-settings"));
+                    instellingen</a> om het gedrag van elk Bluem onderdeel te wijzigen.', 'bluem'), esc_url(home_url("wp-admin/admin.php?page=bluem-settings")));
                 ?>
             </td>
         </tr>
@@ -1180,8 +1180,8 @@ function bluem_woocommerce_settings_render_input($field)
         ?>
         <textarea
     <?php foreach ($attrs as $akey => $aval) {
-        echo "$akey='" . esc_attr($aval) . "' ";
-    } ?>><?php echo(isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?></textarea>
+        echo esc_html("$akey='" . esc_attr($aval) . "' ");
+    } ?>><?php echo(isset($values[$key]) ? esc_attr($values[$key]) : esc_attr($field['default'])); ?></textarea>
         <?php
     } else {
         $attrs = [];
@@ -1197,9 +1197,9 @@ function bluem_woocommerce_settings_render_input($field)
         } ?>
         <input class='bluem-form-control' id='bluem_woocommerce_settings_<?php echo esc_attr($key); ?>'
                name='bluem_woocommerce_options[<?php echo esc_attr($key); ?>]'
-               value='<?php echo(isset($values[$key]) ? esc_attr($values[$key]) : $field['default']); ?>'
+               value='<?php echo(isset($values[$key]) ? esc_attr($values[$key]) : esc_attr($field['default'])); ?>'
             <?php foreach ($attrs as $akey => $aval) {
-                echo "$akey='" . esc_attr($aval) . "' ";
+                echo esc_html("$akey='" . esc_attr($aval) . "' ");
             } ?> />
         <?php
     } ?>
@@ -1376,7 +1376,7 @@ function bluem_woocommerce_save_age_verification_values($post_id)
     }
 
     if (isset($_POST['age_verification'])) {
-        $attribute_value = isset($_POST['age_verification']) ? sanitize_text_field($_POST['age_verification']) : '';
+        $attribute_value = isset($_POST['age_verification']) ? sanitize_text_field(wp_unslash($_POST['age_verification'])) : '';
         update_post_meta($post_id, 'pa_age_verification', $attribute_value);
     }
 }
@@ -1424,9 +1424,9 @@ function bluem_error_report_email($data = []): bool
         %2$s: admin email address
          */
             esc_html__('Error in Bluem plugin. %1$s <%2$s>,', 'bluem'),
-            $author_name, $author_email
+            esc_html($author_name), esc_html($author_email)
         );
-        $message .= "<p>Data: <br>" . wp_kses_post(json_encode($data)) . "</p>";
+        $message .= "<p>Data: <br>" . wp_kses_post(wp_json_encode($data)) . "</p>";
 
         ob_start();
         foreach ($data as $k => $v) {
@@ -1470,7 +1470,7 @@ function bluem_email_footer(): string
 {
     return sprintf(
     /* translators: %s: website url */
-        esc_html__("Ga naar de site op %s om dit verzoek in detail te bekijken.", 'bluem'), home_url());
+        esc_html__("Ga naar de site op %s om dit verzoek in detail te bekijken.", 'bluem'), esc_url(home_url()));
 }
 
 /**
@@ -1522,8 +1522,15 @@ function bluem_transaction_notification_email(
             $subject .= " › status: $data->status ";
         }
 
-        $message = wp_kses_post(sprintf(__("<p>Beste %s,</p>", 'bluem'), $author_name));
-        $message .= wp_kses_post(sprintf(__("<p>Er is een nieuw Bluem %s verzoek verwerkt met de volgende gegevens:</p><p>", 'bluem'), ucfirst($data->type)));
+        $message = "<p>" .
+            sprintf(
+            /* translators: %s: author name */
+                esc_html__("Beste %s,", 'bluem'), $author_name
+            ) .
+            "</p>";
+        $message .= wp_kses_post(sprintf(
+        /* translators: %s: type of request */
+            __("<p>Er is een nieuw Bluem %s verzoek verwerkt met de volgende gegevens:</p><p>", 'bluem'), ucfirst($data->type)));
 
         ob_start();
         foreach ($data as $k => $v) {
@@ -1611,7 +1618,9 @@ function bluem_woocommerce_get_config(): Stdclass
 
 function bluem_woocommerce_modules_settings_section()
 {
-    wp_kses_post(__('<p>Tip: Verhoog de efficiëntie door alleen de diensten te activeren die voor jouw website van toepassing zijn.</p>', 'bluem'));
+    echo "<p>" .
+        esc_html__('Tip: Verhoog de efficiëntie door alleen de diensten te activeren die voor jouw website van toepassing zijn.', 'bluem') .
+        "</p>";
 }
 
 function bluem_woocommerce_modules_render_mandates_activation()
@@ -1843,7 +1852,7 @@ function bluem_setup_incomplete()
 function bluem_display_module_notices($notices, $title = '', $btn_link = '', $btn_title = '')
 {
     echo '<div class="notice notice-warning is-dismissible">
-        <p><span class="dashicons dashicons-warning"></span> <strong>' . $title . ':</strong><br>
+        <p><span class="dashicons dashicons-warning"></span> <strong>' . esc_html($title) . ':</strong><br>
         ';
     foreach ($notices as $m) {
         echo "* " . esc_html($m) . "<br>";
@@ -1852,7 +1861,7 @@ function bluem_display_module_notices($notices, $title = '', $btn_link = '', $bt
         </p>';
 
     if (!empty($btn_link)) {
-        echo '<p><a href="' . $btn_link . '">' . $btn_title . '</a></p>';
+        echo '<p><a href="' . esc_url($btn_link) . '">' . esc_html($btn_title) . '</a></p>';
     }
 
     echo '</div>';
@@ -1900,7 +1909,7 @@ function bluem_order_requests_metabox_content()
     if (isset($requests) && count($requests) > 0) {
         bluem_render_requests_list($requests);
     } else {
-        esc_html_e("No requests yet");
+        esc_html_e("No requests yet", "bluem");
     }
 }
 
@@ -1931,7 +1940,7 @@ function bluem_dialogs_get_simple_footer(bool $include_link = true): string
 {
     return (
         $include_link ?
-            "<p><a href='" . home_url() . "' target='_self' style='text-decoration:none;'>" . esc_html__('Ga terug naar de webshop', 'bluem') . "</a></p>" :
+            "<p><a href='" . esc_url(home_url()) . "' target='_self' style='text-decoration:none;'>" . esc_html__('Ga terug naar de webshop', 'bluem') . "</a></p>" :
             ""
         ) . "</div></body></html>";
 }
@@ -1946,9 +1955,9 @@ function bluem_dialogs_get_simple_footer(bool $include_link = true): string
  */
 function bluem_dialogs_render_prompt(string $html, bool $include_link = true)
 {
-    echo bluem_dialogs_get_simple_header();
+    echo wp_kses_post(bluem_dialogs_get_simple_header());
     echo wp_kses_post($html);
-    echo bluem_dialogs_get_simple_footer($include_link);
+    echo wp_kses_post(bluem_dialogs_get_simple_footer($include_link));
 }
 
 /**
