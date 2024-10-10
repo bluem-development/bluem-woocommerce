@@ -41,10 +41,10 @@ function bluem_woocommerce_payments_settings_section()
 {
     echo '<p><a id="tab_payments"></a>
 <strong>Let op: naast het instellen van de onderstaande functies moet je ook de betaalmethoden activeren bij de
-<a href="' . (home_url() . 'wp-admin/admin.php?page=wc-settings&tab=checkout') . '" target="_blank">WooCommerce instellingen voor Betalingen</a>.
+<a href="' . (esc_url(home_url()) . 'wp-admin/admin.php?page=wc-settings&tab=checkout') . '" target="_blank">WooCommerce instellingen voor Betalingen</a>.
 </strong><br>
     Je kan hier belangrijke gegevens instellen rondom ePayments-transacties om gemakkelijk betalingen te ontvangen.</p>
-    <p>Lees <a href="' . BLUEM_WOOCOMMERCE_MANUAL_URL . '" target="_blank">de handleiding</a> voor meer informatie.</p>';
+    <p>Lees <a href="' . esc_url(BLUEM_WOOCOMMERCE_MANUAL_URL) . '" target="_blank">de handleiding</a> voor meer informatie.</p>';
 }
 
 function bluem_woocommerce_get_payments_option($key)

@@ -1,4 +1,4 @@
-<?php if ( ! defined( 'ABSPATH' ) ) exit;
+<?php if (!defined('ABSPATH')) exit;
 ?>
 
 <style>
@@ -19,8 +19,8 @@
     <h1>
         <?php wp_kses_post(
             sprintf(
-                /* translators: %s: logo html */
-                esc_html__('%s Import / export','bluem'),
+            /* translators: %s: logo html */
+                esc_html__('%s Import / export', 'bluem'),
                 bluem_get_bluem_logo_html(48),
             )
         ); ?>
@@ -66,13 +66,15 @@
         <p>
             <?php esc_html_e('Upload je instellingen hier.', 'bluem'); ?>
 
-        <form method="post" action="<?php echo admin_url('admin.php?page=bluem_admin_importexport&action=import'); ?>">
+        <form method="post"
+              action="<?php echo esc_url(admin_url('admin.php?page=bluem_admin_importexport&action=import')); ?>">
             <input type="hidden" name="action" value="import">
             <label for="import">
-            Input:
+                Input:
             </label>
             <textarea class="bluem_port_input" name="import" id="import" rows="20"></textarea>
-            <p><strong><?php esc_html_e('Let op! Bestaande instellingen zullen worden overschreven.', 'bluem'); ?></strong>
+            <p>
+                <strong><?php esc_html_e('Let op! Bestaande instellingen zullen worden overschreven.', 'bluem'); ?></strong>
             </p>
             <button type="submit"><?php esc_html_e('Importeren', 'bluem'); ?></button>
         </form>

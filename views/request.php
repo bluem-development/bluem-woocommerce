@@ -2,7 +2,7 @@
 ?>
 <div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php echo wp_kses_post(bluem_get_bluem_logo_html(48)); ?>
         <?php esc_html_e('Transactiedetails', 'bluem'); ?>
     </h1>
 
@@ -13,7 +13,7 @@
         <div class="bluem-request-card-body">
             <div class='bluem-column' style="width: 50%;">
                 <h2>
-                    <?php echo ucfirst($request->type); ?>
+                    <?php echo esc_html(ucfirst($request->type)); ?>
                     <?php esc_html_e('Transactie', 'bluem'); ?>
                 </h2>
 
@@ -44,7 +44,8 @@
                             ?>
                             <tr>
                                 <td><?php esc_html_e('Bestelling', 'bluem'); ?>:</td>
-                                <td><a href="<?php echo admin_url("post.php?post={$request->order_id}&action=edit"); ?>"
+                                <td>
+                                    <a href="<?php echo esc_url(admin_url("post.php?post={$request->order_id}&action=edit")); ?>"
                                        title="Bestelling bekijken"
                                        target="_blank">#<?php echo esc_html($order->get_order_number()); ?>
                                         (<?php echo wp_kses_post(wc_price($order->get_total())); ?>)</a></td>
@@ -54,7 +55,8 @@
                     <tr>
                         <td><?php esc_html_e('Gebruiker', 'bluem'); ?>:</td>
                         <?php if (isset($request_author->user_nicename) && $request_author !== false) { ?>
-                            <td><a href="<?php echo admin_url("user-edit.php?user_id=" . $request->user_id); ?>"
+                            <td>
+                                <a href="<?php echo esc_url(admin_url("user-edit.php?user_id=" . $request->user_id)); ?>"
                                    target="_blank"><?php echo esc_html($request_author->user_nicename); ?></a></td>
                         <?php } else { ?>
                             <td><?php esc_html_e('Gastgebruiker/onbekend', 'bluem'); ?></td>
@@ -69,7 +71,7 @@
                     <tr>
                         <td><?php esc_html_e('Status', 'bluem'); ?>:</td>
                         <td><?php bluem_render_request_status($request->status); ?>
-                            (<a href="<?php echo admin_url("admin.php?page=bluem-transactions&request_id=" . $request->id . "&admin_action=status-update"); ?>"
+                            (<a href="<?php echo esc_url(admin_url("admin.php?page=bluem-transactions&request_id=" . $request->id . "&admin_action=status-update")); ?>"
                                 title="Update status">
                                 <?php esc_html_e('Update status', 'bluem'); ?></a>
                             )
@@ -99,10 +101,10 @@
                                 <?php $order_data = $order->get_data(); ?>
                                 <tr>
                                     <td>
-                                        <?php echo bluem_get_formattedDate($order->get_date_created(), 'd-m-Y H:i'); ?>
+                                        <?php echo esc_html(bluem_get_formattedDate($order->get_date_created(), 'd-m-Y H:i')); ?>
                                     </td>
                                     <td>
-                                        <a href='<?php echo admin_url("post.php?post={$link->item_id}&action=edit"); ?>'
+                                        <a href='<?php echo esc_url(admin_url("post.php?post={$link->item_id}&action=edit")); ?>'
                                            target='_blank'><?php esc_html_e('Order', 'bluem'); ?>
                                             #<?php echo esc_html($order->get_order_number()); ?></a>
                                     </td>
@@ -136,7 +138,7 @@
                         $dparts = explode(esc_html__('Nieuwe data:', 'bluem'), $d, 2); ?>
                         <li>
                         <span class="bluem-request-label">
-                            <?php echo bluem_get_formattedDate($log->timestamp); ?>
+                            <?php echo esc_html(bluem_get_formattedDate($log->timestamp)); ?>
                         </span>
                         <?php echo wp_kses_post($dparts[0]); ?><?php
                         if (isset($dparts[1])) {
@@ -160,7 +162,8 @@
                     <?php esc_html_e('Link naar transactie', 'bluem'); ?>:
                 </span>
                         <br>
-                        <a href="<?php echo $request->transaction_url; ?>" target="_blank" rel="noopener noreferrer">
+                        <a href="<?php echo esc_url($request->transaction_url); ?>" target="_blank"
+                           rel="noopener noreferrer">
                             <?php esc_html_e('Transactie bekijken', 'bluem'); ?>
                             <span class="dashicons dashicons-external" style="text-decoration: none;"></span>
                         </a>
@@ -207,7 +210,7 @@
                 <p style="margin: 5px 0; padding: 0;"><span
                             class="bluem-request-label"><?php esc_html_e('Administratie', 'bluem'); ?>:</span></p>
                 <p style="margin: 5px 0; padding: 0;"><a
-                            href="<?php echo admin_url("admin.php?page=bluem-transactions&request_id=" . esc_attr($request->id) . "&admin_action=delete"); ?>"
+                            href="<?php echo esc_url(admin_url("admin.php?page=bluem-transactions&request_id=" . esc_attr($request->id) . "&admin_action=delete")); ?>"
                             class="button bluem-button-danger"
                             onclick="return confirm('<?php esc_html_e('Weet je zeker dat je de transactie wilt verwijderen?', 'bluem'); ?>');"
                             style="margin-top:5pt;"><?php esc_html_e('Verwijder dit verzoek direct', 'bluem'); ?></a>

@@ -1,4 +1,4 @@
-<?php if ( ! defined( 'ABSPATH' ) ) exit;
+<?php if (!defined('ABSPATH')) exit;
 ?>
 
 <?php $pluginDetailsLink = 'plugin-install.php?tab=plugin-information&plugin=bluem&TB_iframe=true&width=600&height=550'; ?>
@@ -19,7 +19,7 @@
     }
 
     .bluem_logo:before {
-        background-image: url('<?php echo plugin_dir_url( '' ); ?>/bluem/assets/bluem/logo-hero.png');
+        background-image: url('<?php echo esc_url(plugin_dir_url( '' )); ?>/bluem/assets/bluem/logo-hero.png');
         background-size: contain;
         background-repeat: no-repeat;
         content: '';
@@ -29,7 +29,7 @@
 
 <div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php echo wp_kses_post(bluem_get_bluem_logo_html(48)); ?>
     </h1>
 
     <?php bluem_render_nav_header('home'); ?>
@@ -46,16 +46,18 @@
 
     <p>
         <strong><?php esc_html_e('Plugin versie', 'bluem'); ?></strong><br/><?php esc_html_e('Versie', 'bluem'); ?> <?php $bluem = get_plugin_data(plugin_dir_path(__FILE__) . '../bluem.php');
-        echo esc_html($bluem['Version']); ?> (<a href="<?php echo admin_url($pluginDetailsLink); ?>"
-                                       target="_blank"><?php esc_html_e('Details bekijken', 'bluem'); ?></a>)</p>
+        echo esc_html($bluem['Version']); ?> (<a href="<?php echo esc_url(admin_url($pluginDetailsLink)); ?>"
+                                                 target="_blank"><?php esc_html_e('Details bekijken', 'bluem'); ?></a>)
+    </p>
 
     <p>
-        <strong><?php esc_html_e('Technische informatie', 'bluem'); ?></strong><br/><?php esc_html_e('WordPress versie:', 'bluem'); ?> <?php echo get_bloginfo('version'); ?>
+        <strong><?php esc_html_e('Technische informatie', 'bluem'); ?></strong><br/><?php esc_html_e('WordPress versie:', 'bluem'); ?> <?php echo esc_html(get_bloginfo('version')); ?>
         <br/>
-        <?php esc_html_e('WooCommerce versie:', 'bluem'); ?> <?php echo class_exists('WooCommerce') ? WC()->version : esc_html__('WooCommerce not installed', 'bluem'); ?>
+        <?php esc_html_e('WooCommerce versie:', 'bluem'); ?> <?php echo class_exists('WooCommerce') ? esc_attr(WC()->version) : esc_html__('WooCommerce not installed', 'bluem'); ?>
         <br/>
-        <?php esc_html_e('Bluem PHP-library versie:', 'bluem'); ?> <?php echo esc_html($dependency_bluem_php_version ?? '-'); ?><br/>
-        <?php esc_html_e('PHP versie:', 'bluem'); ?> <?php echo PHP_VERSION; ?></p>
+        <?php esc_html_e('Bluem PHP-library versie:', 'bluem'); ?> <?php echo esc_html($dependency_bluem_php_version ?? '-'); ?>
+        <br/>
+        <?php esc_html_e('PHP versie:', 'bluem'); ?> <?php echo esc_attr(PHP_VERSION); ?></p>
 
     <?php bluem_render_footer(); ?>
 </div>

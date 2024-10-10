@@ -415,7 +415,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         }
 
         if ($response instanceof ErrorBluemResponse) {
-            throw new RuntimeException("An error occurred in the payment method. Please contact the webshop owner with this message:  " . $response->error());
+            throw new RuntimeException(
+                esc_html("An error occurred in the payment method. Please contact the webshop owner with this message:  " . $response->error())
+            );
         }
 
         $attrs = $response->EMandateTransactionResponse->attributes();
@@ -425,8 +427,8 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         }
         $entranceCode = $attrs['entranceCode'] . "";
 
-        update_post_meta($order_id, 'bluem_entrancecode', $entranceCode);
-        update_post_meta($order_id, 'bluem_mandateid', $mandate_id);
+        update_post_meta($order_id, 'bluem_entrancecode', esc_attr($entranceCode));
+        update_post_meta($order_id, 'bluem_mandateid', esc_attr($mandate_id));
 
         // https://docs.woocommerce.com/document/managing-orders/
         // Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled',
@@ -578,7 +580,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                             'processing',
                             printf(
                                 esc_html__('Authorization (Mandate ID %s) was successful and approved; via webhook', 'bluem'),
-                                $mandateID
+                                esc_attr($mandateID)
                             )
                         );
                     }
@@ -600,7 +602,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             printf(
             /* translators: %s: exception message */
                 esc_html__("Error: Exception: %s", 'bluem'),
-                $e->getMessage()
+                esc_html($e->getMessage())
             );
             exit;
         }
@@ -915,11 +917,10 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                                 /* translators: %1$s: order total plus 10%, %2$s: URL to payment page */
                                     '<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>
 <p>De geschatte factuurwaarde van jouw bestelling is EUR %1$s. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR {$maxAmountResponse->amount}. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor "onbeperkt" te kiezen.</p>'
-                                    .
-                                    '<p><a href="%2$s" target="_self">Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>',
+                                    . '<p><a href="%2$s" target="_self">Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>',
                                     'bluem'),
                                 $order_total_plus_string,
-                                $url
+                                esc_url($url)
                             )
                         ),
                         false
@@ -998,7 +999,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 printf(
                 /* translators: %1$s: mandate id, %2$s: request id */
                     esc_html__('Authorization (Mandate ID %1$s, Request ID %2$s) has been obtained and approved', 'bluem'),
-                    $mandate_id, $request_id
+                    esc_attr($mandate_id), esc_attr($request_id)
                 )
             );
 

@@ -1638,8 +1638,8 @@ function bluem_get_IDINDescription_replaces(): array
         $current_user->display_name ?? '',    // '{gebruikersnaam}',
         $current_user->user_email ?? '',      // '{email}',
         (string)($current_user->ID ?? ''),    // {klantnummer}
-        date('d-m-Y'),                        // '{datum}',
-        date('d-m-Y H:i'),                     // '{datumtijd}',
+        gmdate('d-m-Y'),                        // '{datum}',
+        gmdate('d-m-Y H:i'),                     // '{datumtijd}',
     );
 }
 

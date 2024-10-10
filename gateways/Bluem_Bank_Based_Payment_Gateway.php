@@ -307,7 +307,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             }
         } catch (Exception $e) {
             http_response_code(500);
-            echo esc_html__("Error: Exception: ", 'bluem') . $e->getMessage();
+            echo esc_html__("Error: Exception", 'bluem') . esc_html($e->getMessage());
             exit;
         }
     }
