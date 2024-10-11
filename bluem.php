@@ -345,17 +345,17 @@ function bluem_plugin_activation()
         }
 
         if ($is_valid) {
-            $acc_senderid = sanitize_text_field($_POST['acc_senderid']);
-            $acc_testtoken = sanitize_text_field($_POST['acc_testtoken']);
-            $acc_prodtoken = sanitize_text_field($_POST['acc_prodtoken']);
+            $acc_senderid = sanitize_text_field(wp_unslash($_POST['acc_senderid']));
+            $acc_testtoken = sanitize_text_field(wp_unslash($_POST['acc_testtoken']));
+            $acc_prodtoken = sanitize_text_field(wp_unslash($_POST['acc_prodtoken']));
 
-            $company_name = sanitize_text_field($_POST['company_name']);
-            $company_telephone = sanitize_text_field($_POST['company_telephone']);
-            $company_email = sanitize_text_field($_POST['company_email']);
+            $company_name = sanitize_text_field(wp_unslash($_POST['company_name']));
+            $company_telephone = sanitize_text_field(wp_unslash($_POST['company_telephone']));
+            $company_email = sanitize_text_field(wp_unslash($_POST['company_email']));
 
-            $tech_name = sanitize_text_field($_POST['tech_name']);
-            $tech_telephone = sanitize_text_field($_POST['tech_telephone']);
-            $tech_email = sanitize_text_field($_POST['tech_email']);
+            $tech_name = sanitize_text_field(wp_unslash($_POST['tech_name']));
+            $tech_telephone = sanitize_text_field(wp_unslash($_POST['tech_telephone']));
+            $tech_email = sanitize_text_field(wp_unslash($_POST['tech_email']));
 
             $bluem_options['senderID'] = $acc_senderid;
             $bluem_options['test_accessToken'] = $acc_testtoken;
@@ -1188,10 +1188,12 @@ function bluem_woocommerce_settings_render_input($field)
             'name' => "bluem_woocommerce_options[$key]",
         ];
         ?>
-        <textarea
-    <?php foreach ($attrs as $akey => $aval) {
-        echo esc_html("$akey='" . esc_attr($aval) . "' ");
-    } ?>><?php echo(isset($values[$key]) ? esc_attr($values[$key]) : esc_attr($field['default'])); ?></textarea>
+        <label>
+<textarea
+<?php foreach ($attrs as $akey => $aval) {
+    echo esc_html("$akey='" . esc_attr($aval) . "' ");
+} ?>><?php echo(isset($values[$key]) ? esc_attr($values[$key]) : esc_attr($field['default'])); ?></textarea>
+        </label>
         <?php
     } else {
         $attrs = [];
