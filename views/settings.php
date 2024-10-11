@@ -1,10 +1,10 @@
-<?php if ( ! defined( 'ABSPATH' ) ) {
+<?php if (!defined('ABSPATH')) {
     exit;
 }
 ?>
 <div class="wrap">
     <h1>
-        <?php echo bluem_get_bluem_logo_html(48); ?>
+        <?php echo wp_kses(bluem_get_bluem_logo_html(48), ['img']); ?>
         <?php echo esc_html__('Instellingen', 'bluem'); ?>
     </h1>
 
@@ -12,28 +12,32 @@
 
     <div class="wrap payment-methods">
         <h2 class="nav-tab-wrapper">
-            <a href="#" class="nav-tab" data-tab="general" title="<?php echo esc_html__('Algemeen', 'bluem');?>">
+            <a href="#" class="nav-tab" data-tab="general" title="<?php echo esc_html__('Algemeen', 'bluem'); ?>">
                 <?php echo esc_html__('Algemeen', 'bluem'); ?>
             </a>
-            <a href="#" class="nav-tab" data-tab="account" title="<?php echo esc_html__('Account', 'bluem');?>">
+            <a href="#" class="nav-tab" data-tab="account" title="<?php echo esc_html__('Account', 'bluem'); ?>">
                 <?php echo esc_html__('Account', 'bluem'); ?>
             </a>
             <?php if (bluem_module_enabled('mandates')) { ?>
-                <a href="#" class="nav-tab" data-tab="mandates" title="<?php echo esc_html__('Incassomachtigen', 'bluem');?>">
+                <a href="#" class="nav-tab" data-tab="mandates"
+                   title="<?php echo esc_html__('Incassomachtigen', 'bluem'); ?>">
                     <?php echo esc_html__('Incassomachtigen', 'bluem'); ?>
                 </a>
             <?php } ?>
             <?php if (bluem_module_enabled('payments')) { ?>
-                <a href="#" class="nav-tab" data-tab="payments" title="<?php echo esc_html__('Betalingen', 'bluem');?>">
+                <a href="#" class="nav-tab" data-tab="payments"
+                   title="<?php echo esc_html__('Betalingen', 'bluem'); ?>">
                     <?php echo esc_html__('Betalingen', 'bluem'); ?>
                 </a>
             <?php } ?>
             <?php if (bluem_module_enabled('idin')) { ?>
-                <a href="#" class="nav-tab" data-tab="identity" title="<?php echo esc_html__('Identiteit', 'bluem');?>">
+                <a href="#" class="nav-tab" data-tab="identity"
+                   title="<?php echo esc_html__('Identiteit', 'bluem'); ?>">
                     <?php echo esc_html__('Identiteit', 'bluem'); ?>
                 </a>
             <?php } ?>
-            <a href="#" class="nav-tab" data-tab="integrations" title="<?php echo esc_html__('Integraties', 'bluem');?>">
+            <a href="#" class="nav-tab" data-tab="integrations"
+               title="<?php echo esc_html__('Integraties', 'bluem'); ?>">
                 <?php echo esc_html__('Integraties', 'bluem'); ?>
             </a>
         </h2>

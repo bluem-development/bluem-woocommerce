@@ -170,8 +170,8 @@ By default, this is disabled as it is quite context specific if the webshop is s
 ## Important notes when compiling:
 - delete `vendor/bluem-development/bluem-php/examples` to be sure as it is not necessary in production.
 
-# InstantMandates (custom integration)
-U can use our plug-in to initiate an eMandate transaction directly from, as example, within an App.
+# Instant Mandates
+You can use our plug-in to initiate an eMandate transaction directly from, as example, within an App.
 All u have to do is make a GET request to bluem-woocommerce/mandate_instant_request with the `debtorreference` as query.
 Make sure the debtorreference is unique and refers to an customer/user.
 Set the return URI within the Bluem plug-in settings.
