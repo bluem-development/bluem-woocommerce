@@ -214,7 +214,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                 )
             );
 
-            $contact_form_id = !empty($_POST['contact_form_id']) ? sanitize_text_field($_POST['contact_form_id']) : '';
+            $contact_form_id = !empty($_POST['contact_form_id']) ? sanitize_text_field(wp_unslash($_POST['contact_form_id'])) : '';
 
             $posted_data = array();
             // @todo: change this to only retrieve the fields relevant for the form
@@ -222,7 +222,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
             // var_dump($form);
             foreach ($_POST as $key => $value) {
                 if ($key !== 'contact_form_id') {
-                    $posted_data[sanitize_text_field($key)] = sanitize_text_field($value);
+                    $posted_data[sanitize_text_field($key)] = sanitize_text_field(wp_unslash($value));
                 }
             }
 

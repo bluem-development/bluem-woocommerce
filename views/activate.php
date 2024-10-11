@@ -69,21 +69,21 @@
                     <th scope="row"><?php esc_html_e('SenderID', 'bluem'); ?>
                     </th>
                     <td><input type="text" name="acc_senderid" id="acc_senderid"
-                               value="<?php echo !empty($_POST['acc_senderid']) ? esc_html(sanitize_text_field($_POST['acc_senderid'])) : (!empty($bluem_options['senderID']) ? esc_attr($bluem_options['senderID']) : ''); ?>"
+                               value="<?php echo !empty($_POST['acc_senderid']) ? esc_html(sanitize_text_field(wp_unslash($_POST['acc_senderid']))) : (!empty($bluem_options['senderID']) ? esc_attr($bluem_options['senderID']) : ''); ?>"
                                class="form-control"></td>
                 </tr>
                 <tr>
                     <th scope="row"><?php esc_html_e('Test token', 'bluem'); ?>
                     </th>
                     <td><input type="password" name="acc_testtoken" id="acc_testtoken"
-                               value="<?php echo !empty($_POST['acc_testtoken']) ? esc_html(sanitize_text_field($_POST['acc_testtoken'])) : (!empty($bluem_options['test_accessToken']) ? esc_attr($bluem_options['test_accessToken']) : ''); ?>"
+                               value="<?php echo !empty($_POST['acc_testtoken']) ? esc_html(sanitize_text_field(wp_unslash($_POST['acc_testtoken']))) : (!empty($bluem_options['test_accessToken']) ? esc_attr($bluem_options['test_accessToken']) : ''); ?>"
                                class="form-control" style="width: 425px;"></td>
                 </tr>
                 <tr>
                     <th scope="row"><?php esc_html_e('Productie token', 'bluem'); ?>
                     </th>
                     <td><input type="password" name="acc_prodtoken" id="acc_prodtoken"
-                               value="<?php echo !empty($_POST['acc_prodtoken']) ? esc_html(sanitize_text_field($_POST['acc_prodtoken'])) : (!empty($bluem_options['production_accessToken']) ? esc_attr($bluem_options['production_accessToken']) : ''); ?>"
+                               value="<?php echo !empty($_POST['acc_prodtoken']) ? esc_html(sanitize_text_field(wp_unslash($_POST['acc_prodtoken']))) : (!empty($bluem_options['production_accessToken']) ? esc_attr($bluem_options['production_accessToken']) : ''); ?>"
                                class="form-control" style="width: 425px;"></td>
                 </tr>
                 </tbody>
@@ -108,19 +108,19 @@
                 <tr>
                     <th scope="row"><?php esc_html_e('Bedrijfsnaam', 'bluem'); ?> *</th>
                     <td><input type="text" name="company_name" id="company_name"
-                               value="<?php echo !empty($_POST['company_name']) ? esc_html(sanitize_text_field($_POST['company_name'])) : (!empty($bluem_registration['company']) && !empty($bluem_registration['company']['name']) ? esc_html($bluem_registration['company']['name']) : ''); ?>"
+                               value="<?php echo !empty($_POST['company_name']) ? esc_html(sanitize_text_field(wp_unslash($_POST['company_name']))) : (!empty($bluem_registration['company']) && !empty($bluem_registration['company']['name']) ? esc_html($bluem_registration['company']['name']) : ''); ?>"
                                class="form-control" required="required"></td>
                 </tr>
                 <tr>
                     <th scope="row"><?php esc_html_e('Telefoonnummer', 'bluem'); ?> *</th>
                     <td><input type="tel" name="company_telephone" id="company_telephone"
-                               value="<?php echo !empty($_POST['company_telephone']) ? esc_html(sanitize_text_field($_POST['company_telephone'])) : (!empty($bluem_registration['company']) && !empty($bluem_registration['company']['telephone']) ? esc_html($bluem_registration['company']['telephone']) : ''); ?>"
+                               value="<?php echo !empty($_POST['company_telephone']) ? esc_html(sanitize_text_field(wp_unslash($_POST['company_telephone']))) : (!empty($bluem_registration['company']) && !empty($bluem_registration['company']['telephone']) ? esc_html($bluem_registration['company']['telephone']) : ''); ?>"
                                class="form-control" required="required"></td>
                 </tr>
                 <tr>
                     <th scope="row"><?php esc_html_e('E-mailadres', 'bluem'); ?> *</th>
                     <td><input type="email" name="company_email" id="company_email"
-                               value="<?php echo !empty($_POST['company_email']) ? esc_html(sanitize_text_field($_POST['company_email'])) : (!empty($bluem_registration['company']) && !empty($bluem_registration['company']['email']) ? esc_html($bluem_registration['company']['email']) : ''); ?>"
+                               value="<?php echo !empty($_POST['company_email']) ? esc_html(sanitize_text_field(wp_unslash($_POST['company_email']))) : (!empty($bluem_registration['company']) && !empty($bluem_registration['company']['email']) ? esc_html($bluem_registration['company']['email']) : ''); ?>"
                                class="form-control" required="required"></td>
                 </tr>
                 </tbody>
@@ -140,19 +140,19 @@
                 <tr>
                     <th scope="row"><?php esc_html_e('Voor- en achternaam', 'bluem'); ?> *</th>
                     <td><input type="text" name="tech_name" id="tech_name"
-                               value="<?php echo !empty($_POST['tech_name']) ? esc_html(sanitize_text_field($_POST['tech_name'])) : (!empty($bluem_registration['tech_contact']) && !empty($bluem_registration['tech_contact']['name']) ? esc_html($bluem_registration['tech_contact']['name']) : ''); ?>"
+                               value="<?php echo !empty($_POST['tech_name']) ? esc_html(sanitize_text_field(wp_unslash($_POST['tech_name']))) : (!empty($bluem_registration['tech_contact']) && !empty($bluem_registration['tech_contact']['name']) ? esc_html($bluem_registration['tech_contact']['name']) : ''); ?>"
                                class="form-control" required="required"></td>
                 </tr>
                 <tr>
                     <th scope="row"><?php esc_html_e('Telefoonnummer', 'bluem'); ?> *</th>
                     <td><input type="tel" name="tech_telephone" id="tech_telephone"
-                               value="<?php echo !empty($_POST['tech_telephone']) ? esc_html(sanitize_text_field($_POST['tech_telephone'])) : (!empty($bluem_registration['tech_contact']) && !empty($bluem_registration['tech_contact']['telephone']) ? esc_html($bluem_registration['tech_contact']['telephone']) : ''); ?>"
+                               value="<?php echo !empty($_POST['tech_telephone']) ? esc_html(sanitize_text_field(wp_unslash($_POST['tech_telephone']))) : (!empty($bluem_registration['tech_contact']) && !empty($bluem_registration['tech_contact']['telephone']) ? esc_html($bluem_registration['tech_contact']['telephone']) : ''); ?>"
                                class="form-control" required="required"></td>
                 </tr>
                 <tr>
                     <th scope="row"><?php esc_html_e('E-mailadres', 'bluem'); ?> *</th>
                     <td><input type="email" name="tech_email" id="tech_email"
-                               value="<?php echo !empty($_POST['tech_email']) ? esc_html(sanitize_text_field($_POST['tech_email'])) : (!empty($bluem_registration['tech_contact']) && !empty($bluem_registration['tech_contact']['email']) ? esc_html($bluem_registration['tech_contact']['email']) : ''); ?>"
+                               value="<?php echo !empty($_POST['tech_email']) ? esc_html(sanitize_text_field(wp_unslash($_POST['tech_email']))) : (!empty($bluem_registration['tech_contact']) && !empty($bluem_registration['tech_contact']['email']) ? esc_html($bluem_registration['tech_contact']['email']) : ''); ?>"
                                class="form-control" required="required"></td>
                 </tr>
                 </tbody>

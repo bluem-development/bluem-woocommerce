@@ -332,12 +332,12 @@ function bluem_plugin_activation()
         'tech_email'
     ];
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
         // Validate input
         $is_valid = true;
 
         foreach ($required_fields as $required_field) {
-            $value = $_POST[$required_field];
+            $value = sanitize_text_field(wp_unslash($_POST[$required_field]));
 
             if (empty ($value)) {
                 $is_valid = false;
@@ -345,17 +345,53 @@ function bluem_plugin_activation()
         }
 
         if ($is_valid) {
-            $acc_senderid = sanitize_text_field(wp_unslash($_POST['acc_senderid']));
-            $acc_testtoken = sanitize_text_field(wp_unslash($_POST['acc_testtoken']));
-            $acc_prodtoken = sanitize_text_field(wp_unslash($_POST['acc_prodtoken']));
+            if (!empty($_POST['acc_senderid'])) {
+                $acc_senderid = sanitize_text_field(wp_unslash($_POST['acc_senderid']));
+            } else {
+                $acc_senderid = '';
+            }
+            if (!empty($_POST['acc_testtoken'])) {
+                $acc_testtoken = sanitize_text_field(wp_unslash($_POST['acc_testtoken']));
+            } else {
+                $acc_testtoken = '';
+            }
+            if (!empty($_POST['acc_prodtoken'])) {
+                $acc_prodtoken = sanitize_text_field(wp_unslash($_POST['acc_prodtoken']));
+            } else {
+                $acc_prodtoken = '';
+            }
 
-            $company_name = sanitize_text_field(wp_unslash($_POST['company_name']));
-            $company_telephone = sanitize_text_field(wp_unslash($_POST['company_telephone']));
-            $company_email = sanitize_text_field(wp_unslash($_POST['company_email']));
+            if (!empty($_POST['company_name'])) {
+                $company_name = sanitize_text_field(wp_unslash($_POST['company_name']));
+            } else {
+                $company_name = '';
+            }
+            if (!empty($_POST['company_telephone'])) {
+                $company_telephone = sanitize_text_field(wp_unslash($_POST['company_telephone']));
+            } else {
+                $company_telephone = '';
+            }
+            if (!empty($_POST['company_email'])) {
+                $company_email = sanitize_text_field(wp_unslash($_POST['company_email']));
+            } else {
+                $company_email = '';
+            }
 
-            $tech_name = sanitize_text_field(wp_unslash($_POST['tech_name']));
-            $tech_telephone = sanitize_text_field(wp_unslash($_POST['tech_telephone']));
-            $tech_email = sanitize_text_field(wp_unslash($_POST['tech_email']));
+            if (!empty($_POST['tech_name'])) {
+                $tech_name = sanitize_text_field(wp_unslash($_POST['tech_name']));
+            } else {
+                $tech_name = '';
+            }
+            if (!empty($_POST['tech_telephone'])) {
+                $tech_telephone = sanitize_text_field(wp_unslash($_POST['tech_telephone']));
+            } else {
+                $tech_telephone = '';
+            }
+            if (!empty($_POST['tech_email'])) {
+                $tech_email = sanitize_text_field(wp_unslash($_POST['tech_email']));
+            } else {
+                $tech_email = '';
+            }
 
             $bluem_options['senderID'] = $acc_senderid;
             $bluem_options['test_accessToken'] = $acc_testtoken;
@@ -396,12 +432,12 @@ function bluem_requests_view()
 {
     if (isset($_GET['request_id']) && $_GET['request_id'] !== "") {
         if (isset($_GET['admin_action']) && $_GET['admin_action'] === "delete") {
-            bluem_db_delete_request_by_id(sanitize_text_field($_GET['request_id']));
+            bluem_db_delete_request_by_id(sanitize_text_field(wp_unslash($_GET['request_id'])));
             wp_redirect(
                 esc_url(admin_url("admin.php?page=bluem-transactions"))
             );
         } elseif (isset($_GET['admin_action']) && $_GET['admin_action'] === "status-update") {
-            bluem_update_request_by_id(sanitize_text_field($_GET['request_id']));
+            bluem_update_request_by_id(sanitize_text_field(wp_unslash($_GET['request_id'])));
 
             bluem_requests_view_request();
         } else {
@@ -721,7 +757,7 @@ function bluem_requests_view_request()
 {
     global $wpdb;
 
-    $id = sanitize_text_field($_GET['request_id']);
+    $id = sanitize_text_field(wp_unslash($_GET['request_id']));
 
     if (!is_numeric($id)) {
         return;
@@ -787,7 +823,7 @@ function bluem_requests_view_all()
 // @todo Deprecate this
 function bluem_woocommerce_tab($default_tab = null)
 {
-    return isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : $default_tab;
+    return isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : $default_tab;
 }
 
 /**
@@ -1832,7 +1868,7 @@ function bluem_setup_incomplete()
                             $msg = [
                                 esc_html__('Je hebt de Bluem iDEAL ingeschakeld maar de betaalmethode nog niet binnen WooCommerce geactiveerd.', 'bluem')
                             ];
-                            bluem_display_module_notices($msg, esc_html__('De Bluem integratie is nog niet volledig geactiveerd', 'bluem'), ($_GET['page'] !== 'wc-settings' ? admin_url('admin.php?page=wc-settings&tab=checkout') : ''), esc_html__('Klik hier om naar de WooCommerce configuratie te gaan.', 'bluem'));
+                            bluem_display_module_notices($msg, esc_html__('De Bluem integratie is nog niet volledig geactiveerd', 'bluem'), (!empty($_GET['page']) && $_GET['page'] !== 'wc-settings' ? esc_url(admin_url('admin.php?page=wc-settings&tab=checkout')) : ''), esc_html__('Klik hier om naar de WooCommerce configuratie te gaan.', 'bluem'));
                         }
                         break;
 
@@ -1841,7 +1877,8 @@ function bluem_setup_incomplete()
                             $msg = [
                                 esc_html__('Je hebt de Bluem mandates ingeschakeld maar de betaalmethode nog niet binnen WooCommerce geactiveerd.', 'bluem')
                             ];
-                            bluem_display_module_notices($msg, esc_html__('De Bluem integratie is nog niet volledig geactiveerd', 'bluem'), ($_GET['page'] !== 'wc-settings' ? admin_url('admin.php?page=wc-settings&tab=checkout') : ''), esc_html__('Klik hier om naar de WooCommerce configuratie te gaan.', 'bluem'));
+                            bluem_display_module_notices($msg, esc_html__('De Bluem integratie is nog niet volledig geactiveerd', 'bluem'),
+                                (!empty($_GET['page']) && $_GET['page'] !== 'wc-settings' ? esc_url(admin_url('admin.php?page=wc-settings&tab=checkout')) : ''), esc_html__('Klik hier om naar de WooCommerce configuratie te gaan.', 'bluem'));
                         }
                         break;
                 }
@@ -2008,7 +2045,7 @@ function bluem_admin_importexport(): void
         if (isset($_POST['import']) && $_POST['import'] !== "") {
             try {
                 $import_data = json_decode(stripslashes(
-                    $_POST['import']
+                    sanitize_text_field(wp_unslash($_POST['import']))
                 ), true, 512, JSON_THROW_ON_ERROR);
             } catch (Exception $e) {
                 $import_data = null;

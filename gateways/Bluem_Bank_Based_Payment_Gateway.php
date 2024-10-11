@@ -141,7 +141,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             $description = esc_html__("Bestelling", 'bluem') . " " . $order_id;
         }
 
-        $bluem_payments_ideal_bic = isset($_POST['bluem_payments_ideal_bic']) ? sanitize_text_field($_POST['bluem_payments_ideal_bic']) : '';
+        $bluem_payments_ideal_bic = isset($_POST['bluem_payments_ideal_bic']) ? sanitize_text_field(wp_unslash($_POST['bluem_payments_ideal_bic'])) : '';
 
 
         $debtorReference = $order_id;

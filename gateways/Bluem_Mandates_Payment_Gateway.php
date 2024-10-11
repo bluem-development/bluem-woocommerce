@@ -370,7 +370,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             // @todo Possibly allow different redirect after fast checkout with existing, valid, mandate.
         }
 
-        $bluem_mandates_bic = isset($_POST['bluem_mandates_bic']) ? sanitize_text_field($_POST['bluem_mandates_bic']) : '';
+        $bluem_mandates_bic = isset($_POST['bluem_mandates_bic']) ? sanitize_text_field(wp_unslash($_POST['bluem_mandates_bic'])) : '';
 
         $order_id = $order->get_id();
         // update: added prefixed order ID for retries of mandate requests

@@ -1491,41 +1491,41 @@ function bluem_woocommerce_idin_save_extra_profile_fields($user_id): bool
     update_user_meta(
         $user_id,
         'bluem_idin_entrance_code',
-        sanitize_text_field($_POST['bluem_idin_entrance_code'])
+        sanitize_text_field(wp_unslash($_POST['bluem_idin_entrance_code']))
     );
     update_user_meta(
         $user_id,
         'bluem_idin_transaction_id',
-        sanitize_text_field($_POST['bluem_idin_transaction_id'])
+        sanitize_text_field(wp_unslash($_POST['bluem_idin_transaction_id']))
     );
     update_user_meta(
         $user_id,
         'bluem_idin_transaction_url',
-        sanitize_text_field($_POST['bluem_idin_transaction_url'])
+        sanitize_text_field(wp_unslash($_POST['bluem_idin_transaction_url']))
     );
 
     update_user_meta(
         $user_id,
         'bluem_idin_validated',
-        sanitize_text_field($_POST['bluem_idin_validated'])
+        sanitize_text_field(wp_unslash($_POST['bluem_idin_validated']))
     );
 
     update_user_meta(
         $user_id,
         'bluem_idin_report_last_verification_timestamp',
-        sanitize_text_field($_POST['bluem_idin_report_last_verification_timestamp'])
+        sanitize_text_field(wp_unslash($_POST['bluem_idin_report_last_verification_timestamp']))
     );
 
     update_user_meta(
         $user_id,
         'bluem_idin_report_customeridresponse',
-        sanitize_text_field($_POST['bluem_idin_report_customeridresponse'])
+        sanitize_text_field(wp_unslash($_POST['bluem_idin_report_customeridresponse']))
     );
 
     update_user_meta(
         $user_id,
         'bluem_idin_report_agecheckresponse',
-        sanitize_text_field($_POST['bluem_idin_report_agecheckresponse'])
+        sanitize_text_field(wp_unslash($_POST['bluem_idin_report_agecheckresponse']))
     );
 
     return true;
