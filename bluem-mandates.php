@@ -344,26 +344,35 @@ function bluem_woocommerce_mandates_save_extra_profile_fields($user_id)
         return false;
     }
 
-    update_user_meta(
-        $user_id,
-        'bluem_latest_mandate_id',
-        esc_attr(sanitize_text_field($_POST['bluem_latest_mandate_id']))
-    );
-    update_user_meta(
-        $user_id,
-        'bluem_latest_mandate_entrance_code',
-        esc_attr(sanitize_text_field($_POST['bluem_latest_mandate_entrance_code']))
-    );
-    update_user_meta(
-        $user_id,
-        'bluem_latest_mandate_amount',
-        esc_attr(sanitize_text_field($_POST['bluem_latest_mandate_amount']))
-    );
-    update_user_meta(
-        $user_id,
-        'bluem_mandates_validated',
-        esc_attr(sanitize_text_field($_POST['bluem_mandates_validated']))
-    );
+    if (isset($_POST['bluem_latest_mandate_id'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_latest_mandate_id',
+            esc_attr(sanitize_text_field(wp_unslash($_POST['bluem_latest_mandate_id'])))
+        );
+    }
+
+    if (isset($_POST['bluem_latest_mandate_entrance_code'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_latest_mandate_entrance_code',
+            esc_attr(sanitize_text_field(wp_unslash($_POST['bluem_latest_mandate_entrance_code'])))
+        );
+    }
+    if (isset($_POST['bluem_latest_mandate_amount'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_latest_mandate_amount',
+            esc_attr(sanitize_text_field(wp_unslash($_POST['bluem_latest_mandate_amount'])))
+        );
+    }
+    if (isset($_POST['bluem_mandates_validated'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_mandates_validated',
+            esc_attr(sanitize_text_field(wp_unslash($_POST['bluem_mandates_validated'])))
+        );
+    }
 }
 
 function bluem_woocommerce_mandates_settings_section()

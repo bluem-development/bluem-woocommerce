@@ -634,7 +634,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         // $this->bluem = new Bluem( $this->bluem_config );
         // dont recreate it here, it should already exist in the gateway!
 
-        if (!isset($_GET['mandateID'])) {
+        if (!empty(sanitize_text_field(wp_unslash($_GET['mandateID'])))) {
             $errormessage = esc_html__("Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.", 'bluem');
             bluem_error_report_email(
                 [
@@ -659,7 +659,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             bluem_dialogs_render_prompt($errormessage);
             exit;
         }
-        $mandateID = sanitize_text_field($_GET['mandateID']);
+        $mandateID = sanitize_text_field(wp_unslash($_GET['mandateID']));
 
         $order = $this->getOrder($mandateID);
         if (is_null($order)) {

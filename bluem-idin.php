@@ -866,7 +866,7 @@ function bluem_idin_form(): string
         return $html;
     }
 
-    if (isset($_GET['result']) && sanitize_text_field($_GET['result']) === 'false') {
+    if (isset($_GET['result']) && sanitize_text_field(wp_unslash($_GET['result'])) === 'false') {
         $html .= '<div class="">';
 
         if (isset($bluem_config->IDINErrorMessage)) {
@@ -905,14 +905,14 @@ function bluem_idin_shortcode_idin_execute(): void
 {
     $shortcode_execution_url = 'bluem-woocommerce/idin_execute';
 
-    if (!str_contains(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), $shortcode_execution_url)) {
+    if (!isset($_SERVER['REQUEST_URI']) || !str_contains(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), $shortcode_execution_url)) {
         // any other request
         return;
     }
 
     $goto = false;
     if (!empty($_GET['redirect_to_checkout'])
-        && sanitize_text_field($_GET['redirect_to_checkout']) === 'true'
+        && sanitize_text_field(wp_unslash($_GET['redirect_to_checkout'])) === 'true'
     ) {
         // v1.2.6: added cart url instead of static cart as this is front-end language dependent
         // $goto = wc_get_cart_url();
@@ -948,7 +948,7 @@ function bluem_idin_shortcode_callback(): void
     $request_by_debtor_ref = false;
 
     if (isset($_GET['debtorReference']) && $_GET['debtorReference'] !== '') {
-        $debtorReference = sanitize_text_field($_GET['debtorReference']);
+        $debtorReference = sanitize_text_field(wp_unslash($_GET['debtorReference']));
         $request_by_debtor_ref = bluem_db_get_request_by_debtor_reference($debtorReference);
     }
 
@@ -1488,45 +1488,59 @@ function bluem_woocommerce_idin_save_extra_profile_fields($user_id): bool
         return false;
     }
 
-    update_user_meta(
-        $user_id,
-        'bluem_idin_entrance_code',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_entrance_code']))
-    );
-    update_user_meta(
-        $user_id,
-        'bluem_idin_transaction_id',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_transaction_id']))
-    );
-    update_user_meta(
-        $user_id,
-        'bluem_idin_transaction_url',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_transaction_url']))
-    );
+    if (!empty($_POST['bluem_idin_entrance_code'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_entrance_code',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_entrance_code']))
+        );
+    }
+    if (!empty($_POST['bluem_idin_transaction_id'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_transaction_id',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_transaction_id']))
+        );
+    }
+    if (!empty($_POST['bluem_idin_transaction_url'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_transaction_url',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_transaction_url']))
+        );
+    }
 
-    update_user_meta(
-        $user_id,
-        'bluem_idin_validated',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_validated']))
-    );
+    if (!empty($_POST['bluem_idin_validated'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_validated',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_validated']))
+        );
+    }
 
-    update_user_meta(
-        $user_id,
-        'bluem_idin_report_last_verification_timestamp',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_report_last_verification_timestamp']))
-    );
+    if (!empty($_POST['bluem_idin_report_last_verification_timestamp'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_report_last_verification_timestamp',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_report_last_verification_timestamp']))
+        );
+    }
 
-    update_user_meta(
-        $user_id,
-        'bluem_idin_report_customeridresponse',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_report_customeridresponse']))
-    );
+    if (!empty($_POST['bluem_idin_report_customeridresponse'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_report_customeridresponse',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_report_customeridresponse']))
+        );
+    }
 
-    update_user_meta(
-        $user_id,
-        'bluem_idin_report_agecheckresponse',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_report_agecheckresponse']))
-    );
+    if (!empty($_POST['bluem_idin_report_agecheckresponse'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_report_agecheckresponse',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_report_agecheckresponse']))
+        );
+    }
 
     return true;
 }

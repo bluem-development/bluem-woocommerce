@@ -250,7 +250,6 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         return array(
             'result' => 'failure',
-            'message' => print_r($response, true)
         );
     }
 
@@ -371,7 +370,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             exit;
         }
 
-        $entranceCode = sanitize_text_field($_GET['entranceCode']);
+        $entranceCode = sanitize_text_field(wp_unslash($_GET['entranceCode']));
 
         $order = $this->getOrderByEntranceCode($entranceCode);
 

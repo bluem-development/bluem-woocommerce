@@ -189,7 +189,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
 {
     $bluem_config = bluem_woocommerce_get_config();
 
-    if (strpos(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), 'bluem-woocommerce/bluem-integrations/wpcf7_mandate') === false) {
+    if (!isset($_SERVER['REQUEST_URI']) || strpos(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), 'bluem-woocommerce/bluem-integrations/wpcf7_mandate') === false) {
         return;
     }
 
@@ -199,7 +199,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
         return;
     }
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $bluem_config = bluem_woocommerce_get_config();
 
         $debtorReference = bin2hex(random_bytes(15));
@@ -549,7 +549,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
 
     $storage = bluem_db_get_storage();
 
-    if (strpos(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), 'bluem-woocommerce/bluem-integrations/wpcf7_callback') === false) {
+    if (empty($_SERVER['REQUEST_URI']) || strpos(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), 'bluem-woocommerce/bluem-integrations/wpcf7_callback') === false) {
         return;
     }
 
@@ -752,11 +752,14 @@ function bluem_woocommerce_integration_wpcf7_results_shortcode()
         return 'Er is een fout opgetreden. Ga terug en probeer het opnieuw.';
     }
 
-    $contact_form = WPCF7_ContactForm::get_instance(sanitize_text_field($_GET['form']));
+    if (!empty($_GET['form'])) {
 
-    if (!empty($contact_form)) {
-        if (!empty($_GET['result']) && $_GET['result'] === 'true') {
-            return '<p>' . $contact_form->pref('bluem_mandate_success') . '</p>';
+        $contact_form = WPCF7_ContactForm::get_instance(sanitize_text_field(wp_unslash($_GET['form'])));
+
+        if (!empty($contact_form)) {
+            if (!empty($_GET['result']) && wp_unslash($_GET['result']) === 'true') {
+                return '<p>' . $contact_form->pref('bluem_mandate_success') . '</p>';
+            }
         }
     }
     return '<p>' . $contact_form->pref('bluem_mandate_failure') . '</p>';
@@ -1315,8 +1318,8 @@ function bluem_woocommerce_integration_gform_results_shortcode()
     }
 
     $request_from_db = bluem_db_get_request_by_transaction_id_and_entrance_code(
-        sanitize_text_field($_GET['mid']),
-        sanitize_text_field($_GET['ec']),
+        sanitize_text_field(wp_unslash($_GET['mid'])),
+        sanitize_text_field(wp_unslash($_GET['ec'])),
     );
 
     if ($request_from_db !== false) {
