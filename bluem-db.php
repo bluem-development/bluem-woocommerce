@@ -206,7 +206,7 @@ function bluem_db_insert_storage($object)
 
     if (!empty($token) && !empty($secret)) {
 
-        $result = $wpdb->get_results($wpdb->prepare("SELECT id, data FROM `$table_name` WHERE token = %s AND secret = %s", $token, $secret));
+        $result = $wpdb->get_results($wpdb->prepare("SELECT id, data FROM $table_name WHERE token = %s AND secret = %s", $token, $secret));
 
         if ($result) {
             $decoded_data = json_decode($result[0]->data, true);
