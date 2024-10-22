@@ -337,7 +337,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 
         // Convert UTF-8 to ISO
         if (!empty($this->bluem_config->eMandateReason)) {
-            $this->bluem_config->eMandateReason = mb_convert_encoding($bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
+            $this->bluem_config->eMandateReason = mb_convert_encoding($this->bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
         } else {
             $this->bluem_config->eMandateReason = esc_html__("Incasso machtiging", 'bluem');
         }

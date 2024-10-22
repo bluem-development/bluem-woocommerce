@@ -1803,6 +1803,11 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
             if ($response->Error() !== '') {
                 $msg .= '<br>Response: ' .
                     $response->Error();
+            } elseif (!empty($response->IdentityTransactionResponse->Error->ErrorMessage)) {
+                $msg .= '<br>' . sprintf(
+                    /* translators: %s: Error message */
+                        esc_html__('iDIN fout: %s', 'bluem'), $response->IdentityTransactionResponse->Error->ErrorMessage . ""
+                    );
             } else {
                 $msg .= '<br>' . esc_html__('Algemene fout', 'bluem');
             }
@@ -2444,10 +2449,14 @@ $allowedTags = [
     'div' => [
         'class' => [],
         'id' => [],
+        'style' => [],
     ],
     'img' => [
         'src' => [],
         'class' => [],
+        'width' => [],
+        'height' => [],
+        'style' => []
     ],
     'h4' => [],
     'hr' => [],
@@ -2472,7 +2481,7 @@ function bluem_idin_generate_notice(string $message = '', bool $button = false, 
 
     $idin_logo_html = "<img src='" .
         esc_url(plugin_dir_url(__FILE__) . 'assets/bluem/idin.png') . "' class='bluem-idin-logo'
-    style='position:absolute; top:15pt; left:15pt; max-height:64px; '/>";
+    style=' max-height:64px; '/>";
 
     $options = get_option('bluem_woocommerce_options');
     if (isset($options['idin_identify_button_inner']) && $options['idin_identify_button_inner'] !== '') {
@@ -2489,7 +2498,7 @@ function bluem_idin_generate_notice(string $message = '', bool $button = false, 
     if (isset($options['idin_identity_more_information_popup']) && $options['idin_identity_more_information_popup'] !== '') {
         $more_information_popup = $options['idin_identity_more_information_popup'];
     } else {
-        $more_information_popup = esc_html__('Toelichting op IDIN als essentieel onderdeel van het winkelproces', 'bluem');
+        $more_information_popup = esc_html__('iDIN is een essentieel onderdeel van het winkelproces voor onze webwinkel. Zie je dit kader? Dan is het identificeren voor je aankoop of interactie essentieel.', 'bluem');
     }
 
     $html = "<div style='position:relative;" .
@@ -2558,11 +2567,8 @@ function bluem_idin_generate_notice(string $message = '', bool $button = false, 
     return $html;
 }
 
-function bluem_idin_generate_notice_e(string $message = '', bool $button = false, bool $logo = true, bool $border = true): string
+function bluem_idin_generate_notice_e(string $message = '', bool $button = false, bool $logo = true, bool $border = true): void
 {
-    echo bluem_idin_generate_notice($message, $button, $logo, $border);
-    echo "<HR>";
-    
     global $allowedTags;
     echo wp_kses(
         bluem_idin_generate_notice($message, $button, $logo, $border),

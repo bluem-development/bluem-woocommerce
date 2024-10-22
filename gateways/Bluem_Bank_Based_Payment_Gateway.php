@@ -249,7 +249,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         }
 
         return array(
-            'result' => 'failure'
+            'result' => 'failure',
+            'message' => print_r($response, true)
         );
     }
 
@@ -354,6 +355,9 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      */
     public function bluem_bank_payments_callback(): void
     {
+
+        echo "Called bluem_bank_payments_callback";
+        die();
         if (!isset($_GET['entranceCode'])) {
             $errormessage = esc_html__("Fout: geen juiste entranceCode teruggekregen bij payment_callback. Neem contact op met de webshop en vermeld je contactgegevens.", 'bluem');
             bluem_error_report_email(
