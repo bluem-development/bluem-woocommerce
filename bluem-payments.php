@@ -12,11 +12,12 @@ use Bluem\BluemPHP\Bluem;
 add_filter('woocommerce_payment_gateways', 'bluem_add_gateway_class_payments', 12);
 function bluem_add_gateway_class_payments($gateways)
 {
-    $gateways[] = Bluem_iDEAL_Payment_Gateway::class; // your class name is here
+    $gateways[] = Bluem_iDEAL_Payment_Gateway::class;
     $gateways[] = Bluem_PayPal_Payment_Gateway::class;
     $gateways[] = Bluem_Creditcard_Payment_Gateway::class;
     $gateways[] = Bluem_Sofort_Payment_Gateway::class;
     $gateways[] = Bluem_CarteBancaire_Payment_Gateway::class;
+
     return $gateways;
 }
 

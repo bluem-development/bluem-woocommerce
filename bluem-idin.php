@@ -866,7 +866,7 @@ function bluem_idin_form(): string
         return $html;
     }
 
-    if (isset($_GET['result']) && sanitize_text_field($_GET['result']) === 'false') {
+    if (isset($_GET['result']) && sanitize_text_field(wp_unslash($_GET['result'])) === 'false') {
         $html .= '<div class="">';
 
         if (isset($bluem_config->IDINErrorMessage)) {
@@ -905,14 +905,14 @@ function bluem_idin_shortcode_idin_execute(): void
 {
     $shortcode_execution_url = 'bluem-woocommerce/idin_execute';
 
-    if (!str_contains(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), $shortcode_execution_url)) {
+    if (!isset($_SERVER['REQUEST_URI']) || !str_contains(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), $shortcode_execution_url)) {
         // any other request
         return;
     }
 
     $goto = false;
     if (!empty($_GET['redirect_to_checkout'])
-        && sanitize_text_field($_GET['redirect_to_checkout']) === 'true'
+        && sanitize_text_field(wp_unslash($_GET['redirect_to_checkout'])) === 'true'
     ) {
         // v1.2.6: added cart url instead of static cart as this is front-end language dependent
         // $goto = wc_get_cart_url();
@@ -948,7 +948,7 @@ function bluem_idin_shortcode_callback(): void
     $request_by_debtor_ref = false;
 
     if (isset($_GET['debtorReference']) && $_GET['debtorReference'] !== '') {
-        $debtorReference = sanitize_text_field($_GET['debtorReference']);
+        $debtorReference = sanitize_text_field(wp_unslash($_GET['debtorReference']));
         $request_by_debtor_ref = bluem_db_get_request_by_debtor_reference($debtorReference);
     }
 
@@ -1488,45 +1488,59 @@ function bluem_woocommerce_idin_save_extra_profile_fields($user_id): bool
         return false;
     }
 
-    update_user_meta(
-        $user_id,
-        'bluem_idin_entrance_code',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_entrance_code']))
-    );
-    update_user_meta(
-        $user_id,
-        'bluem_idin_transaction_id',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_transaction_id']))
-    );
-    update_user_meta(
-        $user_id,
-        'bluem_idin_transaction_url',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_transaction_url']))
-    );
+    if (!empty($_POST['bluem_idin_entrance_code'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_entrance_code',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_entrance_code']))
+        );
+    }
+    if (!empty($_POST['bluem_idin_transaction_id'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_transaction_id',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_transaction_id']))
+        );
+    }
+    if (!empty($_POST['bluem_idin_transaction_url'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_transaction_url',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_transaction_url']))
+        );
+    }
 
-    update_user_meta(
-        $user_id,
-        'bluem_idin_validated',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_validated']))
-    );
+    if (!empty($_POST['bluem_idin_validated'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_validated',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_validated']))
+        );
+    }
 
-    update_user_meta(
-        $user_id,
-        'bluem_idin_report_last_verification_timestamp',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_report_last_verification_timestamp']))
-    );
+    if (!empty($_POST['bluem_idin_report_last_verification_timestamp'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_report_last_verification_timestamp',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_report_last_verification_timestamp']))
+        );
+    }
 
-    update_user_meta(
-        $user_id,
-        'bluem_idin_report_customeridresponse',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_report_customeridresponse']))
-    );
+    if (!empty($_POST['bluem_idin_report_customeridresponse'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_report_customeridresponse',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_report_customeridresponse']))
+        );
+    }
 
-    update_user_meta(
-        $user_id,
-        'bluem_idin_report_agecheckresponse',
-        sanitize_text_field(wp_unslash($_POST['bluem_idin_report_agecheckresponse']))
-    );
+    if (!empty($_POST['bluem_idin_report_agecheckresponse'])) {
+        update_user_meta(
+            $user_id,
+            'bluem_idin_report_agecheckresponse',
+            sanitize_text_field(wp_unslash($_POST['bluem_idin_report_agecheckresponse']))
+        );
+    }
 
     return true;
 }
@@ -1803,6 +1817,11 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
             if ($response->Error() !== '') {
                 $msg .= '<br>Response: ' .
                     $response->Error();
+            } elseif (!empty($response->IdentityTransactionResponse->Error->ErrorMessage)) {
+                $msg .= '<br>' . sprintf(
+                    /* translators: %s: Error message */
+                        esc_html__('iDIN fout: %s', 'bluem'), $response->IdentityTransactionResponse->Error->ErrorMessage . ""
+                    );
             } else {
                 $msg .= '<br>' . esc_html__('Algemene fout', 'bluem');
             }
@@ -1931,7 +1950,7 @@ function bluem_checkout_idin_notice(): void
         $validation_message = $idin_identity_topbar_no_verification_text;
 
         if (!$validated) {
-            echo wp_kses_post(bluem_idin_generate_notice($validation_message, true));
+            bluem_idin_generate_notice_e($validation_message, true);
 
             return;
         }
@@ -2007,9 +2026,9 @@ function bluem_checkout_idin_notice(): void
             // }
 
             if (!$age_valid) {
-                echo wp_kses_post(bluem_idin_generate_notice($validation_message, true));
+                bluem_idin_generate_notice_e($validation_message, true);
             } else {
-                echo wp_kses_post(bluem_idin_generate_notice($idin_identity_dialog_thank_you_message));
+                bluem_idin_generate_notice_e($idin_identity_dialog_thank_you_message);
             }
 
             return;
@@ -2019,7 +2038,7 @@ function bluem_checkout_idin_notice(): void
     // <p>Identificatie is vereist alvorens je deze bestelling kan plaatsen</p>";
 
     if ($validation_needed && bluem_checkout_check_idin_validated_filter() == false) {
-        echo wp_kses_post(bluem_idin_generate_notice('Verifieer eerst je identiteit.', true));
+        bluem_idin_generate_notice_e('Verifieer eerst je identiteit.', true);
         // esc_html_e(
         // "Verifieer eerst je identiteit via de mijn account pagina",
         // "woocommerce"
@@ -2125,7 +2144,7 @@ function bluem_checkout_check_idin_validated(): bool
         if (!$validated) {
             if ($idin_show_notice_in_checkout) {
                 wc_add_notice(
-                    wp_kses_post(bluem_idin_generate_notice($validation_message, true, false, false)),
+                    bluem_idin_generate_notice($validation_message, true, false, false),
                     'error'
                 );
             }
@@ -2169,7 +2188,6 @@ function bluem_checkout_check_idin_validated(): bool
                 } else {
                     // error: kon birthday niet inlezen, wel ingevuld bij de bank? niet geldig dus.
                     $validation_message = $idin_identity_topbar_no_verification_text;
-                    // "We hebben uw leeftijd (nog) niet kunnen opvragen. Voltooi eerst de identificatieprocedure";
 
                     $age_valid = false;
                 }
@@ -2177,7 +2195,7 @@ function bluem_checkout_check_idin_validated(): bool
                 if (!$age_valid) {
                     if ($idin_show_notice_in_checkout) {
                         wc_add_notice(
-                            wp_kses_post(bluem_idin_generate_notice($validation_message, true, false, false)),
+                            bluem_idin_generate_notice($validation_message, true, false, false),
                             'error'
                         );
                     }
@@ -2197,7 +2215,7 @@ function bluem_checkout_check_idin_validated(): bool
     if ($validation_needed && bluem_checkout_check_idin_validated_filter() == false) {
         if ($idin_show_notice_in_checkout) {
             wc_add_notice(
-                wp_kses_post(bluem_idin_generate_notice($validation_message, true, false, false)),
+                bluem_idin_generate_notice($validation_message, true, false, false),
                 'error'
             );
         }
@@ -2278,7 +2296,7 @@ add_filter('woocommerce_email_order_meta_fields', 'bluem_order_email_identity_me
  * @param $sent_to_admin
  * @param $order
  */
-function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order): bool
+function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order): bool|array
 {
     global $current_user;
 
@@ -2436,6 +2454,31 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order): 
 // {
 // }
 
+$allowedTags = [
+    'a' => [
+        'href' => [],
+        'class' => [],
+        'target' => [],
+    ],
+    'div' => [
+        'class' => [],
+        'id' => [],
+        'style' => [],
+    ],
+    'img' => [
+        'src' => [],
+        'class' => [],
+        'width' => [],
+        'height' => [],
+        'style' => []
+    ],
+    'h4' => [],
+    'hr' => [],
+    'span' => [
+        'class' => [],
+    ],
+];
+
 /**
  * Generate the necessary HTML to show a notice concerning iDIN status
  *
@@ -2448,9 +2491,11 @@ function bluem_order_email_identity_meta_data($fields, $sent_to_admin, $order): 
  */
 function bluem_idin_generate_notice(string $message = '', bool $button = false, bool $logo = true, bool $border = true): string
 {
+    global $allowedTags;
+
     $idin_logo_html = "<img src='" .
         esc_url(plugin_dir_url(__FILE__) . 'assets/bluem/idin.png') . "' class='bluem-idin-logo'
-    style='position:absolute; top:15pt; left:15pt; max-height:64px; '/>";
+    style=' max-height:64px; '/>";
 
     $options = get_option('bluem_woocommerce_options');
     if (isset($options['idin_identify_button_inner']) && $options['idin_identify_button_inner'] !== '') {
@@ -2467,7 +2512,7 @@ function bluem_idin_generate_notice(string $message = '', bool $button = false, 
     if (isset($options['idin_identity_more_information_popup']) && $options['idin_identity_more_information_popup'] !== '') {
         $more_information_popup = $options['idin_identity_more_information_popup'];
     } else {
-        $more_information_popup = esc_html__('Toelichting op IDIN als essentieel onderdeel van het winkelproces', 'bluem');
+        $more_information_popup = esc_html__('iDIN is een essentieel onderdeel van het winkelproces voor onze webwinkel. Zie je dit kader? Dan is het identificeren voor je aankoop of interactie essentieel.', 'bluem');
     }
 
     $html = "<div style='position:relative;" .
@@ -2487,22 +2532,21 @@ function bluem_idin_generate_notice(string $message = '', bool $button = false, 
     " . ($border ? 'margin-left:100px; display:block; width:auto; height:auto;' : '') . "'>
         $message";
     if ($button) {
-        $html .= "<div style='' class='bluem-idin-button'>" .
+        $html .= "<div style='' class='bluem-idin-button'>";
+        $html .=
             sprintf(
-            /*
-		translators:
-		%s: url  to more information
-		%s: button text */
-                wp_kses_post(
-                    __("<a href='%1\$s' target='_self' class='button bluem-identify-button' style='display:inline-block' title='%2\$s'>%3\$s</a>", 'bluem')
-                ),
-                home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true'),
+
+            /* translators:
+        %1$s: url  to more information
+        %2$s: button text */
+                __('<a href="%1$s" target="_self" class="button bluem-identify-button" style="display:inline-block">%2$s</a>', 'bluem'),
+                esc_url(home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true')),
                 $identify_button_inner
-            ) .
-            '</div>';
+            );
+        $html .= '</div>';
     }
 
-    $checkout_url = wc_get_checkout_url();
+    $checkout_url = esc_url(wc_get_checkout_url());
     $html .= '
     <div class="bluem-idin-box">
 	<a class="bluem-idin-info-button" href="' . $checkout_url . '#idin_info_popup">
@@ -2511,7 +2555,7 @@ function bluem_idin_generate_notice(string $message = '', bool $button = false, 
     </a></div>';
 
     $html .= sprintf(
-        wp_kses_post(
+        wp_kses(
         /* translators: %1$s: checkout url %2$s: more information popup %3$s: checkout url */
             __(
                 '<div id="idin_info_popup" class="bluem-idin-overlay">
@@ -2527,6 +2571,7 @@ function bluem_idin_generate_notice(string $message = '', bool $button = false, 
             </div></div></div>',
                 'bluem'
             ),
+            $allowedTags
         ),
         esc_url($checkout_url),
         wp_kses_post($more_information_popup),
@@ -2534,6 +2579,15 @@ function bluem_idin_generate_notice(string $message = '', bool $button = false, 
     );
 
     return $html;
+}
+
+function bluem_idin_generate_notice_e(string $message = '', bool $button = false, bool $logo = true, bool $border = true): void
+{
+    global $allowedTags;
+    echo wp_kses(
+        bluem_idin_generate_notice($message, $button, $logo, $border),
+        $allowedTags
+    );
 }
 
 

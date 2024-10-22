@@ -1,5 +1,8 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 require_once __DIR__ . '/Bluem_Payment_Gateway_Interface.php';
 
 use Bluem\BluemPHP\Bluem;
@@ -78,7 +81,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
                 function ($query, $query_vars) {
                     if (!empty($query_vars['bluem_transactionid'])) {
                         $query['meta_query'][] = array(
-                            'key'   => 'bluem_transactionid',
+                            'key' => 'bluem_transactionid',
                             'value' => esc_attr($query_vars['bluem_transactionid']),
                         );
                     }
@@ -93,7 +96,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
             add_filter('woocommerce_order_data_store_cpt_get_orders_query', function ($query, $query_vars) {
                 if (!empty($query_vars['bluem_entrancecode'])) {
                     $query['meta_query'][] = array(
-                        'key'   => 'bluem_entrancecode',
+                        'key' => 'bluem_entrancecode',
                         'value' => esc_attr($query_vars['bluem_entrancecode']),
                     );
                 }
@@ -125,24 +128,24 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
     public function init_form_fields()
     {
         $this->form_fields = apply_filters('wc_offline_form_fields', [
-            'enabled'     => [
-                'title'       => esc_html__('Enable/disable', 'bluem'),
-                'label'       => 'Enable '.$this->method_title,
-                'type'        => 'checkbox',
+            'enabled' => [
+                'title' => esc_html__('Enable/disable', 'bluem'),
+                'label' => 'Enable ' . $this->method_title,
+                'type' => 'checkbox',
                 'description' => '',
-                'default'     => 'no'
+                'default' => 'no'
             ],
-            'title'       => [
-                'title'       => esc_html__('Displayed title', 'bluem'),
-                'type'        => 'text',
+            'title' => [
+                'title' => esc_html__('Displayed title', 'bluem'),
+                'type' => 'text',
                 'description' => esc_html__('This is the title the user sees during checkout.', 'bluem'),
-                'default'     => $this->method_title,
+                'default' => $this->method_title,
             ],
             'description' => [
-                'title'       => esc_html__('Description', 'bluem'),
-                'type'        => 'textarea',
+                'title' => esc_html__('Description', 'bluem'),
+                'type' => 'textarea',
                 'description' => esc_html__('This is the description the user sees during checkout.', 'bluem'),
-                'default'     => $this->description
+                'default' => $this->description
             ]
         ]);
     }
@@ -159,7 +162,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
         $options = get_option('bluem_woocommerce_options');
         if (isset($options['paymentCompleteRedirectType'])) {
             if ($options['paymentCompleteRedirectType'] === "custom"
-                 && !empty($options['paymentCompleteRedirectCustomURL'])
+                && !empty($options['paymentCompleteRedirectCustomURL'])
             ) {
                 $url = site_url($options['paymentCompleteRedirectCustomURL']);
             } else {
@@ -180,7 +183,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
     protected function validateAndEnableBluemConfiguration(): bool
     {
         try {
-            $this->bluem        = new Bluem($this->bluem_config);
+            $this->bluem = new Bluem($this->bluem_config);
         } catch (Exception $e) {
             return false;
         }
