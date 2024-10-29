@@ -2036,12 +2036,18 @@ function bluem_admin_import_execute($data): array
  * Render the admin Import / Export page
  * @return void
  */
-function bluem_admin_importexport(): void
+function bluem_admin_importexport()
 {
     $import_data = null;
     $messages = [];
 
     if (isset($_POST['action']) && $_POST['action'] === "import") {
+//
+//        if (!isset($_POST['bluem_importexport_nonce']) || !wp_verify_nonce($_POST['bluem_importexport_nonce'])) {
+//            echo "<div class='notice notice-error'><p>" . esc_html__("Kon niet importeren: nonce niet geldig", 'bluem') . "</p></div>";
+//            die();
+//        }
+
         $decoded = true;
 
         if (isset($_POST['import']) && $_POST['import'] !== "") {
@@ -2080,6 +2086,8 @@ function bluem_admin_importexport(): void
     if ($options !== false) {
         $options_json = wp_json_encode($options);
     }
+
+    $form_nonce = wp_create_nonce( 'bluem_importexport_nonce' );
 
     // @todo: improve this by creating a renderer function and passing the renderdata
     // @todo: then generalise this to other parts of the plugin

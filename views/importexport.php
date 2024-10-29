@@ -67,8 +67,12 @@
             <?php esc_html_e('Upload je instellingen hier.', 'bluem'); ?>
 
         <form method="post"
-              action="<?php echo esc_url(admin_url('admin.php?page=bluem_admin_importexport&action=import')); ?>">
+              action="<?php echo esc_url(admin_url('admin.php?page=bluem-importexport')); ?>">
+
             <input type="hidden" name="action" value="import">
+
+            <input type="hidden" name="bluem_importexport_nonce" value="<?php echo $form_nonce;?>">
+
             <label for="import">
                 Input:
             </label>
