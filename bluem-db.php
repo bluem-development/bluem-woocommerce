@@ -188,6 +188,26 @@ function bluem_db_request_log($request_id, $description, $log_data = array())
     );
 }
 
+function bluem_db_initialize_session_storage(): array|false
+{
+    if (!empty($_COOKIE['bluem_storage_token']) || !empty($_COOKIE['bluem_storage_secret']) || !isset($_SERVER['SERVER_NAME'])) {
+        return false;
+    }
+
+    // Generate a 32-character token
+    $token = bin2hex(random_bytes(16));
+
+    // Generate a 64-character secret
+    $secret = bin2hex(random_bytes(32));
+
+    $path = sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME']));
+
+    setcookie('bluem_storage_token', $token, 0, '/', $path, false, true);
+    setcookie('bluem_storage_secret', $secret, 0, '/', $path, false, true);
+
+    return [$token, $secret];
+}
+
 /**
  * Insert data into storage
  *
@@ -209,7 +229,11 @@ function bluem_db_insert_storage($object)
         $result = $wpdb->get_results($wpdb->prepare("SELECT id, data FROM $table_name WHERE token = %s AND secret = %s", $token, $secret));
 
         if ($result) {
-            $decoded_data = json_decode($result[0]->data, true);
+            try {
+                $decoded_data = json_decode($result[0]->data, true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                $decoded_data = null;
+            }
 
             $record_id = $result[0]->id;
 
@@ -224,7 +248,7 @@ function bluem_db_insert_storage($object)
 
             // Loop through new data
             foreach ($object as $key => $value) {
-                $new_object[$key] = $value; // Overwrite if key exists
+                $new_object[$key] = $value;
             }
 
             return bluem_db_update_storage(
@@ -236,11 +260,6 @@ function bluem_db_insert_storage($object)
         }
     }
 
-    // Generate a 32-character token
-    $token = bin2hex(random_bytes(16));
-
-    // Generate a 64-character secret
-    $secret = bin2hex(random_bytes(32));
 
     $db_result = $wpdb->insert(
         $wpdb->prefix . 'bluem_storage',
@@ -254,13 +273,16 @@ function bluem_db_insert_storage($object)
         )
     );
 
+    $expiration = time() + (7 * 24 * 60 * 60); // 7 days
+
     if ($db_result !== false && isset($_SERVER['SERVER_NAME'])) {
         // Set cookies for token and secret for
-        setcookie('bluem_storage_token', $token, 0, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
-        setcookie('bluem_storage_secret', $secret, 0, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
+        setcookie('bluem_storage_token', $token, $expiration, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
+        setcookie('bluem_storage_secret', $secret, $expiration, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
 
         return true;
     }
+
     return false;
 }
 
@@ -286,15 +308,18 @@ function bluem_db_get_storage($key = null)
         );
 
         if ($result) {
-            // Decode the JSON data
-            $decoded_data = json_decode($result, true);
+            try {
+                $decoded_data = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                $decoded_data = null;
+            }
 
             if ($decoded_data !== null) {
                 if ($key !== null && isset($decoded_data[$key])) {
-                    return $decoded_data[$key]; // Return the specific key's value
+                    return $decoded_data[$key];
                 }
 
-                return $decoded_data; // Return the entire decoded JSON data as an array
+                return $decoded_data;
             }
         }
     }

@@ -29,7 +29,7 @@ function bluem_render_request_table($categoryName, $requests, $users_by_id = arr
         echo '<p>';
         printf(
         /* translators: %s: Name of the category (Bluem service)   */
-            esc_html__('No transactions yet for %s', 'bluem'),
+            esc_html__('Nog geen transacties voor %s', 'bluem'),
             esc_attr($categoryName)
         );
         echo '</p>';

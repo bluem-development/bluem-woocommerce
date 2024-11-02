@@ -39,7 +39,7 @@ function bluem_display_php_errors(): string
         && $log_contents = @file_get_contents($error_log_path)) {
         $content = '<pre>' . esc_html($log_contents) . '</pre>';
     } else {
-        $content = esc_html__('Unable to access the PHP error log. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.', 'bluem');
+        $content = esc_html__('Geen toegang tot PHP-foutenlogboek. Of het log bestaat niet, loggen is uitgeschakeld of de benodigde leesrechten ontbreken.', 'bluem');
     }
     return $content;
 }
@@ -57,10 +57,10 @@ function bluem_display_wordpress_debug_log()
         if ($log_contents = @file_get_contents($error_log_path)) {
             $content = '<pre>' . esc_html($log_contents) . '</pre>';
         } else {
-            $content = esc_html__('Unable to access the WordPress debug log. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.', 'bluem');
+            $content = esc_html__('Geen toegang tot het WordPress debug-logboek. Of het log bestaat niet, loggen is uitgeschakeld of de benodigde leesrechten ontbreken.', 'bluem');
         }
     } else {
-        $content = esc_html__('Unable to access the WordPress debug log. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.', 'bluem');
+        $content = esc_html__('Geen toegang tot het WordPress debug-logboek. Of het log bestaat niet, loggen is uitgeschakeld of de benodigde leesrechten ontbreken.', 'bluem');
     }
     return $content;
 }
@@ -79,13 +79,13 @@ function bluem_display_woocommerce_logs(): string
 
     $content = '';
 
-    if (is_array($woocommerce_logs)) {
+    if (is_array($woocommerce_logs) && count($woocommerce_logs) > 0) {
         foreach ($woocommerce_logs as $log) {
-            $content .= '<h4>' . basename($log) . '</h4>';
+            $content .= '<h4>' . esc_attr(basename($log)) . '</h4>';
             $content .= '<pre>' . esc_html(file_get_contents($log)) . '</pre>';
         }
     } else {
-        $content = esc_html__('Unable to access the WooCommerce logs. Either the log does not exist, logging has been disabled, or the necessary read permissions are lacking.', 'bluem');
+        $content = esc_html__('Geen toegang tot de WooCommerce logboeken. Of het log bestaat niet, loggen is uitgeschakeld of de benodigde leesrechten ontbreken.', 'bluem');
     }
 
     return $content;

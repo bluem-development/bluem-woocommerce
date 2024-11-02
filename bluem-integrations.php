@@ -183,15 +183,10 @@ function bluem_woocommerce_integration_gform_javascript()
  * ContactForm 7 integration.
  * AJAX Form submissions.
  */
-add_action('parse_request', 'bluem_woocommerce_integration_wpcf7_ajax');
 
 function bluem_woocommerce_integration_wpcf7_ajax()
 {
     $bluem_config = bluem_woocommerce_get_config();
-
-    if (!isset($_SERVER['REQUEST_URI']) || strpos(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), 'bluem-woocommerce/bluem-integrations/wpcf7_mandate') === false) {
-        return;
-    }
 
     $bluem_mandate_approve = !empty($_POST['bluem_mandate_approve']) ? sanitize_text_field(wp_unslash($_POST['bluem_mandate_approve'])) : '';
 
@@ -541,17 +536,11 @@ function bluem_woocommerce_integration_wpcf7_submit()
  * ContactForm 7 integration.
  * Callback for requests.
  */
-add_action('parse_request', 'bluem_woocommerce_integration_wpcf7_callback');
-
 function bluem_woocommerce_integration_wpcf7_callback()
 {
     $bluem_config = bluem_woocommerce_get_config();
 
     $storage = bluem_db_get_storage();
-
-    if (empty($_SERVER['REQUEST_URI']) || strpos(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), 'bluem-woocommerce/bluem-integrations/wpcf7_callback') === false) {
-        return;
-    }
 
     if ($bluem_config->wpcf7Active !== 'Y') {
         return;
@@ -1025,17 +1014,12 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
  * Gravity Forms integration.
  * Callback after request
  */
-add_action('parse_request', 'bluem_woocommerce_integration_gform_callback');
 
 function bluem_woocommerce_integration_gform_callback()
 {
     $bluem_config = bluem_woocommerce_get_config();
 
     $storage = bluem_db_get_storage();
-
-    if (strpos(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), 'bluem-woocommerce/bluem-integrations/gform_callback') === false) {
-        return;
-    }
 
     if ($bluem_config->gformActive !== 'Y') {
         return;

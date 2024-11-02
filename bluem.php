@@ -2,13 +2,13 @@
 
 /**
  * Plugin Name: Bluem ePayments, iDIN, eMandates services and integration for WooCommerce
- * Version: 1.3.22
+ * Version: 1.3.23
  * Plugin URI: https://bluem.nl/en/
  * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and more
  * Author: Bluem Payment Services
  * Author URI: https://bluem.nl
  * Requires at least: 5.0
- * Tested up to: 6.5
+ * Tested up to: 6.6
  * Requires PHP: 8.0
  *
  * License: GPL v3
@@ -143,9 +143,95 @@ if (!bluem_is_permalinks_enabled()) {
 function bluem_woocommerce_plugin_activate()
 {
     update_option('bluem_plugin_registration', false);
+
+    // Rewrite rules:
+    add_rewrite_rule('^bluem-woocommerce/idin_execute/?$', 'index.php?bluem_idin_shortcode_execute=1', 'top');
+    add_rewrite_rule('^bluem-woocommerce/idin_shortcode_callback/?$', 'index.php?bluem_idin_shortcode_callback=1', 'top');
+
+    add_rewrite_rule('^bluem-woocommerce/mandate_shortcode_execute/?$', 'index.php?bluem_mandate_shortcode_execute=1', 'top');
+    add_rewrite_rule('^bluem-woocommerce/mandate_shortcode_callback/?$', 'index.php?bluem_mandate_shortcode_callback=1', 'top');
+
+    add_rewrite_rule('^bluem-woocommerce/mandate_instant_request/?$', 'index.php?bluem_mandates_instant_request=1', 'top');
+    add_rewrite_rule('^bluem-woocommerce/mandates_instant_callback/?$', 'index.php?bluem_mandates_instant_callback=1', 'top');
+
+    add_rewrite_rule('^bluem-woocommerce/bluem_idin_webhook/?$', 'index.php?bluem_idin_webhook=1', 'top');
+
+    // Integrations
+    add_rewrite_rule('^bluem-woocommerce/bluem-integrations/wpcf7_mandate/?$', 'index.php?bluem_woocommerce_integration_wpcf7_ajax=1', 'top');
+    add_rewrite_rule('^bluem-woocommerce/bluem-integrations/wpcf7_callback/?$', 'index.php?bluem_woocommerce_integration_wpcf7_callback=1', 'top');
+    add_rewrite_rule('^bluem-woocommerce/bluem-integrations/gform_callback/?$', 'index.php?bluem_woocommerce_integration_gform_callback=1', 'top');
+
+    // Flush the rules after adding them
+    flush_rewrite_rules();
 }
 
 register_activation_hook(__FILE__, 'bluem_woocommerce_plugin_activate');
+
+add_filter('query_vars', function ($vars) {
+    $bluem_vars = [
+        'bluem_idin_shortcode_execute',
+        'bluem_mandate_shortcode_execute',
+        'bluem_mandates_instant_request',
+        'bluem_idin_shortcode_callback',
+        'bluem_mandate_shortcode_callback',
+        'bluem_mandates_instant_callback',
+        'bluem_idin_webhook',
+        'bluem_woocommerce_integration_wpcf7_ajax',
+        'bluem_woocommerce_integration_wpcf7_callback',
+        'bluem_woocommerce_integration_gform_callback',
+    ];
+
+    return array_merge($vars, $bluem_vars);
+});
+
+
+add_action('template_redirect', function () {
+    // POST requests
+    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        if (get_query_var('bluem_idin_shortcode_execute') == 1) {
+            bluem_idin_shortcode_idin_execute();
+        } elseif (get_query_var('bluem_mandate_shortcode_execute') == 1) {
+            bluem_mandate_shortcode_execute();
+        }
+        return;
+    }
+
+    // GET requests
+    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET') {
+        if (get_query_var('bluem_mandates_instant_request') == 1) {
+            bluem_mandates_instant_request();
+        } elseif (get_query_var('bluem_mandates_instant_callback') == 1) {
+            bluem_mandates_instant_callback();
+        } elseif (get_query_var('bluem_idin_shortcode_callback') == 1) {
+            bluem_idin_shortcode_callback();
+        } elseif (get_query_var('bluem_mandate_shortcode_callback') == 1) {
+            bluem_mandate_shortcode_callback();
+        } elseif (get_query_var('bluem_idin_webhook') == 1) {
+            bluem_idin_webhook();
+        }
+
+        if (get_query_var('bluem_woocommerce_integration_wpcf7_ajax') == 1) {
+            bluem_woocommerce_integration_wpcf7_ajax();
+        }
+        if (get_query_var('bluem_woocommerce_integration_wpcf7_callback') == 1) {
+            bluem_woocommerce_integration_wpcf7_callback();
+        }
+        if (get_query_var('bluem_woocommerce_integration_gform_callback') == 1) {
+            bluem_woocommerce_integration_gform_callback();
+        }
+    }
+});
+
+// Plug-in deactivation
+function bluem_woocommerce_plugin_deactivate()
+{
+    // Flush to remove custom rules added by us
+    flush_rewrite_rules();
+}
+
+register_deactivation_hook(__FILE__, 'bluem_woocommerce_plugin_deactivate');
+
 
 // Update CSS within in Admin
 function bluem_add_admin_style()
@@ -1063,20 +1149,16 @@ function bluem_woocommerce_register_settings()
 // Only executed on admin pages and AJAX requests.
 add_action('admin_init', 'bluem_woocommerce_register_settings');
 
-function bluem_woocommerce_init()
+function bluem_woocommerce_init(): void
 {
-
-    /**
-     * Register error logging
-     */
     bluem_register_error_logging();
 
     /**
-     * Create session storage.
+     * Initialize session for public pages
      */
-    bluem_db_insert_storage([
-        'bluem_storage_init' => true,
-    ]);
+    if (!is_admin()) {
+        bluem_db_initialize_session_storage();
+    }
 }
 
 // Always executed while plug-in is activated
@@ -1468,7 +1550,7 @@ function bluem_error_report_email($data = []): bool
         $subject = "[" . get_bloginfo('name') . "] ";
         $subject .= esc_html__("Notificatie Error in Bluem ", 'bluem');
 
-        $message = printf(
+        $message = sprintf(
         /* translators:
         %1$s: admin name
         %2$s: admin email address
@@ -1506,6 +1588,7 @@ function bluem_error_report_email($data = []): bool
             /* translators: %s: admin email address */
                 esc_html__("Sent error report mail to %s", 'bluem'), $to));
         }
+
 
         // or no mail sent
 
@@ -2036,7 +2119,7 @@ function bluem_admin_import_execute($data): array
  * Render the admin Import / Export page
  * @return void
  */
-function bluem_admin_importexport(): void
+function bluem_admin_importexport()
 {
     $import_data = null;
     $messages = [];
@@ -2081,6 +2164,8 @@ function bluem_admin_importexport(): void
         $options_json = wp_json_encode($options);
     }
 
+    $form_nonce = wp_create_nonce('bluem_importexport_nonce');
+
     // @todo: improve this by creating a renderer function and passing the renderdata
     // @todo: then generalise this to other parts of the plugin
     include_once 'views/importexport.php';
@@ -2103,7 +2188,7 @@ function bluem_woocommerce_is_woocommerce_active(): bool
 }
 
 
-function bluem_register_error_logging()
+function bluem_register_error_logging(): void
 {
     $settings = get_option('bluem_woocommerce_options');
 
@@ -2120,8 +2205,5 @@ function bluem_register_error_logging()
             $bluem_options['bluem_plugin_version'] = $bluem['Version'] ?? '0';
             update_option('bluem_woocommerce_options', $bluem_options);
         }
-
-//        $logger = new SentryLogger();
-//        $logger->initialize();
     }
 }

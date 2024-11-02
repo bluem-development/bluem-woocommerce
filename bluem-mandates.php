@@ -4,8 +4,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-use Bluem\BluemPHP\Bluem;
-
 /*
  * This action hook registers our PHP class as a WooCommerce payment gateway
  */
