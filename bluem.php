@@ -211,13 +211,13 @@ add_action('template_redirect', function () {
             bluem_idin_webhook();
         }
 
-        if(get_query_var('bluem_woocommerce_integration_wpcf7_ajax') == 1) {
+        if (get_query_var('bluem_woocommerce_integration_wpcf7_ajax') == 1) {
             bluem_woocommerce_integration_wpcf7_ajax();
         }
-        if(get_query_var('bluem_woocommerce_integration_wpcf7_callback') == 1) {
+        if (get_query_var('bluem_woocommerce_integration_wpcf7_callback') == 1) {
             bluem_woocommerce_integration_wpcf7_callback();
         }
-        if(get_query_var('bluem_woocommerce_integration_gform_callback') == 1) {
+        if (get_query_var('bluem_woocommerce_integration_gform_callback') == 1) {
             bluem_woocommerce_integration_gform_callback();
         }
     }
@@ -2125,12 +2125,6 @@ function bluem_admin_importexport()
     $messages = [];
 
     if (isset($_POST['action']) && $_POST['action'] === "import") {
-//
-//        if (!isset($_POST['bluem_importexport_nonce']) || !wp_verify_nonce($_POST['bluem_importexport_nonce'])) {
-//            echo "<div class='notice notice-error'><p>" . esc_html__("Kon niet importeren: nonce niet geldig", 'bluem') . "</p></div>";
-//            die();
-//        }
-
         $decoded = true;
 
         if (isset($_POST['import']) && $_POST['import'] !== "") {
