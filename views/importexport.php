@@ -71,7 +71,7 @@
 
             <input type="hidden" name="action" value="import">
 
-            <input type="hidden" name="bluem_importexport_nonce" value="<?php echo $form_nonce;?>">
+            <input type="hidden" name="bluem_importexport_nonce" value="<?php echo esc_attr($form_nonce);?>">
 
             <label for="import">
                 Input:

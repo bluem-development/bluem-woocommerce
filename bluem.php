@@ -162,11 +162,11 @@ add_filter('query_vars', function ($vars) {
     return $vars;
 });
 add_action('template_redirect', function () {
-    if (get_query_var('bluem_idin_shortcode_execute') == 1 && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (get_query_var('bluem_idin_shortcode_execute') == 1 && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
         bluem_idin_shortcode_idin_execute();
         return;
     }
-    elseif (get_query_var('bluem_mandate_shortcode_execute') == 1 && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    elseif (get_query_var('bluem_mandate_shortcode_execute') == 1 && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
         bluem_mandate_shortcode_execute();
         return;
     }

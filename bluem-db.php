@@ -190,8 +190,7 @@ function bluem_db_request_log($request_id, $description, $log_data = array())
 
 function bluem_db_initialize_session_storage(): array|false
 {
-    if(!empty($_COOKIE['bluem_storage_token']) || !empty($_COOKIE['bluem_storage_secret'])) {
-//        echo "session set";
+    if (!empty($_COOKIE['bluem_storage_token']) || !empty($_COOKIE['bluem_storage_secret']) || !isset($_SERVER['SERVER_NAME'])) {
         return false;
     }
 
@@ -203,10 +202,10 @@ function bluem_db_initialize_session_storage(): array|false
 
     $path = sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME']));
 
-    setcookie('bluem_storage_token', $token, 0, '/',  $path, false, true);
+    setcookie('bluem_storage_token', $token, 0, '/', $path, false, true);
     setcookie('bluem_storage_secret', $secret, 0, '/', $path, false, true);
 
-    return [$token,$secret];
+    return [$token, $secret];
 }
 
 /**

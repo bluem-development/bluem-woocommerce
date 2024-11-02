@@ -16,7 +16,7 @@
         <?php esc_html_e('Om verder te gaan, vragen wij u vriendelijk onderstaande gegevens in te vullen', 'bluem'); ?>
     </p>
     <p>
-        <?php esc_html_e('Mocht u dit al eerder hebben ingevuld, dan ziet u dit venster weer omdat de plug-in opnieuw geactiveerd is.','bluem');?>
+        <?php esc_html_e('Mocht u dit al eerder hebben ingevuld, dan ziet u dit venster weer omdat de plug-in opnieuw geactiveerd is.', 'bluem'); ?>
     </p>
 
     <?php if (isset($bluem_plugin_registration) && ((int)$bluem_plugin_registration) === 1) { ?>
@@ -99,16 +99,19 @@
                     <?php
                     esc_html_e("Voor het gebruik van onze diensten is een account vereist.", 'bluem');
                     ?>
-                    <br />
+                    <br/>
                     <?php
                     esc_html_e("Voor meer informatie:", 'bluem');
                     ?><br/>
-                    <a href='https://bluem.nl/direct-online-betalen/' title='<?php esc_html_e('Bluem website','bluem');?>' target='_blank'>
-                        <?php esc_html_e('bluem.nl','bluem');?></a>
+                    <a href='https://bluem.nl/direct-online-betalen/'
+                       title='<?php esc_html_e('Bluem website', 'bluem'); ?>' target='_blank'>
+                        <?php esc_html_e('bluem.nl', 'bluem'); ?></a>
                     <br/>
-                    <a href='tel:+31852220400' target='_blank' title='<?php esc_html_e('Bellen naar Bluem','bluem');?>'>
+                    <a href='tel:+31852220400' target='_blank'
+                       title='<?php esc_html_e('Bellen naar Bluem', 'bluem'); ?>'>
                         +31(0)85-2220400</a><br/>
-                    <a href='mailto:info@bluem.nl' target='_blank' title='<?php esc_html_e('Mailen naar Bluem');?>'>info@bluem.nl</a>.
+                    <a href='mailto:info@bluem.nl' target='_blank'
+                       title='<?php esc_html_e('Mailen naar Bluem', 'bluem'); ?>'>info@bluem.nl</a>.
                 </p>
                 <p>
                     <?php wp_kses_post(__('Vul hier de accountgegevens in, zoals door Bluem is verstrekt.<br />Neem voor meer informatie contact op met uw accountmanager.<br />Laat velden leeg om dit later op te geven.', 'bluem')); ?>
