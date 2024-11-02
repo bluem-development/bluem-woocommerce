@@ -1063,20 +1063,9 @@ function bluem_woocommerce_register_settings()
 // Only executed on admin pages and AJAX requests.
 add_action('admin_init', 'bluem_woocommerce_register_settings');
 
-function bluem_woocommerce_init()
+function bluem_woocommerce_init(): void
 {
-
-    /**
-     * Register error logging
-     */
     bluem_register_error_logging();
-
-    /**
-     * Create session storage.
-     */
-    bluem_db_insert_storage([
-        'bluem_storage_init' => true,
-    ]);
 }
 
 // Always executed while plug-in is activated
@@ -2111,7 +2100,7 @@ function bluem_woocommerce_is_woocommerce_active(): bool
 }
 
 
-function bluem_register_error_logging()
+function bluem_register_error_logging(): void
 {
     $settings = get_option('bluem_woocommerce_options');
 
@@ -2128,8 +2117,5 @@ function bluem_register_error_logging()
             $bluem_options['bluem_plugin_version'] = $bluem['Version'] ?? '0';
             update_option('bluem_woocommerce_options', $bluem_options);
         }
-
-//        $logger = new SentryLogger();
-//        $logger->initialize();
     }
 }
