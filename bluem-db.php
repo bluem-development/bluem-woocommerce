@@ -258,10 +258,12 @@ function bluem_db_insert_storage($object)
         )
     );
 
+    $expiration = time() + (7 * 24 * 60 * 60); // 7 days
+
     if ($db_result !== false && isset($_SERVER['SERVER_NAME'])) {
         // Set cookies for token and secret for
-        setcookie('bluem_storage_token', $token, 0, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
-        setcookie('bluem_storage_secret', $secret, 0, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
+        setcookie('bluem_storage_token', $token, $expiration, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
+        setcookie('bluem_storage_secret', $secret, $expiration, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
 
         return true;
     }
