@@ -6,8 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Bluem\BluemPHP\Bluem;
 
-add_action( 'parse_request', 'bluem_mandate_shortcode_execute' );
-
 /**
  * This function is called POST from the form rendered on a page or post
  *
@@ -17,10 +15,6 @@ add_action( 'parse_request', 'bluem_mandate_shortcode_execute' );
  * @throws \Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException
  */
 function bluem_mandate_shortcode_execute(): void {
-	if ( substr( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), -43 ) !== 'bluem-woocommerce/mandate_shortcode_execute' ) {
-		return;
-	}
-
 	$nonce = $_REQUEST['_wpnonce'];
 	if ( ! wp_verify_nonce( $nonce, 'bluem-nonce' ) ) {
 		die( 'Did not pass security check' );

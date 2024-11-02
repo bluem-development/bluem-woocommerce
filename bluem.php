@@ -143,9 +143,44 @@ if (!bluem_is_permalinks_enabled()) {
 function bluem_woocommerce_plugin_activate()
 {
     update_option('bluem_plugin_registration', false);
+
+    // Rewrite rules:
+    add_rewrite_rule('^bluem-woocommerce/idin_execute/?$', 'index.php?bluem_idin_shortcode_execute=1', 'top');
+    add_rewrite_rule('^bluem-woocommerce/mandate_shortcode_execute/?$', 'index.php?bluem_mandate_shortcode_execute=1', 'top');
+
+    // Flush the rules after adding them
+    flush_rewrite_rules();
 }
 
 register_activation_hook(__FILE__, 'bluem_woocommerce_plugin_activate');
+
+
+
+add_filter('query_vars', function ($vars) {
+    $vars[] = 'bluem_idin_shortcode_execute';
+    $vars[] = 'bluem_mandate_shortcode_execute';
+    return $vars;
+});
+add_action('template_redirect', function () {
+    if (get_query_var('bluem_idin_shortcode_execute') == 1 && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        bluem_idin_shortcode_idin_execute();
+        return;
+    }
+    elseif (get_query_var('bluem_mandate_shortcode_execute') == 1 && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        bluem_mandate_shortcode_execute();
+        return;
+    }
+});
+
+
+// Plug-in deactivation
+function bluem_woocommerce_plugin_deactivate() {
+    // Flush to remove custom rules added by us
+    flush_rewrite_rules();
+}
+
+register_deactivation_hook(__FILE__, 'bluem_woocommerce_plugin_deactivate');
+
 
 // Update CSS within in Admin
 function bluem_add_admin_style()
@@ -1495,6 +1530,7 @@ function bluem_error_report_email($data = []): bool
             /* translators: %s: admin email address */
                 esc_html__("Sent error report mail to %s", 'bluem'), $to));
         }
+
 
         // or no mail sent
 

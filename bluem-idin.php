@@ -895,7 +895,6 @@ function bluem_idin_form(): string
     return $html;
 }
 
-add_action('parse_request', 'bluem_idin_shortcode_idin_execute');
 /**
  * This function is called POST from the form rendered on a page or post
  *
@@ -903,13 +902,6 @@ add_action('parse_request', 'bluem_idin_shortcode_idin_execute');
  */
 function bluem_idin_shortcode_idin_execute(): void
 {
-    $shortcode_execution_url = 'bluem-woocommerce/idin_execute';
-
-    if (!isset($_SERVER['REQUEST_URI']) || !str_contains(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), $shortcode_execution_url)) {
-        // any other request
-        return;
-    }
-
     $goto = false;
     if (!empty($_GET['redirect_to_checkout'])
         && sanitize_text_field(wp_unslash($_GET['redirect_to_checkout'])) === 'true'
