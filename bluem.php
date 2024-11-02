@@ -1101,6 +1101,13 @@ add_action('admin_init', 'bluem_woocommerce_register_settings');
 function bluem_woocommerce_init(): void
 {
     bluem_register_error_logging();
+
+    /**
+     * Initialize session for public pages
+     */
+    if(!is_admin()) {
+        bluem_db_initialize_session_storage();
+    }
 }
 
 // Always executed while plug-in is activated

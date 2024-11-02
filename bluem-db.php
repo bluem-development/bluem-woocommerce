@@ -188,6 +188,27 @@ function bluem_db_request_log($request_id, $description, $log_data = array())
     );
 }
 
+function bluem_db_initialize_session_storage(): array|false
+{
+    if(!empty($_COOKIE['bluem_storage_token']) || !empty($_COOKIE['bluem_storage_secret'])) {
+//        echo "session set";
+        return false;
+    }
+
+    // Generate a 32-character token
+    $token = bin2hex(random_bytes(16));
+
+    // Generate a 64-character secret
+    $secret = bin2hex(random_bytes(32));
+
+    $path = sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME']));
+
+    setcookie('bluem_storage_token', $token, 0, '/',  $path, false, true);
+    setcookie('bluem_storage_secret', $secret, 0, '/', $path, false, true);
+
+    return [$token,$secret];
+}
+
 /**
  * Insert data into storage
  *
@@ -240,11 +261,6 @@ function bluem_db_insert_storage($object)
         }
     }
 
-    // Generate a 32-character token
-    $token = bin2hex(random_bytes(16));
-
-    // Generate a 64-character secret
-    $secret = bin2hex(random_bytes(32));
 
     $db_result = $wpdb->insert(
         $wpdb->prefix . 'bluem_storage',
@@ -267,6 +283,7 @@ function bluem_db_insert_storage($object)
 
         return true;
     }
+
     return false;
 }
 
