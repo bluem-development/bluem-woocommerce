@@ -1457,7 +1457,7 @@ function bluem_error_report_email($data = []): bool
         $subject = "[" . get_bloginfo('name') . "] ";
         $subject .= esc_html__("Notificatie Error in Bluem ", 'bluem');
 
-        $message = printf(
+        $message = sprintf(
         /* translators:
         %1$s: admin name
         %2$s: admin email address
