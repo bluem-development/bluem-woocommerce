@@ -142,11 +142,14 @@ update-trunk:
 #	@cd $(SVN_DIR)/trunk && svn commit -m "Updating trunk to version $(NEW_TAG)"
 
 commit-to-svn:
+	@echo "$(BLUE)Committing tag to SVN...$(NC)"
 	svn add $(SVN_DIR)/tags/$(NEW_TAG)
 	cd $(SVN_DIR); svn commit -m "Added tags/$(NEW_TAG)"
+	@echo "$(BLUE)Committing trunk to SVN...$(NC)"
 	svn delete $(SVN_DIR)/trunk
 	svn add $(SVN_DIR)/trunk --force
 	cd $(SVN_DIR); svn commit -m "Replaced trunk folder with version $(NEW_TAG)"
+	@echo "$(GREEN)Done!$(NC)"
 
 get-fresh-svn:
 	svn checkout $(SVN_URL) svn-directory
