@@ -262,17 +262,12 @@ function bluem_mandate_shortcode_execute(): void {
 	exit;
 }
 
-add_action( 'parse_request', 'bluem_mandate_mandate_shortcode_callback' );
 /**
  * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in Cookie, sent for a SUD to the Bluem API.
  *
  * @return void
  */
-function bluem_mandate_mandate_shortcode_callback(): void {
-	if ( strpos( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'bluem-woocommerce/mandate_shortcode_callback' ) === false ) {
-		return;
-	}
-
+function bluem_mandate_shortcode_callback(): void {
 	global $current_user;
 
 	$bluem_config = bluem_woocommerce_get_config();

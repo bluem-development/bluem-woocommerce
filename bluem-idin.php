@@ -915,16 +915,11 @@ function bluem_idin_shortcode_idin_execute(): void
     bluem_idin_execute(null, true, $goto);
 }
 
-add_action('parse_request', 'bluem_idin_shortcode_callback');
 /**
  * This function is executed at a callback GET request with a given mandateId. This is then, together with the entranceCode in user or Bluem session storage, sent for a SUD to the Bluem API.
  */
 function bluem_idin_shortcode_callback(): void
 {
-    if (!str_contains(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), 'bluem-woocommerce/idin_shortcode_callback')) {
-        return;
-    }
-
     $bluem_config = bluem_woocommerce_get_config();
 
     // fallback until this is corrected in bluem-php
@@ -1258,7 +1253,6 @@ function bluem_idin_shortcode_callback(): void
     exit;
 }
 
-add_action('parse_request', 'bluem_idin_webhook');
 /**
  * Identity webhook action
  *
@@ -1266,9 +1260,6 @@ add_action('parse_request', 'bluem_idin_webhook');
  */
 function bluem_idin_webhook(): void
 {
-    if (strpos(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), 'bluem-woocommerce/bluem_idin_webhook') === false) {
-        return;
-    }
     http_response_code(200);
     exit;
 }

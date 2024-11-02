@@ -146,7 +146,20 @@ function bluem_woocommerce_plugin_activate()
 
     // Rewrite rules:
     add_rewrite_rule('^bluem-woocommerce/idin_execute/?$', 'index.php?bluem_idin_shortcode_execute=1', 'top');
+    add_rewrite_rule('^bluem-woocommerce/idin_shortcode_callback/?$', 'index.php?bluem_idin_shortcode_callback=1', 'top');
+
     add_rewrite_rule('^bluem-woocommerce/mandate_shortcode_execute/?$', 'index.php?bluem_mandate_shortcode_execute=1', 'top');
+    add_rewrite_rule('^bluem-woocommerce/mandate_shortcode_callback/?$', 'index.php?bluem_mandate_shortcode_callback=1', 'top');
+
+    add_rewrite_rule('^bluem-woocommerce/mandate_instant_request/?$', 'index.php?bluem_mandates_instant_request=1', 'top');
+    add_rewrite_rule('^bluem-woocommerce/mandates_instant_callback/?$', 'index.php?bluem_mandates_instant_callback=1', 'top');
+
+    add_rewrite_rule('^bluem-woocommerce/bluem_idin_webhook/?$', 'index.php?bluem_idin_webhook=1', 'top');
+
+    // Integrations
+    add_rewrite_rule('^bluem-woocommerce/bluem-integrations/wpcf7_mandate/?$', 'index.php?bluem_woocommerce_integration_wpcf7_ajax=1', 'top');
+    add_rewrite_rule('^bluem-woocommerce/bluem-integrations/wpcf7_callback/?$', 'index.php?bluem_woocommerce_integration_wpcf7_callback=1', 'top');
+    add_rewrite_rule('^bluem-woocommerce/bluem-integrations/gform_callback/?$', 'index.php?bluem_woocommerce_integration_gform_callback=1', 'top');
 
     // Flush the rules after adding them
     flush_rewrite_rules();
@@ -154,27 +167,65 @@ function bluem_woocommerce_plugin_activate()
 
 register_activation_hook(__FILE__, 'bluem_woocommerce_plugin_activate');
 
-
-
 add_filter('query_vars', function ($vars) {
-    $vars[] = 'bluem_idin_shortcode_execute';
-    $vars[] = 'bluem_mandate_shortcode_execute';
-    return $vars;
-});
-add_action('template_redirect', function () {
-    if (get_query_var('bluem_idin_shortcode_execute') == 1 && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        bluem_idin_shortcode_idin_execute();
-        return;
-    }
-    elseif (get_query_var('bluem_mandate_shortcode_execute') == 1 && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        bluem_mandate_shortcode_execute();
-        return;
-    }
+    $bluem_vars = [
+        'bluem_idin_shortcode_execute',
+        'bluem_mandate_shortcode_execute',
+        'bluem_mandates_instant_request',
+        'bluem_idin_shortcode_callback',
+        'bluem_mandate_shortcode_callback',
+        'bluem_mandates_instant_callback',
+        'bluem_idin_webhook',
+        'bluem_woocommerce_integration_wpcf7_ajax',
+        'bluem_woocommerce_integration_wpcf7_callback',
+        'bluem_woocommerce_integration_gform_callback',
+    ];
+
+    return array_merge($vars, $bluem_vars);
 });
 
+
+add_action('template_redirect', function () {
+    // POST requests
+    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        if (get_query_var('bluem_idin_shortcode_execute') == 1) {
+            bluem_idin_shortcode_idin_execute();
+        } elseif (get_query_var('bluem_mandate_shortcode_execute') == 1) {
+            bluem_mandate_shortcode_execute();
+        }
+        return;
+    }
+
+    // GET requests
+    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET') {
+        if (get_query_var('bluem_mandates_instant_request') == 1) {
+            bluem_mandates_instant_request();
+        } elseif (get_query_var('bluem_mandates_instant_callback') == 1) {
+            bluem_mandates_instant_callback();
+        } elseif (get_query_var('bluem_idin_shortcode_callback') == 1) {
+            bluem_idin_shortcode_callback();
+        } elseif (get_query_var('bluem_mandate_shortcode_callback') == 1) {
+            bluem_mandate_shortcode_callback();
+        } elseif (get_query_var('bluem_idin_webhook') == 1) {
+            bluem_idin_webhook();
+        }
+
+        if(get_query_var('bluem_woocommerce_integration_wpcf7_ajax') == 1) {
+            bluem_woocommerce_integration_wpcf7_ajax();
+        }
+        if(get_query_var('bluem_woocommerce_integration_wpcf7_callback') == 1) {
+            bluem_woocommerce_integration_wpcf7_callback();
+        }
+        if(get_query_var('bluem_woocommerce_integration_gform_callback') == 1) {
+            bluem_woocommerce_integration_gform_callback();
+        }
+    }
+});
 
 // Plug-in deactivation
-function bluem_woocommerce_plugin_deactivate() {
+function bluem_woocommerce_plugin_deactivate()
+{
     // Flush to remove custom rules added by us
     flush_rewrite_rules();
 }
@@ -1105,7 +1156,7 @@ function bluem_woocommerce_init(): void
     /**
      * Initialize session for public pages
      */
-    if(!is_admin()) {
+    if (!is_admin()) {
         bluem_db_initialize_session_storage();
     }
 }
@@ -2119,7 +2170,7 @@ function bluem_admin_importexport()
         $options_json = wp_json_encode($options);
     }
 
-    $form_nonce = wp_create_nonce( 'bluem_importexport_nonce' );
+    $form_nonce = wp_create_nonce('bluem_importexport_nonce');
 
     // @todo: improve this by creating a renderer function and passing the renderdata
     // @todo: then generalise this to other parts of the plugin
