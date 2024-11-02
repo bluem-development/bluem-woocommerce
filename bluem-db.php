@@ -209,7 +209,11 @@ function bluem_db_insert_storage($object)
         $result = $wpdb->get_results($wpdb->prepare("SELECT id, data FROM $table_name WHERE token = %s AND secret = %s", $token, $secret));
 
         if ($result) {
-            $decoded_data = json_decode($result[0]->data, true);
+            try {
+                $decoded_data = json_decode($result[0]->data, true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                $decoded_data = null;
+            }
 
             $record_id = $result[0]->id;
 
@@ -224,7 +228,7 @@ function bluem_db_insert_storage($object)
 
             // Loop through new data
             foreach ($object as $key => $value) {
-                $new_object[$key] = $value; // Overwrite if key exists
+                $new_object[$key] = $value;
             }
 
             return bluem_db_update_storage(
@@ -286,15 +290,18 @@ function bluem_db_get_storage($key = null)
         );
 
         if ($result) {
-            // Decode the JSON data
-            $decoded_data = json_decode($result, true);
+            try {
+                $decoded_data = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                $decoded_data = null;
+            }
 
             if ($decoded_data !== null) {
                 if ($key !== null && isset($decoded_data[$key])) {
-                    return $decoded_data[$key]; // Return the specific key's value
+                    return $decoded_data[$key];
                 }
 
-                return $decoded_data; // Return the entire decoded JSON data as an array
+                return $decoded_data;
             }
         }
     }
