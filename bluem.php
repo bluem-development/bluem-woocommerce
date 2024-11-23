@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Bluem ePayments, iDIN, eMandates services and integration for WooCommerce
- * Version: 1.3.23
+ * Version: 1.3.24
  * Plugin URI: https://bluem.nl/en/
  * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and more
  * Author: Bluem Payment Services
@@ -95,6 +95,12 @@ if (!function_exists('bluem_is_contactform7_activated')) {
     }
 }
 
+if (function_exists('bluem_is_contactform7_activated')) {
+    if (bluem_is_contactform7_activated()) {
+        define( 'WPCF7_LOAD_JS', false );
+    }
+}
+
 /**
  * Check if Gravity Forms is activated
  */
@@ -157,8 +163,11 @@ function bluem_woocommerce_plugin_activate()
     add_rewrite_rule('^bluem-woocommerce/bluem_idin_webhook/?$', 'index.php?bluem_idin_webhook=1', 'top');
 
     // Integrations
+    // WPCF7
+    add_rewrite_rule('^bluem-woocommerce/bluem-integrations/wpcf7_mandate', 'index.php?bluem_woocommerce_integration_wpcf7_ajax=1', 'top');
     add_rewrite_rule('^bluem-woocommerce/bluem-integrations/wpcf7_mandate/?$', 'index.php?bluem_woocommerce_integration_wpcf7_ajax=1', 'top');
     add_rewrite_rule('^bluem-woocommerce/bluem-integrations/wpcf7_callback/?$', 'index.php?bluem_woocommerce_integration_wpcf7_callback=1', 'top');
+    // Gravity Forms
     add_rewrite_rule('^bluem-woocommerce/bluem-integrations/gform_callback/?$', 'index.php?bluem_woocommerce_integration_gform_callback=1', 'top');
 
     // Flush the rules after adding them
@@ -193,6 +202,8 @@ add_action('template_redirect', function () {
             bluem_idin_shortcode_idin_execute();
         } elseif (get_query_var('bluem_mandate_shortcode_execute') == 1) {
             bluem_mandate_shortcode_execute();
+        } elseif (get_query_var('bluem_woocommerce_integration_wpcf7_ajax') == 1) {
+            bluem_woocommerce_integration_wpcf7_ajax();
         }
         return;
     }
@@ -211,9 +222,6 @@ add_action('template_redirect', function () {
             bluem_idin_webhook();
         }
 
-        if (get_query_var('bluem_woocommerce_integration_wpcf7_ajax') == 1) {
-            bluem_woocommerce_integration_wpcf7_ajax();
-        }
         if (get_query_var('bluem_woocommerce_integration_wpcf7_callback') == 1) {
             bluem_woocommerce_integration_wpcf7_callback();
         }

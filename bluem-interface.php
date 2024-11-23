@@ -549,8 +549,12 @@ function bluem_woocommerce_render_contactform7_table(string $value): void
         if (!empty($contactFormData->payload)) {
             foreach ($contactFormData->payload as $payloadKey => $payloadValue) {
                 $formHTML .= '<tr>
-                            <td>' . wp_kses_post($payloadKey) . '</td>
-                            <td>' . wp_kses_post($payloadValue) . '</td>
+                            <td>' . wp_kses_post($payloadKey) . '</td>';
+                if(is_object($payloadValue) || is_array($payloadValue)) {
+                    $payloadValue = json_encode($payloadValue);
+                }
+
+                $formHTML .= '<td>' . wp_kses_post($payloadValue) . '</td>
                         </tr>';
             }
         }
