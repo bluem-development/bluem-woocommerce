@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 use Bluem\BluemPHP\Bluem;
+use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 
 function bluem_woocommerce_integrations_settings_section()
 {
@@ -392,11 +393,10 @@ function bluem_woocommerce_integration_wpcf7_submit()
 
     $is_bluem_ajax = $contact_form->is_true('bluem_is_ajax');
 
-    if ($is_bluem_mandate && !$is_bluem_ajax && !empty($bluem_mandate_approve) && !empty($submission)) {
-        $posted_data = $submission->get_posted_data();
+    $posted_data = $submission->get_posted_data();
+    $bluem_mandate_approve = $posted_data['bluem_mandate_approve'] ?? null;
 
-        $posted_data_hash = $submission->get_posted_data_hash();
-
+    if ($is_bluem_mandate && !empty($submission) && !empty($bluem_mandate_approve)) {
         $debtorReference = bin2hex(random_bytes(15));
 
         if (!empty($debtorReference)) {
@@ -426,12 +426,16 @@ function bluem_woocommerce_integration_wpcf7_submit()
                     $bluem_config->eMandateReason = 'Incasso machtiging ' . $debtorReference;
                 }
 
-                $bluem = new Bluem($bluem_config);
+                try {
+                    $bluem = new Bluem($bluem_config);
+                } catch (InvalidBluemConfigurationException $e) {
+                    exit('Error instantiating Bluem: Invalid configuration');
+                }
 
                 $mandate_id_counter = get_option('bluem_woocommerce_mandate_id_counter');
 
                 if (!isset($mandate_id_counter)) {
-                    $mandate_id_counter = $preferences['mandate_id_counter'];
+                    $mandate_id_counter = $preferences['mandate_id_counter'] ?? 0;
                 }
 
                 $mandate_id = $mandate_id_counter + 1;
@@ -557,7 +561,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
     $mandateID = $storage['bluem_mandate_transaction_id'] ?? 0;
 
     $entranceCode = $storage['bluem_mandate_entrance_code'] ?? '';
-
+    
     if (empty($mandateID)) {
         if (!empty($bluem_config->wpcf7Resultpage)) {
             wp_redirect(home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=error");
