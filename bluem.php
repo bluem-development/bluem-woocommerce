@@ -154,7 +154,10 @@ function bluem_woocommerce_plugin_activate()
     add_rewrite_rule('^bluem-woocommerce/idin_execute/?$', 'index.php?bluem_idin_shortcode_execute=1', 'top');
     add_rewrite_rule('^bluem-woocommerce/idin_shortcode_callback/?$', 'index.php?bluem_idin_shortcode_callback=1', 'top');
 
+    add_rewrite_rule('^bluem-woocommerce/mandate_shortcode_execute', 'index.php?bluem_mandate_shortcode_execute=1', 'top');
     add_rewrite_rule('^bluem-woocommerce/mandate_shortcode_execute/?$', 'index.php?bluem_mandate_shortcode_execute=1', 'top');
+
+    add_rewrite_rule('^bluem-woocommerce/mandate_shortcode_callback', 'index.php?bluem_mandate_shortcode_callback=1', 'top');
     add_rewrite_rule('^bluem-woocommerce/mandate_shortcode_callback/?$', 'index.php?bluem_mandate_shortcode_callback=1', 'top');
 
     add_rewrite_rule('^bluem-woocommerce/mandate_instant_request/?$', 'index.php?bluem_mandates_instant_request=1', 'top');
@@ -212,6 +215,10 @@ add_action('template_redirect', function () {
     if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET') {
         if (get_query_var('bluem_mandates_instant_request') == 1) {
             bluem_mandates_instant_request();
+
+        } elseif (get_query_var('bluem_mandate_shortcode_execute') == 1) {
+            // lets also allow this method in GET
+            bluem_mandate_shortcode_execute();
         } elseif (get_query_var('bluem_mandates_instant_callback') == 1) {
             bluem_mandates_instant_callback();
         } elseif (get_query_var('bluem_idin_shortcode_callback') == 1) {
