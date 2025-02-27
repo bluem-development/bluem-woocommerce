@@ -139,6 +139,24 @@ function bluem_display_woocommerce_logs(): string
             <h3><?php esc_html_e('WooCommerce error logs', 'bluem'); ?></h3>
             <?php echo wp_kses_post(bluem_display_woocommerce_logs()); ?>
         </div>
+
+        <div class="wrap">
+        <h2><?php esc_html_e('Refresh rewrite rules','bluem'); ?></h2>
+        <p><?php esc_html_e('Refresh rewrite rules description','bluem'); ?></p>
+
+            <form method="post" action="">
+                <?php wp_nonce_field('flush_rewrite_rules_nonce', 'flush_rewrite_rules_nonce'); ?>
+                <input type="submit" name="flush_rewrite_rules" class="button button-primary" value="<?php esc_html_e('Refresh rewrite rules','bluem'); ?>">
+            </form>
+        </div>
+        <?php
+
+    if (isset($_POST['flush_rewrite_rules']) && check_admin_referer('flush_rewrite_rules_nonce', 'flush_rewrite_rules_nonce')) {
+        flush_rewrite_rules();
+        echo '<div class="updated"><p>
+'. esc_html("Refreshed rewrite rules successfully","bluem").'
+        </p></div>';
+    } ?>
     </div>
 
     <?php bluem_render_footer(); ?>
