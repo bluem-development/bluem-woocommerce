@@ -143,7 +143,7 @@ update-trunk:
 
 commit-to-svn:
 	@echo "$(BLUE)Committing tag to SVN...$(NC)"
-	svn add $(SVN_DIR)/tags/$(NEW_TAG)
+	svn add $(SVN_DIR)/tags/$(NEW_TAG) --force
 	cd $(SVN_DIR); svn commit -m "Added tags/$(NEW_TAG)"
 	@echo "$(BLUE)Committing trunk to SVN...$(NC)"
 	svn delete $(SVN_DIR)/trunk
