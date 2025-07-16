@@ -258,3 +258,16 @@ If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsu
 // @todo: Localize all error messages to english primarily
 // @todo: finish docblocking
 // deprecate function bluem_db_create_link soon
+
+
+# Releasse plan
+To actually release a new version, follow these steps:
+
+1. Update the WordPress plugin version in the `bluem.php` file
+2. Update the `readme.txt` file with the new version number and changelog
+3. Commit the changes with a message like "Release version X.X.X"
+4. Push those changes to the `master` branch
+5. Run the command below to prepare the deployment files into the build directory and clean out any non-production files
+    ```bash
+   make pre-deployment
+    ```
