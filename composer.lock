@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "512e2b7486329a5026f7c4dc7f9ccebb",
+    "content-hash": "72ee310b717b9b068d12e4483c5ffdc3",
     "packages": [
         {
             "name": "bluem-development/bluem-php",
-            "version": "2.3.6",
+            "version": "2.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bluem-development/bluem-php.git",
-                "reference": "f9c48da7946cef13ce81b23ea29abeaa6ec6d84b"
+                "reference": "8de2cb0cd87c3a2e8cf403df92b854dc300f5d45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/f9c48da7946cef13ce81b23ea29abeaa6ec6d84b",
-                "reference": "f9c48da7946cef13ce81b23ea29abeaa6ec6d84b",
+                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/8de2cb0cd87c3a2e8cf403df92b854dc300f5d45",
+                "reference": "8de2cb0cd87c3a2e8cf403df92b854dc300f5d45",
                 "shasum": ""
             },
             "require": {
@@ -71,9 +71,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bluem-development/bluem-php",
-                "source": "https://github.com/bluem-development/bluem-php/tree/2.3.6"
+                "source": "https://github.com/bluem-development/bluem-php/tree/2.3.7"
             },
-            "time": "2025-07-16T14:48:21+00:00"
+            "time": "2025-07-16T14:54:23+00:00"
         },
         {
             "name": "selective/xmldsig",
