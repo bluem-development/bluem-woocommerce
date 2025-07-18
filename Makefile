@@ -1,5 +1,12 @@
 .DEFAULT_GOAL := help
 
+-include build.env
+
+PLUGIN_VERSION ?= $(NEW_TAG)
+
+plugin_version:
+	echo "Version is $(PLUGIN_VERSION)"
+
 .PHONY: help
 help:
 	@printf '\nTo run a task: make <task_name>\n'
@@ -66,17 +73,21 @@ NC = \033[0m # No Color
 
 
 .PHONY: prepare-release
-prepare-release: check-tag confirm svn-check repo-check pre-deployment add-tag update-trunk clean-up
+prepare-release: check-tag confirm svn-check repo-check pre-deployment add-tag update-trunk
 # send-email
 
+PLUGIN_VERSION ?= $(NEW_TAG)
+
 check-tag:
-	@if [ -z "$(NEW_TAG)" ]; then \
-		echo "$(RED)NEW_TAG is not set. Use make release NEW_TAG=x.y.z to specify the tag$(NC)"; \
+	@if [ -z "$(PLUGIN_VERSION)" ]; then \
+		echo "$(RED)PLUGIN_VERSION is not set. Use make release NEW_TAG=x.y.z to specify the tag explicitly$(NC)"; \
 		exit 1; \
+	else \
+		  echo "Tag set to $(PLUGIN_VERSION)"; \
 	fi
 
 confirm:
-	@echo "$(BLUE)You are about to release a new version, namely \"$(NEW_TAG)\". Are you sure? [Y/n]$(NC)" && read ans && [ $${ans:-Y} = Y ]
+	@echo "$(BLUE)You are about to release a new version, namely \"$(PLUGIN_VERSION)\". Are you sure? [Y/n]$(NC)" && read ans && [ $${ans:-Y} = Y ]
 
 svn-check:
 	@#echo "$(BLUE)Checking SVN availability...$(NC)"
@@ -104,30 +115,32 @@ pre-deployment:
 	@cd $(BUILD_DIR) && rm -rf README.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml codeception.yml Dockerfile loadenv.sh Makefile .php-cs-fixer.cache .phpunit.result.cache .travis.yml phpunit.xml psalm.xml .DS_STORE .svnignore loadenv.sh
 	@rm -rf $(BUILD_DIR)/vendor/bluem-development/bluem-php/examples $(BUILD_DIR)/vendor/bluem-development/bluem-php/tests $(BUILD_DIR)/vendor/bluem-development/bluem-php/.github
 	@rm $(BUILD_DIR)/vendor/bluem-development/bluem-php/.env.example
+	@rm $(BUILD_DIR)/build.env
 	@rm $(BUILD_DIR)/vendor/bluem-development/bluem-php/.gitignore
 	@rm -rf $(BUILD_DIR)/vendor/selective/xmldsig/.github
 
 add-tag:
+	make check-tag
 	@echo "$(BLUE)Copying files to SVN tag directory...$(NC)"
-	@echo "Folder: $(SVN_DIR)/tags/$(NEW_TAG)"
-	if [ -d "$(SVN_DIR)/tags/$(NEW_TAG)" ]; then \
-		rm -rf "$(SVN_DIR)/tags/$(NEW_TAG)"/*; \
+	@echo "Folder: $(SVN_DIR)/tags/$(PLUGIN_VERSION)"
+	if [ -d "$(SVN_DIR)/tags/$(PLUGIN_VERSION)" ]; then \
+		rm -rf "$(SVN_DIR)/tags/$(PLUGIN_VERSION)"/*; \
 	else \
-		mkdir -p "$(SVN_DIR)/tags/$(NEW_TAG)"; \
+		mkdir -p "$(SVN_DIR)/tags/$(PLUGIN_VERSION)"; \
 	fi
-	@mkdir -p $(SVN_DIR)/tags/$(NEW_TAG)
-	@cp -R $(BUILD_DIR)/ $(SVN_DIR)/tags/$(NEW_TAG)/
+	@mkdir -p $(SVN_DIR)/tags/$(PLUGIN_VERSION)
+	@cp -R $(BUILD_DIR)/ $(SVN_DIR)/tags/$(PLUGIN_VERSION)/
 
 #add-tag-to-svn:
-#	@echo "$(BLUE)Adding new tag $(NEW_TAG) to SVN repository...$(NC)"
-#	@#cd $(SVN_DIR)/tags/$(NEW_TAG) && svn add --force * --auto-props --parents --depth infinity -q
+#	@echo "$(BLUE)Adding new tag $(PLUGIN_VERSION) to SVN repository...$(NC)"
+#	@#cd $(SVN_DIR)/tags/$(PLUGIN_VERSION) && svn add --force * --auto-props --parents --depth infinity -q
 
 #svn-commit:
-#	@echo "$(BLUE)Committing new tag $(NEW_TAG) to SVN repository...$(NC)"
-#	@#cd $(SVN_DIR)/tags/$(NEW_TAG) && svn commit -m "Tagging version $(NEW_TAG)"
+#	@echo "$(BLUE)Committing new tag $(PLUGIN_VERSION) to SVN repository...$(NC)"
+#	@#cd $(SVN_DIR)/tags/$(PLUGIN_VERSION) && svn commit -m "Tagging version $(PLUGIN_VERSION)"
 
 update-trunk:
-	@echo "$(BLUE)Also updating trunk files to  latest tag $(NEW_TAG)...$(NC)"
+	@echo "$(BLUE)Also updating trunk files to  latest tag $(PLUGIN_VERSION)...$(NC)"
 	if [ -d "$(SVN_DIR)/trunk" ]; then \
 		rm -rf "$(SVN_DIR)/trunk"/*; \
 	else \
@@ -135,20 +148,20 @@ update-trunk:
 	fi
 	@rm -rf $(SVN_DIR)/trunk/*
 	@cp -R $(BUILD_DIR)/* $(SVN_DIR)/trunk/.
-	@echo "$(BLUE)Commit trunk to SVN to this latest tag $(NEW_TAG)...$(NC)"
+	@echo "$(BLUE)Commit trunk to SVN to this latest tag $(PLUGIN_VERSION)...$(NC)"
 	@echo "$(RED) Don't forget to actually commit to SVN now."
 
 #	@cd $(SVN_DIR)/trunk && svn add --force * --auto-props --parents --depth infinity -q
-#	@cd $(SVN_DIR)/trunk && svn commit -m "Updating trunk to version $(NEW_TAG)"
+#	@cd $(SVN_DIR)/trunk && svn commit -m "Updating trunk to version $(PLUGIN_VERSION)"
 
 commit-to-svn:
 	@echo "$(BLUE)Committing tag to SVN...$(NC)"
-	svn add $(SVN_DIR)/tags/$(NEW_TAG) --force
-	cd $(SVN_DIR); svn commit -m "Added tags/$(NEW_TAG)"
+	svn add $(SVN_DIR)/tags/$(PLUGIN_VERSION) --force
+	cd $(SVN_DIR); svn commit -m "Added tags/$(PLUGIN_VERSION)"
 	@echo "$(BLUE)Committing trunk to SVN...$(NC)"
-	svn delete $(SVN_DIR)/trunk
+	#svn delete $(SVN_DIR)/trunk
 	svn add $(SVN_DIR)/trunk --force
-	cd $(SVN_DIR); svn commit -m "Replaced trunk folder with version $(NEW_TAG)"
+	cd $(SVN_DIR); svn commit -m "Replaced trunk folder with version $(PLUGIN_VERSION)"
 	@echo "$(GREEN)Done!$(NC)"
 
 get-fresh-svn:
