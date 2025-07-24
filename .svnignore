@@ -9,3 +9,4 @@ svn-directory/
 tests/
 tools/
 vendor/
+docker/
