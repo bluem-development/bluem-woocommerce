@@ -16,8 +16,8 @@
         "issues": "https://github.com/bluem-development/bluem-woocommerce"
     },
     "require": {
-        "php": ">=8.0",
-        "bluem-development/bluem-php": "2.3.5",
+        "php": ">=8.2",
+        "bluem-development/bluem-php": "2.3.8",
         "ext-json": "*"
     },
     "minimum-stability": "dev",
