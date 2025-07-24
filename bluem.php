@@ -1334,6 +1334,7 @@ function bluem_woocommerce_settings_render_input( $field ) {
 	}
 }
 
+
 /**
  * @return array
  */
