@@ -1297,9 +1297,11 @@ function bluem_woocommerce_settings_render_input( $field ) {
 		?>
         <label>
 <textarea
-<?php foreach ( $attrs as $akey => $aval ) {
-	echo esc_html( "$akey='" . esc_attr( $aval ) . "' " );
-} ?>><?php echo( isset( $values[ $key ] ) ? esc_attr( $values[ $key ] ) : esc_attr( $field['default'] ) ); ?></textarea>
+    <?php foreach ( $attrs as $akey => $aval ) {
+        echo esc_html( "$akey='" . esc_attr( $aval ) . "' " );
+    } ?>
+    style="height: 10em; width: 100%; min-width: 300px; max-width: 600px; resize: vertical; box-sizing: border-box; line-height: 1.5;"
+><?php echo( isset( $values[ $key ] ) ? esc_attr( $values[ $key ] ) : esc_attr( $field['default'] ) ); ?></textarea>
         </label>
 		<?php
 	} else {
