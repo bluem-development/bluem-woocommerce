@@ -40,7 +40,7 @@ function bluem_woocommerce_get_integrations_options()
         'gformResultpage' => array(
             'key' => 'gformResultpage',
             'title' => 'bluem_gformResultpage',
-            'name' => 'Slug resultaatpagina',
+            'name' => 'Slug resultaatpagina voor Gravity Forms',
             'description' => 'De slug van de resultaatpagina',
             'default' => '',
         ),
@@ -60,7 +60,7 @@ function bluem_woocommerce_get_integrations_options()
             'key' => 'wpcf7Resultpage',
             'title' => 'bluem_wpcf7Resultpage',
             'name' => 'Slug resultaatpagina',
-            'description' => 'De slug van de resultaatpagina',
+            'description' => 'De slug van de resultaatpagina voor ContactForm 7',
             'default' => '',
         ),
     );
@@ -561,7 +561,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
     $mandateID = $storage['bluem_mandate_transaction_id'] ?? 0;
 
     $entranceCode = $storage['bluem_mandate_entrance_code'] ?? '';
-    
+
     if (empty($mandateID)) {
         if (!empty($bluem_config->wpcf7Resultpage)) {
             wp_redirect(home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=error");
