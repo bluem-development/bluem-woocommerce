@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2efe3d1e0ea124d57cbd40ff4452f496",
+    "content-hash": "e7cd63869ebabc23c37887e5290d12ce",
     "packages": [
         {
             "name": "bluem-development/bluem-php",
@@ -6104,7 +6104,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.0",
+        "php": ">=8.2",
         "ext-json": "*"
     },
     "platform-dev": {},
