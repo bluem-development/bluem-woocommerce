@@ -68,7 +68,7 @@ function bluem_woocommerce_get_idin_options(): array
             'key' => 'IDINBrandID',
             'title' => 'bluem_IDINBrandID',
             'name' => 'IDIN BrandId',
-            'description' => '',
+            'description' => esc_html__('Indien je een specifiek Brand ID hebt voor iDIN, vul deze hier in. Dit is optioneel, maar kan nodig zijn indien je meerdere Brand ID\'s hebt.','bluem'),
             'default' => '',
         ),
         'idin_scenario_active' => array(
