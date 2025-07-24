@@ -10,3 +10,4 @@ tests/
 tools/
 vendor/
 docker
+docker/
