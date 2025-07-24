@@ -2,9 +2,9 @@
 Contributors: bluempaymentservices
 Tags: Bluem,Payments,iDIN,iDEAL,eMandates
 Requires at least: 5.0
-Tested up to: 6.6
+Tested up to: 6.8
 Requires PHP: 8.0
-Stable tag: 1.3.27
+Stable tag: 1.4.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -77,6 +77,8 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
+- 1.4.0: Feature & stability improvements, most notably iDIN redirects
+- 1.3.28: Refactor SNS to ASN and update BIC list
 - 1.3.27: Certificate update (yearly refresh)
 - 1.3.26: Stability fixes and improvements for Contact Form integration
 - 1.3.25: Added refresh rewrite rule tooling
