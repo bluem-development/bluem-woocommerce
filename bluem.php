@@ -2166,3 +2166,7 @@ function bluem_register_error_logging(): void {
 		}
 	}
 }
+
+// blocks & api
+require_once __DIR__ . '/bluem-blocks.php';
+require_once __DIR__ . '/bluem-api.php';

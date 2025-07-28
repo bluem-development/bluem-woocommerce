@@ -1,0 +1,11 @@
+{
+  "name": "bluem-wordpress",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "wp-scripts build blocks/index.js --output-path blocks/dist",
+    "start": "wp-scripts start blocks/index.js --output-path blocks/dist"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^26.0.0"
+  }
+}

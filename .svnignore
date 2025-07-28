@@ -11,3 +11,6 @@ tools/
 vendor/
 docker
 docker/
+node_modules/
+package.json
+package-lock.json

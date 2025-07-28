@@ -31,3 +31,7 @@ tools/*
 .env
 svn-directory
 svn-directory/*
+node_modules
+node_modules/*
+blocks/dist
+blocks/dist/*
