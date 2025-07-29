@@ -99,6 +99,7 @@ repo-check:
 
 pre-deployment:
 	#make run-phpcbf
+	@npm run build
 	@echo "$(BLUE)Preparing build directory...$(NC)"
 	if [ -d "$(BUILD_DIR)" ]; then \
         if [ "$(BUILD_DIR)" != "/" ]; then \
@@ -112,7 +113,7 @@ pre-deployment:
 	@cd $(BUILD_DIR) && composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction || { echo "$(RED)Composer install failed!$(NC)"; exit 1; }
 	@cd $(BUILD_DIR) && composer clear-cache
 	@echo "$(BLUE)Removing unnecessary files from build directory...$(NC)"
-	@cd $(BUILD_DIR) && rm -rf README.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml codeception.yml Dockerfile loadenv.sh Makefile .php-cs-fixer.cache .phpunit.result.cache .travis.yml phpunit.xml psalm.xml .DS_STORE .svnignore loadenv.sh
+	@cd $(BUILD_DIR) && rm -rf README.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml codeception.yml Dockerfile loadenv.sh Makefile .php-cs-fixer.cache .phpunit.result.cache .travis.yml phpunit.xml psalm.xml .DS_STORE .svnignore loadenv.sh package.json package-lock.json
 	@rm -rf $(BUILD_DIR)/vendor/bluem-development/bluem-php/examples $(BUILD_DIR)/vendor/bluem-development/bluem-php/tests $(BUILD_DIR)/vendor/bluem-development/bluem-php/.github
 	@rm $(BUILD_DIR)/vendor/bluem-development/bluem-php/.env.example
 	@rm $(BUILD_DIR)/build.env
@@ -176,7 +177,16 @@ clean-up:
 	@#rm -rf $(BUILD_DIR)
 
 copy-to-docker:
-	make pre-deployment; cp -r build/* ../plugins/bluem/.
+	make pre-deployment;
+	@echo "$(BLUE)Preparing `docker/plugins/bluem` directory...$(NC)"
+	if [ -d "docker/plugins/bluem" ]; then \
+        if [ "docker/plugins/bluem" != "/" ]; then \
+            rm -rf "docker/plugins/bluem"/*; \
+        fi \
+    else \
+        mkdir -p "docker/plugins/bluem"; \
+    fi; \
+    cp -r build/* docker/plugins/bluem
 
 
 run-phpcs:
