@@ -78,6 +78,7 @@ It is possible to programmatically block display and functionality on your site 
 
 == Changelog ==
 - 1.3.29: Callback URL fix for iDIN shortcode
+- 1.3.28: Refactor SNS to ASN and update BIC list
 - 1.3.27: Certificate update (yearly refresh)
 - 1.3.26: Stability fixes and improvements for Contact Form integration
 - 1.3.25: Added refresh rewrite rule tooling

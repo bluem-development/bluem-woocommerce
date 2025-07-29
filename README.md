@@ -51,7 +51,7 @@ If you want to use this repository, follow the following steps to compile
 2. Install [Composer](https://getcomposer.org) on your local machine
 3. Run the `composer update` command in the downloaded folder. This will generate a `vendor` folder and install all required dependencies and libraries.
 4. Ensure the folder and its contents are located at the `./wp-content/plugins/bluem-woocommerce` path. (You could also compress the contents of this folder into a ZIP file and upload this into your site).
-5. Your plug-in should now be visible within your WordPress plugin list. Activate the plug-in from this page
+5. Your plug-in should now be visible within your WordPress plug-in list. Activate the plug-in from this page
 
 If possible, please run the installation procedure on a testing environment first, before installing the plug-in in a development environment.
 
@@ -262,12 +262,39 @@ If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsu
 
 # Releasse plan
 To actually release a new version, follow these steps:
+> Ensure you have SVN & Composer installed globally on your local machine.
 
-1. Update the WordPress plugin version in the `bluem.php` file
-2. Update the `readme.txt` file with the new version number and changelog
-3. Commit the changes with a message like "Release version X.X.X"
-4. Push those changes to the `master` branch
-5. Run the command below to prepare the deployment files into the build directory and clean out any non-production files
+> To get started with the SVN, set up a folder with all existing files, checkout the SVN folder using the command below:
+> ```bash
+> make get-fresh-svn
+> ```
+
+1. Determine the new version of the plug-in, using [semantic versioning](https://semver.org/). 
+2. Update the WordPress plug-in version in the `bluem.php` file
+3. Update the `readme.txt` file with the new version number and changelog
+4. Update the changelog in the `readme.txt` file with the new version number and a summary of changes. These changes will also show up in the WordPress plug-in directory.
+5. Commit the changes with a message like "Release version X.X.X" where the X's are your new version tag.
+6. Push those changes to the `master` branch through a PR with review procedure.
+7. Run the command below to prepare the deployment files into the build directory and clean out any non-production files
     ```bash
    make pre-deployment
     ```
+8. Copy these changes into the SVN directory in two places: the tags folder with your new tag and the trunk folder (which always contains the latest version). Use these commands to help you:
+   1. Copying the files to the tags folder:
+      ```bash
+      make add-tag NEW_TAG=1.3.27
+      ```
+   2. Copying the files to the trunk folder:
+      ```bash
+      make update-trunk NEW_TAG=1.3.27
+      ```
+   3. Commit the changes to the SVN repository:
+      ```bash
+      make commit-to-svn NEW_TAG=1.3.27
+      ```
+      This command will commit the changes to the SVN repository, including the new tag and trunk updates.
+      > Note: this command will also automatically update the `readme.txt` file in the SVN repository with the new version number and changelog.
+      > It can take a little while before files are all committed.
+9. After the commit is successful, you can check the SVN repository to ensure that the new tag and trunk updates are present.
+10. The plug-in is now available in the WordPress plug-in directory and can be installed by users.
+11. Enjoy your new release!
