@@ -1054,15 +1054,7 @@ function bluem_idin_shortcode_callback(): void
     /**
      * Determining the right callback.
      */
-    $goto = $bluem_config->IDINPageURL;
-
-    if (str_contains(sanitize_url(wp_unslash($_SERVER['REQUEST_URI'])), 'bluem-woocommerce/idin_shortcode_callback/go_to_cart')) {
-        $goto = wc_get_checkout_url();
-    } elseif (!empty($goto)) {
-        $goto = home_url($bluem_config->IDINPageURL);
-    } else {
-        $goto = home_url();
-    }
+	$goto = bluem_get_idin_shortcode_callback_url( $bluem_config );
 
     switch ($statusCode) {
         case 'Success': // in case of success...
@@ -1251,6 +1243,29 @@ function bluem_idin_shortcode_callback(): void
 
     wp_safe_redirect(location: sprintf('%s?result=false&status=%s', $goto, $statusCode));
     exit;
+}
+
+/**
+ * Determine the Callback URL for the iDIN shortcode flow
+ * @param Stdclass $bluem_config
+ *
+ * @return string
+ */
+function bluem_get_idin_shortcode_callback_url( Stdclass $bluem_config ): string {
+
+	if ( str_contains( sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'bluem-woocommerce/idin_shortcode_callback/go_to_cart' ) ) {
+		return wc_get_checkout_url();
+	} elseif ( ! empty( $bluem_config->IDINPageURL ) ) {
+	    $callbackUrl = (string) $bluem_config->IDINPageURL;
+
+		// if goto is relative URL, append it with the home URL of WordPress
+		if ( ! str_starts_with( $callbackUrl, 'http://' ) && ! str_starts_with( $callbackUrl, 'https://' ) ) {
+			return home_url( $bluem_config->IDINPageURL );
+		}
+        // else just use goto
+        return $callbackUrl;
+	}
+    return home_url();
 }
 
 /**
