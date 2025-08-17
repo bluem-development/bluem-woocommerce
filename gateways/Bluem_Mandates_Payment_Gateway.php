@@ -637,8 +637,8 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 			$mandateID = null;
 		}
 
-		if ( ! empty( $mandateID ) ) {
-			$errormessage = esc_html__( "Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.", 'bluem' );
+		if ( empty( $mandateID ) ) {
+			$errormessage = esc_html__( "Fout: geen mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.", 'bluem' );
 			bluem_error_report_email(
 				[
 					'service'  => 'mandates',
