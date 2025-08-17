@@ -176,7 +176,9 @@ clean-up:
 	@#rm -rf $(BUILD_DIR)
 
 copy-to-docker:
-	make pre-deployment; cp -r build/* ../plugins/bluem/.
+	make pre-deployment;
+	@echo "$(BLUE)Copying all from build to docker/plugins/bluem directory...$(NC)"
+	cp -r ./build/* ./docker/plugins/bluem/.
 
 
 run-phpcs:

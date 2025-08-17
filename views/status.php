@@ -142,7 +142,7 @@ function bluem_display_woocommerce_logs(): string
 
         <div class="wrap">
         <h2><?php esc_html_e('Refresh rewrite rules','bluem'); ?></h2>
-        <p><?php esc_html_e('Refresh rewrite rules description','bluem'); ?></p>
+        <p><?php esc_html_e('Zijn er problemen met het tonen/leveren van pagina\'s van de plug-in in je site? Klik dan hieronder om de Bluem pagina opnieuw te registreren. Dit zorgt er doorgaans voor dat de website de modernere vorm van pagina\'s kan tonen. ' ,'bluem'); ?></p>
 
             <form method="post" action="">
                 <?php wp_nonce_field('flush_rewrite_rules_nonce', 'flush_rewrite_rules_nonce'); ?>
