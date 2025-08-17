@@ -171,6 +171,7 @@ function bluem_woocommerce_plugin_activate()
     add_rewrite_rule('^bluem-woocommerce/bluem-integrations/wpcf7_mandate/?$', 'index.php?bluem_woocommerce_integration_wpcf7_ajax=1', 'top');
     add_rewrite_rule('^bluem-woocommerce/bluem-integrations/wpcf7_callback/?$', 'index.php?bluem_woocommerce_integration_wpcf7_callback=1', 'top');
     // Gravity Forms
+    add_rewrite_rule('^bluem-woocommerce/bluem-integrations/gform_callback?$', 'index.php?bluem_woocommerce_integration_gform_callback=1', 'top');
     add_rewrite_rule('^bluem-woocommerce/bluem-integrations/gform_callback/?$', 'index.php?bluem_woocommerce_integration_gform_callback=1', 'top');
 
     // Flush the rules after adding them

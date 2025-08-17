@@ -561,7 +561,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
     $mandateID = $storage['bluem_mandate_transaction_id'] ?? 0;
 
     $entranceCode = $storage['bluem_mandate_entrance_code'] ?? '';
-    
+
     if (empty($mandateID)) {
         if (!empty($bluem_config->wpcf7Resultpage)) {
             wp_redirect(home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=error");
@@ -1007,7 +1007,22 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
                 }
                 exit;
             } catch (Exception $e) {
-                // var_dump($e->getMessage());
+                $error_message =
+	                sprintf(
+	                    /* translators: %s: error code */
+						esc_html__( "Er ging iets mis het maken van de Gravity Forms transactie, foutcode: %s", 'bluem', ),
+						$e->getMessage()
+					);
+				bluem_error_report_email(
+					array(
+						'service' => 'mandates',
+						'function' => 'gform_execute',
+						'message' => $error_message,
+					)
+				);
+	            bluem_dialogs_render_prompt($error_message);
+	            exit;
+
                 die();
             }
         }
@@ -1026,13 +1041,19 @@ function bluem_woocommerce_integration_gform_callback()
     $storage = bluem_db_get_storage();
 
     if ($bluem_config->gformActive !== 'Y') {
-        return;
+	    bluem_dialogs_render_prompt( esc_html__("Fout: de Gravity Forms integratie is niet actief, maar toch is er een callback. 
+	    Controleer de instellingen van de plugin. Neem contact op met de webshop en vermeld je contactgegevens.", 'bluem' ) );
+	    exit;
     }
 
     try {
         $bluem = new Bluem($bluem_config);
     } catch (Exception $e) {
-        // @todo: deal with incorrectly setup Bluem
+	    bluem_dialogs_render_prompt( esc_html__(
+			"Fout: de Bluem configuratie is niet correct terwijl Gravity forms al actief is. 
+			Probeer de instellingen te corrigeren. Lukt dat niet?
+			Neem contact op met de plug-in support en vermeld je contactgegevens.", 'bluem' ) );
+		exit;
     }
 
     $formID = $storage['bluem_integration_gform_form_id'] ?? 0;
