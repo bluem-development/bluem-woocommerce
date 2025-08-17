@@ -631,56 +631,45 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
      */
     public function bluem_mandates_callback()
     {
-        // $this->bluem = new Bluem( $this->bluem_config );
-        // dont recreate it here, it should already exist in the gateway!
+		if(isset($_GET['mandateID'])) {
+	        $mandateID = sanitize_text_field(wp_unslash($_GET['mandateID']));
+		} else {
+			$mandateID = null;
+		}
 
-        if (!empty(sanitize_text_field(wp_unslash($_GET['mandateID'])))) {
-            $errormessage = esc_html__("Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.", 'bluem');
-            bluem_error_report_email(
-                [
-                    'service' => 'mandates',
-                    'function' => 'mandates_callback',
-                    'message' => $errormessage
-                ]
-            );
-            bluem_dialogs_render_prompt($errormessage);
-            exit;
-        }
+		if ( ! empty( $mandateID ) ) {
+			$errormessage = esc_html__( "Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.", 'bluem' );
+			bluem_error_report_email(
+				[
+					'service'  => 'mandates',
+					'function' => 'mandates_callback',
+					'message'  => $errormessage
+				]
+			);
+			bluem_dialogs_render_prompt( $errormessage );
+			exit;
+		}
 
-        if ($_GET['mandateID'] == "") {
-            $errormessage = esc_html__("Fout: geen juist mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens.", "bluem");
-            bluem_error_report_email(
-                [
-                    'service' => 'mandates',
-                    'function' => 'mandates_callback',
-                    'message' => $errormessage
-                ]
-            );
-            bluem_dialogs_render_prompt($errormessage);
-            exit;
-        }
-        $mandateID = sanitize_text_field(wp_unslash($_GET['mandateID']));
+		$order = $this->getOrder( $mandateID );
+		if ( is_null( $order ) ) {
+			$errormessage = sprintf(
+			/* translators: %s: error code */
+				esc_html__( "Fout: mandaat niet gevonden in webshop orders. Neem contact op met de webshop en vermeld de code %s bij je gegevens.", "bluem" ), $mandateID );
+			bluem_error_report_email(
+				[
+					'service'  => 'mandates',
+					'function' => 'mandates_callback',
+					'message'  => $errormessage
+				]
+			);
+			bluem_dialogs_render_prompt( $errormessage );
+			exit;
+		}
 
-        $order = $this->getOrder($mandateID);
-        if (is_null($order)) {
-            $errormessage = sprintf(
-            /* translators: %s: error code */
-                esc_html__("Fout: mandaat niet gevonden in webshop. Neem contact op met de webshop en vermeld de code %s bij je gegevens.", "bluem"), $mandateID);
-            bluem_error_report_email(
-                [
-                    'service' => 'mandates',
-                    'function' => 'mandates_callback',
-                    'message' => $errormessage
-                ]
-            );
-            bluem_dialogs_render_prompt($errormessage);
-            exit;
-        }
-
-        $request_from_db = bluem_db_get_request_by_transaction_id_and_type(
-            $mandateID,
-            "mandates"
-        );
+	    $request_from_db = bluem_db_get_request_by_transaction_id_and_type(
+		    $mandateID,
+		    "mandates"
+	    );
 
         if (!$request_from_db) {
             // @todo: give an error, as this transaction has clearly not been saved
