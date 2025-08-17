@@ -269,32 +269,34 @@ To actually release a new version, follow these steps:
 > make get-fresh-svn
 > ```
 
+
 1. Determine the new version of the plug-in, using [semantic versioning](https://semver.org/). 
-2. Update the WordPress plug-in version in the `bluem.php` file
-3. Update the `readme.txt` file with the new version number and changelog
-4. Update the changelog in the `readme.txt` file with the new version number and a summary of changes. These changes will also show up in the WordPress plug-in directory.
-5. Commit the changes with a message like "Release version X.X.X" where the X's are your new version tag.
-6. Push those changes to the `master` branch through a PR with review procedure.
-7. Run the command below to prepare the deployment files into the build directory and clean out any non-production files
+2. Set the new version of the plug-in in the `build.env` file.
+3. Update the WordPress plug-in version in the `bluem.php` file
+4. Update the `readme.txt` file with the new version number and changelog
+5. Update the changelog in the `readme.txt` file with the new version number and a summary of changes. These changes will also show up in the WordPress plug-in directory.
+6. Commit the changes with a message like "Release version X.X.X" where the X's are your new version tag.
+7. Push those changes to the `master` branch through a PR with review procedure.
+8. Run the command below to prepare the deployment files into the build directory and clean out any non-production files
     ```bash
    make pre-deployment
     ```
-8. Copy these changes into the SVN directory in two places: the tags folder with your new tag and the trunk folder (which always contains the latest version). Use these commands to help you:
+9. Copy these changes into the SVN directory in two places: the tags folder with your new tag and the trunk folder (which always contains the latest version). Use these commands to help you:
    1. Copying the files to the tags folder:
       ```bash
-      make add-tag NEW_TAG=1.3.27
+      make add-tag
       ```
    2. Copying the files to the trunk folder:
       ```bash
-      make update-trunk NEW_TAG=1.3.27
+      make update-trunk
       ```
    3. Commit the changes to the SVN repository:
       ```bash
-      make commit-to-svn NEW_TAG=1.3.27
+      make commit-to-svn
       ```
       This command will commit the changes to the SVN repository, including the new tag and trunk updates.
       > Note: this command will also automatically update the `readme.txt` file in the SVN repository with the new version number and changelog.
       > It can take a little while before files are all committed.
-9. After the commit is successful, you can check the SVN repository to ensure that the new tag and trunk updates are present.
-10. The plug-in is now available in the WordPress plug-in directory and can be installed by users.
-11. Enjoy your new release!
+10. After the commit is successful, you can check the SVN repository to ensure that the new tag and trunk updates are present.
+11. The plug-in is now available in the WordPress plug-in directory and can be installed by users.
+12. Enjoy your new release!
