@@ -125,6 +125,36 @@ function bluem_display_woocommerce_logs(): string
                                                                           style="color: #4F800D;"></span></li>
                 <?php } ?>
             </ul>
+
+            <div class="wrap">
+                <h2><?php esc_html_e('Refresh rewrite rules','bluem'); ?></h2>
+                <p><?php esc_html_e('Zijn er problemen met het tonen/leveren van pagina\'s van de plug-in in je site? Klik dan hieronder om de Bluem pagina opnieuw te registreren. Dit zorgt er doorgaans voor dat de website de modernere vorm van pagina\'s kan tonen. ' ,'bluem'); ?></p>
+
+                <form method="post" action="">
+                    <?php wp_nonce_field('flush_rewrite_rules_nonce', 'flush_rewrite_rules_nonce'); ?>
+                    <input type="submit" name="flush_rewrite_rules" class="button button-primary" value="<?php esc_html_e('Refresh rewrite rules','bluem'); ?>">
+                </form>
+            </div>
+            <?php
+            if (isset($_POST['flush_rewrite_rules']) && check_admin_referer('flush_rewrite_rules_nonce', 'flush_rewrite_rules_nonce')) {
+                flush_rewrite_rules();
+                echo '<div class="updated"><p>
+'. esc_html("Refreshed rewrite rules successfully","bluem").'
+        </p>';
+                echo '</div>';
+            } ?>
+
+            <h3>Available Bluem rules</h3>
+            <ul><?php
+            $rules = get_option( 'rewrite_rules' );
+            foreach ($rules as $key => $value) {
+                if(str_contains($key, 'bluem')) {
+                    $key = str_replace(['^bluem-woocommerce/','','$'], '', $key);
+                    echo '<li>✅ <strong>'.esc_html($key).'</strong></li>';
+                }
+            }
+            ?>
+            </ul>
         </div>
 
         <div id="logs" class="tab-content">
@@ -140,23 +170,7 @@ function bluem_display_woocommerce_logs(): string
             <?php echo wp_kses_post(bluem_display_woocommerce_logs()); ?>
         </div>
 
-        <div class="wrap">
-        <h2><?php esc_html_e('Refresh rewrite rules','bluem'); ?></h2>
-        <p><?php esc_html_e('Zijn er problemen met het tonen/leveren van pagina\'s van de plug-in in je site? Klik dan hieronder om de Bluem pagina opnieuw te registreren. Dit zorgt er doorgaans voor dat de website de modernere vorm van pagina\'s kan tonen. ' ,'bluem'); ?></p>
 
-            <form method="post" action="">
-                <?php wp_nonce_field('flush_rewrite_rules_nonce', 'flush_rewrite_rules_nonce'); ?>
-                <input type="submit" name="flush_rewrite_rules" class="button button-primary" value="<?php esc_html_e('Refresh rewrite rules','bluem'); ?>">
-            </form>
-        </div>
-        <?php
-
-    if (isset($_POST['flush_rewrite_rules']) && check_admin_referer('flush_rewrite_rules_nonce', 'flush_rewrite_rules_nonce')) {
-        flush_rewrite_rules();
-        echo '<div class="updated"><p>
-'. esc_html("Refreshed rewrite rules successfully","bluem").'
-        </p></div>';
-    } ?>
     </div>
 
     <?php bluem_render_footer(); ?>

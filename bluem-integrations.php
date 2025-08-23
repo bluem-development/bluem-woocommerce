@@ -231,9 +231,6 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                 $preferences = get_option('bluem_woocommerce_options');
 
                 // Convert UTF-8 to ISO
-                // if (!empty($bluem_mandate_reason)) {
-                // $bluem_config->eMandateReason = $bluem_mandate_reason . ' (' . $debtorReference . ')';
-                // } else
                 if (!empty($bluem_config->eMandateReason)) {
                     $bluem_config->eMandateReason = mb_convert_encoding($bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
                 } else {
