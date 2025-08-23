@@ -146,9 +146,20 @@ if (!bluem_is_permalinks_enabled()) {
 }
 
 // Plug-in activation
-function bluem_woocommerce_plugin_activate()
+function bluem_woocommerce_plugin_activate(): void
 {
     update_option('bluem_plugin_registration', false);
+
+    bluem_add_rewrites();
+    // Flush the rules after adding them
+    flush_rewrite_rules();
+}
+
+register_activation_hook(__FILE__, 'bluem_woocommerce_plugin_activate');
+
+
+function bluem_add_rewrites(): void
+{
 
     // Rewrite rules:
     add_rewrite_rule('^bluem-woocommerce/idin_execute/?$', 'index.php?bluem_idin_shortcode_execute=1', 'top');
@@ -174,11 +185,9 @@ function bluem_woocommerce_plugin_activate()
     add_rewrite_rule('^bluem-woocommerce/bluem-integrations/gform_callback?$', 'index.php?bluem_woocommerce_integration_gform_callback=1', 'top');
     add_rewrite_rule('^bluem-woocommerce/bluem-integrations/gform_callback/?$', 'index.php?bluem_woocommerce_integration_gform_callback=1', 'top');
 
-    // Flush the rules after adding them
-    flush_rewrite_rules();
-}
 
-register_activation_hook(__FILE__, 'bluem_woocommerce_plugin_activate');
+}
+add_action('init', 'bluem_add_rewrites');
 
 add_filter('query_vars', function ($vars) {
     $bluem_vars = [
