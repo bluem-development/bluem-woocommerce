@@ -11,8 +11,6 @@ use stdClass;
 
 class BluemActivationNotifier
 {
-
-
     private const NOTIFICATION_EMAIL = 'pluginsupport@bluem.nl';
 
 

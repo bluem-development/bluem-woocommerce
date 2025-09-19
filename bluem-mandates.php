@@ -247,7 +247,7 @@ function bluem_woocommerce_mandates_show_extra_profile_fields($user)
                 <td>
                     <?php
                     bluem_render_requests_list($bluem_requests);
-                    ?>
+            ?>
                 </td>
             </tr>
             <?php
@@ -286,35 +286,35 @@ function bluem_woocommerce_mandates_show_extra_profile_fields($user)
 
             <?php
         }
-        ?>
+    ?>
         <tr>
             <th><label for="bluem_mandates_validated">Machtiging via shortcode / InstantMandates valide?</label></th>
             <td>
                 <?php
-                $curValidatedVal = (int)esc_attr(
-                    get_user_meta(
-                        $user->ID,
-                        'bluem_mandates_validated',
-                        true
-                    )
-                );
-                ?>
+            $curValidatedVal = (int)esc_attr(
+                get_user_meta(
+                    $user->ID,
+                    'bluem_mandates_validated',
+                    true
+                )
+            );
+    ?>
                 <select name="bluem_mandates_validated" id="bluem_mandates_validated">
                     <option value="1"
                         <?php
-                        if ($curValidatedVal == 1) {
-                            echo 'selected';
-                        }
-                        ?>
+            if ($curValidatedVal == 1) {
+                echo 'selected';
+            }
+    ?>
                     >
                         Ja
                     </option>
                     <option value="0"
                         <?php
-                        if ($curValidatedVal == 0) {
-                            echo 'selected';
-                        }
-                        ?>
+    if ($curValidatedVal == 0) {
+        echo 'selected';
+    }
+    ?>
                     >
                         Nee
                     </option>
