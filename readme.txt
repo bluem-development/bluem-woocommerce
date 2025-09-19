@@ -1,4 +1,4 @@
-=== Bluem ePayments, iDIN, eMandates services and integration for WooCommerce ===
+=== Bluem ePayments, eMandates & iDIN ===
 Contributors: bluempaymentservices
 Tags: Bluem,Payments,iDIN,iDEAL,eMandates
 Requires at least: 5.0
