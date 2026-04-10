@@ -300,3 +300,11 @@ To actually release a new version, follow these steps:
 10. After the commit is successful, you can check the SVN repository to ensure that the new tag and trunk updates are present.
 11. The plug-in is now available in the WordPress plug-in directory and can be installed by users.
 12. Enjoy your new release!
+
+
+## Updating language POT file
+
+Run this command to create/update the language file
+```bash
+php -d memory_limit=512M ~/wp-cli.phar i18n make-pot . languages/bluem.pot --skip-js --domain=bluem --exclude="svn-directory,build,docker,vendor"
+```
