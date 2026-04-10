@@ -2149,9 +2149,16 @@ function bluem_display_module_notices( $notices, $title = '', $btn_link = '', $b
  */
 
 add_action( 'add_meta_boxes_woocommerce_page_wc-orders', 'bluem_order_requests_metabox', 99, 1 );
-function bluem_order_requests_metabox( $order ): void
+function bluem_order_requests_metabox( $order )
 {
-    add_meta_box( 'woocommerce-shipping-details', esc_html__( 'Bluem request(s)', 'bluem' ), 'bluem_order_requests_metabox_content', 'woocommerce_page_wc-orders', 'normal', 'default' );
+    add_meta_box(
+            'woocommerce-shipping-details',
+            esc_html__('Bluem request(s)', 'bluem'),
+            'bluem_order_requests_metabox_content',
+            'woocommerce_page_wc-orders',
+            'normal',
+            'high'
+    );
 }
 
 /**
@@ -2159,12 +2166,11 @@ function bluem_order_requests_metabox( $order ): void
  *
  * @return void
  */
-function bluem_order_requests_metabox_content(): void {
-    global $post;
+function bluem_order_requests_metabox_content($post) {
     $order_id = $post->ID;
 
-    //  requests from links:
     $requests_links = bluem_db_get_links_for_order( $order_id );
+
     $requests       = [];
     foreach ( $requests_links as $rql ) {
         $requests[] = bluem_db_get_request_by_id( $rql->request_id );
