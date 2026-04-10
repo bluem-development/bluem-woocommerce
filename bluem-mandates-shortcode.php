@@ -330,7 +330,7 @@ function bluem_mandate_shortcode_callback(): void
     if (!$response->Status()) {
         $errormessage
             = sprintf(
-                /* translators: %s: Error message */
+                /* translators: %s: error message */
                 esc_html__('Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status', 'bluem'),
                 $response->Error()
             );

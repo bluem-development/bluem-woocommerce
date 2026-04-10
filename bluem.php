@@ -2049,8 +2049,8 @@ function bluem_setup_incomplete() {
                      && $options['paymentsIDEALBrandID'] !== $sender_id . 'Payment'
                 ) {
                     $messages[]  = sprintf(
-                    /* translators: %s: the invalid brandID value */
-                        esc_html__( 'The Payments BrandID for iDEAL ("%s") must match your SenderID + "Payment" (for example, %s).', 'bluem' ),
+                    /* translators: %1$s: the invalid brandID value %2$s: a valid BrandID value */
+                        esc_html__( 'The Payments BrandID for iDEAL ("%1$s") must match your SenderID + "Payment" (for example, %2$s).', 'bluem' ),
                         esc_html( $options['paymentsIDEALBrandID'] ),
                         esc_html( $sender_id . 'Payment' )
                     );
@@ -2071,8 +2071,8 @@ function bluem_setup_incomplete() {
                      && ! empty( $sender_id )
                      && strpos( $options[ $option_key ], $sender_id ) === false
                 ) {
-                    /* translators: %1$s: payment method label, %2$s: the invalid brandID value, %3$s: the expected SenderID prefix */
                     $messages[]  = sprintf(
+                    /* translators: %1$s: payment method label, %2$s: the invalid brandID value, %3$s: the expected SenderID prefix */
                         esc_html__( 'The Payments BrandID for %1$s ("%2$s") must contain your SenderID ("%3$s").', 'bluem' ),
                         esc_html( $label ),
                         esc_html( $options[ $option_key ] ),

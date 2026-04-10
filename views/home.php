@@ -1,4 +1,6 @@
-<?php if (!defined('ABSPATH')) exit;
+<?php if (!defined('ABSPATH')) {
+    exit;
+}
 ?>
 
 <?php $pluginDetailsLink = 'plugin-install.php?tab=plugin-information&plugin=bluem&TB_iframe=true&width=600&height=550'; ?>
@@ -19,7 +21,7 @@
     }
 
     .bluem_logo:before {
-        background-image: url('<?php echo esc_url(plugin_dir_url( '' )); ?>/bluem/assets/bluem/logo-hero.png');
+        background-image: url('<?php echo esc_url(plugin_dir_url('')); ?>/bluem/assets/bluem/logo-hero.png');
         background-size: contain;
         background-repeat: no-repeat;
         content: '';
@@ -46,7 +48,7 @@
 
     <p>
         <strong><?php esc_html_e('Plugin version', 'bluem'); ?></strong><br/><?php esc_html_e('Version', 'bluem'); ?> <?php $bluem = get_plugin_data(plugin_dir_path(__FILE__) . '../bluem.php');
-        echo esc_html($bluem['Version']); ?> (<a href="<?php echo esc_url(admin_url($pluginDetailsLink)); ?>"
+echo esc_html($bluem['Version']); ?> (<a href="<?php echo esc_url(admin_url($pluginDetailsLink)); ?>"
                                                  target="_blank"><?php esc_html_e('View details', 'bluem'); ?></a>)
     </p>
 

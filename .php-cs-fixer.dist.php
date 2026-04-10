@@ -16,6 +16,8 @@ return (new Config())
             // Scan both src/ and tests/ as root directories
             ->in([
                 __DIR__ . '/src',
+                __DIR__ . '/gateways',
+                __DIR__ . '/views',
                 __DIR__ . '/tests',
             ])
             ->append(glob(__DIR__ . '/bluem-*.php') ?: [])

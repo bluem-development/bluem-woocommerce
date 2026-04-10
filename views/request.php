@@ -1,4 +1,6 @@
-<?php if (!defined('ABSPATH')) exit;
+<?php if (!defined('ABSPATH')) {
+    exit;
+}
 ?>
 <div class="wrap">
     <h1>
@@ -51,7 +53,7 @@
                                         (<?php echo wp_kses_post(wc_price($order->get_total())); ?>)</a></td>
                             </tr>
                         <?php }
-                    } ?>
+                        } ?>
                     <tr>
                         <td><?php esc_html_e('User', 'bluem'); ?>:</td>
                         <?php if (isset($request_author->user_nicename) && $request_author !== false) { ?>
@@ -65,7 +67,7 @@
                     <tr>
                         <td><?php esc_html_e('Date', 'bluem'); ?>:</td>
                         <td><?php echo esc_html(bluem_get_formattedDate($request->timestamp ?? ''));
-                            ?>
+        ?>
                         </td>
                     </tr>
                     <tr>
@@ -113,7 +115,7 @@
                                     </td>
                                     <td>
                                         <?php echo esc_html($order_data['total']);
-                                        echo esc_html(" " . $order->get_currency()); ?>
+                                echo esc_html(" " . $order->get_currency()); ?>
                                     </td>
                                 </tr>
                             <?php } ?>
@@ -145,7 +147,7 @@
                             ?>&nbsp;
                         <abbr title="<?php
                         echo wp_kses_post(str_replace('"', '', $dparts[1]));
-                        ?>" style="cursor: help;"><span class="dashicons dashicons-info-outline"></span>
+                            ?>" style="cursor: help;"><span class="dashicons dashicons-info-outline"></span>
                             </abbr><?php
                         } ?>
                         </li><?php
@@ -178,17 +180,17 @@
                 } catch (Exception $e) {
                     $pl = null;
                 }
-                if (!is_null($pl)) {
-                    ?>
+        if (!is_null($pl)) {
+            ?>
                     <h4>
                         <?php esc_html_e('Extra details', 'bluem'); ?>:
                     </h4>
                     <?php
-                    foreach ($pl as $plk => $plv) {
-                        bluem_render_obj_row_recursive($plk, $plv);
-                    }
-                }
-                ?>
+            foreach ($pl as $plk => $plv) {
+                bluem_render_obj_row_recursive($plk, $plv);
+            }
+        }
+        ?>
                 </p>
                 <p>
                 <hr>
@@ -261,7 +263,7 @@ border-radius:5px; margin:10pt 0 0 0; padding:5pt 15pt;">
                 </p>
                 </div><?php
             }
-            ?>
+        ?>
         </div>
     <?php } else { ?>
         <p><?php esc_html_e('Request not found', 'bluem'); ?></p>

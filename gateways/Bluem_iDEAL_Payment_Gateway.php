@@ -1,5 +1,8 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
+
+if (! defined('ABSPATH')) {
+    exit;
+}
 include_once __DIR__ . '/Bluem_Bank_Based_Payment_Gateway.php';
 
 class Bluem_iDEAL_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
@@ -34,11 +37,11 @@ class Bluem_iDEAL_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
      */
     public function payment_fields()
     {
-        if($this->bluem === null) {
+        if ($this->bluem === null) {
             return;
         }
 
-        $BICs = $this->bluem->retrieveBICsForContext( "Payments" );
+        $BICs = $this->bluem->retrieveBICsForContext("Payments");
 
         $description = $this->get_description();
 
@@ -55,12 +58,12 @@ class Bluem_iDEAL_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
 
         // Check for options
         if ($this->_show_fields && !empty($options)) {
-            woocommerce_form_field('bluem_payments_ideal_bic', array(
+            woocommerce_form_field('bluem_payments_ideal_bic', [
                 'type' => 'select',
                 'required' => true,
                 'label' => esc_html__('Select a bank:', 'bluem'),
-                'options' => $options
-            ), '');
+                'options' => $options,
+            ], '');
         }
     }
 

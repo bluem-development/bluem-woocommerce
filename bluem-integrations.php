@@ -891,7 +891,7 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
                 $response = $bluem->PerformRequest($request);
 
                 if (! isset($response->EMandateTransactionResponse->TransactionURL)) {
-                        $msg = 'Something went wrong while creating the transaction.<br>Please provide the following information to the site administrator:';
+                    $msg = 'Something went wrong while creating the transaction.<br>Please provide the following information to the site administrator:';
 
                     if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
                         $msg .= '<br>'
@@ -900,7 +900,7 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
                         $msg .= '<br>'
                                 . $response->Error();
                     } else {
-                            $msg .= '<br>General error';
+                        $msg .= '<br>General error';
                     }
 
                     bluem_error_report_email(
@@ -1005,7 +1005,7 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
                 $error_message
                     = sprintf(
                         /* translators: %s: error code */
-                            esc_html__("Something went wrong while creating the Gravity Forms transaction, error code: %s", 'bluem'),
+                        esc_html__("Something went wrong while creating the Gravity Forms transaction, error code: %s", 'bluem'),
                         $e->getMessage()
                     );
                 bluem_error_report_email(

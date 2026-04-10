@@ -207,7 +207,7 @@ function bluem_mandates_instant_callback()
 
     if (!$response->Status()) {
         $errormessage = sprintf(
-            /* translators: %s: status code */
+            /* translators: %s: error message */
             esc_html__('Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status', 'bluem'),
             $response->Error()
         );

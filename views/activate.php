@@ -19,7 +19,7 @@
         <?php esc_html_e('If you have already filled this in before, you are seeing this screen again because the plugin has been reactivated.', 'bluem'); ?>
     </p>
 
-    <?php if (isset($bluem_plugin_registration) && ((int)$bluem_plugin_registration) === 1) { ?>
+    <?php if (isset($bluem_plugin_registration) && ((int) $bluem_plugin_registration) === 1) { ?>
         <div class="notice notice-success is-dismissible">
             <p>
                 <span class="dashicons dashicons-yes-alt"></span> <?php esc_html_e('The plugin has been activated', 'bluem'); ?>
@@ -56,7 +56,7 @@
         </div>
     <?php } ?>
 
-    <?php if (isset ($is_valid) && !$is_valid) { ?>
+    <?php if (isset($is_valid) && !$is_valid) { ?>
         <div class="notice notice-warning is-dismissible">
             <p><span class="dashicons dashicons-warning"></span>
                 <?php esc_html_e('Please fill in all required fields correctly.', 'bluem'); ?></p>
@@ -97,11 +97,11 @@
                 <p>
                     <?php
                     esc_html_e('An account is required to use our services.', 'bluem');
-                    ?>
+?>
                     <br/>
                     <?php
-                    esc_html_e('For more information:', 'bluem');
-                    ?><br/>
+esc_html_e('For more information:', 'bluem');
+?><br/>
                     <a href='https://bluem.nl/direct-online-betalen/'
                        title='<?php echo esc_attr__('Bluem website', 'bluem'); ?>' target='_blank'>
                         <?php esc_html_e('bluem.nl', 'bluem'); ?></a>
