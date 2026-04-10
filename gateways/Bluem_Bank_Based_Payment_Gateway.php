@@ -145,7 +145,6 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway {
 
 		$bluem_payments_ideal_bic = isset( $_POST['bluem_payments_ideal_bic'] ) ? sanitize_text_field( wp_unslash( $_POST['bluem_payments_ideal_bic'] ) ) : '';
 
-
 		$debtorReference = $order_id;
 		$amount          = $order->get_total();
 		$currency        = self::EURO_CURRENCY; // @todo: get dynamically from order
@@ -189,20 +188,14 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway {
 		$request->dueDateTime      = $dueDateTime->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
 		$request->debtorReturnURL  = home_url( sprintf( 'wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode ) );
 
-		$payload = wp_json_encode( [
-			'environment'       => $this->bluem_config->environment,
-			'amount'            => $amount,
-			'method'            => $this->bankSpecificBrandID,
-			'currency'          => $currency,
-			'due_date'          => $request->dueDateTime,
-			'payment_reference' => $request->paymentReference
-		], JSON_THROW_ON_ERROR );
 
 		// allow third parties to add additional data to the request object through this additional action
 		$request = apply_filters(
 			'bluem_woocommerce_enhance_payment_request',
 			$request
 		);
+
+
 
 		try {
 			$response = $this->bluem->PerformRequest( $request );
@@ -212,6 +205,36 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway {
 				'result'    => 'failure'
 			);
 		}
+
+
+
+        if(!empty($response->PaymentTransactionResponse->Error)) {
+//            $data = [
+//                'description'=> $description,
+//                'debtorReference'=> $debtorReference,
+//                'amount'=> $amount,
+//                'dueDateTime'=> $dueDateTime->format( 'Y-m-d H:i:s' ),
+//                'currency'=> $currency,
+//                'entranceCode'=> $entranceCode,
+//                'bic?'=>$bluem_payments_ideal_bic,
+//                'returnUrl'=>home_url( sprintf( 'wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode ) ),
+//            ];
+//        var_dump("Processing Payment for order id: ", $data);
+//        var_dump($request);
+//        var_dump($request->XmlString());
+//        echo "<HR>";
+//        var_dump($response);
+//        var_dump($response->Status());
+//        var_dump($response->Error());
+//        var_dump($response->asXML());
+//            return;
+            return [
+                'exception' => $response->PaymentTransactionResponse->Error,
+                'result'    => 'failure'
+            ];
+        }
+
+
 		// Possible statuses: BLUEM_WC_STATUS_PENDING, 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled',
 
 		$order->update_status( BLUEM_WC_STATUS_PENDING, esc_html__( 'Awaiting Bluem Payment Signature', 'bluem' ) );
@@ -228,6 +251,15 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway {
 
 			// redirect cast to string, for AJAX response handling
 			$transactionURL = ( $response->PaymentTransactionResponse->TransactionURL . "" );
+
+            $payload = wp_json_encode( [
+                'environment'       => $this->bluem_config->environment,
+                'amount'            => $amount,
+                'method'            => $this->bankSpecificBrandID,
+                'currency'          => $currency,
+                'due_date'          => $request->dueDateTime,
+                'payment_reference' => $request->paymentReference
+            ], JSON_THROW_ON_ERROR );
 
 			bluem_db_create_request(
 				[
@@ -251,6 +283,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway {
 		}
 
 		return array(
+            'message' => 'Geen betalings-URL teruggekregen van Bluem. Fout: ' . ( $response->Error() ?? 'Onbekende fout' ),
 			'result' => 'failure',
 		);
 	}
@@ -417,13 +450,15 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway {
 		if ( ! $response->Status() ) {
 			$errormessage = sprintf(
 			/* translators: %s: error status */
-				esc_html__( "Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem' ), $response->Error() );
+            esc_html__( "Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem' ), $response->Error() );
 			bluem_error_report_email(
 				[
 					'service'  => 'payments',
 					'function' => 'payments_callback',
 					'message'  => $errormessage,
-					'response' => $response
+					'response' => $response,
+                    'transactionID' => $transactionID,
+                    'entranceCode' => $entranceCode
 				]
 			);
 			bluem_dialogs_render_prompt( $errormessage );

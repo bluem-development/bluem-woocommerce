@@ -191,5 +191,6 @@ run-phpcs:
 run-phpcbf:
 	vendor/bin/phpcbf --standard=WordPress ./src bluem-*.php
 
-#send-email:
-#	@./loadenv.sh
+start-docker:
+	docker-compose up -d
+	open http://localhost:8000/wp-admin/

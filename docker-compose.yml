@@ -21,7 +21,7 @@ services:
   wordpress:
     depends_on:
       - db
-    image: wordpress:latest
+    image: wordpress:php8.4-apache
     volumes:
       - ./docker/wordpress:/var/www/html
       - ./docker/plugins:/var/www/html/wp-content/plugins
