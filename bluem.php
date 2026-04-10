@@ -2147,22 +2147,11 @@ function bluem_display_module_notices( $notices, $title = '', $btn_link = '', $b
 /*
  *  Adding Meta container admin shop_order pages
  */
-add_action( 'add_meta_boxes', 'bluem_order_requests_metabox' );
 
-/**
- * bluem_order_requests_metabox
- *
- * @return void
- */
-function bluem_order_requests_metabox() {
-    add_meta_box(
-            'bluem_order_requests_metabox_content',
-            esc_html__( 'Bluem request(s)', 'bluem' ),
-            'bluem_order_requests_metabox_content',
-            'shop_order',
-            'normal',
-            'default'
-    );
+add_action( 'add_meta_boxes_woocommerce_page_wc-orders', 'bluem_order_requests_metabox', 99, 1 );
+function bluem_order_requests_metabox( $order ): void
+{
+    add_meta_box( 'woocommerce-shipping-details', esc_html__( 'Bluem request(s)', 'bluem' ), 'bluem_order_requests_metabox_content', 'woocommerce_page_wc-orders', 'normal', 'default' );
 }
 
 /**
@@ -2170,7 +2159,7 @@ function bluem_order_requests_metabox() {
  *
  * @return void
  */
-function bluem_order_requests_metabox_content() {
+function bluem_order_requests_metabox_content(): void {
     global $post;
     $order_id = $post->ID;
 
