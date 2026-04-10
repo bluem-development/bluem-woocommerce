@@ -7,6 +7,7 @@ require_once __DIR__ . '/Bluem_Payment_Gateway_Interface.php';
 
 use Bluem\BluemPHP\Bluem;
 
+#[AllowDynamicProperties]
 abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem_Payment_Gateway_Interface
 {
     public const PAYMENT_STATUS_SUCCESS = "Success";
@@ -21,6 +22,14 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
      * @var Stdclass
      */
     protected $bluem_config;
+
+
+    public $id;
+    public $title;
+    public $icon;
+    public $method_description;
+    public $method_title;
+    public $method_description_content;
 
     /**
      * @var Bluem
