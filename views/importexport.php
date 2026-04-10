@@ -19,7 +19,7 @@
 
 <div class="wrap">
     <h1>
-        <?php wp_kses_post(
+        <?php echo wp_kses_post(
                 sprintf(
                 /* translators: %s: logo html */
                         esc_html__( '%s Import / export', 'bluem' ),

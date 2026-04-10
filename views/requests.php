@@ -6,7 +6,7 @@
 <div class="wrap">
     <h1>
         <?php echo wp_kses_post( bluem_get_bluem_logo_html( 48 ) ); ?>
-        <?php esc_html_e( 'Transacties', 'bluem' ); ?>
+        <?php esc_html_e( 'Transactions', 'bluem' ); ?>
     </h1>
 
     <?php bluem_render_nav_header( 'transactions' ); ?>
@@ -52,10 +52,10 @@
                     <?php if ( count( $rs ) > 0 ) {
                         ?>
                         <p>
-                            <?php echo count( $rs ); ?> <?php echo esc_html__( 'transactie(s) getoond', 'bluem' ); ?>
+                            <?php echo count( $rs ); ?> <?php echo esc_html__( 'transaction(s) shown', 'bluem' ); ?>
                             &middot;
-                            <?php esc_html_e( 'Klik op een transactie voor meer gedetailleerde informatie.', 'bluem' ); ?></p>
-                        <p><?php wp_kses_post( __( 'Bekijk nog meer informatie over alle transacties in het <a href="https://viamijnbank.net/" target="_blank">viamijnbank.net dashboard</a>.', 'bluem' ) ); ?></p>
+                            <?php esc_html_e( 'Click a transaction for more detailed information.', 'bluem' ); ?></p>
+                        <p><?php echo wp_kses_post( __( 'View more information about all transactions in the <a href="https://viamijnbank.net/" target="_blank">viamijnbank.net dashboard</a>.', 'bluem' ) ); ?></p>
                         <?php
                     } ?>
                 </div>

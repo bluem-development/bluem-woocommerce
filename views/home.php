@@ -41,7 +41,7 @@
     <p><?php esc_html_e('With the Bluem WordPress plugin, you can easily integrate online payments, identity checks and age verifications on your website.', 'bluem'); ?></p>
 
     <p><strong><?php esc_html_e('Bluem Dashboard', 'bluem'); ?></strong><br/>
-        <?php wp_kses_post(__('Alle transacties zijn ook zichtbaar in het <a href="https://viamijnbank.net/" target="_blank">viamijnbank.net dashboard</a>.', 'bluem')); ?>
+        <?php echo wp_kses_post(__('All transactions are also visible in the <a href="https://viamijnbank.net/" target="_blank">viamijnbank.net dashboard</a>.', 'bluem')); ?>
     </p>
 
     <p>

@@ -40,7 +40,7 @@ function bluem_display_php_errors(): string {
          && $log_contents = @file_get_contents( $error_log_path ) ) {
         $content = '<pre>' . esc_html( $log_contents ) . '</pre>';
     } else {
-        $content = esc_html__( 'Geen toegang tot PHP-foutenlogboek. Of het log bestaat niet, loggen is uitgeschakeld of de benodigde leesrechten ontbreken.', 'bluem' );
+        $content = esc_html__( 'Cannot access the PHP error log. Either the log does not exist, logging is disabled, or the required read permissions are missing.', 'bluem' );
     }
 
     return $content;
@@ -58,10 +58,10 @@ function bluem_display_wordpress_debug_log() {
         if ( $log_contents = @file_get_contents( $error_log_path ) ) {
             $content = '<pre>' . esc_html( $log_contents ) . '</pre>';
         } else {
-            $content = esc_html__( 'Geen toegang tot het WordPress debug-logboek. Of het log bestaat niet, loggen is uitgeschakeld of de benodigde leesrechten ontbreken.', 'bluem' );
+            $content = esc_html__( 'Cannot access the WordPress debug log. Either the log does not exist, logging is disabled, or the required read permissions are missing.', 'bluem' );
         }
     } else {
-        $content = esc_html__( 'Geen toegang tot het WordPress debug-logboek. Of het log bestaat niet, loggen is uitgeschakeld of de benodigde leesrechten ontbreken.', 'bluem' );
+        $content = esc_html__( 'Cannot access the WordPress debug log. Either the log does not exist, logging is disabled, or the required read permissions are missing.', 'bluem' );
     }
 
     return $content;
@@ -86,7 +86,7 @@ function bluem_display_woocommerce_logs(): string {
             $content .= '<pre>' . esc_html( file_get_contents( $log ) ) . '</pre>';
         }
     } else {
-        $content = esc_html__( 'Geen toegang tot de WooCommerce logboeken. Of het log bestaat niet, loggen is uitgeschakeld of de benodigde leesrechten ontbreken.', 'bluem' );
+        $content = esc_html__( 'Cannot access the WooCommerce logs. Either the log does not exist, logging is disabled, or the required read permissions are missing.', 'bluem' );
     }
 
     return $content;
@@ -104,32 +104,32 @@ function bluem_display_woocommerce_logs(): string {
 
     <div class="wrap payment-methods">
         <h2 class="nav-tab-wrapper">
-            <a href="#" class="nav-tab" data-tab="general"><?php esc_html_e( 'Systeem', 'bluem' ); ?></a>
+            <a href="#" class="nav-tab" data-tab="general"><?php esc_html_e( 'System', 'bluem' ); ?></a>
             <a href="#" class="nav-tab" data-tab="logs"><?php esc_html_e( 'Logs', 'bluem' ); ?></a>
         </h2>
 
         <div id="general" class="tab-content">
-            <h1><?php esc_html_e( 'Systeem', 'bluem' ); ?></h1>
+            <h1><?php esc_html_e( 'System', 'bluem' ); ?></h1>
 
-            <p><?php esc_html_e( 'De volgende betaalmethoden zijn ingeschakeld', 'bluem' ); ?>:</p>
+            <p><?php esc_html_e( 'The following payment methods are enabled', 'bluem' ); ?>:</p>
             <ul>
                 <?php if ( bluem_module_enabled( 'mandates' ) ) { ?>
-                    <li><?php esc_html_e( 'Incassomachtigen', 'bluem' ); ?> <span class="dashicons dashicons-yes"
+                    <li><?php esc_html_e( 'Direct Debit', 'bluem' ); ?> <span class="dashicons dashicons-yes"
                                                                                   style="color: #4F800D;"></span></li>
                 <?php } ?>
                 <?php if ( bluem_module_enabled( 'payments' ) ) { ?>
-                    <li><?php esc_html_e( 'Betalingen', 'bluem' ); ?> <span class="dashicons dashicons-yes"
+                    <li><?php esc_html_e( 'Payments', 'bluem' ); ?> <span class="dashicons dashicons-yes"
                                                                             style="color: #4F800D;"></span></li>
                 <?php } ?>
                 <?php if ( bluem_module_enabled( 'idin' ) ) { ?>
-                    <li><?php esc_html_e( 'Identiteit', 'bluem' ); ?> <span class="dashicons dashicons-yes"
+                    <li><?php esc_html_e( 'Identity', 'bluem' ); ?> <span class="dashicons dashicons-yes"
                                                                             style="color: #4F800D;"></span></li>
                 <?php } ?>
             </ul>
 
             <div class="wrap">
                 <h2><?php esc_html_e( 'Refresh rewrite rules', 'bluem' ); ?></h2>
-                <p><?php esc_html_e( 'Zijn er problemen met het tonen/leveren van pagina\'s van de plug-in in je site? Klik dan hieronder om de Bluem pagina opnieuw te registreren. Dit zorgt er doorgaans voor dat de website de modernere vorm van pagina\'s kan tonen. ', 'bluem' ); ?></p>
+                <p><?php esc_html_e( 'Are there problems displaying plugin pages on your site? Click below to re-register the Bluem pages. This generally allows the website to serve the modern form of pages.', 'bluem' ); ?></p>
 
                 <form method="post" action="">
                     <?php wp_nonce_field( 'flush_rewrite_rules_nonce', 'flush_rewrite_rules_nonce' ); ?>
@@ -141,12 +141,12 @@ function bluem_display_woocommerce_logs(): string {
             if ( isset( $_POST['flush_rewrite_rules'] ) && check_admin_referer( 'flush_rewrite_rules_nonce', 'flush_rewrite_rules_nonce' ) ) {
                 flush_rewrite_rules();
                 echo '<div class="updated"><p>
-' . esc_html( "Refreshed rewrite rules successfully", "bluem" ) . '
+' . esc_html__( 'Refreshed rewrite rules successfully', 'bluem' ) . '
         </p>';
                 echo '</div>';
             } ?>
 
-            <h3>Available Bluem rules</h3>
+            <h3><?php esc_html_e( 'Available Bluem rules', 'bluem' ); ?></h3>
             <ul><?php
                 $rules = get_option( 'rewrite_rules' );
                 foreach ( $rules as $key => $value ) {
