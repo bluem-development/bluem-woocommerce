@@ -2027,25 +2027,43 @@ function bluem_setup_incomplete() {
             $valid_setup = false;
         }
 
-        // Validate payment brandIDs match expected shape: SenderID (e.g. S001) + "Payment"
+        // Validate payment brandIDs: iDEAL must be exactly SenderID + "Payment",
+        // other methods only need to start with a valid SenderID (S + digits).
         if ( bluem_module_enabled( 'payments' ) ) {
-            $payment_brand_keys = [
-                'paymentsIDEALBrandID'         => 'iDEAL',
+            $sender_id = $options['senderID'] ?? '';
+
+            // iDEAL: must be exactly <SenderID>Payment
+            if ( ! empty( $options['paymentsIDEALBrandID'] )
+                 && $options['paymentsIDEALBrandID'] !== $sender_id . 'Payment'
+            ) {
+                /* translators: %s: the invalid brandID value */
+                $messages[]  = sprintf(
+                    esc_html__( 'Het Payments BrandID voor iDEAL ("%s") moet gelijk zijn aan je SenderID + "Payment" (bijv. %s).', 'bluem' ),
+                    esc_html( $options['paymentsIDEALBrandID'] ),
+                    esc_html( $sender_id . 'Payment' )
+                );
+                $valid_setup = false;
+            }
+
+            // Other payment methods: brandID must start with the configured SenderID
+            $other_brand_keys = [
                 'paymentsCreditcardBrandID'    => 'CreditCard',
                 'paymentsPayPalBrandID'        => 'PayPal',
                 'paymentsSofortBrandID'        => 'SOFORT',
                 'paymentsCarteBancaireBrandID' => 'Carte Bancaire',
             ];
 
-            foreach ( $payment_brand_keys as $option_key => $label ) {
+            foreach ( $other_brand_keys as $option_key => $label ) {
                 if ( ! empty( $options[ $option_key ] )
-                     && ! preg_match( '/^S\d+Payment$/', $options[ $option_key ] )
+                     && ! empty( $sender_id )
+                     && strpos( $options[ $option_key ], $sender_id ) === false
                 ) {
-                    /* translators: %1$s: payment method label, %2$s: the invalid brandID value */
+                    /* translators: %1$s: payment method label, %2$s: the invalid brandID value, %3$s: the expected SenderID prefix */
                     $messages[]  = sprintf(
-                        esc_html__( 'Het Payments BrandID voor %1$s ("%2$s") heeft niet het verwachte formaat SenderID + "Payment" (bijv. S001Payment).', 'bluem' ),
+                        esc_html__( 'Het Payments BrandID voor %1$s ("%2$s") moet je SenderID ("%3$s") bevatten.', 'bluem' ),
                         esc_html( $label ),
-                        esc_html( $options[ $option_key ] )
+                        esc_html( $options[ $option_key ] ),
+                        esc_html( $sender_id )
                     );
                     $valid_setup = false;
                 }
