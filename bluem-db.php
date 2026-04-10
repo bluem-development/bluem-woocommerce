@@ -385,8 +385,8 @@ function bluem_db_update_request($request_id, $request_object): bool
             $request_id,
             wp_kses_post(
                 sprintf(
-                    /* translators: %s: data in JSON */
-                    esc_html__('Transactie bijgewerkt. Nieuwe data: %s', 'bluem'),
+                    /* translators: %s: data object in JSON, don't translate it. */
+                    esc_html__('Transaction updated. New data: %s', 'bluem'),
                     esc_js(wp_json_encode($request_object))
                 )
             )
@@ -447,7 +447,7 @@ function bluem_db_validated_request($request): bool
  *
  * @return string[]
  */
-function bluem_db_get_request_fields()
+function bluem_db_get_request_fields(): array
 {
     return [
         'id',
