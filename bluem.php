@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce
- * Version: 1.3.34
+ * Version: 1.3.36
  * Plugin URI: https://bluem.nl/en/
  * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and much, much more
  * Author: Bluem Payment Services
@@ -952,7 +952,9 @@ function bluem_requests_view_with_filter( $filters = [], string $current_categor
 
     if ( $current_category === '' ) {
         $enabled_modules  = bluem_filter_request_types_enabled( BLUEM_TRANSACTION_REQUEST_TYPES );
-        $current_category = $enabled_modules[0];
+        if (!empty($enabled_modules[0])) {
+            $current_category = $enabled_modules[0];
+        }
     }
 
     include_once 'views/requests.php';
@@ -2023,6 +2025,31 @@ function bluem_setup_incomplete() {
         ) {
             $messages[]  = esc_html__( "iDIN BrandID ontbreekt", 'bluem' );
             $valid_setup = false;
+        }
+
+        // Validate payment brandIDs match expected shape: SenderID (e.g. S001) + "Payment"
+        if ( bluem_module_enabled( 'payments' ) ) {
+            $payment_brand_keys = [
+                'paymentsIDEALBrandID'         => 'iDEAL',
+                'paymentsCreditcardBrandID'    => 'CreditCard',
+                'paymentsPayPalBrandID'        => 'PayPal',
+                'paymentsSofortBrandID'        => 'SOFORT',
+                'paymentsCarteBancaireBrandID' => 'Carte Bancaire',
+            ];
+
+            foreach ( $payment_brand_keys as $option_key => $label ) {
+                if ( ! empty( $options[ $option_key ] )
+                     && ! preg_match( '/^S\d+Payment$/', $options[ $option_key ] )
+                ) {
+                    /* translators: %1$s: payment method label, %2$s: the invalid brandID value */
+                    $messages[]  = sprintf(
+                        esc_html__( 'Het Payments BrandID voor %1$s ("%2$s") heeft niet het verwachte formaat SenderID + "Payment" (bijv. S001Payment).', 'bluem' ),
+                        esc_html( $label ),
+                        esc_html( $options[ $option_key ] )
+                    );
+                    $valid_setup = false;
+                }
+            }
         }
 
         /**
