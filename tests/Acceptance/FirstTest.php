@@ -4,11 +4,9 @@ namespace Tests\Acceptance;
 
 use Tests\Support\AcceptanceTester;
 
-class FirstCest
+class FirstTest
 {
-    public function _before(AcceptanceTester $I)
-    {
-    }
+    public function _before(AcceptanceTester $I) {}
 
     public function frontpageWorks(AcceptanceTester $I)
     {

@@ -6,7 +6,6 @@ if (!defined('ABSPATH')) {
 
 use Bluem\BluemPHP\Bluem;
 
-
 function bluem_mandates_instant_request(): void
 {
     $bluem_config = bluem_woocommerce_get_config();
@@ -20,11 +19,11 @@ function bluem_mandates_instant_request(): void
     if (empty($debtorReference)) {
         $errormessage = esc_html__('Fout: geen debtorReferentie opgegeven', 'bluem');
         bluem_error_report_email(
-            array(
+            [
                 'service' => 'mandates',
                 'function' => 'shortcode_execute',
                 'message' => $errormessage,
-            )
+            ]
         );
         bluem_dialogs_render_prompt($errormessage);
         exit;
@@ -33,10 +32,10 @@ function bluem_mandates_instant_request(): void
     $debtorReference = sanitize_text_field($debtorReference);
 
     $db_results = bluem_db_get_requests_by_keyvalues(
-        array(
+        [
             'debtor_reference' => $debtorReference,
             'status' => 'Success',
-        )
+        ]
     );
 
     // Check the sequence type or previous success results
@@ -84,20 +83,20 @@ function bluem_mandates_instant_request(): void
                 );
 
                 if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
-                    $msg .= '<br>' .
-                        $response->EMandateTransactionResponse->Error->ErrorMessage;
+                    $msg .= '<br>'
+                        . $response->EMandateTransactionResponse->Error->ErrorMessage;
                 } elseif ($response instanceof \Bluem\BluemPHP\ErrorBluemResponse) {
-                    $msg .= '<br>' .
-                        $response->Error();
+                    $msg .= '<br>'
+                        . $response->Error();
                 } else {
                     $msg .= '<br>Algemene fout';
                 }
                 bluem_error_report_email(
-                    array(
+                    [
                         'service' => 'mandates',
                         'function' => 'shortcode_execute',
                         'message' => $msg,
-                    )
+                    ]
                 );
                 bluem_dialogs_render_prompt($msg);
                 exit;
@@ -109,15 +108,15 @@ function bluem_mandates_instant_request(): void
             $transactionURL = ($response->EMandateTransactionResponse->TransactionURL . '');
 
             bluem_db_insert_storage(
-                array(
+                [
                     'bluem_mandate_transaction_id' => $mandate_id,
                     'bluem_mandate_transaction_url' => $transactionURL,
                     'bluem_mandate_entrance_code' => $request->entranceCode,
-                )
+                ]
             );
 
             $db_creation_result = bluem_db_create_request(
-                array(
+                [
                     'entrance_code' => $request->entranceCode,
                     'transaction_id' => $request->mandateID,
                     'transaction_url' => $transactionURL,
@@ -128,13 +127,13 @@ function bluem_mandates_instant_request(): void
                     'type' => 'mandates',
                     'order_id' => '',
                     'payload' => wp_json_encode(
-                        array(
+                        [
                             'created_via' => 'instant_request',
                             'environment' => $bluem->getConfig('environment'),
                             'created_mandate_id' => $mandate_id,
-                        )
+                        ]
                     ),
-                )
+                ]
             );
 
             if (ob_get_length() !== false && ob_get_length() > 0) {
@@ -181,11 +180,11 @@ function bluem_mandates_instant_callback()
         }
         $errormessage = esc_html__('Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.', 'bluem');
         bluem_error_report_email(
-            array(
+            [
                 'service' => 'mandates',
                 'function' => 'shortcode_callback',
                 'message' => $errormessage,
-            )
+            ]
         );
         bluem_dialogs_render_prompt($errormessage);
         exit;
@@ -194,11 +193,11 @@ function bluem_mandates_instant_callback()
     if (empty($entranceCode)) {
         $errormessage = esc_html__('Fout: Entrancecode is niet set; kan dus geen mandaat opvragen', 'bluem');
         bluem_error_report_email(
-            array(
+            [
                 'service' => 'mandates',
                 'function' => 'shortcode_callback',
                 'message' => $errormessage,
-            )
+            ]
         );
         bluem_dialogs_render_prompt($errormessage);
         exit;
@@ -208,16 +207,16 @@ function bluem_mandates_instant_callback()
 
     if (!$response->Status()) {
         $errormessage = sprintf(
-        /* translators: %s: status code */
+            /* translators: %s: status code */
             esc_html__('Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status', 'bluem'),
             $response->Error()
         );
         bluem_error_report_email(
-            array(
+            [
                 'service' => 'mandates',
                 'function' => 'shortcode_callback',
                 'message' => $errormessage,
-            )
+            ]
         );
         bluem_dialogs_render_prompt($errormessage);
         exit;
@@ -233,9 +232,9 @@ function bluem_mandates_instant_callback()
     if ($statusCode !== $request_from_db->status) {
         bluem_db_update_request(
             $request_from_db->id,
-            array(
+            [
                 'status' => $statusCode,
-            )
+            ]
         );
         // also update locally for email notification
         $request_from_db->status = $statusCode;
@@ -263,9 +262,9 @@ function bluem_mandates_instant_callback()
 
             bluem_db_update_request(
                 $request_from_db->id,
-                array(
+                [
                     'payload' => wp_json_encode($newPayload),
-                )
+                ]
             );
         }
 
@@ -281,11 +280,11 @@ function bluem_mandates_instant_callback()
         }
         $errormessage = esc_html__('Fout: de ondertekening is geslaagd maar er is geen response URI opgegeven. Neem contact op met de website om dit technisch probleem aan te geven.', 'bluem');
         bluem_error_report_email(
-            array(
+            [
                 'service' => 'mandates',
                 'function' => 'instant_callback',
                 'message' => $errormessage,
-            )
+            ]
         );
         bluem_dialogs_render_prompt($errormessage);
         exit;
@@ -325,15 +324,15 @@ function bluem_mandates_instant_callback()
     }
 
     bluem_error_report_email(
-        array(
+        [
             'service' => 'mandates',
             'function' => 'shortcode_callback',
             'message' => sprintf(
-            /* translators: %s: status code */
+                /* translators: %s: status code */
                 esc_html__('Fout: Onbekende of foutieve status teruggekregen: %s<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site', 'bluem'),
                 $statusCode
             ),
-        )
+        ]
     );
     wp_redirect($bluem_config->instantMandatesResponseURI . '?result=false&reason=error');
     exit;

@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -14,7 +15,7 @@ function bluem_db_create_requests_table(): void
 {
     global $wpdb, $bluem_db_version;
 
-    $installed_ver = (float)get_option('bluem_db_version');
+    $installed_ver = (float) get_option('bluem_db_version');
 
     if (empty($installed_ver) || $installed_ver < $bluem_db_version) {
         $charset_collate = $wpdb->get_charset_collate();
@@ -118,7 +119,7 @@ function bluem_db_check(): void
 {
     global $bluem_db_version;
 
-    if ((float)get_site_option('bluem_db_version') !== $bluem_db_version) {
+    if ((float) get_site_option('bluem_db_version') !== $bluem_db_version) {
         bluem_db_create_requests_table();
     }
 }
@@ -145,7 +146,7 @@ function bluem_db_create_request($request_object): int
     if ($insert_result) {
         $request_id = $wpdb->insert_id;
 
-        $request_object = (object)$request_object;
+        $request_object = (object) $request_object;
 
         if (isset($request_object->order_id)
             && !is_null($request_object->order_id)
@@ -168,7 +169,7 @@ function bluem_db_create_request($request_object): int
     return -1;
 }
 
-function bluem_db_request_log($request_id, $description, $log_data = array())
+function bluem_db_request_log($request_id, $description, $log_data = [])
 {
     global $wpdb, $current_user;
 
@@ -177,14 +178,14 @@ function bluem_db_request_log($request_id, $description, $log_data = array())
 
     return $wpdb->insert(
         $wpdb->prefix . 'bluem_requests_log',
-        array(
+        [
             'request_id' => $request_id,
             'description' => $description,
             'timestamp' => gmdate(
                 'Y-m-d H:i:s',
             ),
             'user_id' => $current_user->ID,
-        )
+        ]
     );
 }
 
@@ -237,7 +238,7 @@ function bluem_db_insert_storage($object)
 
             $record_id = $result[0]->id;
 
-            $new_object = array();
+            $new_object = [];
 
             if ($decoded_data !== null) {
                 // Loop through current data
@@ -253,9 +254,9 @@ function bluem_db_insert_storage($object)
 
             return bluem_db_update_storage(
                 $record_id,
-                array(
+                [
                     'data' => wp_json_encode($new_object),
-                )
+                ]
             );
         }
     }
@@ -263,14 +264,14 @@ function bluem_db_insert_storage($object)
 
     $db_result = $wpdb->insert(
         $wpdb->prefix . 'bluem_storage',
-        array(
+        [
             'token' => $token,
             'secret' => $secret,
             'data' => wp_json_encode($object),
             'timestamp' => gmdate(
                 'Y-m-d H:i:s',
             ),
-        )
+        ]
     );
 
     $expiration = time() + (7 * 24 * 60 * 60); // 7 days
@@ -343,9 +344,9 @@ function bluem_db_update_storage($id, $object): bool
     $update_result = $wpdb->update(
         $table_name,
         $object,
-        array(
+        [
             'id' => $id,
-        )
+        ]
     );
 
     if ($update_result) {
@@ -374,9 +375,9 @@ function bluem_db_update_request($request_id, $request_object): bool
     $update_result = $wpdb->update(
         $wpdb->prefix . 'bluem_requests',
         $request_object,
-        array(
+        [
             'id' => $request_id,
-        )
+        ]
     );
 
     if ($update_result) {
@@ -384,7 +385,7 @@ function bluem_db_update_request($request_id, $request_object): bool
             $request_id,
             wp_kses_post(
                 sprintf(
-                /* translators: %s: data in JSON */
+                    /* translators: %s: data in JSON */
                     esc_html__('Transactie bijgewerkt. Nieuwe data: %s', 'bluem'),
                     esc_js(wp_json_encode($request_object))
                 )
@@ -448,7 +449,7 @@ function bluem_db_validated_request($request): bool
  */
 function bluem_db_get_request_fields()
 {
-    return array(
+    return [
         'id',
         'entrance_code',
         'transaction_id',
@@ -460,7 +461,7 @@ function bluem_db_get_request_fields()
         'debtor_reference',
         'order_id',
         'payload',
-    );
+    ];
 }
 
 /**
@@ -491,8 +492,8 @@ function bluem_db_delete_request_by_id($request_id)
 
     $wpdb->show_errors();
 
-    $query = $wpdb->delete($wpdb->prefix . 'bluem_requests', array('id' => $request_id));
-    $query2 = $wpdb->delete($wpdb->prefix . 'bluem_requests_log', array('request_id' => $request_id));
+    $query = $wpdb->delete($wpdb->prefix . 'bluem_requests', ['id' => $request_id]);
+    $query2 = $wpdb->delete($wpdb->prefix . 'bluem_requests_log', ['request_id' => $request_id]);
 
     return $query && $query2;
 }
@@ -520,10 +521,10 @@ function bluem_db_get_request_by_transaction_id($transaction_id)
 function bluem_db_get_request_by_transaction_id_and_type($transaction_id, $type)
 {
     $res = bluem_db_get_requests_by_keyvalues(
-        array(
+        [
             'transaction_id' => $transaction_id,
             'type' => $type,
-        )
+        ]
     );
 
     return $res !== false && count($res) > 0 ? $res[0] : false;
@@ -532,10 +533,10 @@ function bluem_db_get_request_by_transaction_id_and_type($transaction_id, $type)
 function bluem_db_get_request_by_transaction_id_and_entrance_code($transaction_id, $entrance_code)
 {
     $res = bluem_db_get_requests_by_keyvalues(
-        array(
+        [
             'transaction_id' => $transaction_id,
             'entrance_code' => $entrance_code,
-        )
+        ]
     );
 
     return $res !== false && count($res) > 0 ? $res[0] : false;
@@ -547,10 +548,9 @@ function bluem_db_get_requests_by_keyvalue(
     $sort_key = null,
     $sort_dir = 'ASC',
     $limit = 0
-)
-{
+) {
     return bluem_db_get_requests_by_keyvalues(
-        array($key => $value),
+        [$key => $value],
         $sort_key,
         $sort_dir,
         $limit
@@ -558,20 +558,19 @@ function bluem_db_get_requests_by_keyvalue(
 }
 
 function bluem_db_get_requests_by_keyvalues(
-    $keyvalues = array(),
+    $keyvalues = [],
     $sort_key = null,
     $sort_dir = 'ASC',
     $limit = 0
-)
-{
+) {
     global $wpdb;
 
     $wpdb->show_errors(); // Show or display errors
 
     // Start building the query
     $query = 'SELECT * FROM `' . $wpdb->prefix . 'bluem_requests`';
-    $where_clauses = array();
-    $query_values = array();
+    $where_clauses = [];
+    $query_values = [];
 
     // Add conditions if key-value pairs are provided
     if (count($keyvalues) > 0) {
@@ -588,7 +587,7 @@ function bluem_db_get_requests_by_keyvalues(
     }
 
     // Add sorting if sort_key is provided
-    if (!is_null($sort_key) && $sort_key !== '' && in_array(strtoupper($sort_dir), array('ASC', 'DESC'))) {
+    if (!is_null($sort_key) && $sort_key !== '' && in_array(strtoupper($sort_dir), ['ASC', 'DESC'])) {
         $query .= " ORDER BY `{$sort_key}` " . strtoupper($sort_dir);
     }
 
@@ -623,7 +622,7 @@ function bluem_db_get_requests_by_user_id($user_id = null)
         $user_id
     );
 
-    return $res !== false && count($res) > 0 ? $res : array();
+    return $res !== false && count($res) > 0 ? $res : [];
 }
 
 function bluem_db_get_requests_by_user_id_and_type($user_id = null, $type = '')
@@ -637,15 +636,15 @@ function bluem_db_get_requests_by_user_id_and_type($user_id = null, $type = '')
     // @todo Throw an error when type is not given, or default to wildcard
 
     $res = bluem_db_get_requests_by_keyvalues(
-        array(
+        [
             'user_id' => $user_id,
             'type' => $type,
-        ),
+        ],
         'timestamp',
         'DESC'
     );
 
-    return $res !== false && count($res) > 0 ? $res : array();
+    return $res !== false && count($res) > 0 ? $res : [];
 }
 
 function bluem_db_get_most_recent_request($user_id = null, $type = 'mandates')
@@ -658,23 +657,24 @@ function bluem_db_get_most_recent_request($user_id = null, $type = 'mandates')
     }
 
     // Validate the type against allowed values
-    if (!in_array($type, array('mandates', 'payments', 'identity'))) {
+    if (!in_array($type, ['mandates', 'payments', 'identity'])) {
         return false;
     }
 
     $wpdb->show_errors(); // Enable error display
 
     try {
-        $results = $wpdb->get_results($wpdb->prepare(
-            'SELECT *
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                'SELECT *
                 FROM `' . $wpdb->prefix . 'bluem_requests`
                 WHERE `user_id` = %d
                     AND `type` = %s
                 ORDER BY `timestamp` DESC
                 LIMIT 1',
-            $user_id,
-            $type
-        )
+                $user_id,
+                $type
+            )
         );
 
         if (count($results) > 0) {
@@ -706,9 +706,9 @@ function bluem_db_put_request_payload($request_id, $data)
 
     bluem_db_update_request(
         $request_id,
-        array(
+        [
             'payload' => wp_json_encode($newPayload),
-        )
+        ]
     );
 }
 
@@ -753,18 +753,18 @@ function bluem_db_create_link($request_id, $item_id, $item_type = 'order'): int
 {
     global $wpdb;
 
-    $installed_ver = (float)get_option('bluem_db_version');
+    $installed_ver = (float) get_option('bluem_db_version');
     if ($installed_ver <= 1.2) {
         return -1;
     }
 
     $insert_result = $wpdb->insert(
         $wpdb->prefix . 'bluem_requests_links',
-        array(
+        [
             'request_id' => $request_id,
             'item_id' => $item_id,
             'item_type' => $item_type,
-        )
+        ]
     );
 
     if ($insert_result) {

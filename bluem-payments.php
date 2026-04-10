@@ -58,75 +58,75 @@ function bluem_woocommerce_get_payments_option($key)
 
 function bluem_woocommerce_get_payments_options()
 {
-    return array(
-        'paymentsIDEALBrandID' => array(
+    return [
+        'paymentsIDEALBrandID' => [
             'key' => 'paymentsIDEALBrandID',
             'title' => 'bluem_paymentsIDEALBrandID',
             'name' => 'BrandID voor iDEAL',
             'description' => 'Het Bluem BrandID voor betalingen via iDEAL Payments',
             'default' => '',
-        ),
-        'paymentsUseDebtorWallet' => array(
+        ],
+        'paymentsUseDebtorWallet' => [
             'key' => 'paymentsUseDebtorWallet',
             'title' => 'bluem_paymentsUseDebtorWallet',
             'name' => 'Selecteer bank methode',
             'description' => "Wil je dat er in deze website al een bank moet worden geselecteerd bij de Checkout procedure, in plaats van in de Bluem Portal? Indien je 'Gebruik eigen checkout' selecteert, wordt er een veld toegevoegd aan de WooCommerce checkout pagina waar je een van de beschikbare banken kan selecteren.",
             'type' => 'select',
             'default' => '0',
-            'options' => array(
+            'options' => [
                 '0' => 'Gebruik Bluem Portal (standaard)',
                 '1' => 'Gebruik eigen checkout',
-            ),
-        ),
-        'paymentsCreditcardBrandID' => array(
+            ],
+        ],
+        'paymentsCreditcardBrandID' => [
             'key' => 'paymentsCreditcardBrandID',
             'title' => 'bluem_paymentsCreditcardBrandID',
             'name' => 'BrandID voor CreditCard',
             'description' => 'Het Bluem BrandID voor betalingen via CreditCard Payments',
             'default' => '',
-        ),
-        'paymentsPayPalBrandID' => array(
+        ],
+        'paymentsPayPalBrandID' => [
             'key' => 'paymentsPayPalBrandID',
             'title' => 'bluem_paymentsPayPalBrandID',
             'name' => 'BrandID voor PayPal',
             'description' => 'Het Bluem BrandID voor betalingen via PayPal Payments',
             'default' => '',
-        ),
-        'paymentsSofortBrandID' => array(
+        ],
+        'paymentsSofortBrandID' => [
             'key' => 'paymentsSofortBrandID',
             'title' => 'bluem_paymentsSofortBrandID',
             'name' => 'BrandID voor SOFORT',
             'description' => 'Het Bluem BrandID voor betalingen via SOFORT Payments',
             'default' => '',
-        ),
-        'paymentsCarteBancaireBrandID' => array(
+        ],
+        'paymentsCarteBancaireBrandID' => [
             'key' => 'paymentsCarteBancaireBrandID',
             'title' => 'bluem_paymentsCarteBancaireBrandID',
             'name' => 'BrandID voor Carte Bancaire',
             'description' => 'Het Bluem BrandID voor betalingen via Carte Bancaire Payments',
             'default' => '',
-        ),
-        'paymentCompleteRedirectType' => array(
+        ],
+        'paymentCompleteRedirectType' => [
             'key' => 'paymentCompleteRedirectType',
             'title' => 'bluem_paymentCompleteRedirectType',
             'name' => 'Waarheen verwijzen na succesvolle betaling?',
             'description' => 'Als de gebruiker heeft betaald, waar moet dan naar verwezen worden?',
             'type' => 'select',
             'default' => 'order_details',
-            'options' => array(
+            'options' => [
                 'order_details' => 'Pagina met Order gegevens (standaard)',
                 'custom' => 'Eigen URL (vul hieronder in)',
-            ),
-        ),
-        'paymentCompleteRedirectCustomURL' => array(
+            ],
+        ],
+        'paymentCompleteRedirectCustomURL' => [
             'key' => 'paymentCompleteRedirectCustomURL',
             'title' => 'bluem_paymentCompleteRedirectCustomURL',
             'name' => 'Eigen interne URL om klant naar te verwijzen',
             'description' => "Indien hierboven 'Eigen URL' is gekozen, vul hier dan de URL in waarnaar doorverwezen moet worden. Je kan bijv. <code>thanks</code> invullen om de klant naar <strong>" . site_url('thanks') . '</strong> te verwijzen',
             'type' => 'text',
             'default' => '',
-        ),
-    );
+        ],
+    ];
 }
 
 function bluem_woocommerce_settings_render_paymentsIDEALBrandID()
@@ -222,7 +222,7 @@ function bluem_woocommerce_payments_show_extra_profile_fields($user)
                 <td>
                     <?php
                     bluem_render_requests_list($bluem_requests);
-                    ?>
+            ?>
                 </td>
             </tr>
         <?php } ?>

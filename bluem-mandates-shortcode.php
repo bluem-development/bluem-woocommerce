@@ -39,11 +39,11 @@ function bluem_mandate_shortcode_execute(): void
             if (!empty($storage['bluem_mandate_debtorreference'])) {
                 $debtorReference = $storage['bluem_mandate_debtorreference'];
 
-                $db_query = array(
+                $db_query = [
                     'debtor_reference' => $debtorReference,
                     'user_id' => get_current_user_id(),
                     'status' => 'Success',
-                );
+                ];
 
                 // Check for a successful transaction
                 $db_results = bluem_db_get_requests_by_keyvalues($db_query);
@@ -52,9 +52,9 @@ function bluem_mandate_shortcode_execute(): void
                     $mandateID = $db_results[0]->transaction_id;
 
                     bluem_db_insert_storage(
-                        array(
+                        [
                             'bluem_mandate_transaction_id' => $mandateID,
-                        )
+                        ]
                     );
 
                     if (!empty($current_user)) {
@@ -71,16 +71,16 @@ function bluem_mandate_shortcode_execute(): void
                 $debtorReference = sanitize_text_field($_POST['bluem_debtorReference']);
 
                 bluem_db_insert_storage(
-                    array(
+                    [
                         'bluem_mandate_debtorreference' => $debtorReference,
-                    )
+                    ]
                 );
 
-                $db_query = array(
+                $db_query = [
                     'debtor_reference' => $debtorReference,
                     'user_id' => get_current_user_id(),
                     'status' => 'Success',
-                );
+                ];
 
                 // Check for a successful transaction
                 $db_results = bluem_db_get_requests_by_keyvalues($db_query);
@@ -89,9 +89,9 @@ function bluem_mandate_shortcode_execute(): void
                     $mandateID = $db_results[0]->transaction_id;
 
                     bluem_db_insert_storage(
-                        array(
+                        [
                             'bluem_mandate_transaction_id' => $mandateID,
-                        )
+                        ]
                     );
 
                     if (!empty($current_user)) {
@@ -109,9 +109,9 @@ function bluem_mandate_shortcode_execute(): void
                 $debtorReference = $current_user->user_nicename();
 
                 bluem_db_insert_storage(
-                    array(
+                    [
                         'bluem_mandate_debtorreference' => $debtorReference,
-                    )
+                    ]
                 );
             }
         } elseif ($bluem_config->sequenceType === 'OOFF') {
@@ -119,17 +119,17 @@ function bluem_mandate_shortcode_execute(): void
                 $debtorReference = sanitize_text_field($_POST['bluem_debtorReference']);
 
                 bluem_db_insert_storage(
-                    array(
+                    [
                         'bluem_mandate_debtorreference' => $debtorReference,
-                    )
+                    ]
                 );
             } elseif (is_user_logged_in()) {
                 $debtorReference = $current_user->user_nicename();
 
                 bluem_db_insert_storage(
-                    array(
+                    [
                         'bluem_mandate_debtorreference' => $debtorReference,
-                    )
+                    ]
                 );
             }
         }
@@ -163,10 +163,10 @@ function bluem_mandate_shortcode_execute(): void
 
         // Save the necessary data to later request more information and refer to this transaction
         bluem_db_insert_storage(
-            array(
+            [
                 'bluem_mandate_transaction_id' => $request->mandateID,
                 'bluem_mandate_entrance_code' => $request->entranceCode,
-            )
+            ]
         );
 
         if (!empty($current_user)) {
@@ -190,20 +190,20 @@ function bluem_mandate_shortcode_execute(): void
             );
 
             if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
-                $msg .= '<br>' .
-                    esc_html($response->EMandateTransactionResponse->Error->ErrorMessage);
+                $msg .= '<br>'
+                    . esc_html($response->EMandateTransactionResponse->Error->ErrorMessage);
             } elseif (get_class($response) == 'Bluem\BluemPHP\ErrorBluemResponse') {
-                $msg .= '<br>' .
-                    esc_html($response->Error());
+                $msg .= '<br>'
+                    . esc_html($response->Error());
             } else {
                 $msg .= '<br>' . esc_html('Algemene fout', 'bluem');
             }
             bluem_error_report_email(
-                array(
+                [
                     'service' => 'mandates',
                     'function' => 'shortcode_execute',
                     'message' => $msg,
-                )
+                ]
             );
             bluem_dialogs_render_prompt($msg);
             exit;
@@ -215,10 +215,10 @@ function bluem_mandate_shortcode_execute(): void
         $transactionURL = ($response->EMandateTransactionResponse->TransactionURL . '');
 
         bluem_db_insert_storage(
-            array(
+            [
                 'bluem_mandate_transaction_id' => $mandate_id,
                 'bluem_mandate_transaction_url' => $transactionURL,
-            )
+            ]
         );
 
         if (!empty($current_user)) {
@@ -232,7 +232,7 @@ function bluem_mandate_shortcode_execute(): void
         }
 
         bluem_db_create_request(
-            array(
+            [
                 'entrance_code' => $request->entranceCode,
                 'transaction_id' => $request->mandateID,
                 'transaction_url' => $transactionURL,
@@ -243,13 +243,13 @@ function bluem_mandate_shortcode_execute(): void
                 'type' => 'mandates',
                 'order_id' => '',
                 'payload' => wp_json_encode(
-                    array(
+                    [
                         'created_via' => 'shortcode',
                         'environment' => $bluem->getConfig('environment'),
                         'created_mandate_id' => $mandate_id,
-                    )
+                    ]
                 ),
-            )
+            ]
         );
 
         if (ob_get_length() !== false && ob_get_length() > 0) {
@@ -302,11 +302,11 @@ function bluem_mandate_shortcode_callback(): void
         }
         $errormessage = esc_html__('Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.', 'bluem');
         bluem_error_report_email(
-            array(
+            [
                 'service' => 'mandates',
                 'function' => 'shortcode_callback',
                 'message' => $errormessage,
-            )
+            ]
         );
         bluem_dialogs_render_prompt($errormessage);
         exit;
@@ -315,11 +315,11 @@ function bluem_mandate_shortcode_callback(): void
     if (empty($entranceCode)) {
         $errormessage = esc_html__('Fout: Entrancecode is niet set; kan dus geen mandaat opvragen', 'bluem');
         bluem_error_report_email(
-            array(
+            [
                 'service' => 'mandates',
                 'function' => 'shortcode_callback',
                 'message' => $errormessage,
-            )
+            ]
         );
         bluem_dialogs_render_prompt($errormessage);
         exit;
@@ -328,18 +328,18 @@ function bluem_mandate_shortcode_callback(): void
     $response = $bluem->MandateStatus($mandateID, $entranceCode);
 
     if (!$response->Status()) {
-        $errormessage =
-            sprintf(
-            /* translators: %s: Error message */
+        $errormessage
+            = sprintf(
+                /* translators: %s: Error message */
                 esc_html__('Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status', 'bluem'),
                 $response->Error()
             );
         bluem_error_report_email(
-            array(
+            [
                 'service' => 'mandates',
                 'function' => 'shortcode_callback',
                 'message' => $errormessage,
-            )
+            ]
         );
         bluem_dialogs_render_prompt($errormessage);
         exit;
@@ -356,9 +356,9 @@ function bluem_mandate_shortcode_callback(): void
     if ($statusCode !== $request_from_db->status) {
         bluem_db_update_request(
             $request_from_db->id,
-            array(
+            [
                 'status' => $statusCode,
-            )
+            ]
         );
         // also update locally for email notification
         $request_from_db->status = $statusCode;
@@ -372,9 +372,9 @@ function bluem_mandate_shortcode_callback(): void
     if ($statusCode === 'Success') {
         // Define a cookie so that this will be recognised the next time
         bluem_db_insert_storage(
-            array(
+            [
                 'bluem_mandate_transaction_id' => $mandateID,
-            )
+            ]
         );
 
         if (!empty($current_user)) {
@@ -399,9 +399,9 @@ function bluem_mandate_shortcode_callback(): void
 
             bluem_db_update_request(
                 $request_from_db->id,
-                array(
+                [
                     'payload' => wp_json_encode($newPayload),
-                )
+                ]
             );
         }
         wp_redirect(home_url($bluem_config->thanksPageURL) . '?result=true');
@@ -421,16 +421,16 @@ function bluem_mandate_shortcode_callback(): void
     } else {
         // "Fout: Onbekende of foutieve status";
         bluem_error_report_email(
-            array(
+            [
                 'service' => 'mandates',
                 'function' => 'shortcode_callback',
-                'message' =>
-                    sprintf(
-                    /* translators: %s: error status */
+                'message'
+                    => sprintf(
+                        /* translators: %s: error status */
                         esc_html__('Fout: Onbekende of foutieve status teruggekregen: %s. Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site', 'bluem'),
                         $statusCode
                     ),
-            )
+            ]
         );
         wp_redirect(home_url($bluem_config->thanksPageURL) . '?result=false&reason=error');
         exit;
@@ -482,11 +482,11 @@ function bluem_mandateform(): string
         if (!empty($mandateID) && $validated_db !== '0') {
             // Check for recurring mode
             if ($bluem_config->sequenceType === 'RCUR') {
-                $db_query = array(
+                $db_query = [
                     'transaction_id' => $mandateID,
                     'user_id' => get_current_user_id(),
                     'status' => 'Success',
-                );
+                ];
 
                 $db_results = bluem_db_get_requests_by_keyvalues($db_query);
 
@@ -506,11 +506,11 @@ function bluem_mandateform(): string
 
             // Check for recurring mode
             if ($bluem_config->sequenceType === 'RCUR') {
-                $db_query = array(
+                $db_query = [
                     'transaction_id' => $mandateID,
                     'user_id' => get_current_user_id(),
                     'status' => 'Success',
-                );
+                ];
 
                 $db_results = bluem_db_get_requests_by_keyvalues($db_query);
 
@@ -525,11 +525,11 @@ function bluem_mandateform(): string
 
             // Check for recurring mode
             if ($bluem_config->sequenceType === 'RCUR') {
-                $db_query = array(
+                $db_query = [
                     'debtor_reference' => $debtorReference,
                     'user_id' => get_current_user_id(),
                     'status' => 'Success',
-                );
+                ];
 
                 $db_results = bluem_db_get_requests_by_keyvalues($db_query);
 

@@ -30,184 +30,184 @@ function bluem_woocommerce_get_mandates_option($key)
 
 function bluem_woocommerce_get_mandates_options()
 {
-    return array(
-        'brandID' => array(
+    return [
+        'brandID' => [
             'key' => 'brandID',
             'title' => 'bluem_brandID',
             'name' => 'Bluem Brand ID',
             'description' => 'Wat is je Bluem eMandates BrandID? Je hebt deze ontvangen door Bluem.',
             'default' => '',
-        ),
-        'merchantID' => array(
+        ],
+        'merchantID' => [
             'key' => 'merchantID',
             'title' => 'bluem_merchantID',
             'name' => 'Incassant merchantID (benodigd voor machtigingen op Productie)',
             'description' => 'Het merchantID, te vinden op het contract dat je hebt met de bank voor ontvangen van incasso machtigingen. <strong>Dit is essentieel: zonder dit gegeven zal een klant geen machtiging kunnen afsluiten op productie</strong>.',
             'default' => '',
-        ),
-        'merchantSubId' => array(
+        ],
+        'merchantSubId' => [
             'key' => 'merchantSubId',
             'title' => 'bluem_merchantSubId',
             'name' => 'Bluem Merchant Sub ID',
             'default' => '0',
             'description' => 'Hier hoef je waarschijnlijk niks aan te veranderen.',
             'type' => 'select',
-            'options' => array('0' => '0'),
-        ),
+            'options' => ['0' => '0'],
+        ],
 
-        'thanksPage' => array(
+        'thanksPage' => [
             'key' => 'thanksPage',
             'title' => 'bluem_thanksPage',
             'name' => 'Waar wordt de gebruiker uiteindelijk naar verwezen?',
             'type' => 'select',
-            'options' => array(
+            'options' => [
                 'order_page' => 'Detailpagina van de zojuist geplaatste bestelling (standaard)',
-            ),
-        ),
-        'eMandateReason' => array(
+            ],
+        ],
+        'eMandateReason' => [
             'key' => 'eMandateReason',
             'title' => 'bluem_eMandateReason',
             'name' => 'Reden voor Machtiging',
             'description' => 'Een bondige beschrijving van incasso weergegeven bij afgifte.',
             'default' => 'Incasso machtiging',
-        ),
-        'localInstrumentCode' => array(
+        ],
+        'localInstrumentCode' => [
             'key' => 'localInstrumentCode',
             'title' => 'bluem_localInstrumentCode',
             'name' => 'Type incasso machtiging afgifte',
             'description' => 'Kies type incassomachtiging. Neem bij vragen hierover contact op met Bluem.',
             'type' => 'select',
             'default' => 'CORE',
-            'options' => array(
+            'options' => [
                 'CORE' => 'CORE machtiging',
                 'B2B' => 'B2B machtiging (zakelijk)',
-            ),
-        ),
+            ],
+        ],
 
         // RequestType = Issuing (altijd)
-        'requestType' => array(
+        'requestType' => [
             'key' => 'requestType',
             'title' => 'bluem_requestType',
             'name' => 'Bluem Request Type',
             'description' => '',
             'type' => 'select',
             'default' => 'Issuing',
-            'options' => array('Issuing' => 'Issuing (standaard)'),
-        ),
+            'options' => ['Issuing' => 'Issuing (standaard)'],
+        ],
 
-        'sequenceType' => array(
+        'sequenceType' => [
             'key' => 'sequenceType',
             'title' => 'bluem_sequenceType',
             'name' => 'Type incasso sequentie',
             'description' => '',
             'type' => 'select',
             'default' => 'RCUR',
-            'options' => array(
+            'options' => [
                 'RCUR' => 'Doorlopende machtiging (recurring)',
                 'OOFF' => 'Eenmalige machtiging (one-time)',
-            ),
-        ),
+            ],
+        ],
 
-        'mandatesUseDebtorWallet' => array(
+        'mandatesUseDebtorWallet' => [
             'key' => 'mandatesUseDebtorWallet',
             'title' => 'bluem_mandatesUseDebtorWallet',
             'name' => 'Selecteer bank methode',
             'description' => "Wil je dat er in deze website al een bank moet worden geselecteerd bij de Checkout procedure, in plaats van in de Bluem Portal? Indien je 'Gebruik eigen checkout' selecteert, wordt er een veld toegevoegd aan de WooCommerce checkout pagina waar je een van de beschikbare banken kan selecteren.",
             'type' => 'select',
             'default' => '0',
-            'options' => array(
+            'options' => [
                 '0' => 'Gebruik Bluem Portal (standaard)',
                 '1' => 'Gebruik eigen checkout',
-            ),
-        ),
+            ],
+        ],
 
-        'successMessage' => array(
+        'successMessage' => [
             'key' => 'successMessage',
             'title' => 'bluem_successMessage',
             'name' => 'Melding bij succesvolle machtiging via shortcode formulier',
             'description' => 'Een bondige beschrijving volstaat.',
             'default' => 'Uw machtiging is succesvol ontvangen. Hartelijk dank.',
-        ),
-        'errorMessage' => array(
+        ],
+        'errorMessage' => [
             'key' => 'errorMessage',
             'title' => 'bluem_errorMessage',
             'name' => 'Melding bij gefaalde machtiging via shortcode formulier',
             'description' => 'Een bondige beschrijving volstaat.',
             'default' => 'Er is een fout opgetreden. De incassomachtiging is geannuleerd.',
-        ),
+        ],
 
-        'purchaseIDPrefix' => array(
+        'purchaseIDPrefix' => [
             'key' => 'purchaseIDPrefix',
             'title' => 'bluem_purchaseIDPrefix',
             'name' => 'Automatisch Voorvoegsel bij klantreferentie',
             'description' => 'Welke korte tekst moet voor de debtorReference weergegeven worden bij een transactie in de Bluem incassomachtiging portaal. Dit kan handig zijn om Bluem transacties makkelijk te kunnen identificeren.',
             'type' => 'text',
             'default' => '',
-        ),
-        'debtorReferenceFieldName' => array(
+        ],
+        'debtorReferenceFieldName' => [
             'key' => 'debtorReferenceFieldName',
             'title' => 'bluem_debtorReferenceFieldName',
             'name' => 'Label voor klantreferentie bij invulformulier shortcode',
             'description' => "Indien je de Machtigingen shortcode gebruikt: Welk label moet bij het invulveld in het formulier komen te staan? Dit kan bijvoorbeeld 'volledige naam' of 'klantnummer' zijn. <strong>Laat dit veld leeg om alleen een knop weer te geven</strong>.",
             'type' => 'text',
             'default' => '',
-        ),
-        'thanksPageURL' => array(
+        ],
+        'thanksPageURL' => [
             'key' => 'thanksPageURL',
             'title' => 'bluem_thanksPageURL',
             'name' => 'Slug van de resultaat pagina',
             'description' => 'Indien je de Machtigingen shortcode gebruikt: Op welke pagina wordt de shortcode geplaatst? Dit is een slug, dus als je <code>thanks</code> invult, wordt de gehele URL: ' . site_url('thanks') . '. We geven de querystrings <code>result</code> en indien van toepassing <code>reason</code> mee waarmee je de status kan opvangen.',
             'type' => 'text',
             'default' => '',
-        ),
-        'instantMandatesResponseURI' => array(
+        ],
+        'instantMandatesResponseURI' => [
             'key' => 'instantMandatesResponseURI',
             'title' => 'bluem_instantMandatesResponseURI',
             'name' => 'URI voor InstantMandates',
             'description' => 'Indien je InstantMandates gebruikt: De <code>response</code> URI na een request. Dit kan een externe URL of een Deep Link zijn. We geven de querystrings <code>result</code> en indien van toepassing <code>reason</code> mee waarmee je de status kan opvangen.',
             'type' => 'text',
             'default' => '',
-        ),
-        'mandate_id_counter' => array(
+        ],
+        'mandate_id_counter' => [
             'key' => 'mandate_id_counter',
             'title' => 'bluem_mandate_id_counter',
             'name' => 'Begingetal mandaat ID\'s',
             'description' => 'Op welk getal wil je mandaat op dit moment nummeren? Dit getal wordt vervolgens automatisch opgehoogd.',
             'type' => 'text',
             'default' => '1',
-        ),
-        'maxAmountEnabled' => array(
+        ],
+        'maxAmountEnabled' => [
             'key' => 'maxAmountEnabled',
             'title' => 'bluem_maxAmountEnabled',
             'name' => 'Check op maximale bestelwaarde voor incassomachtigingen',
             'description' => "Wil je dat er bij zakelijke incassomachtigingen een check wordt uitgevoerd op de maximale waarde van de incasso, indien er een beperkte bedrag incasso machtiging is afgegeven? Zet dit gegeven dan op 'wel checken'. Er wordt dan een foutmelding gegeven als een klant een bestelling plaatst met een toegestaan bedrag dat lager is dan het orderbedrag (vermenigvuldigd met het volgende gegeven, de factor). Is de machtiging onbeperkt of anders groter dan het orderbedrag, dan wordt de machtiging geaccepteerd.",
             'type' => 'select',
             'default' => '1',
-            'options' => array(
+            'options' => [
                 '1' => 'Wel checken op MaxAmount',
                 '0' => 'Niet checken op MaxAmount',
-            ),
-        ),
+            ],
+        ],
 
         // Bij B2B krijgen wij terug of de gebruiker een maximaal mandaatbedrag heeft afgegeven.
         // Dit mandaat bedrag wordt vergeleken met de orderwaarde. De orderwaarde plus
         // onderstaand percentage moet lager zijn dan het maximale mandaatbedrag.
         // Geef hier het percentage aan.
-        'maxAmountFactor' => array(
+        'maxAmountFactor' => [
             'key' => 'maxAmountFactor',
             'title' => 'bluem_maxAmountFactor',
             'name' => 'Welke factor van de bestelling mag het maximale bestelbedrag zijn?',
             'description' => 'Als er een max amount wordt meegestuurd, wat is dan het maximale bedrag wat wordt toegestaan? Gebaseerd op de order grootte.',
             'type' => 'number',
-            'attrs' => array(
+            'attrs' => [
                 'step' => '0.01',
                 'min' => '0.00',
                 'max' => '999.00',
                 'placeholder' => '1.00',
-            ),
+            ],
             'default' => '1.00',
-        ),
-    );
+        ],
+    ];
 }
 
 
@@ -291,7 +291,7 @@ function bluem_woocommerce_mandates_show_extra_profile_fields($user)
             <th><label for="bluem_mandates_validated">Machtiging via shortcode / InstantMandates valide?</label></th>
             <td>
                 <?php
-            $curValidatedVal = (int)esc_attr(
+            $curValidatedVal = (int) esc_attr(
                 get_user_meta(
                     $user->ID,
                     'bluem_mandates_validated',
@@ -380,7 +380,7 @@ function bluem_woocommerce_mandates_settings_section()
     // The below code is useful when you want the mandate_id to start counting at a fixed minimum.
     // This is what had to be implemented for H2OPro; one of the first clients.
     // @todo: convert to action so it can be overriden by third-party developers such as H2OPro.
-    if (home_url() == 'https://www.h2opro.nl' && (int)($mandate_id_counter . '') < 111100) {
+    if (home_url() == 'https://www.h2opro.nl' && (int) ($mandate_id_counter . '') < 111100) {
         $mandate_id_counter += 111000;
         update_option('bluem_woocommerce_mandate_id_counter', $mandate_id_counter);
     }
