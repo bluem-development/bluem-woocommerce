@@ -29,7 +29,7 @@ function bluem_render_request_table($categoryName, $requests, $users_by_id = [])
         echo '<p>';
         printf(
             /* translators: %s: Name of the category (Bluem service)   */
-            esc_html__('Nog geen transacties voor %s', 'bluem'),
+            esc_html__('No transactions yet for %s', 'bluem'),
             esc_attr($categoryName)
         );
         echo '</p>';
@@ -41,10 +41,10 @@ function bluem_render_request_table($categoryName, $requests, $users_by_id = [])
         <table class="table widefat bluem-requests-table">
             <thead>
             <tr>
-                <th style="width:20%;"><?php esc_html_e('Verzoek', 'bluem'); ?></th>
-                <th style="width:20%;"><?php esc_html_e('Gebruiker', 'bluem'); ?></th>
-                <th style="width:15%;"><?php esc_html_e('Datum', 'bluem'); ?></th>
-                <th style="width:20%;"><?php esc_html_e('Extra informatie', 'bluem'); ?></th>
+                <th style="width:20%;"><?php esc_html_e('Request', 'bluem'); ?></th>
+                <th style="width:20%;"><?php esc_html_e('User', 'bluem'); ?></th>
+                <th style="width:15%;"><?php esc_html_e('Date', 'bluem'); ?></th>
+                <th style="width:20%;"><?php esc_html_e('Additional info', 'bluem'); ?></th>
                 <th style="width:20%;"><?php esc_html_e('Status', 'bluem'); ?></th>
                 <th style="width:5%;"></th>
             </tr>
@@ -81,7 +81,7 @@ function bluem_render_request_table($categoryName, $requests, $users_by_id = [])
                                 ?>
                                 <a href="<?php echo esc_url(admin_url("post.php?post={$r->order_id}&action=edit")); ?>"
                                    target="_blank">
-                                    <?php esc_html_e('Bestelling', 'bluem'); ?> <?php echo esc_html($order->get_order_number()); ?>
+                                    <?php esc_html_e('Order', 'bluem'); ?> <?php echo esc_html($order->get_order_number()); ?>
                                     (<?php echo wp_kses_post(wc_price($order->get_total())); ?>)
                                 </a>
                                 <?php
@@ -94,7 +94,7 @@ function bluem_render_request_table($categoryName, $requests, $users_by_id = [])
                 if (isset($r->debtor_reference) && $r->debtor_reference !== '') {
                     ?>
 
-                            <span style="color:#aaa; font-size:9pt; display:block;"><?php esc_html_e('Klantreferentie', 'bluem'); ?>:
+                            <span style="color:#aaa; font-size:9pt; display:block;"><?php esc_html_e('Customer reference', 'bluem'); ?>:
 							<?php
                     echo esc_html($r->debtor_reference);
                     ?>
@@ -121,7 +121,7 @@ function bluem_render_request_status(string $status): void
             {
                 echo "<span style='color:#1a94c0;'>
                 <span class='dashicons dashicons-plus-alt'></span>
-                    " . esc_html__('Aangemaakt', 'bluem') . '
+                    " . esc_html__('Created', 'bluem') . '
                 </span>';
 
                 break;
@@ -132,7 +132,7 @@ function bluem_render_request_status(string $status): void
                 echo "<span style='color:#2e9801'>
 
                 <span class='dashicons dashicons-yes-alt'></span>
-                        " . esc_html__('Succesvol', 'bluem') . ' afgerond
+                        " . esc_html__('Completed successfully', 'bluem') . '
                     </span>';
 
                 break;
@@ -142,14 +142,14 @@ function bluem_render_request_status(string $status): void
             {
                 echo "<span style='color:#bd1818'>
                         <span class='dashicons dashicons-dismiss'></span>
-                        " . esc_html__('Geannuleerd', 'bluem') . '</span>';
+                        " . esc_html__('Cancelled', 'bluem') . '</span>';
                 break;
             }
         case 'expired':
             {
                 echo "<span style='color:#bd1818'>
                         <span class='dashicons dashicons-dismiss'></span>
-                        " . esc_html__('Verlopen', 'bluem') . '</span>';
+                        " . esc_html__('Expired', 'bluem') . '</span>';
                 break;
             }
         case 'open':
@@ -158,15 +158,15 @@ function bluem_render_request_status(string $status): void
                 echo "<span style='color:#6a4285'>
 
                         <span class='dashicons dashicons-editor-help'></span>
-                        " . esc_html__('Openstaand', 'bluem') . '</span>';
+                        " . esc_html__('Open', 'bluem') . '</span>';
                 break;
             }
         case 'pending':
             {
-                echo "<span style='color:#6a4285' title='mogelijk moet dit verzoek nog worden ondertekend door een tweede ondertekenaar'>
+                echo "<span style='color:#6a4285' title='this request may still need to be signed by a second signatory'>
 
                         <span class='dashicons dashicons-editor-help'></span>
-                        " . esc_html__('in afwachting van verwerking', 'bluem') . '</span>';
+                        " . esc_html__('Awaiting processing', 'bluem') . '</span>';
                 break;
             }
         case 'processing':
@@ -174,7 +174,7 @@ function bluem_render_request_status(string $status): void
                 echo "<span style='color:#6a4285'>
 
                         <span class='dashicons dashicons-marker'></span>
-                        " . esc_html__('In verwerking', 'bluem') . '</span>';
+                        " . esc_html__('Processing', 'bluem') . '</span>';
                 break;
             }
 
@@ -183,14 +183,14 @@ function bluem_render_request_status(string $status): void
                 echo "<span style='color:#ac1111'>
 
                             <span class='dashicons dashicons-dismiss'></span>
-                            " . esc_html__('Ontoereikend', 'bluem') . '</span>';
+                            " . esc_html__('Insufficient', 'bluem') . '</span>';
                 break;
             }
         case 'failure':
             {
                 echo "<span style='color:#ac1111'>
                     <span class='dashicons dashicons-dismiss'></span>
-                    " . esc_html__('Gefaald', 'bluem') . '</span>';
+                    " . esc_html__('Failed', 'bluem') . '</span>';
                 break;
             }
         default:
@@ -227,12 +227,12 @@ function bluem_render_footer($align_right = true): void
     }
     ?>
             ">
-        <?php esc_html_e('Hulp nodig?', 'bluem'); ?>
+        <?php esc_html_e('Need help?', 'bluem'); ?>
         <br>
         <a href="https://bluem-development.github.io/bluem-docs/wordpress-woo-handleiding.html"
            target="_blank" style="text-decoration:none;">
             <span class="dashicons dashicons-media-document"></span>
-            <?php esc_html_e('Handleiding', 'bluem'); ?>
+            <?php esc_html_e('Manual', 'bluem'); ?>
             <small>
                 <span class="dashicons dashicons-external"></span>
             </small>
@@ -285,7 +285,7 @@ function bluem_render_requests_list($requests)
                                 ) {
                                     ?>
                                     <span class="bluem-request-label">
-									<?php esc_html_e('CustomerID', 'bluem'); ?>:
+                                <?php esc_html_e('CustomerID', 'bluem'); ?>:
 				</span>
                                     <?php echo esc_html($pl->report->CustomerIDResponse); ?>
                                     <?php
@@ -295,8 +295,8 @@ function bluem_render_requests_list($requests)
 
                             <?php if (isset($pl->report->AddressResponse)) { ?>
                                 <div>
-				<span class="bluem-request-label">
-								<?php esc_html_e('Adres', 'bluem'); ?>:
+        <span class="bluem-request-label">
+                <?php esc_html_e('Address', 'bluem'); ?>:
 				</span>
                                     <?php
                                 foreach ($pl->report->AddressResponse as $k => $v) {
@@ -310,8 +310,8 @@ function bluem_render_requests_list($requests)
 
                             <?php if (isset($pl->report->BirthDateResponse)) { ?>
                                 <div>
-				<span class="bluem-request-label">
-								<?php esc_html_e('Geb.datum', 'bluem'); ?>:
+        <span class="bluem-request-label">
+                <?php esc_html_e('Birth date', 'bluem'); ?>:
 				</span>
                                     <?php echo esc_html($pl->report->BirthDateResponse); ?>
 
@@ -321,7 +321,7 @@ function bluem_render_requests_list($requests)
                             <?php if (isset($pl->report->EmailResponse)) { ?>
                                 <div>
 				<span class="bluem-request-label">
-								<?php esc_html_e('E-mail', 'bluem'); ?>:
+                            <?php esc_html_e('Email', 'bluem'); ?>:
 				</span>
                                     <?php echo esc_html($pl->report->EmailResponse); ?>
 
@@ -330,7 +330,7 @@ function bluem_render_requests_list($requests)
                             <?php if (isset($pl->report->TelephoneResponse1)) { ?>
                                 <div>
 				<span class="bluem-request-label">
-								<?php esc_html_e('Telefoonnr.', 'bluem'); ?>:
+                            <?php esc_html_e('Phone no.', 'bluem'); ?>:
 				</span>
                                     <?php echo esc_html($pl->report->TelephoneResponse1); ?>
 
@@ -342,7 +342,7 @@ function bluem_render_requests_list($requests)
                                 ?>
                                 <div>
 				<span class="bluem-request-label">
-								<?php esc_html_e('Bluem modus', 'bluem'); ?>:
+                            <?php esc_html_e('Bluem mode', 'bluem'); ?>:
 				</span>
                                     <?php echo esc_attr(ucfirst($pl->environment)); ?>
                                 </div>
@@ -366,7 +366,7 @@ function bluem_render_requests_list($requests)
                 <div class="bluem-request-list-item-row">
 
 			<span class="bluem-request-label">
-				<?php esc_html_e('Transactienummer', 'bluem'); ?>:
+                <?php esc_html_e('Transaction number', 'bluem'); ?>:
 
 			</span>
                     <?php echo esc_html($r->transaction_id); ?>
@@ -377,7 +377,7 @@ function bluem_render_requests_list($requests)
                 ?>
                     <div class="bluem-request-list-item-row">
 			<span class="bluem-request-label">
-					<?php esc_html_e('Klantreferentie', 'bluem'); ?>:
+                    <?php esc_html_e('Customer reference', 'bluem'); ?>:
 			</span>
                         <?php echo esc_html($r->debtor_reference); ?>
                     </div>
@@ -387,7 +387,7 @@ function bluem_render_requests_list($requests)
                 <div class="bluem-request-list-item-row">
 
 			<span class="bluem-request-label">
-				<?php esc_html_e('Tijdstip', 'bluem'); ?>
+                <?php esc_html_e('Time', 'bluem'); ?>
 			</span>
                     <?php $rdate = new DateTimeImmutable($r->timestamp, new DateTimeZone('Europe/Amsterdam')); ?>
                     <?php echo esc_html($rdate->format('d-m-Y H:i:s')); ?>
@@ -575,7 +575,7 @@ function bluem_woocommerce_render_contactform7_table(string $value): void
 function bluem_render_requests_type($cat): string
 {
     if ($cat === 'mandates') {
-        return esc_html__('Incassomachtigen', 'bluem');
+        return esc_html__('Direct Debit', 'bluem');
     }
 
     if ($cat === 'ideal') {
@@ -599,14 +599,14 @@ function bluem_render_requests_type($cat): string
     }
 
     if ($cat === 'identity') {
-        return esc_html__('Identiteit', 'bluem');
+        return esc_html__('Identity', 'bluem');
     }
 
     if ($cat === 'integrations') {
-        return esc_html__('Integraties', 'bluem');
+        return esc_html__('Integrations', 'bluem');
     }
 
-    return esc_html__('Onbekend type', 'bluem') . ': ' . esc_html($cat);
+    return esc_html__('Unknown type', 'bluem') . ': ' . esc_html($cat);
 }
 
 function bluem_render_requests_table_title($cat): void
@@ -614,28 +614,28 @@ function bluem_render_requests_table_title($cat): void
     $result = '';
     if ($cat === 'mandates') {
         $result .= '<span class="dashicons dashicons-money"></span>&nbsp; ';
-        $result .= esc_html__('Digitaal Incassomachtigen', 'bluem');
+        $result .= esc_html__('Direct Debit', 'bluem');
     } elseif ($cat === 'ideal') {
         $result .= '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
-        $result .= esc_html__('iDEAL betalingen', 'bluem');
+        $result .= esc_html__('iDEAL payments', 'bluem');
     } elseif ($cat === 'creditcard') {
         $result .= '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
-        $result .= esc_html__('Creditcard betalingen', 'bluem');
+        $result .= esc_html__('Credit card payments', 'bluem');
     } elseif ($cat === 'paypal') {
         $result .= '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
-        $result .= esc_html__('PayPal betalingen', 'bluem');
+        $result .= esc_html__('PayPal payments', 'bluem');
     } elseif ($cat === 'cartebancaire') {
         $result .= '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
-        $result .= esc_html__('Carte Bancaire betalingen', 'bluem');
+        $result .= esc_html__('Carte Bancaire payments', 'bluem');
     } elseif ($cat === 'sofort') {
         $result .= '<span class="dashicons dashicons-money-alt"></span>&nbsp; ';
-        $result .= esc_html__('SOFORT betalingen', 'bluem');
+        $result .= esc_html__('SOFORT payments', 'bluem');
     } elseif ($cat === 'identity') {
         $result .= '<span class="dashicons dashicons-businessperson"></span>&nbsp; ';
-        $result .= esc_html__('Identiteit', 'bluem');
+        $result .= esc_html__('Identity', 'bluem');
     } elseif ($cat === 'integrations') {
         $result .= '<span class="dashicons dashicons-businessperson"></span>&nbsp; ';
-        $result .= esc_html__('Integraties', 'bluem');
+        $result .= esc_html__('Integrations', 'bluem');
     }
 
     echo '<h2>' . wp_kses_post($result) . '</h2>';
@@ -668,7 +668,7 @@ function bluem_render_nav_header($active_page = '')
     ?>
         >
             <span class="dashicons dashicons-yes-alt"></span>
-            <?php esc_html_e('Activatie', 'bluem'); ?>
+            <?php esc_html_e('Activation', 'bluem'); ?>
         </a>
         <a href="<?php echo esc_url(admin_url('admin.php?page=bluem-transactions')); ?>"
                 <?php
@@ -680,7 +680,7 @@ function bluem_render_nav_header($active_page = '')
     ?>
         >
             <span class="dashicons dashicons-money"></span>
-            <?php esc_html_e('Transacties', 'bluem'); ?>
+            <?php esc_html_e('Transactions', 'bluem'); ?>
         </a>
         <a href="<?php echo esc_url(admin_url('admin.php?page=bluem-settings')); ?>"
                 <?php
@@ -692,7 +692,7 @@ function bluem_render_nav_header($active_page = '')
     ?>
         >
             <span class="dashicons dashicons-admin-settings"></span>
-            <?php esc_html_e('Instellingen', 'bluem'); ?>
+            <?php esc_html_e('Settings', 'bluem'); ?>
         </a>
         <a href="<?php echo esc_url(admin_url('admin.php?page=bluem-status')); ?>"
                 <?php
@@ -710,7 +710,7 @@ function bluem_render_nav_header($active_page = '')
            target="_blank"
            class="nav-tab">
             <span class="dashicons dashicons-media-document"></span>
-            <?php esc_html_e('Handleiding', 'bluem'); ?>
+            <?php esc_html_e('Manual', 'bluem'); ?>
             <small>
                 <span class="dashicons dashicons-external"></span>
             </small>

@@ -59,9 +59,9 @@
     <div style="width: 45%; float:left;">
 
 
-        <h2><span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Exporteren', 'bluem' ); ?></h2>
+        <h2><span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Export', 'bluem' ); ?></h2>
         <p>
-            <?php esc_html_e( 'Kopieer en plak de onderstaande informatie om je instellingen te exporteren.', 'bluem' ); ?>
+            <?php esc_html_e( 'Copy and paste the information below to export your settings.', 'bluem' ); ?>
         </p>
         <blockquote>
         <pre class="bluem_port_input"><?php echo esc_js( $options_json ?? '' ); ?>
@@ -71,10 +71,10 @@
 
 
     <div style="width: 45%; float:left;">
-        <h2><span class="dashicons dashicons-database-import"></span> <?php esc_html_e( 'Importeren', 'bluem' ); ?></h2>
+        <h2><span class="dashicons dashicons-database-import"></span> <?php esc_html_e( 'Import', 'bluem' ); ?></h2>
 
         <p>
-            <?php esc_html_e( 'Upload je instellingen hier.', 'bluem' ); ?>
+            <?php esc_html_e( 'Upload your settings here.', 'bluem' ); ?>
 
         <form method="post"
               action="<?php echo esc_url( admin_url( 'admin.php?page=bluem-importexport' ) ); ?>">
@@ -88,9 +88,9 @@
             </label>
             <textarea class="bluem_port_input" name="import" id="import" rows="20"></textarea>
             <p>
-                <strong><?php esc_html_e( 'Let op! Bestaande instellingen zullen worden overschreven.', 'bluem' ); ?></strong>
+                <strong><?php esc_html_e( 'Warning! Existing settings will be overwritten.', 'bluem' ); ?></strong>
             </p>
-            <button type="submit"><?php esc_html_e( 'Importeren', 'bluem' ); ?></button>
+            <button type="submit"><?php esc_html_e( 'Import', 'bluem' ); ?></button>
         </form>
         </p>
     </div>

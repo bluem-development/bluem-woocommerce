@@ -2032,17 +2032,30 @@ function bluem_setup_incomplete() {
         if ( bluem_module_enabled( 'payments' ) ) {
             $sender_id = $options['senderID'] ?? '';
 
-            // iDEAL: must be exactly <SenderID>Payment
-            if ( ! empty( $options['paymentsIDEALBrandID'] )
-                 && $options['paymentsIDEALBrandID'] !== $sender_id . 'Payment'
-            ) {
-                /* translators: %s: the invalid brandID value */
-                $messages[]  = sprintf(
-                    esc_html__( 'The Payments BrandID for iDEAL ("%s") must match your SenderID + "Payment" (for example, %s).', 'bluem' ),
-                    esc_html( $options['paymentsIDEALBrandID'] ),
-                    esc_html( $sender_id . 'Payment' )
+            // iDEAL: senderID must not be empty
+            if ($sender_id === '') {
+                $messages[] = sprintf(
+                    esc_html__('Your SenderID is not yet set, please add it in the settings', 'bluem')
                 );
+            }
+
+            // iDEAL, paymentsIDEALBrandID must be set
+            if ( empty( $options['paymentsIDEALBrandID'] ) ) {
+                $messages[]  = esc_html__( 'The Payments BrandID for iDEAL is missing.', 'bluem' );
                 $valid_setup = false;
+            } else {
+                // iDEAL: must be exactly <SenderID>Payment
+                if ( ! empty( $options['paymentsIDEALBrandID'] )
+                     && $options['paymentsIDEALBrandID'] !== $sender_id . 'Payment'
+                ) {
+                    $messages[]  = sprintf(
+                    /* translators: %s: the invalid brandID value */
+                        esc_html__( 'The Payments BrandID for iDEAL ("%s") must match your SenderID + "Payment" (for example, %s).', 'bluem' ),
+                        esc_html( $options['paymentsIDEALBrandID'] ),
+                        esc_html( $sender_id . 'Payment' )
+                    );
+                    $valid_setup = false;
+                }
             }
 
             // Other payment methods: brandID must start with the configured SenderID

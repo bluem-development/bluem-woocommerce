@@ -5,40 +5,40 @@
 <div class="wrap">
     <h1>
         <?php echo wp_kses( bluem_get_bluem_logo_html( 48 ), [ 'img' ] ); ?>
-        <?php echo esc_html__( 'Instellingen', 'bluem' ); ?>
+        <?php echo esc_html__( 'Settings', 'bluem' ); ?>
     </h1>
 
     <?php bluem_render_nav_header( 'settings' ); ?>
 
     <div class="wrap payment-methods">
         <h2 class="nav-tab-wrapper">
-            <a href="#" class="nav-tab" data-tab="general" title="<?php echo esc_html__( 'Algemeen', 'bluem' ); ?>">
-                <?php echo esc_html__( 'Algemeen', 'bluem' ); ?>
+            <a href="#" class="nav-tab" data-tab="general" title="<?php echo esc_html__( 'General', 'bluem' ); ?>">
+                <?php echo esc_html__( 'General', 'bluem' ); ?>
             </a>
             <a href="#" class="nav-tab" data-tab="account" title="<?php echo esc_html__( 'Account', 'bluem' ); ?>">
                 <?php echo esc_html__( 'Account', 'bluem' ); ?>
             </a>
             <?php if ( bluem_module_enabled( 'mandates' ) ) { ?>
                 <a href="#" class="nav-tab" data-tab="mandates"
-                   title="<?php echo esc_html__( 'Incassomachtigen', 'bluem' ); ?>">
-                    <?php echo esc_html__( 'Incassomachtigen', 'bluem' ); ?>
+                    title="<?php echo esc_html__( 'Direct Debit', 'bluem' ); ?>">
+                    <?php echo esc_html__( 'Direct Debit', 'bluem' ); ?>
                 </a>
             <?php } ?>
             <?php if ( bluem_module_enabled( 'payments' ) ) { ?>
                 <a href="#" class="nav-tab" data-tab="payments"
-                   title="<?php echo esc_html__( 'Betalingen', 'bluem' ); ?>">
-                    <?php echo esc_html__( 'Betalingen', 'bluem' ); ?>
+                    title="<?php echo esc_html__( 'Payments', 'bluem' ); ?>">
+                    <?php echo esc_html__( 'Payments', 'bluem' ); ?>
                 </a>
             <?php } ?>
             <?php if ( bluem_module_enabled( 'idin' ) ) { ?>
                 <a href="#" class="nav-tab" data-tab="identity"
-                   title="<?php echo esc_html__( 'Identiteit', 'bluem' ); ?>">
-                    <?php echo esc_html__( 'Identiteit', 'bluem' ); ?>
+                    title="<?php echo esc_html__( 'Identity', 'bluem' ); ?>">
+                    <?php echo esc_html__( 'Identity', 'bluem' ); ?>
                 </a>
             <?php } ?>
             <a href="#" class="nav-tab" data-tab="integrations"
-               title="<?php echo esc_html__( 'Integraties', 'bluem' ); ?>">
-                <?php echo esc_html__( 'Integraties', 'bluem' ); ?>
+               title="<?php echo esc_html__( 'Integrations', 'bluem' ); ?>">
+                <?php echo esc_html__( 'Integrations', 'bluem' ); ?>
             </a>
             <a class="nav-tab nav-tab-fake-tab"
                href="<?php echo esc_url( admin_url( 'admin.php?page=bluem-importexport' ) ); ?>"
@@ -103,7 +103,7 @@
 
             <div style="margin-top: 0; padding-top: 25px; border-top: 1px solid #2b4e6c;">
                 <input name="submit" class="button button-primary" type="submit"
-                       value="<?php echo esc_html__( 'Veranderingen opslaan', 'bluem' ); ?>"/>
+                              value="<?php echo esc_html__( 'Save changes', 'bluem' ); ?>"/>
             </div>
         </form>
     </div>
