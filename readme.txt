@@ -2,9 +2,9 @@
 Contributors: bluempaymentservices
 Tags: Bluem,Payments,iDIN,iDEAL,eMandates
 Requires at least: 5.0
-Tested up to: 6.9.4
+Tested up to: 7.0.0
 Requires PHP: 8.4
-Stable tag: 2.0.0
+Stable tag: 1.4.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -77,7 +77,7 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
-- 2.0.0: Updated to support latest WordPress and WooCommerce versions, added new features and improvements
+- 1.4.0: Updated to support latest WordPress and WooCommerce versions, added new features and improvements
     - PHP 8.4 minimum support
     - Updated dependencies and libraries
     - Improved stability and performance
