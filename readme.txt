@@ -1,7 +1,7 @@
 === Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce===
 Contributors: bluempaymentservices
 Tags: Bluem,Payments,iDIN,iDEAL,eMandates
-Requires at least: 5.0
+Requires at least: 6.0
 Tested up to: 7.0.0
 Requires PHP: 8.4
 Stable tag: 1.4.0
