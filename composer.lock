@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7886412398963081f282e9a44516b0e2",
+    "content-hash": "e51701ec5657f3da60de7295ad5ee417",
     "packages": [
         {
             "name": "bluem-development/bluem-php",
-            "version": "3.0-beta-2",
+            "version": "2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bluem-development/bluem-php.git",
-                "reference": "856850b59e75a04d3dda86e1e344cf0cc4393d66"
+                "reference": "3c4676bc39e0b263163022270546f2f9e5ab7cc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/856850b59e75a04d3dda86e1e344cf0cc4393d66",
-                "reference": "856850b59e75a04d3dda86e1e344cf0cc4393d66",
+                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/3c4676bc39e0b263163022270546f2f9e5ab7cc4",
+                "reference": "3c4676bc39e0b263163022270546f2f9e5ab7cc4",
                 "shasum": ""
             },
             "require": {
@@ -28,15 +28,15 @@
                 "ext-openssl": "*",
                 "ext-simplexml": "*",
                 "php": ">=8.3",
-                "selective/xmldsig": "^3.2"
+                "robrichards/xmlseclibs": "^3.1"
             },
             "require-dev": {
                 "phpcompatibility/php-compatibility": "^9.3",
                 "phpspec/prophecy": "~1.0",
-                "phpunit/phpunit": "^11",
+                "phpunit/phpunit": "^12",
                 "rector/rector": "^2.4",
-                "squizlabs/php_codesniffer": "^3.7",
-                "vlucas/phpdotenv": "^5.4"
+                "squizlabs/php_codesniffer": "^3.10",
+                "vlucas/phpdotenv": "^5.6"
             },
             "type": "package",
             "autoload": {
@@ -70,61 +70,51 @@
             ],
             "support": {
                 "issues": "https://github.com/bluem-development/bluem-php",
-                "source": "https://github.com/bluem-development/bluem-php/tree/3.0-beta-2"
+                "source": "https://github.com/bluem-development/bluem-php/tree/2.5.0"
             },
-            "time": "2026-04-05T09:04:45+00:00"
+            "time": "2026-06-30T20:51:27+00:00"
         },
         {
-            "name": "selective/xmldsig",
-            "version": "3.2.0",
+            "name": "robrichards/xmlseclibs",
+            "version": "3.1.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/selective-php/xmldsig.git",
-                "reference": "c6fa6b639c2c7781e61f885ac8a8de2fa3e9b6a0"
+                "url": "https://github.com/robrichards/xmlseclibs.git",
+                "reference": "03062be78178cbb5e8f605cd255dc32a14981f92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/selective-php/xmldsig/zipball/c6fa6b639c2c7781e61f885ac8a8de2fa3e9b6a0",
-                "reference": "c6fa6b639c2c7781e61f885ac8a8de2fa3e9b6a0",
+                "url": "https://api.github.com/repos/robrichards/xmlseclibs/zipball/03062be78178cbb5e8f605cd255dc32a14981f92",
+                "reference": "03062be78178cbb5e8f605cd255dc32a14981f92",
                 "shasum": ""
             },
             "require": {
-                "ext-dom": "*",
                 "ext-openssl": "*",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
-            },
-            "require-dev": {
-                "ext-gmp": "*",
-                "friendsofphp/php-cs-fixer": "^3",
-                "phpstan/phpstan": "^2",
-                "phpunit/phpunit": "^10 || ^12",
-                "squizlabs/php_codesniffer": "^4",
-                "starkbank/ecdsa": "^2.0"
+                "php": ">= 5.4"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Selective\\XmlDSig\\": "src/"
+                    "RobRichards\\XMLSecLibs\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "BSD-3-Clause"
             ],
-            "description": "Sign XML Documents with Digital Signatures",
-            "homepage": "https://github.com/selective-php/xmldsig",
+            "description": "A PHP library for XML Security",
+            "homepage": "https://github.com/robrichards/xmlseclibs",
             "keywords": [
-                "signatures",
-                "verify",
+                "security",
+                "signature",
                 "xml",
                 "xmldsig"
             ],
             "support": {
-                "issues": "https://github.com/selective-php/xmldsig/issues",
-                "source": "https://github.com/selective-php/xmldsig/tree/3.2.0"
+                "issues": "https://github.com/robrichards/xmlseclibs/issues",
+                "source": "https://github.com/robrichards/xmlseclibs/tree/3.1.5"
             },
-            "abandoned": "robrichards/xmlseclibs",
-            "time": "2025-11-09T09:15:21+00:00"
+            "time": "2026-03-13T10:31:56+00:00"
         }
     ],
     "packages-dev": [
@@ -3550,16 +3540,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.12.23",
+            "version": "v0.12.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "4dcc0f08047d52bbde475eda481146fd8e27e1a4"
+                "reference": "ca0fdcf8a7617afa3adfdf1b5fef573dffb69ca1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/4dcc0f08047d52bbde475eda481146fd8e27e1a4",
-                "reference": "4dcc0f08047d52bbde475eda481146fd8e27e1a4",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/ca0fdcf8a7617afa3adfdf1b5fef573dffb69ca1",
+                "reference": "ca0fdcf8a7617afa3adfdf1b5fef573dffb69ca1",
                 "shasum": ""
             },
             "require": {
@@ -3623,9 +3613,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.12.23"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.12.24"
             },
-            "time": "2026-05-23T13:41:31+00:00"
+            "time": "2026-06-29T15:41:09+00:00"
         },
         {
             "name": "revolt/event-loop",
