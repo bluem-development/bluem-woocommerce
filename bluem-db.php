@@ -160,7 +160,7 @@ function bluem_db_create_request($request_object): int
         }
         bluem_db_request_log(
             $request_id,
-            esc_html__('Verzoek aangemaakt', 'bluem')
+            esc_html__('Request created', 'bluem')
         );
 
         return $wpdb->insert_id;
