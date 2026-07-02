@@ -20,8 +20,8 @@
             </a>
             <?php if (bluem_module_enabled('mandates')) { ?>
                 <a href="#" class="nav-tab" data-tab="mandates"
-                    title="<?php echo esc_html__('Direct Debit', 'bluem'); ?>">
-                    <?php echo esc_html__('Direct Debit', 'bluem'); ?>
+                    title="<?php echo esc_html__('eMandates', 'bluem'); ?>">
+                    <?php echo esc_html__('eMandates', 'bluem'); ?>
                 </a>
             <?php } ?>
             <?php if (bluem_module_enabled('payments')) { ?>

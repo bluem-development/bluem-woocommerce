@@ -16,7 +16,7 @@ function bluem_woocommerce_get_integration_option($key)
 {
     $options = bluem_woocommerce_get_integrations_options();
     if (array_key_exists($key, $options)) {
-        return $options[ $key ];
+        return $options[$key];
     }
 
     return false;
@@ -218,7 +218,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
 
             foreach ($_POST as $key => $value) {
                 if ($key !== 'contact_form_id') {
-                    $posted_data[ sanitize_text_field($key) ] = sanitize_text_field(wp_unslash($value));
+                    $posted_data[sanitize_text_field($key)] = sanitize_text_field(wp_unslash($value));
                 }
             }
 
@@ -234,7 +234,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                 if (! empty($bluem_config->eMandateReason)) {
                     $bluem_config->eMandateReason = mb_convert_encoding($bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
                 } else {
-                    $bluem_config->eMandateReason = 'Direct debit mandate ' . $debtorReference;
+                    $bluem_config->eMandateReason = 'eMandate ' . $debtorReference;
                 }
 
                 $bluem = new Bluem($bluem_config);
@@ -264,10 +264,10 @@ function bluem_woocommerce_integration_wpcf7_ajax()
 
                         if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
                             $msg .= '<br>'
-                                    . $response->EMandateTransactionResponse->Error->ErrorMessage;
+                                . $response->EMandateTransactionResponse->Error->ErrorMessage;
                         } elseif ($response instanceof \Bluem\BluemPHP\ErrorBluemResponse) {
                             $msg .= '<br>'
-                                    . $response->Error();
+                                . $response->Error();
                         } else {
                             $msg .= '<br>General error';
                         }
@@ -419,7 +419,7 @@ function bluem_woocommerce_integration_wpcf7_submit()
                 } elseif (! empty($bluem_config->eMandateReason)) {
                     $bluem_config->eMandateReason = mb_convert_encoding($bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
                 } else {
-                    $bluem_config->eMandateReason = 'Direct debit mandate ' . $debtorReference;
+                    $bluem_config->eMandateReason = 'eMandate ' . $debtorReference;
                 }
 
                 try {
@@ -453,10 +453,10 @@ function bluem_woocommerce_integration_wpcf7_submit()
 
                         if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
                             $msg .= '<br>'
-                                    . $response->EMandateTransactionResponse->Error->ErrorMessage;
+                                . $response->EMandateTransactionResponse->Error->ErrorMessage;
                         } elseif ($response instanceof \Bluem\BluemPHP\ErrorBluemResponse) {
                             $msg .= '<br>'
-                                    . $response->Error();
+                                . $response->Error();
                         } else {
                             $msg .= '<br>General error';
                         }
@@ -790,12 +790,12 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
 
         if (! empty($field->inputName) && ! empty($value) && strpos($field->inputName, 'bluem_') === 0) {
             // echo " set $value for input {$field->inputName}";
-            $form_data[ $field->inputName ] = $value;
+            $form_data[$field->inputName] = $value;
         }
 
         if (! empty($field->label) && ! empty($value) && strpos($field->label, 'bluem_') === 0) {
             // echo " set $value for label {$field->label}";
-            $form_data[ $field->label ] = $value;
+            $form_data[$field->label] = $value;
         }
     }
 
@@ -859,13 +859,13 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
             } elseif (! empty($bluem_config->eMandateReason)) {
                 $bluem_config->eMandateReason = mb_convert_encoding($bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
             } else {
-                $bluem_config->eMandateReason = 'Direct debit mandate ' . $debtorReference;
+                $bluem_config->eMandateReason = 'eMandate ' . $debtorReference;
             }
 
             try {
                 $bluem = new Bluem($bluem_config);
             } catch (Exception $e) {
-                echo('Could not process the Gravity Forms request correctly; check your settings.');
+                echo ('Could not process the Gravity Forms request correctly; check your settings.');
                 die();
             }
 
@@ -895,10 +895,10 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
 
                     if (isset($response->EMandateTransactionResponse->Error->ErrorMessage)) {
                         $msg .= '<br>'
-                                . $response->EMandateTransactionResponse->Error->ErrorMessage;
+                            . $response->EMandateTransactionResponse->Error->ErrorMessage;
                     } elseif (get_class($response) === 'Bluem\BluemPHP\ErrorBluemResponse') {
                         $msg .= '<br>'
-                                . $response->Error();
+                            . $response->Error();
                     } else {
                         $msg .= '<br>General error';
                     }
@@ -1206,9 +1206,9 @@ function bluem_woocommerce_integration_gform_callback()
                 }
 
                 if (! empty($field_label)) {
-                    $form_data[ $field_label ] = $field_value;
+                    $form_data[$field_label] = $field_value;
                 } elseif (! empty($field_id)) {
-                    $form_data[ $field_id ] = $field_value;
+                    $form_data[$field_id] = $field_value;
                 }
             }
 
@@ -1382,9 +1382,9 @@ function bluem_woocommerce_integration_gform_results_shortcode()
             $field_value = rgar($entry, $field_id);
 
             if (! empty($field_label)) {
-                $form_data[ $field_label ] = $field_value;
+                $form_data[$field_label] = $field_value;
             } elseif (! empty($field_id)) {
-                $form_data[ $field_id ] = $field_value;
+                $form_data[$field_id] = $field_value;
             }
         }
     }

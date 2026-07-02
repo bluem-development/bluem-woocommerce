@@ -4,7 +4,6 @@ if (! defined('ABSPATH')) {
 }
 ?>
 <style type="text/css">
-
     .bluem_logo {
         margin-top: 25px;
         background: linear-gradient(90deg, #7C2EC1 0%, #330B9B 100%);
@@ -24,7 +23,6 @@ if (! defined('ABSPATH')) {
         background-repeat: no-repeat;
         content: '';
     }
-
 </style>
 
 <?php
@@ -37,8 +35,10 @@ function bluem_display_php_errors(): string
 {
     $error_log_path = ini_get('error_log');
 
-    if (! empty($error_log_path) && file_exists($error_log_path)
-         && $log_contents = @file_get_contents($error_log_path)) {
+    if (
+        ! empty($error_log_path) && file_exists($error_log_path)
+        && $log_contents = @file_get_contents($error_log_path)
+    ) {
         $content = '<pre>' . esc_html($log_contents) . '</pre>';
     } else {
         $content = esc_html__('Cannot access the PHP error log. Either the log does not exist, logging is disabled, or the required read permissions are missing.', 'bluem');
@@ -99,7 +99,7 @@ function bluem_display_woocommerce_logs(): string
 
 <div class="wrap">
     <h1>
-        <?php echo wp_kses(bluem_get_bluem_logo_html(48), [ 'img' ]); ?>
+        <?php echo wp_kses(bluem_get_bluem_logo_html(48), ['img']); ?>
         <?php esc_html_e('Status', 'bluem'); ?>
     </h1>
 
@@ -117,16 +117,16 @@ function bluem_display_woocommerce_logs(): string
             <p><?php esc_html_e('The following payment methods are enabled', 'bluem'); ?>:</p>
             <ul>
                 <?php if (bluem_module_enabled('mandates')) { ?>
-                    <li><?php esc_html_e('Direct Debit', 'bluem'); ?> <span class="dashicons dashicons-yes"
-                                                                                  style="color: #4F800D;"></span></li>
+                    <li><?php esc_html_e('eMandates', 'bluem'); ?> <span class="dashicons dashicons-yes"
+                            style="color: #4F800D;"></span></li>
                 <?php } ?>
                 <?php if (bluem_module_enabled('payments')) { ?>
                     <li><?php esc_html_e('Payments', 'bluem'); ?> <span class="dashicons dashicons-yes"
-                                                                            style="color: #4F800D;"></span></li>
+                            style="color: #4F800D;"></span></li>
                 <?php } ?>
                 <?php if (bluem_module_enabled('idin')) { ?>
                     <li><?php esc_html_e('Identity', 'bluem'); ?> <span class="dashicons dashicons-yes"
-                                                                            style="color: #4F800D;"></span></li>
+                            style="color: #4F800D;"></span></li>
                 <?php } ?>
             </ul>
 
@@ -137,7 +137,7 @@ function bluem_display_woocommerce_logs(): string
                 <form method="post" action="">
                     <?php wp_nonce_field('flush_rewrite_rules_nonce', 'flush_rewrite_rules_nonce'); ?>
                     <input type="submit" name="flush_rewrite_rules" class="button button-primary"
-                           value="<?php esc_html_e('Refresh rewrite rules', 'bluem'); ?>">
+                        value="<?php esc_html_e('Refresh rewrite rules', 'bluem'); ?>">
                 </form>
             </div>
             <?php
@@ -152,13 +152,13 @@ function bluem_display_woocommerce_logs(): string
             <h3><?php esc_html_e('Available Bluem rules', 'bluem'); ?></h3>
             <ul><?php
                 $rules = get_option('rewrite_rules');
-foreach ($rules as $key => $value) {
-    if (str_contains($key, 'bluem')) {
-        $key = str_replace([ '^bluem-woocommerce/', '', '$' ], '', $key);
-        echo '<li>✅ <strong>' . esc_html($key) . '</strong></li>';
-    }
-}
-?>
+                foreach ($rules as $key => $value) {
+                    if (str_contains($key, 'bluem')) {
+                        $key = str_replace(['^bluem-woocommerce/', '', '$'], '', $key);
+                        echo '<li>✅ <strong>' . esc_html($key) . '</strong></li>';
+                    }
+                }
+                ?>
             </ul>
         </div>
 
@@ -182,11 +182,10 @@ foreach ($rules as $key => $value) {
 </div>
 
 <script type="text/javascript">
-
-    (function ($) {
-        $(document).ready(function () {
+    (function($) {
+        $(document).ready(function() {
             // Handle tab click event
-            $('div.payment-methods .nav-tab').on('click', function (e) {
+            $('div.payment-methods .nav-tab').on('click', function(e) {
                 e.preventDefault();
 
                 // Get the clicked tab's identifier
@@ -203,11 +202,9 @@ foreach ($rules as $key => $value) {
             $('div.payment-methods .nav-tab:first-child').trigger('click');
         });
     })(jQuery);
-
 </script>
 
 <style type="text/css">
-
     div.payment-methods .nav-tab-wrapper {
         border-bottom: 1px solid #2b4e6c;
         margin-bottom: 0;
@@ -253,5 +250,4 @@ foreach ($rules as $key => $value) {
 
         font-size: 10px;
     }
-
 </style>

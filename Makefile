@@ -195,4 +195,5 @@ run-phpcbf:
 
 start-docker:
 	docker-compose up -d
+	sleep 1
 	open http://localhost:8000/wp-admin/
