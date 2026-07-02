@@ -39,11 +39,11 @@ function bluem_init_payment_gateway_class()
 function bluem_woocommerce_payments_settings_section()
 {
     echo '<p><a id="tab_payments"></a>
-<strong>Let op: naast het instellen van de onderstaande functies moet je ook de betaalmethoden activeren bij de
-<a href="' . (esc_url(home_url()) . 'wp-admin/admin.php?page=wc-settings&tab=checkout') . '" target="_blank">WooCommerce instellingen voor Betalingen</a>.
+<strong>Note: in addition to configuring the functions below, you must also activate the payment methods in the
+<a href="' . (esc_url(home_url()) . 'wp-admin/admin.php?page=wc-settings&tab=checkout') . '" target="_blank">WooCommerce payment settings</a>.
 </strong><br>
-    Je kan hier belangrijke gegevens instellen rondom ePayments-transacties om gemakkelijk betalingen te ontvangen.</p>
-    <p>Lees <a href="' . esc_url(BLUEM_WOOCOMMERCE_MANUAL_URL) . '" target="_blank">de handleiding</a> voor meer informatie.</p>';
+    Here you can configure important details for ePayments transactions so you can easily receive payments.</p>
+    <p>Read <a href="' . esc_url(BLUEM_WOOCOMMERCE_MANUAL_URL) . '" target="_blank">the manual</a> for more information.</p>';
 }
 
 function bluem_woocommerce_get_payments_option($key)
@@ -62,67 +62,67 @@ function bluem_woocommerce_get_payments_options()
         'paymentsIDEALBrandID' => [
             'key' => 'paymentsIDEALBrandID',
             'title' => 'bluem_paymentsIDEALBrandID',
-            'name' => 'BrandID voor iDEAL',
-            'description' => 'Het Bluem BrandID voor betalingen via iDEAL Payments',
+            'name' => 'BrandID for iDEAL',
+            'description' => 'The Bluem BrandID for payments via iDEAL Payments',
             'default' => '',
         ],
         'paymentsUseDebtorWallet' => [
             'key' => 'paymentsUseDebtorWallet',
             'title' => 'bluem_paymentsUseDebtorWallet',
-            'name' => 'Selecteer bank methode',
-            'description' => "Wil je dat er in deze website al een bank moet worden geselecteerd bij de Checkout procedure, in plaats van in de Bluem Portal? Indien je 'Gebruik eigen checkout' selecteert, wordt er een veld toegevoegd aan de WooCommerce checkout pagina waar je een van de beschikbare banken kan selecteren.",
+            'name' => 'Select bank method',
+            'description' => "Do you want a bank to be selected on this website during checkout instead of in the Bluem Portal? If you select 'Use own checkout', a field will be added to the WooCommerce checkout page where you can select one of the available banks.",
             'type' => 'select',
             'default' => '0',
             'options' => [
-                '0' => 'Gebruik Bluem Portal (standaard)',
-                '1' => 'Gebruik eigen checkout',
+                '0' => 'Use Bluem Portal (default)',
+                '1' => 'Use own checkout',
             ],
         ],
         'paymentsCreditcardBrandID' => [
             'key' => 'paymentsCreditcardBrandID',
             'title' => 'bluem_paymentsCreditcardBrandID',
-            'name' => 'BrandID voor CreditCard',
-            'description' => 'Het Bluem BrandID voor betalingen via CreditCard Payments',
+            'name' => 'BrandID for CreditCard',
+            'description' => 'The Bluem BrandID for payments via CreditCard Payments',
             'default' => '',
         ],
         'paymentsPayPalBrandID' => [
             'key' => 'paymentsPayPalBrandID',
             'title' => 'bluem_paymentsPayPalBrandID',
-            'name' => 'BrandID voor PayPal',
-            'description' => 'Het Bluem BrandID voor betalingen via PayPal Payments',
+            'name' => 'BrandID for PayPal',
+            'description' => 'The Bluem BrandID for payments via PayPal Payments',
             'default' => '',
         ],
         'paymentsSofortBrandID' => [
             'key' => 'paymentsSofortBrandID',
             'title' => 'bluem_paymentsSofortBrandID',
-            'name' => 'BrandID voor SOFORT',
-            'description' => 'Het Bluem BrandID voor betalingen via SOFORT Payments',
+            'name' => 'BrandID for SOFORT',
+            'description' => 'The Bluem BrandID for payments via SOFORT Payments',
             'default' => '',
         ],
         'paymentsCarteBancaireBrandID' => [
             'key' => 'paymentsCarteBancaireBrandID',
             'title' => 'bluem_paymentsCarteBancaireBrandID',
-            'name' => 'BrandID voor Carte Bancaire',
-            'description' => 'Het Bluem BrandID voor betalingen via Carte Bancaire Payments',
+            'name' => 'BrandID for Carte Bancaire',
+            'description' => 'The Bluem BrandID for payments via Carte Bancaire Payments',
             'default' => '',
         ],
         'paymentCompleteRedirectType' => [
             'key' => 'paymentCompleteRedirectType',
             'title' => 'bluem_paymentCompleteRedirectType',
-            'name' => 'Waarheen verwijzen na succesvolle betaling?',
-            'description' => 'Als de gebruiker heeft betaald, waar moet dan naar verwezen worden?',
+            'name' => 'Where to redirect after a successful payment?',
+            'description' => 'When the user has paid, where should they be redirected?',
             'type' => 'select',
             'default' => 'order_details',
             'options' => [
-                'order_details' => 'Pagina met Order gegevens (standaard)',
-                'custom' => 'Eigen URL (vul hieronder in)',
+                'order_details' => 'Page with order details (default)',
+                'custom' => 'Custom URL (enter below)',
             ],
         ],
         'paymentCompleteRedirectCustomURL' => [
             'key' => 'paymentCompleteRedirectCustomURL',
             'title' => 'bluem_paymentCompleteRedirectCustomURL',
-            'name' => 'Eigen interne URL om klant naar te verwijzen',
-            'description' => "Indien hierboven 'Eigen URL' is gekozen, vul hier dan de URL in waarnaar doorverwezen moet worden. Je kan bijv. <code>thanks</code> invullen om de klant naar <strong>" . site_url('thanks') . '</strong> te verwijzen',
+            'name' => 'Custom internal URL to redirect the customer to',
+            'description' => "If 'Custom URL' was chosen above, enter the URL to redirect to here. For example, you can enter <code>thanks</code> to redirect the customer to <strong>" . site_url('thanks') . '</strong>',
             'type' => 'text',
             'default' => '',
         ],

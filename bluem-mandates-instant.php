@@ -17,7 +17,7 @@ function bluem_mandates_instant_request(): void
     }
 
     if (empty($debtorReference)) {
-        $errormessage = esc_html__('Fout: geen debtorReferentie opgegeven', 'bluem');
+        $errormessage = esc_html__('Error: no debtorReference specified', 'bluem');
         bluem_error_report_email(
             [
                 'service' => 'mandates',
@@ -50,7 +50,7 @@ function bluem_mandates_instant_request(): void
         if (!empty($bluem_config->eMandateReason)) {
             $bluem_config->eMandateReason = mb_convert_encoding($bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
         } else {
-            $bluem_config->eMandateReason = esc_html__('Incasso machtiging ', 'bluem') . $debtorReference;
+            $bluem_config->eMandateReason = esc_html__('Direct debit mandate ', 'bluem') . $debtorReference;
         }
 
         $bluem = new Bluem($bluem_config);
@@ -77,7 +77,7 @@ function bluem_mandates_instant_request(): void
 
             if (!isset($response->EMandateTransactionResponse->TransactionURL)) {
                 $msg = esc_html__(
-                    'Er ging iets mis bij het aanmaken van de transactie.<br>
+                    'Something went wrong while creating the transaction.<br>
                 Vermeld onderstaande informatie aan het websitebeheer:',
                     'bluem'
                 );
@@ -89,7 +89,7 @@ function bluem_mandates_instant_request(): void
                     $msg .= '<br>'
                         . $response->Error();
                 } else {
-                    $msg .= '<br>Algemene fout';
+                    $msg .= '<br>General error';
                 }
                 bluem_error_report_email(
                     [
@@ -178,7 +178,7 @@ function bluem_mandates_instant_callback()
             wp_redirect($bluem_config->instantMandatesResponseURI . '?result=false&reason=error');
             exit;
         }
-        $errormessage = esc_html__('Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.', 'bluem');
+        $errormessage = esc_html__('Error: no valid mandate ID was returned during callback. Please contact the webshop and mention your contact details.', 'bluem');
         bluem_error_report_email(
             [
                 'service' => 'mandates',
@@ -191,7 +191,7 @@ function bluem_mandates_instant_callback()
     }
 
     if (empty($entranceCode)) {
-        $errormessage = esc_html__('Fout: Entrancecode is niet set; kan dus geen mandaat opvragen', 'bluem');
+        $errormessage = esc_html__('Error: EntranceCode is not set, so the mandate cannot be retrieved.', 'bluem');
         bluem_error_report_email(
             [
                 'service' => 'mandates',
@@ -208,7 +208,7 @@ function bluem_mandates_instant_callback()
     if (!$response->Status()) {
         $errormessage = sprintf(
             /* translators: %s: error message */
-            esc_html__('Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status', 'bluem'),
+            esc_html__('Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem'),
             $response->Error()
         );
         bluem_error_report_email(
@@ -273,12 +273,12 @@ function bluem_mandates_instant_callback()
             'mandates'
         );
 
-        // "De ondertekening is geslaagd";
+        // "The signing succeeded";
         if (!empty($bluem_config->instantMandatesResponseURI)) {
             wp_redirect($bluem_config->instantMandatesResponseURI . '?result=true');
             exit;
         }
-        $errormessage = esc_html__('Fout: de ondertekening is geslaagd maar er is geen response URI opgegeven. Neem contact op met de website om dit technisch probleem aan te geven.', 'bluem');
+        $errormessage = esc_html__('Error: the signing succeeded but no response URI was specified. Please contact the website to report this technical issue.', 'bluem');
         bluem_error_report_email(
             [
                 'service' => 'mandates',
@@ -291,34 +291,34 @@ function bluem_mandates_instant_callback()
     }
 
     if ($statusCode === 'Cancelled') {
-        // "Je hebt de mandaat ondertekening geannuleerd";
+        // "You canceled the mandate signing";
         if (!empty($bluem_config->instantMandatesResponseURI)) {
             wp_redirect($bluem_config->instantMandatesResponseURI . '?result=false&reason=cancelled');
             exit;
         }
-        $errormessage = esc_html__('Fout: de transactie is geannuleerd. Probeer het opnieuw.', 'bluem');
+        $errormessage = esc_html__('Error: the transaction was canceled. Please try again.', 'bluem');
         bluem_dialogs_render_prompt($errormessage);
         exit;
     }
 
     if ($statusCode === 'Open' || $statusCode === 'Pending') {
-        // "De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch."
+        // "The mandate signing has not yet been confirmed. This may take a moment but happens automatically."
         if (!empty($bluem_config->instantMandatesResponseURI)) {
             wp_redirect($bluem_config->instantMandatesResponseURI . '?result=false&reason=open');
             exit;
         }
-        $errormessage = esc_html__('Fout: de transactie staat nog open. Dit kan even duren. Vernieuw deze pagina regelmatig voor de status.', 'bluem');
+        $errormessage = esc_html__('Error: the transaction is still open. This may take a moment. Refresh this page regularly to check the status.', 'bluem');
         bluem_dialogs_render_prompt($errormessage);
         exit;
     }
 
     if ($statusCode === 'Expired') {
-        // "Fout: De mandaat of het verzoek daartoe is verlopen";
+        // "Error: the mandate or mandate request has expired";
         if (!empty($bluem_config->instantMandatesResponseURI)) {
             wp_redirect($bluem_config->instantMandatesResponseURI . '?result=false&reason=expired');
             exit;
         }
-        $errormessage = esc_html__('Fout: de transactie is verlopen. Probeer het opnieuw.', 'bluem');
+        $errormessage = esc_html__('Error: the transaction has expired. Please try again.', 'bluem');
         bluem_dialogs_render_prompt($errormessage);
         exit;
     }
@@ -329,7 +329,7 @@ function bluem_mandates_instant_callback()
             'function' => 'shortcode_callback',
             'message' => sprintf(
                 /* translators: %s: status code */
-                esc_html__('Fout: Onbekende of foutieve status teruggekregen: %s<br>Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site', 'bluem'),
+                esc_html__('Error: unknown or invalid status received: %s<br>Please contact the webshop and mention this status; the user has been redirected back to the site.', 'bluem'),
                 $statusCode
             ),
         ]

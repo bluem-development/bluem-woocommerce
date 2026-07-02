@@ -140,7 +140,7 @@ function bluem_mandate_shortcode_execute(): void
         if (!empty($bluem_config->eMandateReason)) {
             $bluem_config->eMandateReason = mb_convert_encoding($bluem_config->eMandateReason, 'ISO-8859-1', 'UTF-8');
         } else {
-            $bluem_config->eMandateReason = 'Incasso machtiging ' . $debtorReference;
+            $bluem_config->eMandateReason = 'Direct debit mandate ' . $debtorReference;
         }
 
         $bluem = new Bluem($bluem_config);
@@ -184,7 +184,7 @@ function bluem_mandate_shortcode_execute(): void
 
         if (!isset($response->EMandateTransactionResponse->TransactionURL)) {
             $msg = esc_html__(
-                'Er ging iets mis bij het aanmaken van de transactie.<br>
+                'Something went wrong while creating the transaction.<br>
             Vermeld onderstaande informatie aan het websitebeheer:',
                 'bluem'
             );
@@ -196,7 +196,7 @@ function bluem_mandate_shortcode_execute(): void
                 $msg .= '<br>'
                     . esc_html($response->Error());
             } else {
-                $msg .= '<br>' . esc_html('Algemene fout', 'bluem');
+                $msg .= '<br>' . esc_html('General error', 'bluem');
             }
             bluem_error_report_email(
                 [
@@ -297,10 +297,10 @@ function bluem_mandate_shortcode_callback(): void
     if (!isset($_GET['mandateID'])) {
         if ($bluem_config->thanksPageURL !== '') {
             wp_redirect(home_url($bluem_config->thanksPageURL) . '?result=false&reason=error');
-            // echo "<p>Er is een fout opgetreden. De incassomachtiging is geannuleerd.</p>";
+            // echo "<p>An error occurred. The direct debit mandate has been canceled.</p>";
             return;
         }
-        $errormessage = esc_html__('Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.', 'bluem');
+        $errormessage = esc_html__('Error: no valid mandate ID was returned during callback. Please contact the webshop and mention your contact details.', 'bluem');
         bluem_error_report_email(
             [
                 'service' => 'mandates',
@@ -313,7 +313,7 @@ function bluem_mandate_shortcode_callback(): void
     }
 
     if (empty($entranceCode)) {
-        $errormessage = esc_html__('Fout: Entrancecode is niet set; kan dus geen mandaat opvragen', 'bluem');
+        $errormessage = esc_html__('Error: EntranceCode is not set, so the mandate cannot be retrieved.', 'bluem');
         bluem_error_report_email(
             [
                 'service' => 'mandates',
@@ -331,7 +331,7 @@ function bluem_mandate_shortcode_callback(): void
         $errormessage
             = sprintf(
                 /* translators: %s: error message */
-                esc_html__('Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status', 'bluem'),
+                esc_html__('Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem'),
                 $response->Error()
             );
         bluem_error_report_email(
@@ -407,19 +407,19 @@ function bluem_mandate_shortcode_callback(): void
         wp_redirect(home_url($bluem_config->thanksPageURL) . '?result=true');
         exit;
     } elseif ($statusCode === 'Cancelled') {
-        // "Je hebt de mandaat ondertekening geannuleerd";
+        // "You canceled the mandate signing";
         wp_redirect(home_url($bluem_config->thanksPageURL) . '?result=false&reason=cancelled');
         exit;
     } elseif ($statusCode === 'Open' || $statusCode == 'Pending') {
-        // "De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch."
+        // "The mandate signing has not yet been confirmed. This may take a moment but happens automatically."
         wp_redirect(home_url($bluem_config->thanksPageURL) . '?result=false&reason=open');
         exit;
     } elseif ($statusCode === 'Expired') {
-        // "Fout: De mandaat of het verzoek daartoe is verlopen";
+        // "Error: the mandate or mandate request has expired";
         wp_redirect(home_url($bluem_config->thanksPageURL) . '?result=false&reason=expired');
         exit;
     } else {
-        // "Fout: Onbekende of foutieve status";
+        // "Error: unknown or invalid status";
         bluem_error_report_email(
             [
                 'service' => 'mandates',
@@ -427,7 +427,7 @@ function bluem_mandate_shortcode_callback(): void
                 'message'
                     => sprintf(
                         /* translators: %s: error status */
-                        esc_html__('Fout: Onbekende of foutieve status teruggekregen: %s. Neem contact op met de webshop en vermeld deze status; gebruiker wel doorverwezen terug naar site', 'bluem'),
+                        esc_html__('Error: unknown or invalid status received: %s. Please contact the webshop and mention this status; the user has been redirected back to the site.', 'bluem'),
                         $statusCode
                     ),
             ]
@@ -546,11 +546,11 @@ function bluem_mandateform(): string
      * Check if eMandate is valid..
      */
     if ($validated !== false) {
-        return '<p>' . esc_html__('Bedankt voor je machtiging met machtiging ID:', 'bluem') . " <span class='bluem-mandate-id'>" . esc_attr($mandateID) . '</span></p>';
+        return '<p>' . esc_html__('Thank you for your mandate with mandate ID:', 'bluem') . " <span class='bluem-mandate-id'>" . esc_attr($mandateID) . '</span></p>';
     } else {
         $nonce = wp_create_nonce('bluem-nonce');
         $html = '<form action="' . home_url('bluem-woocommerce/mandate_shortcode_execute') . '?_wpnonce=' . $nonce . '" method="post">';
-        $html .= '<p>' . esc_html__('Je moet nog een automatische incasso machtiging afgeven.', 'bluem') . '</p>';
+        $html .= '<p>' . esc_html__('You still need to issue a direct debit mandate.', 'bluem') . '</p>';
 
         if (!empty($bluem_config->debtorReferenceFieldName)) {
             $html .= '<p>' . $bluem_config->debtorReferenceFieldName . ' (' . esc_html__('verplicht', 'bluem') . ')<br/>';
@@ -560,7 +560,7 @@ function bluem_mandateform(): string
         }
 
         $html .= '<p><input type="submit" name="bluem-submitted" class="bluem-woocommerce-button bluem-woocommerce-button-mandates" 
-            value="' . esc_html__('Machtiging proces starten', 'bluem') . '.."></p>';
+            value="' . esc_html__('Start mandate process', 'bluem') . '.."></p>';
         $html .= '</form>';
 
         return $html;

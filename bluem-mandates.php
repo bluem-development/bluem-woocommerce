@@ -35,14 +35,14 @@ function bluem_woocommerce_get_mandates_options()
             'key' => 'brandID',
             'title' => 'bluem_brandID',
             'name' => 'Bluem Brand ID',
-            'description' => 'Wat is je Bluem eMandates BrandID? Je hebt deze ontvangen door Bluem.',
+            'description' => 'What is your Bluem eMandates BrandID? You received this from Bluem.',
             'default' => '',
         ],
         'merchantID' => [
             'key' => 'merchantID',
             'title' => 'bluem_merchantID',
-            'name' => 'Incassant merchantID (benodigd voor machtigingen op Productie)',
-            'description' => 'Het merchantID, te vinden op het contract dat je hebt met de bank voor ontvangen van incasso machtigingen. <strong>Dit is essentieel: zonder dit gegeven zal een klant geen machtiging kunnen afsluiten op productie</strong>.',
+            'name' => 'Creditor merchantID (required for mandates in Production)',
+            'description' => 'The merchantID, found on the contract you have with the bank for receiving direct debit mandates. <strong>This is essential: without this value, a customer will not be able to complete a mandate in production</strong>.',
             'default' => '',
         ],
         'merchantSubId' => [
@@ -50,7 +50,7 @@ function bluem_woocommerce_get_mandates_options()
             'title' => 'bluem_merchantSubId',
             'name' => 'Bluem Merchant Sub ID',
             'default' => '0',
-            'description' => 'Hier hoef je waarschijnlijk niks aan te veranderen.',
+            'description' => 'You probably do not need to change this.',
             'type' => 'select',
             'options' => ['0' => '0'],
         ],
@@ -58,29 +58,29 @@ function bluem_woocommerce_get_mandates_options()
         'thanksPage' => [
             'key' => 'thanksPage',
             'title' => 'bluem_thanksPage',
-            'name' => 'Waar wordt de gebruiker uiteindelijk naar verwezen?',
+            'name' => 'Where is the user ultimately redirected?',
             'type' => 'select',
             'options' => [
-                'order_page' => 'Detailpagina van de zojuist geplaatste bestelling (standaard)',
+                'order_page' => 'Detail page of the newly placed order (default)',
             ],
         ],
         'eMandateReason' => [
             'key' => 'eMandateReason',
             'title' => 'bluem_eMandateReason',
-            'name' => 'Reden voor Machtiging',
-            'description' => 'Een bondige beschrijving van incasso weergegeven bij afgifte.',
-            'default' => 'Incasso machtiging',
+            'name' => 'Mandate reason',
+            'description' => 'A concise description of the direct debit shown during issuance.',
+            'default' => 'Direct debit mandate',
         ],
         'localInstrumentCode' => [
             'key' => 'localInstrumentCode',
             'title' => 'bluem_localInstrumentCode',
-            'name' => 'Type incasso machtiging afgifte',
-            'description' => 'Kies type incassomachtiging. Neem bij vragen hierover contact op met Bluem.',
+            'name' => 'Direct debit mandate issuance type',
+            'description' => 'Choose the direct debit mandate type. Contact Bluem if you have questions about this.',
             'type' => 'select',
             'default' => 'CORE',
             'options' => [
-                'CORE' => 'CORE machtiging',
-                'B2B' => 'B2B machtiging (zakelijk)',
+                'CORE' => 'CORE mandate',
+                'B2B' => 'B2B mandate (business)',
             ],
         ],
 
@@ -92,112 +92,112 @@ function bluem_woocommerce_get_mandates_options()
             'description' => '',
             'type' => 'select',
             'default' => 'Issuing',
-            'options' => ['Issuing' => 'Issuing (standaard)'],
+            'options' => ['Issuing' => 'Issuing (default)'],
         ],
 
         'sequenceType' => [
             'key' => 'sequenceType',
             'title' => 'bluem_sequenceType',
-            'name' => 'Type incasso sequentie',
+            'name' => 'Direct debit sequence type',
             'description' => '',
             'type' => 'select',
             'default' => 'RCUR',
             'options' => [
-                'RCUR' => 'Doorlopende machtiging (recurring)',
-                'OOFF' => 'Eenmalige machtiging (one-time)',
+                'RCUR' => 'Recurring mandate',
+                'OOFF' => 'One-time mandate',
             ],
         ],
 
         'mandatesUseDebtorWallet' => [
             'key' => 'mandatesUseDebtorWallet',
             'title' => 'bluem_mandatesUseDebtorWallet',
-            'name' => 'Selecteer bank methode',
-            'description' => "Wil je dat er in deze website al een bank moet worden geselecteerd bij de Checkout procedure, in plaats van in de Bluem Portal? Indien je 'Gebruik eigen checkout' selecteert, wordt er een veld toegevoegd aan de WooCommerce checkout pagina waar je een van de beschikbare banken kan selecteren.",
+            'name' => 'Select bank method',
+            'description' => "Do you want a bank to be selected on this website during checkout instead of in the Bluem Portal? If you select 'Use own checkout', a field will be added to the WooCommerce checkout page where you can select one of the available banks.",
             'type' => 'select',
             'default' => '0',
             'options' => [
-                '0' => 'Gebruik Bluem Portal (standaard)',
-                '1' => 'Gebruik eigen checkout',
+                '0' => 'Use Bluem Portal (default)',
+                '1' => 'Use own checkout',
             ],
         ],
 
         'successMessage' => [
             'key' => 'successMessage',
             'title' => 'bluem_successMessage',
-            'name' => 'Melding bij succesvolle machtiging via shortcode formulier',
-            'description' => 'Een bondige beschrijving volstaat.',
-            'default' => 'Uw machtiging is succesvol ontvangen. Hartelijk dank.',
+            'name' => 'Message for successful mandate via shortcode form',
+            'description' => 'A concise description is sufficient.',
+            'default' => 'Your mandate has been received successfully. Thank you.',
         ],
         'errorMessage' => [
             'key' => 'errorMessage',
             'title' => 'bluem_errorMessage',
-            'name' => 'Melding bij gefaalde machtiging via shortcode formulier',
-            'description' => 'Een bondige beschrijving volstaat.',
-            'default' => 'Er is een fout opgetreden. De incassomachtiging is geannuleerd.',
+            'name' => 'Message for failed mandate via shortcode form',
+            'description' => 'A concise description is sufficient.',
+            'default' => 'An error occurred. The direct debit mandate has been canceled.',
         ],
 
         'purchaseIDPrefix' => [
             'key' => 'purchaseIDPrefix',
             'title' => 'bluem_purchaseIDPrefix',
-            'name' => 'Automatisch Voorvoegsel bij klantreferentie',
-            'description' => 'Welke korte tekst moet voor de debtorReference weergegeven worden bij een transactie in de Bluem incassomachtiging portaal. Dit kan handig zijn om Bluem transacties makkelijk te kunnen identificeren.',
+            'name' => 'Automatic prefix for customer reference',
+            'description' => 'Which short text should be shown before the debtorReference for a transaction in the Bluem direct debit mandate portal. This can be useful for easily identifying Bluem transactions.',
             'type' => 'text',
             'default' => '',
         ],
         'debtorReferenceFieldName' => [
             'key' => 'debtorReferenceFieldName',
             'title' => 'bluem_debtorReferenceFieldName',
-            'name' => 'Label voor klantreferentie bij invulformulier shortcode',
-            'description' => "Indien je de Machtigingen shortcode gebruikt: Welk label moet bij het invulveld in het formulier komen te staan? Dit kan bijvoorbeeld 'volledige naam' of 'klantnummer' zijn. <strong>Laat dit veld leeg om alleen een knop weer te geven</strong>.",
+            'name' => 'Customer reference label for shortcode input form',
+            'description' => "If you use the Mandates shortcode: which label should be shown for the input field in the form? This could be 'full name' or 'customer number', for example. <strong>Leave this field empty to show only a button</strong>.",
             'type' => 'text',
             'default' => '',
         ],
         'thanksPageURL' => [
             'key' => 'thanksPageURL',
             'title' => 'bluem_thanksPageURL',
-            'name' => 'Slug van de resultaat pagina',
-            'description' => 'Indien je de Machtigingen shortcode gebruikt: Op welke pagina wordt de shortcode geplaatst? Dit is een slug, dus als je <code>thanks</code> invult, wordt de gehele URL: ' . site_url('thanks') . '. We geven de querystrings <code>result</code> en indien van toepassing <code>reason</code> mee waarmee je de status kan opvangen.',
+            'name' => 'Result page slug',
+            'description' => 'If you use the Mandates shortcode: on which page is the shortcode placed? This is a slug, so if you enter <code>thanks</code>, the full URL becomes: ' . site_url('thanks') . '. We include the query strings <code>result</code> and, where applicable, <code>reason</code> so you can capture the status.',
             'type' => 'text',
             'default' => '',
         ],
         'instantMandatesResponseURI' => [
             'key' => 'instantMandatesResponseURI',
             'title' => 'bluem_instantMandatesResponseURI',
-            'name' => 'URI voor InstantMandates',
-            'description' => 'Indien je InstantMandates gebruikt: De <code>response</code> URI na een request. Dit kan een externe URL of een Deep Link zijn. We geven de querystrings <code>result</code> en indien van toepassing <code>reason</code> mee waarmee je de status kan opvangen.',
+            'name' => 'URI for InstantMandates',
+            'description' => 'If you use InstantMandates: the <code>response</code> URI after a request. This can be an external URL or a deep link. We include the query strings <code>result</code> and, where applicable, <code>reason</code> so you can capture the status.',
             'type' => 'text',
             'default' => '',
         ],
         'mandate_id_counter' => [
             'key' => 'mandate_id_counter',
             'title' => 'bluem_mandate_id_counter',
-            'name' => 'Begingetal mandaat ID\'s',
-            'description' => 'Op welk getal wil je mandaat op dit moment nummeren? Dit getal wordt vervolgens automatisch opgehoogd.',
+            'name' => 'Starting number for mandate IDs',
+            'description' => 'At which number do you want to number mandates at this moment? This number is then automatically incremented.',
             'type' => 'text',
             'default' => '1',
         ],
         'maxAmountEnabled' => [
             'key' => 'maxAmountEnabled',
             'title' => 'bluem_maxAmountEnabled',
-            'name' => 'Check op maximale bestelwaarde voor incassomachtigingen',
-            'description' => "Wil je dat er bij zakelijke incassomachtigingen een check wordt uitgevoerd op de maximale waarde van de incasso, indien er een beperkte bedrag incasso machtiging is afgegeven? Zet dit gegeven dan op 'wel checken'. Er wordt dan een foutmelding gegeven als een klant een bestelling plaatst met een toegestaan bedrag dat lager is dan het orderbedrag (vermenigvuldigd met het volgende gegeven, de factor). Is de machtiging onbeperkt of anders groter dan het orderbedrag, dan wordt de machtiging geaccepteerd.",
+            'name' => 'Check maximum order value for direct debit mandates',
+            'description' => "Do you want business direct debit mandates to be checked against the maximum direct debit amount when a limited-amount mandate has been issued? Set this to 'check'. An error message will then be shown if a customer places an order with an allowed amount lower than the order amount (multiplied by the next setting, the factor). If the mandate is unlimited or otherwise higher than the order amount, the mandate is accepted.",
             'type' => 'select',
             'default' => '1',
             'options' => [
-                '1' => 'Wel checken op MaxAmount',
-                '0' => 'Niet checken op MaxAmount',
+                '1' => 'Check MaxAmount',
+                '0' => 'Do not check MaxAmount',
             ],
         ],
 
-        // Bij B2B krijgen wij terug of de gebruiker een maximaal mandaatbedrag heeft afgegeven.
-        // Dit mandaat bedrag wordt vergeleken met de orderwaarde. De orderwaarde plus
-        // onderstaand percentage moet lager zijn dan het maximale mandaatbedrag.
-        // Geef hier het percentage aan.
+        // For B2B, we receive whether the user has issued a maximum mandate amount.
+        // This mandate amount is compared with the order value. The order value plus
+        // the percentage below must be lower than the maximum mandate amount.
+        // Enter the percentage here.
         'maxAmountFactor' => [
             'key' => 'maxAmountFactor',
             'title' => 'bluem_maxAmountFactor',
-            'name' => 'Welke factor van de bestelling mag het maximale bestelbedrag zijn?',
-            'description' => 'Als er een max amount wordt meegestuurd, wat is dan het maximale bedrag wat wordt toegestaan? Gebaseerd op de order grootte.',
+            'name' => 'Which order factor may the maximum order amount be?',
+            'description' => 'If a max amount is sent along, what is the maximum allowed amount? Based on the order size.',
             'type' => 'number',
             'attrs' => [
                 'step' => '0.01',
@@ -255,32 +255,32 @@ function bluem_woocommerce_mandates_show_extra_profile_fields($user)
             // legacy code
             ?>
             <tr>
-                <th><label for="bluem_latest_mandate_id">Meest recente MandateID</label></th>
+                <th><label for="bluem_latest_mandate_id">Most recent MandateID</label></th>
                 <td>
                     <input type="text" name="bluem_latest_mandate_id" id="bluem_latest_mandate_id"
                            value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_latest_mandate_id', true)); ?>"
                            class="regular-text"/><br/>
-                    <span class="description">Hier wordt het meest recente mandate ID geplaatst; en gebruikt bij het doen van een volgende checkout.</span>
+                    <span class="description">The most recent mandate ID is placed here and used during the next checkout.</span>
                 </td>
             </tr>
             <tr>
-                <th><label for="bluem_latest_mandate_entrance_code">Meest recente EntranceCode</label></th>
+                <th><label for="bluem_latest_mandate_entrance_code">Most recent EntranceCode</label></th>
 
                 <td>
                     <input type="text" name="bluem_latest_mandate_entrance_code"
                            id="bluem_latest_mandate_entrance_code"
                            value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_latest_mandate_entrance_code', true)); ?>"
                            class="regular-text"/><br/>
-                    <span class="description">Hier wordt het meest recente entrance_code geplaatst; en gebruikt bij het doen van een volgende checkout.</span>
+                    <span class="description">The most recent entrance_code is placed here and used during the next checkout.</span>
                 </td>
             </tr>
             <tr>
-                <th><label for="bluem_latest_mandate_amount">Omvang laatste machtiging</label></th>
+                <th><label for="bluem_latest_mandate_amount">Amount of last mandate</label></th>
                 <td>
                     <input type="text" name="bluem_latest_mandate_amount" id="bluem_latest_mandate_amount"
                            value="<?php echo esc_attr(get_user_meta($user->ID, 'bluem_latest_mandate_amount', true)); ?>"
                            class="regular-text"/><br/>
-                    <span class="description">Dit is de omvang van de laatste machtiging</span>
+                    <span class="description">This is the amount of the last mandate</span>
                 </td>
             </tr>
 
@@ -288,7 +288,7 @@ function bluem_woocommerce_mandates_show_extra_profile_fields($user)
         }
     ?>
         <tr>
-            <th><label for="bluem_mandates_validated">Machtiging via shortcode / InstantMandates valide?</label></th>
+            <th><label for="bluem_mandates_validated">Mandate via shortcode / InstantMandates valid?</label></th>
             <td>
                 <?php
             $curValidatedVal = (int) esc_attr(
@@ -307,7 +307,7 @@ function bluem_woocommerce_mandates_show_extra_profile_fields($user)
             }
     ?>
                     >
-                        Ja
+                        Yes
                     </option>
                     <option value="0"
                         <?php
@@ -316,10 +316,10 @@ function bluem_woocommerce_mandates_show_extra_profile_fields($user)
     }
     ?>
                     >
-                        Nee
+                        No
                     </option>
                 </select><br/>
-                <span class="description">Is een machtiging via shortcode of InstantMandates doorgekomen? Indien van toepassing kan je dit hier overschrijven</span>
+                <span class="description">Has a mandate via shortcode or InstantMandates been received? If applicable, you can override this here</span>
             </td>
         </tr>
     </table>
@@ -384,7 +384,7 @@ function bluem_woocommerce_mandates_settings_section()
         $mandate_id_counter += 111000;
         update_option('bluem_woocommerce_mandate_id_counter', $mandate_id_counter);
     }
-    echo '<p><a id="tab_mandates"></a> Hier kan je alle belangrijke gegevens instellen rondom Digitale Incassomachtigingen.</p>';
+    echo '<p><a id="tab_mandates"></a> Here you can configure all important details for Digital Direct Debit Mandates.</p>';
 }
 
 // ********************** Mandate specific

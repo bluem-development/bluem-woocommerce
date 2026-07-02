@@ -653,7 +653,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
             'mandates'
         );
 
-        // "De ondertekening is geslaagd";
+        // "The signing succeeded";
         if (! empty($bluem_config->wpcf7Resultpage)) {
             wp_redirect(home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=true");
             exit;
@@ -672,7 +672,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
     }
 
     if ($statusCode === 'Cancelled') {
-        // "Je hebt de mandaat ondertekening geannuleerd";
+        // "You canceled the mandate signing";
         if (! empty($bluem_config->wpcf7Resultpage)) {
             wp_redirect(home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=cancelled");
             exit;
@@ -683,7 +683,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
     }
 
     if ($statusCode === 'Open' || $statusCode === 'Pending') {
-        // "De mandaatondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch."
+        // "The mandate signing has not yet been confirmed. This may take a moment but happens automatically."
         if (! empty($bluem_config->wpcf7Resultpage)) {
             wp_redirect(home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=open");
             exit;
@@ -694,7 +694,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
     }
 
     if ($statusCode === 'Expired') {
-        // "Fout: De mandaat of het verzoek daartoe is verlopen";
+        // "Error: the mandate or mandate request has expired";
         if (! empty($bluem_config->wpcf7Resultpage)) {
             wp_redirect(home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=expired");
             exit;
@@ -716,7 +716,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
         wp_redirect(home_url($bluem_config->wpcf7Resultpage) . "?form=$formID&result=false&reason=error");
         exit;
     }
-    $errormessage = 'Fout: er is een onbekende fout opgetreden. Probeer het opnieuw.';
+    $errormessage = 'Error: an unknown error occurred. Please try again.';
     bluem_dialogs_render_prompt($errormessage);
     exit;
 }
@@ -1066,7 +1066,7 @@ function bluem_woocommerce_integration_gform_callback()
             wp_redirect(home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&result=false&reason=error");
             exit;
         }
-        $errormessage = 'Fout: geen juist mandaat id teruggekregen bij callback. Neem contact op met de webshop en vermeld je contactgegevens.';
+        $errormessage = 'Error: no valid mandate ID was returned during callback. Please contact the webshop and mention your contact details.';
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
@@ -1079,7 +1079,7 @@ function bluem_woocommerce_integration_gform_callback()
     }
 
     if (empty($entranceCode)) {
-        $errormessage = 'Fout: Entrancecode is niet set; kan dus geen mandaat opvragen';
+        $errormessage = 'Error: EntranceCode is not set, so the mandate cannot be retrieved.';
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
@@ -1094,8 +1094,8 @@ function bluem_woocommerce_integration_gform_callback()
     $response = $bluem->MandateStatus($mandateID, $entranceCode);
 
     if (! $response->Status()) {
-        $errormessage = 'Fout bij opvragen status: ' . $response->Error() . '
-        <br>Neem contact op met de webshop en vermeld deze status';
+        $errormessage = 'Error retrieving status: ' . $response->Error() . '
+        <br>Please contact the webshop and mention this status';
         bluem_error_report_email(
             [
                 'service'  => 'mandates',
@@ -1244,7 +1244,7 @@ function bluem_woocommerce_integration_gform_callback()
             }
         }
 
-        // "De ondertekening is geslaagd";
+        // "The signing succeeded";
         if (! empty($bluem_config->gformResultpage)) {
             wp_redirect(home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=true");
             exit;
@@ -1261,7 +1261,7 @@ function bluem_woocommerce_integration_gform_callback()
 
         return;
     } elseif ($statusCode === 'Cancelled') {
-        // "Je hebt de mandaat ondertekening geannuleerd";
+        // "You canceled the mandate signing";
         if (! empty($bluem_config->gformResultpage)) {
             wp_redirect(home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=cancelled");
             exit;
@@ -1270,7 +1270,7 @@ function bluem_woocommerce_integration_gform_callback()
         bluem_dialogs_render_prompt($errormessage);
         exit;
     } elseif ($statusCode === 'Open' || $statusCode == 'Pending') {
-        // "De mandaat ondertekening is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch."
+        // "The mandate signing has not yet been confirmed. This may take a moment but happens automatically."
         if (! empty($bluem_config->gformResultpage)) {
             wp_redirect(home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=open");
             exit;
@@ -1279,7 +1279,7 @@ function bluem_woocommerce_integration_gform_callback()
         bluem_dialogs_render_prompt($errormessage);
         exit;
     } elseif ($statusCode === 'Expired') {
-        // "Fout: De mandaat of het verzoek daartoe is verlopen";
+        // "Error: the mandate or mandate request has expired";
         if (! empty($bluem_config->gformResultpage)) {
             wp_redirect(home_url($bluem_config->gformResultpage) . "?form=$formID&entry=$entryID&mid=$mandateID&ec=$entranceCode&result=false&reason=expired");
             exit;

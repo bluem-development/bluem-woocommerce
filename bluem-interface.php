@@ -448,7 +448,7 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0): void
             bluem_render_obj_row_recursive($valuekey, $valuevalue, $level + 1);
         }
     } elseif (is_bool($value)) {
-        echo ' ' . ($value ? esc_html__('Ja', 'bluem') : esc_html__('Nee', 'bluem'));
+        echo ' ' . ($value ? esc_html__('Yes', 'bluem') : esc_html__('No', 'bluem'));
     }
 
     echo '<br>';
@@ -465,7 +465,7 @@ function bluem_woocommerce_render_details_table(string $value): void
             $formHTML = '<table style="padding:5pt; border:1px solid #ddd; margin:10px 0; display: inline-block; vertical-align: inherit;">
 <thead>
     <tr>
-        <th style="text-align: left;">' . esc_html__('Naam', 'bluem') . '</th>
+        <th style="text-align: left;">' . esc_html__('Name', 'bluem') . '</th>
         <th style="text-align: left;">' . esc_html__('Waarde', 'bluem') . '</th>
     </tr>
 </thead>
@@ -531,7 +531,7 @@ function bluem_woocommerce_render_contactform7_table(string $value): void
             $formHTML = '<table style="display: inline-block; vertical-align: inherit;">
 <thead>
     <tr>
-        <th style="text-align: left;">' . esc_html__('Naam', 'bluem') . '</th>
+        <th style="text-align: left;">' . esc_html__('Name', 'bluem') . '</th>
         <th style="text-align: left;">' . esc_html__('Waarde', 'bluem') . '</th>
     </tr>
 </thead>
