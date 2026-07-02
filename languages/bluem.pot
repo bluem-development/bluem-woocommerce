@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-02T19:08:23+00:00\n"
+"POT-Creation-Date: 2026-07-02T19:13:59+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: bluem\n"
@@ -704,6 +704,7 @@ msgid "Status"
 msgstr ""
 
 #: bluem-interface.php:84
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:156
 #: views/request.php:48
 #: views/request.php:110
 msgid "Order"
@@ -813,19 +814,19 @@ msgstr ""
 
 #: bluem-interface.php:469
 #: bluem-interface.php:535
-msgid "Waarde"
+msgid "Value"
 msgstr ""
 
 #: bluem-interface.php:501
-msgid "Formulier invulling"
+msgid "Form entry"
 msgstr ""
 
 #: bluem-interface.php:505
-msgid "Bekijk"
+msgid "View"
 msgstr ""
 
 #: bluem-interface.php:540
-msgid "Formulier ID"
+msgid "Form ID"
 msgstr ""
 
 #: bluem-interface.php:569
@@ -924,48 +925,50 @@ msgstr ""
 #: bluem-mandates-instant.php:79
 msgid ""
 "Something went wrong while creating the transaction.<br>\n"
-"                Vermeld onderstaande informatie aan het websitebeheer:"
+"                Please provide the information below to the website administrator:"
 msgstr ""
 
-#: bluem-mandates-instant.php:181
+#: bluem-mandates-instant.php:180
 #: bluem-mandates-shortcode.php:303
 msgid "Error: no valid mandate ID was returned during callback. Please contact the webshop and mention your contact details."
 msgstr ""
 
-#: bluem-mandates-instant.php:194
+#: bluem-mandates-instant.php:193
 #: bluem-mandates-shortcode.php:316
 msgid "Error: EntranceCode is not set, so the mandate cannot be retrieved."
 msgstr ""
 
-#. translators: %s: error message
 #. translators: %s: error status
-#: bluem-mandates-instant.php:211
+#: bluem-mandates-instant.php:210
 #: bluem-mandates-shortcode.php:334
 #: bluem.php:806
 #: bluem.php:826
 #: bluem.php:886
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:479
+#: gateways/Bluem_Mandates_Payment_Gateway.php:692
+#: gateways/Bluem_Mandates_Payment_Gateway.php:710
 #, php-format
 msgid "Error retrieving status: %s. Please contact the webshop and mention this status."
 msgstr ""
 
-#: bluem-mandates-instant.php:281
+#: bluem-mandates-instant.php:280
 msgid "Error: the signing succeeded but no response URI was specified. Please contact the website to report this technical issue."
 msgstr ""
 
-#: bluem-mandates-instant.php:299
+#: bluem-mandates-instant.php:298
 msgid "Error: the transaction was canceled. Please try again."
 msgstr ""
 
-#: bluem-mandates-instant.php:310
+#: bluem-mandates-instant.php:309
 msgid "Error: the transaction is still open. This may take a moment. Refresh this page regularly to check the status."
 msgstr ""
 
-#: bluem-mandates-instant.php:321
+#: bluem-mandates-instant.php:320
 msgid "Error: the transaction has expired. Please try again."
 msgstr ""
 
 #. translators: %s: status code
-#: bluem-mandates-instant.php:332
+#: bluem-mandates-instant.php:331
 #, php-format
 msgid "Error: unknown or invalid status received: %s<br>Please contact the webshop and mention this status; the user has been redirected back to the site."
 msgstr ""
@@ -973,7 +976,7 @@ msgstr ""
 #: bluem-mandates-shortcode.php:186
 msgid ""
 "Something went wrong while creating the transaction.<br>\n"
-"            Vermeld onderstaande informatie aan het websitebeheer:"
+"            Please provide the information below to the website administrator:"
 msgstr ""
 
 #. translators: %s: error status
@@ -991,7 +994,7 @@ msgid "You still need to issue a direct debit mandate."
 msgstr ""
 
 #: bluem-mandates-shortcode.php:556
-msgid "verplicht"
+msgid "required"
 msgstr ""
 
 #: bluem-mandates-shortcode.php:563
@@ -1421,11 +1424,7 @@ msgstr ""
 #. translators: %1\$s: customer id %2\$s: order id
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:151
 #, php-format
-msgid "Klant %1$s, Bestelling %2$s"
-msgstr ""
-
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:156
-msgid "Bestelling"
+msgid "Customer %1$s, Order %2$s"
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:253
@@ -1433,7 +1432,7 @@ msgid "Awaiting Bluem Payment Signature"
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:256
-msgid "Betalingsproces geïnitieerd"
+msgid "Payment process initiated"
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:328
@@ -1448,19 +1447,19 @@ msgid "Received payment completed webhook notification, but status not updated -
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:348
-msgid "Betaling is gelukt en goedgekeurd; via webhook"
+msgid "Payment succeeded and was approved via webhook"
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:351
-msgid "Betaling is geannuleerd; via webhook"
+msgid "Payment was canceled via webhook"
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:355
-msgid "Betaling is verlopen; via webhook"
+msgid "Payment expired via webhook"
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:357
-msgid "Betaling is gefaald: fout of onbekende status; via webhook"
+msgid "Payment failed: error or unknown status via webhook"
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:372
@@ -1468,29 +1467,21 @@ msgid "Error: Exception"
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:421
-msgid "Fout: geen juiste entranceCode teruggekregen bij payment_callback. Neem contact op met de webshop en vermeld je contactgegevens."
+msgid "Error: no valid entranceCode was returned during payment_callback. Please contact the webshop and mention your contact details."
 msgstr ""
 
 #. translators: %s entrancecode
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:440
 #, php-format
 msgid ""
-"Fout: order niet gevonden in webshop.\n"
-"            Neem contact op met de webshop en vermeld de code %s bij je gegevens."
+"Error: order not found in webshop.\n"
+"            Please contact the webshop and mention the code %s with your details."
 msgstr ""
 
 #. translators: %s: entranceCode
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:460
 #, php-format
-msgid "Geen transactie ID gevonden. Neem contact op met de webshop en vermeld de code %s bij je gegevens."
-msgstr ""
-
-#. translators: %s: error message
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:479
-#: gateways/Bluem_Mandates_Payment_Gateway.php:692
-#: gateways/Bluem_Mandates_Payment_Gateway.php:710
-#, php-format
-msgid "Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status"
+msgid "No transaction ID found. Please contact the webshop and mention the code %s with your details."
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:514
@@ -1509,31 +1500,31 @@ msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:541
 msgid ""
-"Er ging iets mis bij het betalen,\n"
-"                of je hebt het betaalproces niet voltooid.\n"
-"                <br>Probeer opnieuw te betalen vanuit je bestellingsoverzicht\n"
-"                of neem contact op met de webshop\n"
-"                als het probleem zich blijft voordoen."
+"Something went wrong while paying,\n"
+"                or you did not complete the payment process.\n"
+"                <br>Try paying again from your order overview\n"
+"                or contact the webshop\n"
+"                if the problem persists."
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:565
-msgid "Je hebt de betaling geannuleerd"
+msgid "You canceled the payment"
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:572
-msgid "De betaling is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch."
+msgid "The payment has not been confirmed yet. This may take a moment but happens automatically."
 msgstr ""
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:582
-msgid "Fout: De betaling of het verzoek daartoe is verlopen"
+msgid "Error: the payment or payment request has expired"
 msgstr ""
 
 #. translators: %s: status code
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:599
 #, php-format
 msgid ""
-"Fout: Onbekende of foutieve status teruggekregen: %s.\n"
-"                        Neem contact op met de webshop en vermeld deze status"
+"Error: unknown or invalid status received: %s.\n"
+"                        Please contact the webshop and mention this status."
 msgstr ""
 
 #: gateways/Bluem_CarteBancaire_Payment_Gateway.php:15
@@ -1561,43 +1552,44 @@ msgid "Pay easily, quickly and safely via iDEAL"
 msgstr ""
 
 #: gateways/Bluem_iDEAL_Payment_Gateway.php:64
+#: gateways/Bluem_Mandates_Payment_Gateway.php:315
 msgid "Select a bank:"
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:21
-msgid "eMandate Payment Gateway voor WordPress - WooCommerce."
+msgid "eMandate Payment Gateway for WordPress - WooCommerce."
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:25
-msgid "Bluem Digitaal Incassomachtiging (eMandate)"
+msgid "Bluem Digital Direct Debit Mandate (eMandate)"
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:31
-msgid "Bluem Zakelijke Incassomachtiging (eMandate)"
+msgid "Bluem Business Direct Debit Mandate (eMandate)"
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:33
-msgid "Bluem Particuliere Incassomachtiging (eMandate)"
+msgid "Bluem Consumer Direct Debit Mandate (eMandate)"
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:110
-msgid "Activeer de Bluem eMandate Gateway"
+msgid "Enable the Bluem eMandate Gateway"
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:118
-msgid "Dit bepaalt de titel die de gebruiker ziet tijdens het afrekenen."
+msgid "This determines the title the user sees during checkout."
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:119
-msgid "Incasso machtiging voor zakelijke Rabobank, ING of ABN AMRO rekeningen"
+msgid "Direct debit mandate for business Rabobank, ING or ABN AMRO accounts"
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:124
-msgid "Dit bepaalt de beschrijving die de gebruiker ziet tijdens het afrekenen."
+msgid "This determines the description the user sees during checkout."
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:125
-msgid "Geef een B2B eMandate af voor een incasso voor je bestelling."
+msgid "Issue a B2B eMandate for a direct debit for your order."
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:198
@@ -1622,12 +1614,8 @@ msgstr ""
 msgid "Not ready, no metadata"
 msgstr ""
 
-#: gateways/Bluem_Mandates_Payment_Gateway.php:315
-msgid "Selecteer een bank:"
-msgstr ""
-
 #: gateways/Bluem_Mandates_Payment_Gateway.php:345
-msgid "Incasso machtiging"
+msgid "Direct debit mandate"
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:440
@@ -1665,41 +1653,49 @@ msgid "Error: Exception: %s"
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:644
-msgid "Fout: geen mandaat id teruggekregen bij mandates_callback. Neem contact op met de webshop en vermeld je contactgegevens."
+msgid "Error: no mandate ID was returned during mandates_callback. Please contact the webshop and mention your contact details."
 msgstr ""
 
 #. translators: %s: error code
 #: gateways/Bluem_Mandates_Payment_Gateway.php:660
 #, php-format
-msgid "Fout: mandaat niet gevonden in webshop orders. Neem contact op met de webshop en vermeld de code %s bij je gegevens."
+msgid "Error: mandate not found in webshop orders. Please contact the webshop and mention the code %s with your details."
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:765
 msgid ""
-"Uw machtiging wacht op goedkeuring van\n"
-"                    een andere ondertekenaar namens uw organisatie. \n"
-"                    Deze persoon dient in te loggen op internet bankieren\n"
-"                    en deze machtiging ook goed te keuren.\n"
-"                    Hierna is de machtiging goedgekeurd en zal dit\n"
-"                    reageren op deze site."
+"Your mandate is waiting for approval from\n"
+"                    another signer on behalf of your organization.\n"
+"                    This person must log in to online banking\n"
+"                    and also approve this mandate.\n"
+"                    After that, the mandate will be approved and this\n"
+"                    will be reflected on this site."
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:776
-msgid "Goedkeuring is afgebroken of geannuleerd"
+msgid "Approval was interrupted or canceled"
+msgstr ""
+
+#: gateways/Bluem_Mandates_Payment_Gateway.php:782
+msgid "You canceled the mandate signing"
+msgstr ""
+
+#: gateways/Bluem_Mandates_Payment_Gateway.php:786
+msgid "The mandate signing has not been confirmed yet. This may take a moment but happens automatically."
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:793
-msgid "Verzoek is verlopen"
+msgid "Request has expired"
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:801
-msgid "Fout: De mandaat of het verzoek daartoe is verlopen"
+msgid "Error: the mandate or mandate request has expired"
 msgstr ""
 
 #. translators: %s: error status code
 #: gateways/Bluem_Mandates_Payment_Gateway.php:811
 #, php-format
-msgid "Fout: Onbekende of foutieve status teruggekregen: %s. Neem contact op met de webshop en vermeld deze status"
+msgid "Error: unknown or invalid status received: %s. Please contact the webshop and mention this status."
 msgstr ""
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:910
@@ -1710,8 +1706,8 @@ msgstr ""
 #: gateways/Bluem_Mandates_Payment_Gateway.php:918
 #, php-format
 msgid ""
-"<p>Het automatische incasso mandaat dat je hebt afgegeven is niet toereikend voor de incassering van het factuurbedrag van jouw bestelling.</p>\n"
-"<p>De geschatte factuurwaarde van jouw bestelling is EUR %1$s. Het mandaat voor de automatische incasso die je hebt ingesteld is EUR %2$s. Ons advies is om jouw mandaat voor automatische incasso te verhogen of voor \"onbeperkt\" te kiezen.</p><p><a href=\"%3$s\" target=\"_self\">Klik hier om terug te gaan naar de betalingspagina en een nieuw mandaat af te geven</a></p>"
+"<p>The automatic direct debit mandate you issued is not sufficient for collecting the invoice amount of your order.</p>\n"
+"<p>The estimated invoice value of your order is EUR %1$s. The automatic direct debit mandate you configured is EUR %2$s. We recommend increasing your automatic direct debit mandate or choosing \"unlimited\".</p><p><a href=\"%3$s\" target=\"_self\">Click here to return to the payment page and issue a new mandate</a></p>"
 msgstr ""
 
 #. translators: %1$s: order max amount, %2$s: order link, %3$s: order id, %4$s: order amount,

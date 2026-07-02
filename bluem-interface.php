@@ -466,7 +466,7 @@ function bluem_woocommerce_render_details_table(string $value): void
 <thead>
     <tr>
         <th style="text-align: left;">' . esc_html__('Name', 'bluem') . '</th>
-        <th style="text-align: left;">' . esc_html__('Waarde', 'bluem') . '</th>
+        <th style="text-align: left;">' . esc_html__('Value', 'bluem') . '</th>
     </tr>
 </thead>
 <tbody>';
@@ -498,11 +498,11 @@ function bluem_woocommerce_render_details_table(string $value): void
             $formHTML .= "
 <tr>
 
-<td><span class='bluem-request-label'>" . esc_html__('Formulier invulling', 'bluem') . "</span></td>
+<td><span class='bluem-request-label'>" . esc_html__('Form entry', 'bluem') . "</span></td>
                         
                         <td>
                             <a href=\"$formLink\" target='_blank'>
-                            " . esc_html__('Bekijk', 'bluem') . '</a>
+                            " . esc_html__('View', 'bluem') . '</a>
                         </td>
                     </tr>';
         }
@@ -532,12 +532,12 @@ function bluem_woocommerce_render_contactform7_table(string $value): void
 <thead>
     <tr>
         <th style="text-align: left;">' . esc_html__('Name', 'bluem') . '</th>
-        <th style="text-align: left;">' . esc_html__('Waarde', 'bluem') . '</th>
+        <th style="text-align: left;">' . esc_html__('Value', 'bluem') . '</th>
     </tr>
 </thead>
 <tbody>
     <tr>
-        <td>' . esc_html__('Formulier ID', 'bluem') . ':</td>
+        <td>' . esc_html__('Form ID', 'bluem') . ':</td>
         <td>' . $contactFormData->id . '</td>
     </tr>';
         }

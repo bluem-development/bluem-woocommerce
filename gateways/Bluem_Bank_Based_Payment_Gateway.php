@@ -148,12 +148,12 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                 %1\$s: customer id
                 %2\$s: order id
                 */
-                esc_html__("Klant %1\$s, Bestelling %2\$s", 'bluem'),
+                esc_html__("Customer %1\$s, Order %2\$s", 'bluem'),
                 $customer_id,
                 $order_id
             );
         } else {
-            $description = esc_html__("Bestelling", 'bluem') . " " . $order_id;
+            $description = esc_html__("Order", 'bluem') . " " . $order_id;
         }
 
         $bluem_payments_ideal_bic = isset($_POST['bluem_payments_ideal_bic']) ? sanitize_text_field(wp_unslash($_POST['bluem_payments_ideal_bic'])) : '';
@@ -253,7 +253,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $order->update_status(BLUEM_WC_STATUS_PENDING, esc_html__('Awaiting Bluem Payment Signature', 'bluem'));
 
         if (isset($response->PaymentTransactionResponse->TransactionURL)) {
-            $order->add_order_note(esc_html__("Betalingsproces geïnitieerd", 'bluem'));
+            $order->add_order_note(esc_html__("Payment process initiated", 'bluem'));
 
             $transactionID = "" . $response->PaymentTransactionResponse->TransactionID;
             update_post_meta($order_id, 'bluem_transactionid', $transactionID);
@@ -345,16 +345,16 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                             )
                         );
                     } elseif ($order_status === BLUEM_WC_STATUS_PENDING) {
-                        $order->update_status(BLUEM_WC_STATUS_PROCESSING, esc_html__('Betaling is gelukt en goedgekeurd; via webhook', 'bluem'));
+                        $order->update_status(BLUEM_WC_STATUS_PROCESSING, esc_html__('Payment succeeded and was approved via webhook', 'bluem'));
                     }
                 } elseif ($webhook_status === "Cancelled") {
-                    $order->update_status(BLUEM_WC_STATUS_CANCELLED, esc_html__('Betaling is geannuleerd; via webhook', 'bluem'));
+                    $order->update_status(BLUEM_WC_STATUS_CANCELLED, esc_html__('Payment was canceled via webhook', 'bluem'));
                 } elseif ($webhook_status === "Open" || $webhook_status === "Pending") {
                     // if the webhook is still open or pending, nothing has to be done yet
                 } elseif ($webhook_status === "Expired") {
-                    $order->update_status(BLUEM_WC_STATUS_FAILED, esc_html__('Betaling is verlopen; via webhook', 'bluem'));
+                    $order->update_status(BLUEM_WC_STATUS_FAILED, esc_html__('Payment expired via webhook', 'bluem'));
                 } else {
-                    $order->update_status(BLUEM_WC_STATUS_FAILED, esc_html__('Betaling is gefaald: fout of onbekende status; via webhook', 'bluem'));
+                    $order->update_status(BLUEM_WC_STATUS_FAILED, esc_html__('Payment failed: error or unknown status via webhook', 'bluem'));
                 }
                 http_response_code(200);
                 echo 'OK';
@@ -418,7 +418,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
     public function bluem_bank_payments_callback(): void
     {
         if (! isset($_GET['entranceCode'])) {
-            $errormessage = esc_html__("Fout: geen juiste entranceCode teruggekregen bij payment_callback. Neem contact op met de webshop en vermeld je contactgegevens.", 'bluem');
+            $errormessage = esc_html__("Error: no valid entranceCode was returned during payment_callback. Please contact the webshop and mention your contact details.", 'bluem');
             bluem_error_report_email(
                 [
                     'service'  => 'payments',
@@ -437,8 +437,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         if (is_null($order)) {
             $errormessage = sprintf(
                 /* translators: %s entrancecode */
-                esc_html__("Fout: order niet gevonden in webshop.
-            Neem contact op met de webshop en vermeld de code %s bij je gegevens.", 'bluem'),
+                esc_html__("Error: order not found in webshop.
+            Please contact the webshop and mention the code %s with your details.", 'bluem'),
                 $entranceCode
             );
             bluem_error_report_email(
@@ -457,7 +457,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         if (empty($transactionID)) {
             $errormessage = sprintf(
                 /* translators: %s: entranceCode */
-                esc_html__("Geen transactie ID gevonden. Neem contact op met de webshop en vermeld de code %s bij je gegevens.", 'bluem'),
+                esc_html__("No transaction ID found. Please contact the webshop and mention the code %s with your details.", 'bluem'),
                 $entranceCode
             );
             bluem_error_report_email(
@@ -476,7 +476,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         if (! $response->Status()) {
             $errormessage = sprintf(
                 /* translators: %s: error message */
-                esc_html__("Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem'),
+                esc_html__("Error retrieving status: %s. Please contact the webshop and mention this status.", 'bluem'),
                 $response->Error()
             );
             bluem_error_report_email(
@@ -538,11 +538,11 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             bluem_transaction_notification_email(
                 $request_from_db->id
             );
-            $errormessage = wp_kses_post(__("Er ging iets mis bij het betalen,
-                of je hebt het betaalproces niet voltooid.
-                <br>Probeer opnieuw te betalen vanuit je bestellingsoverzicht
-                of neem contact op met de webshop
-                als het probleem zich blijft voordoen.", 'bluem'));
+            $errormessage = wp_kses_post(__("Something went wrong while paying,
+                or you did not complete the payment process.
+                <br>Try paying again from your order overview
+                or contact the webshop
+                if the problem persists.", 'bluem'));
             bluem_error_report_email(
                 [
                     'order_id' => $order->get_id(),
@@ -562,14 +562,14 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             bluem_transaction_notification_email(
                 $request_from_db->id
             );
-            bluem_dialogs_render_prompt(esc_html__("Je hebt de betaling geannuleerd", 'bluem'));
+            bluem_dialogs_render_prompt(esc_html__("You canceled the payment", 'bluem'));
             // terug naar order pagina om het opnieuw te proberen?
             exit;
         } elseif ($statusCode === "Open" || $statusCode === "Pending") {
             bluem_transaction_notification_email(
                 $request_from_db->id
             );
-            bluem_dialogs_render_prompt(esc_html__("De betaling is nog niet bevestigd. Dit kan even duren maar gebeurt automatisch.", 'bluem'));
+            bluem_dialogs_render_prompt(esc_html__("The payment has not been confirmed yet. This may take a moment but happens automatically.", 'bluem'));
             // callback pagina beschikbaar houden om het opnieuw te proberen?
             // is simpelweg SITE/wc-api/bluem_callback?transactionID=$transactionID
             exit;
@@ -579,7 +579,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                 $request_from_db->id
             );
 
-            bluem_dialogs_render_prompt(esc_html__("Fout: De betaling of het verzoek daartoe is verlopen", 'bluem'));
+            bluem_dialogs_render_prompt(esc_html__("Error: the payment or payment request has expired", 'bluem'));
             exit;
         } else {
             $order->update_status(BLUEM_WC_STATUS_FAILED, esc_html__('Payment failed: error or unknown status', 'bluem'));
@@ -597,8 +597,8 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                 sprintf(
                     /* translators: %s: status code */
                     esc_html__(
-                        "Fout: Onbekende of foutieve status teruggekregen: %s.
-                        Neem contact op met de webshop en vermeld deze status",
+                        "Error: unknown or invalid status received: %s.
+                        Please contact the webshop and mention this status.",
                         'bluem'
                     ),
                     $statusCode

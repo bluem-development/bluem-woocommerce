@@ -185,7 +185,7 @@ function bluem_mandate_shortcode_execute(): void
         if (!isset($response->EMandateTransactionResponse->TransactionURL)) {
             $msg = esc_html__(
                 'Something went wrong while creating the transaction.<br>
-            Vermeld onderstaande informatie aan het websitebeheer:',
+            Please provide the information below to the website administrator:',
                 'bluem'
             );
 
@@ -330,7 +330,7 @@ function bluem_mandate_shortcode_callback(): void
     if (!$response->Status()) {
         $errormessage
             = sprintf(
-                /* translators: %s: error message */
+                /* translators: %s: error status */
                 esc_html__('Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem'),
                 $response->Error()
             );
@@ -425,11 +425,11 @@ function bluem_mandate_shortcode_callback(): void
                 'service' => 'mandates',
                 'function' => 'shortcode_callback',
                 'message'
-                    => sprintf(
-                        /* translators: %s: error status */
-                        esc_html__('Error: unknown or invalid status received: %s. Please contact the webshop and mention this status; the user has been redirected back to the site.', 'bluem'),
-                        $statusCode
-                    ),
+                => sprintf(
+                    /* translators: %s: error status */
+                    esc_html__('Error: unknown or invalid status received: %s. Please contact the webshop and mention this status; the user has been redirected back to the site.', 'bluem'),
+                    $statusCode
+                ),
             ]
         );
         wp_redirect(home_url($bluem_config->thanksPageURL) . '?result=false&reason=error');
@@ -553,7 +553,7 @@ function bluem_mandateform(): string
         $html .= '<p>' . esc_html__('You still need to issue a direct debit mandate.', 'bluem') . '</p>';
 
         if (!empty($bluem_config->debtorReferenceFieldName)) {
-            $html .= '<p>' . $bluem_config->debtorReferenceFieldName . ' (' . esc_html__('verplicht', 'bluem') . ')<br/>';
+            $html .= '<p>' . $bluem_config->debtorReferenceFieldName . ' (' . esc_html__('required', 'bluem') . ')<br/>';
             $html .= '<input type="text" name="bluem_debtorReference" required /></p>';
         } else {
             $html .= '<input type="hidden" name="bluem_debtorReference" value="' . (!empty($current_user->ID) ? $current_user->ID : 'visitor-' . time()) . '"  />';

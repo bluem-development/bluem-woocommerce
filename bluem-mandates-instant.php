@@ -78,7 +78,7 @@ function bluem_mandates_instant_request(): void
             if (!isset($response->EMandateTransactionResponse->TransactionURL)) {
                 $msg = esc_html__(
                     'Something went wrong while creating the transaction.<br>
-                Vermeld onderstaande informatie aan het websitebeheer:',
+                Please provide the information below to the website administrator:',
                     'bluem'
                 );
 
@@ -144,7 +144,6 @@ function bluem_mandates_instant_request(): void
             wp_redirect($transactionURL);
             exit;
         } catch (\Exception $e) {
-
         }
     } else {
         wp_redirect($bluem_config->instantMandatesResponseURI . '?result=true');
@@ -207,7 +206,7 @@ function bluem_mandates_instant_callback()
 
     if (!$response->Status()) {
         $errormessage = sprintf(
-            /* translators: %s: error message */
+            /* translators: %s: error status */
             esc_html__('Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem'),
             $response->Error()
         );
