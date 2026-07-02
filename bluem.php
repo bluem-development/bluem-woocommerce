@@ -1047,7 +1047,7 @@ function bluem_settings_page() {
 }
 
 function bluem_woocommerce_general_settings_section() {
-    // Hier kan je alle belangrijke gegevens instellen rondom Bluem algemeen. <br>
+    // Here you can configure all important general Bluem details. <br>
     echo wp_kses_post( __( '<p><a id="tab_general"></a>
     <div class="notice notice-warning inline" style="padding:10px;">
     <span class="dashicons dashicons-unlock"></span>
@@ -1287,21 +1287,21 @@ function bluem_woocommerce_show_general_profile_fields() {
     ?>
     <h2>
         <?php echo wp_kses_post( bluem_get_bluem_logo_html( 48 ) ); ?>
-        <!-- Identiteit verificatie via Bluem -->
-        <?php esc_html_e( 'Bluem onderdelen', 'bluem' ); ?>
+        <!-- Identity verification via Bluem -->
+        <?php esc_html_e( 'Bluem components', 'bluem' ); ?>
     </h2>
     <table class="form-table">
 
         <tr>
             <th>
-                <?php esc_html_e( 'Configureren?', 'bluem' ); ?>
+                <?php esc_html_e( 'Configure?', 'bluem' ); ?>
             </th>
             <td>
                 <?php
                 printf(
                 /* translators: %s: link to bluem settings */
-                        esc_html__( 'Ga naar de <a href="%s">
-                    instellingen</a> om het gedrag van elk Bluem onderdeel te wijzigen.', 'bluem' ), esc_url( home_url( "wp-admin/admin.php?page=bluem-settings" ) ) );
+                        esc_html__( 'Go to the <a href="%s">
+                    settings</a> to change the behavior of each Bluem component.', 'bluem' ), esc_url( home_url( "wp-admin/admin.php?page=bluem-settings" ) ) );
                 ?>
             </td>
         </tr>
@@ -1472,7 +1472,7 @@ function bluem_woocommerce_get_core_options(): array {
                                     'test' => 'Test',
                                     'prod' => "Production (live)",
                             ]
-                // acceptance eventueel later toevoegen
+                // acceptance can be added later
             ],
             'senderID'                       => [
                     'key'         => 'senderID',
@@ -1589,7 +1589,7 @@ function bluem_woocommerce_add_age_verification_field() {
     // Custom Attribute Field
     woocommerce_wp_select( array(
             'id'          => 'age_verification',
-            'label'       => esc_html__( 'Leeftijdsverificatie', 'bluem' ),
+            'label'       => esc_html__( 'Age verification', 'bluem' ),
             'placeholder' => '',
             'options'     => array(
                     'enable'  => esc_html__( 'Enable', 'bluem' ),
@@ -1643,7 +1643,7 @@ function bluem_error_report_email( $data = [] ): bool {
     ) {
         $author_name  = sprintf(
         /* translators: %s: website name */
-                esc_html__( "Administratie van %s", 'bluem' ), get_bloginfo( 'name' ) );
+                esc_html__( "Administration of %s", 'bluem' ), get_bloginfo( 'name' ) );
         $author_email = esc_attr(
                 get_option( "admin_email" )
         );
@@ -1651,7 +1651,7 @@ function bluem_error_report_email( $data = [] ): bool {
         $to = "pluginsupport@bluem.nl";
 
         $subject = "[" . get_bloginfo( 'name' ) . "] ";
-        $subject .= esc_html__( "Notificatie Error in Bluem ", 'bluem' );
+        $subject .= esc_html__( "Error notification in Bluem ", 'bluem' );
 
         $message = sprintf(
         /* translators:
@@ -1705,7 +1705,7 @@ function bluem_error_report_email( $data = [] ): bool {
 function bluem_email_footer(): string {
     return sprintf(
     /* translators: %s: website url */
-            esc_html__( "Ga naar de site op %s om dit verzoek in detail te bekijken.", 'bluem' ), esc_url( home_url() ) );
+            esc_html__( "Go to the site at %s to view this request in detail.", 'bluem' ), esc_url( home_url() ) );
 }
 
 /**
@@ -1742,7 +1742,7 @@ function bluem_transaction_notification_email(
     ) {
         $author_name = sprintf(
         /* translators: %s: website name */
-                esc_html__( "Administratie van %s", 'bluem' ),
+                esc_html__( "Administration of %s", 'bluem' ),
                 get_bloginfo( 'name' )
         );
 
@@ -1751,7 +1751,7 @@ function bluem_transaction_notification_email(
         );
 
         $subject = "[" . get_bloginfo( 'name' ) . "] ";
-        $subject .= "Notificatie Bluem " . ucfirst( $data->type ) . " verzoek › ID " . $data->transaction_id;
+        $subject .= "Bluem " . ucfirst( $data->type ) . " request notification › ID " . $data->transaction_id;
         if ( isset( $data->status ) ) {
             $subject .= " › status: $data->status ";
         }
@@ -1759,17 +1759,17 @@ function bluem_transaction_notification_email(
         $message = "<p>" .
                    sprintf(
                    /* translators: %s: author name */
-                           esc_html__( "Beste %s,", 'bluem' ), $author_name
+                           esc_html__( "Dear %s,", 'bluem' ), $author_name
                    ) .
                    "</p>";
         $message .= wp_kses_post( sprintf(
         /* translators: %s: type of request */
-                __( "<p>Er is een nieuw Bluem %s verzoek verwerkt met de volgende gegevens:</p><p>", 'bluem' ), ucfirst( $data->type ) ) );
+                __( "<p>A new Bluem %s request has been processed with the following details:</p><p>", 'bluem' ), ucfirst( $data->type ) ) );
 
         ob_start();
         foreach ( $data as $k => $v ) {
             if ( $k === "payload" ) {
-                echo "<br><strong>" . esc_html__( 'Meer details', 'bluem' ) . "</strong>:<br> " . esc_html__( "Zie admin interface", 'bluem' ) . "<br>";
+                echo "<br><strong>" . esc_html__( 'More details', 'bluem' ) . "</strong>:<br> " . esc_html__( "See admin interface", 'bluem' ) . "<br>";
                 continue;
             }
 
@@ -1877,7 +1877,7 @@ function bluem_woocommerce_settings_render_suppress_woo() {
     );
 }
 
-//throw new Exception("Voorbeeld voor Peter");
+//throw new Exception("Example for Peter");
 
 function bluem_woocommerce_settings_render_error_reporting_email() {
     bluem_woocommerce_settings_render_input(
