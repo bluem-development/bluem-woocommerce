@@ -1463,14 +1463,14 @@ function bluem_woocommerce_get_core_options(): array {
             'environment'                    => [
                     'key'         => 'environment',
                     'title'       => 'bluem_environment',
-                    'name'        => esc_html__( 'Kies de actieve modus', 'bluem' ),
-                    'description' => esc_html__( 'Vul hier welke modus je wilt gebruiken: prod, test of acc in voor productie (live), test of acceptance omgeving.', 'bluem' ),
+                    'name'        => esc_html__( 'Choose the active mode', 'bluem' ),
+                    'description' => esc_html__( 'Enter which mode you want to use: prod, test or acc for the production (live), test or acceptance environment.', 'bluem' ),
                     'type'        => 'select',
                     'default'     => 'test',
                     'options'     =>
                             [
                                     'test' => 'Test',
-                                    'prod' => "Productie (live)",
+                                    'prod' => "Production (live)",
                             ]
                 // acceptance eventueel later toevoegen
             ],
@@ -1478,30 +1478,30 @@ function bluem_woocommerce_get_core_options(): array {
                     'key'         => 'senderID',
                     'title'       => 'bluem_senderID',
                     'name'        => esc_html__( 'Bluem Sender ID', 'bluem' ),
-                    'description' => esc_html__( 'Het sender ID, uitgegeven door Bluem. Begint met een S, gevolgd door een getal.', 'bluem' ),
+                    'description' => esc_html__( 'The Sender ID issued by Bluem. Starts with an S, followed by a number.', 'bluem' ),
                     'default'     => ""
             ],
             'test_accessToken'               => [
                     'key'         => 'test_accessToken',
                     'title'       => 'bluem_test_accessToken',
                     'type'        => 'password',
-                    'name'        => esc_html__( 'Access Token voor Testen', 'bluem' ),
-                    'description' => esc_html__( 'Het access token om met Bluem te kunnen communiceren, voor de test omgeving', 'bluem' ),
+                    'name'        => esc_html__( 'Access Token for Testing', 'bluem' ),
+                    'description' => esc_html__( 'The access token used to communicate with Bluem for the test environment.', 'bluem' ),
                     'default'     => ''
             ],
             'production_accessToken'         => [
                     'key'         => 'production_accessToken',
                     'title'       => 'bluem_production_accessToken',
                     'type'        => 'password',
-                    'name'        => esc_html__( 'Access Token voor Productie', 'bluem' ),
-                    'description' => esc_html__( 'Het access token om met Bluem te kunnen communiceren, voor de productie omgeving', 'bluem' ),
+                    'name'        => esc_html__( 'Access Token for Production', 'bluem' ),
+                    'description' => esc_html__( 'The access token used to communicate with Bluem for the production environment.', 'bluem' ),
                     'default'     => ''
             ],
             'expectedReturnStatus'           => [
                     'key'         => 'expectedReturnStatus',
                     'title'       => 'bluem_expectedReturnStatus',
-                    'name'        => esc_html__( 'Test modus return status', 'bluem' ),
-                    'description' => esc_html__( 'Welke status wil je terug krijgen voor een TEST transaction of status request? Mogelijke waarden: none, success, cancelled, expired, failure, open, pending', 'bluem' ),
+                    'name'        => esc_html__( 'Test mode return status', 'bluem' ),
+                    'description' => esc_html__( 'Which status do you want to receive for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending', 'bluem' ),
                     'default'     => 'success',
                     'type'        => 'select',
                     'options'     => [
@@ -1517,38 +1517,38 @@ function bluem_woocommerce_get_core_options(): array {
             'suppress_woo'                   => [
                     'key'         => 'suppress_woo',
                     'title'       => 'bluem_suppress_woo',
-                    'name'        => esc_html__( 'WooCommerce gebruiken?', 'bluem' ),
-                    'description' => esc_html__( 'Zet dit op "WooCommerce niet gebruiken" als je deze plug-in wilt gebruiken op deze site zonder WooCommerce functionaliteiten.', 'bluem' ),
+                    'name'        => esc_html__( 'Use WooCommerce?', 'bluem' ),
+                    'description' => esc_html__( 'Set this to "Do not use WooCommerce" if you want to use this plugin on this site without WooCommerce functionality.', 'bluem' ),
                     'type'        => 'select',
                     'default'     => '0',
                     'options'     =>
                             [
-                                    '0' => "WooCommerce wel gebruiken",
-                                    '1' => 'WooCommerce NIET gebruiken'
+                                    '0' => "Use WooCommerce",
+                                    '1' => 'Do NOT use WooCommerce'
                             ]
             ],
             'error_reporting_email'          => [
                     'key'         => 'error_reporting_email',
                     'title'       => 'bluem_error_reporting_email',
-                    'name'        => esc_html__( 'Rapporteer errors bij de developers', 'bluem' ),
-                    'description' => esc_html__( "Help ons snel problemen oplossen en downtime minimaliseren door niet-persoonlijke technische meldingen door te laten sturen.", 'bluem' ),
+                    'name'        => esc_html__( 'Report errors to the developers', 'bluem' ),
+                    'description' => esc_html__( "Help us resolve issues quickly and minimize downtime by forwarding non-personal technical notifications.", 'bluem' ),
                     'type'        => 'select',
                     'default'     => '1',
                     'options'     => [
-                            '1' => esc_html__( 'Ja, stuur errors door naar de developers', 'bluem' ),
-                            '0' => esc_html__( 'Geen error reportage via e-mail', 'bluem' ),
+                            '1' => esc_html__( 'Yes, forward errors to the developers', 'bluem' ),
+                            '0' => esc_html__( 'No error reporting by email', 'bluem' ),
                     ],
             ],
             'transaction_notification_email' => [
                     'key'         => 'transaction_notification_email',
                     'title'       => 'bluem_transaction_notification_email',
-                    'name'        => esc_html__( 'E-mail notificatie voor website eigenaar bij elke nieuwe transactie?', 'bluem' ),
-                    'description' => "Geef hier aan of je als website-eigenaar automatisch een notificatie e-mail wil ontvangen met transactiedetails",
+                    'name'        => esc_html__( 'Email notification for the website owner for each new transaction?', 'bluem' ),
+                    'description' => "Specify here whether you, as the website owner, want to automatically receive a notification email with transaction details",
                     'type'        => 'select',
                     'default'     => '0',
                     'options'     => [
-                            '0' => esc_html__( 'Geen e-mail notificatie (standaard)', 'bluem' ),
-                            '1' => esc_html__( 'Stuur notificatie voor elke transactie naar ', 'bluem' ) . esc_attr( get_option( 'admin_email' ) )
+                            '0' => esc_html__( 'No email notification (default)', 'bluem' ),
+                            '1' => esc_html__( 'Send a notification for each transaction to ', 'bluem' ) . esc_attr( get_option( 'admin_email' ) )
                     ],
             ],
     ];
