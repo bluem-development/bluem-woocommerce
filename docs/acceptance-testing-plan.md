@@ -58,6 +58,40 @@ The current `acceptance_smoke_test` target only has a cheap readiness check. Aft
 
 Keep the smoke target fast and boring. Add richer flows under separate groups, for example `settings`, `checkout`, or `callbacks`.
 
+## GitHub Actions preliminary step
+
+Before adding Playwright, add the Dockerized smoke suite to GitHub Actions. This should be a small CI change once `acceptance_prepare` works locally.
+
+Do not make GitHub Actions responsible for discovering how the WordPress setup should work. First make the local Make targets deterministic, then call those same targets from CI.
+
+Recommended implementation order:
+
+- implement `acceptance_prepare` locally
+- verify `make acceptance_prepare` followed by `make acceptance_smoke_test`
+- update `.github/workflows/ci.yml` to start Dockerized WordPress
+- run the same smoke target in CI
+- upload Codeception output and Docker logs when the smoke test fails
+
+Suggested CI shape:
+
+```yaml
+- uses: actions/checkout@v4
+
+- name: Install PHP dependencies
+  run: composer install --no-interaction --prefer-dist
+
+- name: Start WordPress
+  run: docker compose up -d
+
+- name: Prepare WordPress test site
+  run: make acceptance_prepare
+
+- name: Run acceptance smoke tests
+  run: make acceptance_smoke_test
+```
+
+This should stay in the existing CI flow at first, or as a clearly named separate job such as `acceptance-smoke`. A separate job is cleaner once the suite starts pulling Docker logs or takes noticeably longer than PHPUnit.
+
 ## Playwright next steps
 
 Do not add Playwright until the Codeception smoke path is stable and deterministic. Playwright is the right next layer when the test needs real browser behavior, JavaScript, screenshots, or reliable UI interaction with modern admin pages.
@@ -109,9 +143,9 @@ WP_ADMIN_PASSWORD=wordpress
 
 The first Playwright implementation should reuse the same Docker/WP-CLI setup created for Codeception. The browser layer should not be responsible for installing WordPress or preparing sample data; it should only exercise the already-prepared site.
 
-## CI path
+## Later CI path
 
-Once local setup is repeatable, mirror it in GitHub Actions:
+Once local setup is repeatable, mirror the broader acceptance flow in GitHub Actions:
 
 - check out the repository
 - install PHP dependencies
@@ -120,4 +154,4 @@ Once local setup is repeatable, mirror it in GitHub Actions:
 - run `make acceptance_smoke_test`
 - upload Codeception output and container logs on failure
 
-Add Playwright to CI only after the smoke suite is stable. Browser tests should run as a second job or a clearly separate step so simple PHP/site boot failures stay easy to diagnose.
+Add Playwright to CI only after the Codeception smoke suite is stable. Browser tests should run as a second job or a clearly separate step so simple PHP/site boot failures stay easy to diagnose.

@@ -14,7 +14,8 @@ class FirstTest
     public function frontpageWorks(AcceptanceTester $I)
     {
         $I->amOnPage('/');
-        $I->see('Home');
+        $I->see('Blog');
+        $I->see('wordpress');
     }
 
     /**
@@ -39,7 +40,6 @@ class FirstTest
         $I->fillField('input[name="pwd"]', 'notwordpress');
         $I->click('Log In');
         $I->see('Error: The password you entered for the username wordpress is incorrect.');
-
     }
 
     public function logout(AcceptanceTester $I)
@@ -65,6 +65,7 @@ class FirstTest
     {
         $this->ifIAmLoggedIn($I);
         $I->amOnPage('/wp-admin/admin.php?page=bluem-admin');
-        $I->see('Maak betalen gemakkelijk!');
+        $I->see('Make payments easy!');
+        $I->see("With the Bluem WordPress plugin, you can easily integrate online payments, identity checks and age verifications on your website.");
     }
 }
