@@ -3,6 +3,7 @@
 -include build.env
 
 PLUGIN_VERSION ?= $(NEW_TAG)
+ACCEPTANCE_URL ?= http://localhost:8000
 
 plugin_version:
 	echo "Version is $(PLUGIN_VERSION)"
@@ -15,6 +16,7 @@ help:
 	@printf '\- make test\n'
 	@printf '\- make unit_test\n'
 	@printf '\- make acceptance_test\n'
+	@printf '\- make acceptance_smoke_test\n'
 	@printf '\- make add_git_hooks\n'
 
 .PHONY: install
@@ -45,6 +47,19 @@ unit_test:
 acceptance_test:
 	@printf 'Acceptance tests:\n';
 	php vendor/bin/codecept run --steps
+
+.PHONY: acceptance_check_site
+acceptance_check_site:
+	@printf 'Checking WordPress at $(ACCEPTANCE_URL)...\n';
+	@curl --silent --show-error --fail --location --max-time 5 "$(ACCEPTANCE_URL)/wp-login.php" > /dev/null || { \
+		printf 'WordPress is not reachable at $(ACCEPTANCE_URL). Start and prepare the local Docker site before running acceptance tests.\n'; \
+		exit 1; \
+	}
+
+.PHONY: acceptance_smoke_test
+acceptance_smoke_test: acceptance_check_site
+	@printf 'Acceptance smoke tests:\n';
+	php vendor/bin/codecept run Acceptance --group smoke --steps
 
 .PHONY: add_git_hooks
 add_git_hooks:

@@ -8,12 +8,18 @@ class FirstTest
 {
     public function _before(AcceptanceTester $I) {}
 
+    /**
+     * @group smoke
+     */
     public function frontpageWorks(AcceptanceTester $I)
     {
         $I->amOnPage('/');
         $I->see('Home');
     }
 
+    /**
+     * @group smoke
+     */
     public function loginPageWorks(AcceptanceTester $I)
     {
         $I->amOnPage('/wp-admin');
@@ -52,6 +58,9 @@ class FirstTest
         $I->click('Log In');
     }
 
+    /**
+     * @group smoke
+     */
     public function visitBluemAdminPage(AcceptanceTester $I)
     {
         $this->ifIAmLoggedIn($I);
