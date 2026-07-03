@@ -1,4 +1,4 @@
-<?php if ( ! defined( 'ABSPATH' ) ) {
+<?php if (! defined('ABSPATH')) {
     exit;
 }
 ?>
@@ -19,27 +19,27 @@
 
 <div class="wrap">
     <h1>
-        <?php wp_kses_post(
-                sprintf(
+        <?php echo wp_kses_post(
+            sprintf(
                 /* translators: %s: logo html */
-                        esc_html__( '%s Import / export', 'bluem' ),
-                        bluem_get_bluem_logo_html( 48 ),
-                )
+                esc_html__('%s Import / export', 'bluem'),
+                bluem_get_bluem_logo_html(48),
+            )
         ); ?>
     </h1>
 
-    <?php bluem_render_nav_header( 'importexport' ); ?>
+    <?php bluem_render_nav_header('importexport'); ?>
 
-    <?php if ( isset( $messages ) && count( $messages ) > 0 ) {
+    <?php if (isset($messages) && count($messages) > 0) {
         ?>
         <div>
-            <?php foreach ( $messages as $m ) {
+            <?php foreach ($messages as $m) {
                 ?>
                 <div class="notice notice-info inline" style="padding:10pt;">
                     <?php
-                    echo esc_html( $m );
+                    echo esc_html($m);
 
-                    ?>
+                ?>
                 </div>
                 <?php
             } ?>
@@ -50,8 +50,8 @@
 
     <div>
         <p>
-            <a href="<?php echo admin_url( 'admin.php?page=bluem-settings' ); ?>" class="button">
-                <?php esc_html_e( '← Back to all settings', 'bluem' ); ?>
+            <a href="<?php echo admin_url('admin.php?page=bluem-settings'); ?>" class="button">
+                <?php esc_html_e('← Back to all settings', 'bluem'); ?>
             </a>
         </p>
     </div>
@@ -59,38 +59,38 @@
     <div style="width: 45%; float:left;">
 
 
-        <h2><span class="dashicons dashicons-database-export"></span> <?php esc_html_e( 'Exporteren', 'bluem' ); ?></h2>
+        <h2><span class="dashicons dashicons-database-export"></span> <?php esc_html_e('Export', 'bluem'); ?></h2>
         <p>
-            <?php esc_html_e( 'Kopieer en plak de onderstaande informatie om je instellingen te exporteren.', 'bluem' ); ?>
+            <?php esc_html_e('Copy and paste the information below to export your settings.', 'bluem'); ?>
         </p>
         <blockquote>
-        <pre class="bluem_port_input"><?php echo esc_js( $options_json ?? '' ); ?>
+        <pre class="bluem_port_input"><?php echo esc_js($options_json ?? ''); ?>
             </pre>
         </blockquote>
     </div>
 
 
     <div style="width: 45%; float:left;">
-        <h2><span class="dashicons dashicons-database-import"></span> <?php esc_html_e( 'Importeren', 'bluem' ); ?></h2>
+        <h2><span class="dashicons dashicons-database-import"></span> <?php esc_html_e('Import', 'bluem'); ?></h2>
 
         <p>
-            <?php esc_html_e( 'Upload je instellingen hier.', 'bluem' ); ?>
+            <?php esc_html_e('Upload your settings here.', 'bluem'); ?>
 
         <form method="post"
-              action="<?php echo esc_url( admin_url( 'admin.php?page=bluem-importexport' ) ); ?>">
+              action="<?php echo esc_url(admin_url('admin.php?page=bluem-importexport')); ?>">
 
             <input type="hidden" name="action" value="import">
 
-            <input type="hidden" name="bluem_importexport_nonce" value="<?php echo esc_attr( $form_nonce ); ?>">
+            <input type="hidden" name="bluem_importexport_nonce" value="<?php echo esc_attr($form_nonce); ?>">
 
             <label for="import">
                 Input:
             </label>
             <textarea class="bluem_port_input" name="import" id="import" rows="20"></textarea>
             <p>
-                <strong><?php esc_html_e( 'Let op! Bestaande instellingen zullen worden overschreven.', 'bluem' ); ?></strong>
+                <strong><?php esc_html_e('Warning! Existing settings will be overwritten.', 'bluem'); ?></strong>
             </p>
-            <button type="submit"><?php esc_html_e( 'Importeren', 'bluem' ); ?></button>
+            <button type="submit"><?php esc_html_e('Import', 'bluem'); ?></button>
         </form>
         </p>
     </div>

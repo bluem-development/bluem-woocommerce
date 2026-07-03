@@ -1,4 +1,8 @@
-<?php if ( ! defined( 'ABSPATH' ) ) exit;
+<?php
+
+if (! defined('ABSPATH')) {
+    exit;
+}
 
 include_once __DIR__ . '/Bluem_Bank_Based_Payment_Gateway.php';
 

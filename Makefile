@@ -23,11 +23,13 @@ install:
 
 .PHONY: lint
 lint:
-	./tools/php-cs-fixer/vendor/bin/php-cs-fixer check .
+	echo "Ensure that you ran composer install in the tools/php-cs-fixer folder first, otherwise the php-cs-fixer will not be available."
+	./tools/php-cs-fixer/vendor/bin/php-cs-fixer check
 
 .PHONY: lint_fix
 lint_fix:
-	./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix .
+	echo "Ensure that you ran composer install in the tools/php-cs-fixer folder first, otherwise the php-cs-fixer will not be available."
+	./tools/php-cs-fixer/vendor/bin/php-cs-fixer fix
 
 .PHONY: test
 test:
@@ -191,5 +193,7 @@ run-phpcs:
 run-phpcbf:
 	vendor/bin/phpcbf --standard=WordPress ./src bluem-*.php
 
-#send-email:
-#	@./loadenv.sh
+start-docker:
+	docker-compose up -d
+	sleep 1
+	open http://localhost:8000/wp-admin/

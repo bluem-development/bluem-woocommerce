@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -7,6 +8,7 @@ require_once __DIR__ . '/Bluem_Payment_Gateway_Interface.php';
 
 use Bluem\BluemPHP\Bluem;
 
+#[AllowDynamicProperties]
 abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem_Payment_Gateway_Interface
 {
     public const PAYMENT_STATUS_SUCCESS = "Success";
@@ -21,6 +23,14 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
      * @var Stdclass
      */
     protected $bluem_config;
+
+
+    public $id;
+    public $title;
+    public $icon;
+    public $method_description;
+    public $method_title;
+    public $method_description_content;
 
     /**
      * @var Bluem
@@ -38,9 +48,9 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
 
         // gateways can support subscriptions, refunds, saved payment methods,
         // but we support only payments at the moment
-        $this->supports = array(
-            'products'
-        );
+        $this->supports = [
+            'products',
+        ];
 
         // Load the settings.
         $this->init_settings();
@@ -61,10 +71,10 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
             $this->enabled = $this->get_option('enabled');
 
             // This action hook saves the settings
-            add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(
+            add_action('woocommerce_update_options_payment_gateways_' . $this->id, [
                 $this,
-                'process_admin_options'
-            ));
+                'process_admin_options',
+            ]);
 
             // ********** CREATING plugin URLs for specific functions **********
             // using WooCommerce's builtin webhook possibilities. This action creates an accessible URL wc-api/bluem_payments_webhook and one for the callback as well
@@ -80,10 +90,10 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
                 'woocommerce_order_data_store_cpt_get_orders_query',
                 function ($query, $query_vars) {
                     if (!empty($query_vars['bluem_transactionid'])) {
-                        $query['meta_query'][] = array(
+                        $query['meta_query'][] = [
                             'key' => 'bluem_transactionid',
                             'value' => esc_attr($query_vars['bluem_transactionid']),
-                        );
+                        ];
                     }
 
                     return $query;
@@ -95,10 +105,10 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
             // ********** Allow filtering Orders based on EntranceCode **********
             add_filter('woocommerce_order_data_store_cpt_get_orders_query', function ($query, $query_vars) {
                 if (!empty($query_vars['bluem_entrancecode'])) {
-                    $query['meta_query'][] = array(
+                    $query['meta_query'][] = [
                         'key' => 'bluem_entrancecode',
                         'value' => esc_attr($query_vars['bluem_entrancecode']),
-                    );
+                    ];
                 }
 
                 return $query;
@@ -133,7 +143,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
                 'label' => 'Enable ' . $this->method_title,
                 'type' => 'checkbox',
                 'description' => '',
-                'default' => 'no'
+                'default' => 'no',
             ],
             'title' => [
                 'title' => esc_html__('Displayed title', 'bluem'),
@@ -145,8 +155,8 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
                 'title' => esc_html__('Description', 'bluem'),
                 'type' => 'textarea',
                 'description' => esc_html__('This is the description the user sees during checkout.', 'bluem'),
-                'default' => $this->description
-            ]
+                'default' => $this->description,
+            ],
         ]);
     }
 

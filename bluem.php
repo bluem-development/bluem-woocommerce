@@ -2,14 +2,14 @@
 
 /**
  * Plugin Name: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce
- * Version: 1.3.34
+ * Version: 1.4.0
  * Plugin URI: https://bluem.nl/en/
  * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and much, much more
  * Author: Bluem Payment Services
  * Author URI: https://bluem.nl
- * Requires at least: 5.0
- * Tested up to: 6.6
- * Requires PHP: 8.0
+ * Requires at least: 6.0
+ * Tested up to: 7.0.0
+ * Requires PHP: 8.4
  *
  * License: GPL v3
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -291,9 +291,9 @@ function bluem_woocommerce_no_woocommerce_notice() {
             echo '<div class="notice notice-warning is-dismissible">
             <p><span class="dashicons dashicons-warning"></span>';
             /* translators: %s: the link to settings page   */
-            printf( wp_kses_post( 'De Bluem integratie is grotendeels afhankelijk van WooCommerce - installeer en/of activeer deze plug-in. <br/>
-            Gebruik je geen WooCommerce? Dan kan je deze melding en WooCommerce gerelateerde functionaliteiten uitzetten bij de %s.', 'bluem' ),
-                    '<a href="' . esc_url( admin_url( 'admin.php?page=bluem-settings' ) ) . '">' . esc_html__( 'Instellingen', 'bluem' ) . '</a>' );
+            printf( wp_kses_post( __( 'The Bluem integration depends heavily on WooCommerce - install and/or activate this plugin. <br/>
+            If you do not use WooCommerce, you can disable this notice and WooCommerce-related functionality in the %s.', 'bluem' ) ),
+                    '<a href="' . esc_url( admin_url( 'admin.php?page=bluem-settings' ) ) . '">' . esc_html__( 'Settings', 'bluem' ) . '</a>' );
             echo '</p>
             </div>';
         }
@@ -304,9 +304,9 @@ function bluem_woocommerce_no_permalinks_notice() {
     if ( is_admin() ) {
         echo '<div class="notice notice-warning is-dismissible">
         <p><span class="dashicons dashicons-warning"></span>';
-        esc_html_e( "De Bluem integratie is vanwege de routing afhankelijk van de WordPress Permalink instelling.<br>
-        Selecteer een optie BEHALVE \'Eenvoudig\' bij de Permalink", 'bluem' );
-        echo '<a href="' . esc_url( admin_url( 'options-permalink.php' ) ) . '">' . esc_html__( 'Instellingen', 'bluem' ) . '</a>.</p>
+        echo wp_kses_post( __( 'The Bluem integration depends on the WordPress permalink setting because of routing.<br>
+        Select any option except \'Plain\' in Permalinks.', 'bluem' ) );
+        echo '<a href="' . esc_url( admin_url( 'options-permalink.php' ) ) . '">' . esc_html__( 'Settings', 'bluem' ) . '</a>.</p>
         </div>';
     }
 }
@@ -346,8 +346,8 @@ function bluem_register_menu() {
 
     add_submenu_page(
             'bluem-admin',
-            esc_html__( 'Activatie', 'bluem' ),
-            esc_html__( 'Activatie', 'bluem' ),
+            esc_html__( 'Activation', 'bluem' ),
+            esc_html__( 'Activation', 'bluem' ),
             'manage_options',
             'bluem-activate',
             'bluem_plugin_activation'
@@ -355,8 +355,8 @@ function bluem_register_menu() {
 
     add_submenu_page(
             'bluem-admin',
-            esc_html__( 'Transacties', 'bluem' ),
-            esc_html__( 'Transacties', 'bluem' ),
+            esc_html__( 'Transactions', 'bluem' ),
+            esc_html__( 'Transactions', 'bluem' ),
             'manage_options',
             'bluem-transactions',
             'bluem_requests_view'
@@ -364,8 +364,8 @@ function bluem_register_menu() {
 
     add_submenu_page(
             'bluem-admin',
-            esc_html__( 'Instellingen', 'bluem' ),
-            esc_html__( 'Instellingen', 'bluem' ),
+            esc_html__( 'Settings', 'bluem' ),
+            esc_html__( 'Settings', 'bluem' ),
             'manage_options',
             'bluem-settings',
             'bluem_settings_page'
@@ -640,9 +640,9 @@ function bluem_update_request_by_id( $request_id ) {
             $response = $bluem->IdentityStatus( $request->transaction_id, $request->entrance_code );
 
             if ( ! $response->ReceivedResponse() ) {
-                $errormessage = printf(
+                $errormessage = sprintf(
                 /* translators: %s: error status */
-                        esc_html__( "Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem' ),
+                        wp_kses_post( __( 'Error retrieving status: %s<br>Please contact the webshop and mention this status.', 'bluem' ) ),
                         esc_html( $response->Error() )
                 );
                 bluem_error_report_email(
@@ -702,9 +702,9 @@ function bluem_update_request_by_id( $request_id ) {
 //                //
             }
         } catch ( Exception $e ) {
-            $errormessage = printf(
+            $errormessage = sprintf(
             /* translators: %s: error status */
-                    esc_html__( "Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem' ),
+                    wp_kses_post( __( 'Error retrieving status: %s<br>Please contact the webshop and mention this status.', 'bluem' ) ),
                     esc_html( $response->Error() )
             );
             bluem_error_report_email(
@@ -722,9 +722,9 @@ function bluem_update_request_by_id( $request_id ) {
             $response = $bluem->MandateStatus( $request->transaction_id, $request->entrance_code );
 
             if ( ! $response->Status() ) {
-                $errormessage = printf(
+                $errormessage = sprintf(
                 /* translators: %s: error status */
-                        esc_html__( "Fout bij opvragen status: %s<br>Neem contact op met de webshop en vermeld deze status", 'bluem' ),
+                        wp_kses_post( __( 'Error retrieving status: %s<br>Please contact the webshop and mention this status.', 'bluem' ) ),
                         esc_html( $response->Error() )
                 );
                 bluem_error_report_email(
@@ -801,9 +801,9 @@ function bluem_update_request_by_id( $request_id ) {
                 }
             }
         } catch ( Exception $e ) {
-            $errormessage = printf(
+            $errormessage = sprintf(
             /* translators: %s: error status */
-                    esc_html__( "Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem' ),
+                    wp_kses_post( __( 'Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem' ) ),
                     esc_html( $response->Error() )
             );
             bluem_error_report_email(
@@ -823,7 +823,7 @@ function bluem_update_request_by_id( $request_id ) {
             if ( ! $response->Status() ) {
                 $errormessage = printf(
                 /* translators: %s: error status */
-                        esc_html__( "Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem' ),
+                        wp_kses_post( __( 'Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem' ) ),
                         esc_html( $response->Error() )
                 );
                 bluem_error_report_email(
@@ -858,32 +858,32 @@ function bluem_update_request_by_id( $request_id ) {
              */
             if ( $statusCode === "Success" ) {
                 if ( ! empty ( $order ) ) {
-                    $order->update_status( 'processing', esc_html__( 'Betaling is binnengekomen', 'bluem' ) );
-                    $order->add_order_note( esc_html__( "Betalingsproces voltooid", 'bluem' ) );
+                    $order->update_status( 'processing', esc_html__( 'Payment has been received', 'bluem' ) );
+                    $order->add_order_note( esc_html__( "Payment process completed", 'bluem' ) );
                 }
 //            } elseif ($statusCode === "Pending") {
                 //
             } elseif ( $statusCode === "Cancelled" ) {
                 if ( ! empty ( $order ) ) {
-                    $order->update_status( 'cancelled', esc_html__( 'Betaling is geannuleerd', 'bluem' ) );
+                    $order->update_status( 'cancelled', esc_html__( 'Payment has been canceled', 'bluem' ) );
                 }
 //            } elseif ($statusCode === "Open") {
                 //
             } elseif ( $statusCode === "Expired" ) {
                 if ( ! empty ( $order ) ) {
-                    $order->update_status( 'failed', esc_html__( 'Betaling is verlopen', 'bluem' ) );
+                    $order->update_status( 'failed', esc_html__( 'Payment has expired', 'bluem' ) );
                 }
 //            } elseif ($statusCode === "New") {
                 //
             } else {
                 if ( ! empty ( $order ) ) {
-                    $order->update_status( 'failed', esc_html__( 'Betaling is gefaald: fout of onbekende status', 'bluem' ) );
+                    $order->update_status( 'failed', esc_html__( 'Payment failed: error or unknown status', 'bluem' ) );
                 }
             }
         } catch ( Exception $e ) {
-            $errormessage = printf(
+            $errormessage = sprintf(
             /* translators: %s: error status */
-                    esc_html__( "Fout bij opvragen status: %s. Neem contact op met de webshop en vermeld deze status", 'bluem' ),
+                    wp_kses_post( __( 'Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem' ) ),
                     esc_html( $response->Error() )
             );
             bluem_error_report_email(
@@ -952,7 +952,9 @@ function bluem_requests_view_with_filter( $filters = [], string $current_categor
 
     if ( $current_category === '' ) {
         $enabled_modules  = bluem_filter_request_types_enabled( BLUEM_TRANSACTION_REQUEST_TYPES );
-        $current_category = $enabled_modules[0];
+        if (!empty($enabled_modules[0])) {
+            $current_category = $enabled_modules[0];
+        }
     }
 
     include_once 'views/requests.php';
@@ -1045,27 +1047,27 @@ function bluem_settings_page() {
 }
 
 function bluem_woocommerce_general_settings_section() {
-    // Hier kan je alle belangrijke gegevens instellen rondom Bluem algemeen. <br>
-    wp_kses_post( __( '<p><a id="tab_general"></a>
+    // Here you can configure all important general Bluem details. <br>
+    echo wp_kses_post( __( '<p><a id="tab_general"></a>
     <div class="notice notice-warning inline" style="padding:10px;">
     <span class="dashicons dashicons-unlock"></span>
-    Let op:
-    Je hebt een geactiveerde account nodig bij Bluem.
-    De gegevens die je ontvangt via e-mail kan je hieronder
-    en per specifiek onderdeel invullen.
+    Notice:
+    You need an activated account with Bluem.
+    The details you receive by email can be entered below
+    and for each specific component.
     </div>
     </p>', 'bluem' ) );
 
     echo "<p>";
-    wp_kses_post( __( '<div class="notice notice-info inline" style="padding:10px;">
-    Heb je de plugin al geinstalleerd op een andere website?<br />
-    Gebruik dan de import / export functie om dezelfde instellingen
-    en voorkeuren in te laden.<br />', 'bluem' ) );
+    echo wp_kses_post( __( '<div class="notice notice-info inline" style="padding:10px;">
+    Have you already installed the plugin on another website?<br />
+    Then use the import / export function to load the same settings
+    and preferences.<br />', 'bluem' ) );
 
     printf(
             wp_kses_post(
             /* translators: %s: url to import/export page */
-                    __( 'Ga naar <a href="%s" class="">instellingen importeren of exporteren</a>.</div>', 'bluem' )
+                    __( 'Go to <a href="%s" class="">import or export settings</a>.</div>', 'bluem' )
             ),
             esc_url( admin_url( 'admin.php?page=bluem-importexport' ) )
     );
@@ -1285,21 +1287,21 @@ function bluem_woocommerce_show_general_profile_fields() {
     ?>
     <h2>
         <?php echo wp_kses_post( bluem_get_bluem_logo_html( 48 ) ); ?>
-        <!-- Identiteit verificatie via Bluem -->
-        <?php esc_html_e( 'Bluem onderdelen', 'bluem' ); ?>
+        <!-- Identity verification via Bluem -->
+        <?php esc_html_e( 'Bluem components', 'bluem' ); ?>
     </h2>
     <table class="form-table">
 
         <tr>
             <th>
-                <?php esc_html_e( 'Configureren?', 'bluem' ); ?>
+                <?php esc_html_e( 'Configure?', 'bluem' ); ?>
             </th>
             <td>
                 <?php
                 printf(
                 /* translators: %s: link to bluem settings */
-                        esc_html__( 'Ga naar de <a href="%s">
-                    instellingen</a> om het gedrag van elk Bluem onderdeel te wijzigen.', 'bluem' ), esc_url( home_url( "wp-admin/admin.php?page=bluem-settings" ) ) );
+                        esc_html__( 'Go to the <a href="%s">
+                    settings</a> to change the behavior of each Bluem component.', 'bluem' ), esc_url( home_url( "wp-admin/admin.php?page=bluem-settings" ) ) );
                 ?>
             </td>
         </tr>
@@ -1461,45 +1463,45 @@ function bluem_woocommerce_get_core_options(): array {
             'environment'                    => [
                     'key'         => 'environment',
                     'title'       => 'bluem_environment',
-                    'name'        => esc_html__( 'Kies de actieve modus', 'bluem' ),
-                    'description' => esc_html__( 'Vul hier welke modus je wilt gebruiken: prod, test of acc in voor productie (live), test of acceptance omgeving.', 'bluem' ),
+                    'name'        => esc_html__( 'Choose the active mode', 'bluem' ),
+                    'description' => esc_html__( 'Enter which mode you want to use: prod, test or acc for the production (live), test or acceptance environment.', 'bluem' ),
                     'type'        => 'select',
                     'default'     => 'test',
                     'options'     =>
                             [
                                     'test' => 'Test',
-                                    'prod' => "Productie (live)",
+                                    'prod' => "Production (live)",
                             ]
-                // acceptance eventueel later toevoegen
+                // acceptance can be added later
             ],
             'senderID'                       => [
                     'key'         => 'senderID',
                     'title'       => 'bluem_senderID',
                     'name'        => esc_html__( 'Bluem Sender ID', 'bluem' ),
-                    'description' => esc_html__( 'Het sender ID, uitgegeven door Bluem. Begint met een S, gevolgd door een getal.', 'bluem' ),
+                    'description' => esc_html__( 'The Sender ID issued by Bluem. Starts with an S, followed by a number.', 'bluem' ),
                     'default'     => ""
             ],
             'test_accessToken'               => [
                     'key'         => 'test_accessToken',
                     'title'       => 'bluem_test_accessToken',
                     'type'        => 'password',
-                    'name'        => esc_html__( 'Access Token voor Testen', 'bluem' ),
-                    'description' => esc_html__( 'Het access token om met Bluem te kunnen communiceren, voor de test omgeving', 'bluem' ),
+                    'name'        => esc_html__( 'Access Token for Testing', 'bluem' ),
+                    'description' => esc_html__( 'The access token used to communicate with Bluem for the test environment.', 'bluem' ),
                     'default'     => ''
             ],
             'production_accessToken'         => [
                     'key'         => 'production_accessToken',
                     'title'       => 'bluem_production_accessToken',
                     'type'        => 'password',
-                    'name'        => esc_html__( 'Access Token voor Productie', 'bluem' ),
-                    'description' => esc_html__( 'Het access token om met Bluem te kunnen communiceren, voor de productie omgeving', 'bluem' ),
+                    'name'        => esc_html__( 'Access Token for Production', 'bluem' ),
+                    'description' => esc_html__( 'The access token used to communicate with Bluem for the production environment.', 'bluem' ),
                     'default'     => ''
             ],
             'expectedReturnStatus'           => [
                     'key'         => 'expectedReturnStatus',
                     'title'       => 'bluem_expectedReturnStatus',
-                    'name'        => esc_html__( 'Test modus return status', 'bluem' ),
-                    'description' => esc_html__( 'Welke status wil je terug krijgen voor een TEST transaction of status request? Mogelijke waarden: none, success, cancelled, expired, failure, open, pending', 'bluem' ),
+                    'name'        => esc_html__( 'Test mode return status', 'bluem' ),
+                    'description' => esc_html__( 'Which status do you want to receive for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending', 'bluem' ),
                     'default'     => 'success',
                     'type'        => 'select',
                     'options'     => [
@@ -1515,38 +1517,38 @@ function bluem_woocommerce_get_core_options(): array {
             'suppress_woo'                   => [
                     'key'         => 'suppress_woo',
                     'title'       => 'bluem_suppress_woo',
-                    'name'        => esc_html__( 'WooCommerce gebruiken?', 'bluem' ),
-                    'description' => esc_html__( 'Zet dit op "WooCommerce niet gebruiken" als je deze plug-in wilt gebruiken op deze site zonder WooCommerce functionaliteiten.', 'bluem' ),
+                    'name'        => esc_html__( 'Use WooCommerce?', 'bluem' ),
+                    'description' => esc_html__( 'Set this to "Do not use WooCommerce" if you want to use this plugin on this site without WooCommerce functionality.', 'bluem' ),
                     'type'        => 'select',
                     'default'     => '0',
                     'options'     =>
                             [
-                                    '0' => "WooCommerce wel gebruiken",
-                                    '1' => 'WooCommerce NIET gebruiken'
+                                    '0' => "Use WooCommerce",
+                                    '1' => 'Do NOT use WooCommerce'
                             ]
             ],
             'error_reporting_email'          => [
                     'key'         => 'error_reporting_email',
                     'title'       => 'bluem_error_reporting_email',
-                    'name'        => esc_html__( 'Rapporteer errors bij de developers', 'bluem' ),
-                    'description' => esc_html__( "Help ons snel problemen oplossen en downtime minimaliseren door niet-persoonlijke technische meldingen door te laten sturen.", 'bluem' ),
+                    'name'        => esc_html__( 'Report errors to the developers', 'bluem' ),
+                    'description' => esc_html__( "Help us resolve issues quickly and minimize downtime by forwarding non-personal technical notifications.", 'bluem' ),
                     'type'        => 'select',
                     'default'     => '1',
                     'options'     => [
-                            '1' => esc_html__( 'Ja, stuur errors door naar de developers', 'bluem' ),
-                            '0' => esc_html__( 'Geen error reportage via e-mail', 'bluem' ),
+                            '1' => esc_html__( 'Yes, forward errors to the developers', 'bluem' ),
+                            '0' => esc_html__( 'No error reporting by email', 'bluem' ),
                     ],
             ],
             'transaction_notification_email' => [
                     'key'         => 'transaction_notification_email',
                     'title'       => 'bluem_transaction_notification_email',
-                    'name'        => esc_html__( 'E-mail notificatie voor website eigenaar bij elke nieuwe transactie?', 'bluem' ),
-                    'description' => "Geef hier aan of je als website-eigenaar automatisch een notificatie e-mail wil ontvangen met transactiedetails",
+                    'name'        => esc_html__( 'Email notification for the website owner for each new transaction?', 'bluem' ),
+                    'description' => "Specify here whether you, as the website owner, want to automatically receive a notification email with transaction details",
                     'type'        => 'select',
                     'default'     => '0',
                     'options'     => [
-                            '0' => esc_html__( 'Geen e-mail notificatie (standaard)', 'bluem' ),
-                            '1' => esc_html__( 'Stuur notificatie voor elke transactie naar ', 'bluem' ) . esc_attr( get_option( 'admin_email' ) )
+                            '0' => esc_html__( 'No email notification (default)', 'bluem' ),
+                            '1' => esc_html__( 'Send a notification for each transaction to ', 'bluem' ) . esc_attr( get_option( 'admin_email' ) )
                     ],
             ],
     ];
@@ -1587,7 +1589,7 @@ function bluem_woocommerce_add_age_verification_field() {
     // Custom Attribute Field
     woocommerce_wp_select( array(
             'id'          => 'age_verification',
-            'label'       => esc_html__( 'Leeftijdsverificatie', 'bluem' ),
+            'label'       => esc_html__( 'Age verification', 'bluem' ),
             'placeholder' => '',
             'options'     => array(
                     'enable'  => esc_html__( 'Enable', 'bluem' ),
@@ -1641,7 +1643,7 @@ function bluem_error_report_email( $data = [] ): bool {
     ) {
         $author_name  = sprintf(
         /* translators: %s: website name */
-                esc_html__( "Administratie van %s", 'bluem' ), get_bloginfo( 'name' ) );
+                esc_html__( "Administration of %s", 'bluem' ), get_bloginfo( 'name' ) );
         $author_email = esc_attr(
                 get_option( "admin_email" )
         );
@@ -1649,7 +1651,7 @@ function bluem_error_report_email( $data = [] ): bool {
         $to = "pluginsupport@bluem.nl";
 
         $subject = "[" . get_bloginfo( 'name' ) . "] ";
-        $subject .= esc_html__( "Notificatie Error in Bluem ", 'bluem' );
+        $subject .= esc_html__( "Error notification in Bluem ", 'bluem' );
 
         $message = sprintf(
         /* translators:
@@ -1703,7 +1705,7 @@ function bluem_error_report_email( $data = [] ): bool {
 function bluem_email_footer(): string {
     return sprintf(
     /* translators: %s: website url */
-            esc_html__( "Ga naar de site op %s om dit verzoek in detail te bekijken.", 'bluem' ), esc_url( home_url() ) );
+            esc_html__( "Go to the site at %s to view this request in detail.", 'bluem' ), esc_url( home_url() ) );
 }
 
 /**
@@ -1740,7 +1742,7 @@ function bluem_transaction_notification_email(
     ) {
         $author_name = sprintf(
         /* translators: %s: website name */
-                esc_html__( "Administratie van %s", 'bluem' ),
+                esc_html__( "Administration of %s", 'bluem' ),
                 get_bloginfo( 'name' )
         );
 
@@ -1749,7 +1751,7 @@ function bluem_transaction_notification_email(
         );
 
         $subject = "[" . get_bloginfo( 'name' ) . "] ";
-        $subject .= "Notificatie Bluem " . ucfirst( $data->type ) . " verzoek › ID " . $data->transaction_id;
+        $subject .= "Bluem " . ucfirst( $data->type ) . " request notification › ID " . $data->transaction_id;
         if ( isset( $data->status ) ) {
             $subject .= " › status: $data->status ";
         }
@@ -1757,17 +1759,17 @@ function bluem_transaction_notification_email(
         $message = "<p>" .
                    sprintf(
                    /* translators: %s: author name */
-                           esc_html__( "Beste %s,", 'bluem' ), $author_name
+                           esc_html__( "Dear %s,", 'bluem' ), $author_name
                    ) .
                    "</p>";
         $message .= wp_kses_post( sprintf(
         /* translators: %s: type of request */
-                __( "<p>Er is een nieuw Bluem %s verzoek verwerkt met de volgende gegevens:</p><p>", 'bluem' ), ucfirst( $data->type ) ) );
+                __( "<p>A new Bluem %s request has been processed with the following details:</p><p>", 'bluem' ), ucfirst( $data->type ) ) );
 
         ob_start();
         foreach ( $data as $k => $v ) {
             if ( $k === "payload" ) {
-                echo "<br><strong>" . esc_html__( 'Meer details', 'bluem' ) . "</strong>:<br> " . esc_html__( "Zie admin interface", 'bluem' ) . "<br>";
+                echo "<br><strong>" . esc_html__( 'More details', 'bluem' ) . "</strong>:<br> " . esc_html__( "See admin interface", 'bluem' ) . "<br>";
                 continue;
             }
 
@@ -1849,7 +1851,7 @@ function bluem_woocommerce_get_config(): Stdclass {
 
 function bluem_woocommerce_modules_settings_section() {
     echo "<p>" .
-         esc_html__( 'Tip: Verhoog de efficiëntie door alleen de diensten te activeren die voor jouw website van toepassing zijn.', 'bluem' ) .
+         esc_html__( 'Tip: Improve efficiency by only enabling the services that are relevant for your website.', 'bluem' ) .
          "</p>";
 }
 
@@ -1875,7 +1877,7 @@ function bluem_woocommerce_settings_render_suppress_woo() {
     );
 }
 
-//throw new Exception("Voorbeeld voor Peter");
+//throw new Exception("Example for Peter");
 
 function bluem_woocommerce_settings_render_error_reporting_email() {
     bluem_woocommerce_settings_render_input(
@@ -1895,9 +1897,9 @@ function bluem_woocommerce_modules_render_generic_activation( $module ) {
             'default'     => "",
             'description' => "",
             'options'     => [
-                    ''  => esc_html__( '(Maak een selectie)', 'bluem' ),
-                    '1' => esc_html__( 'Actief', 'bluem' ),
-                    '0' => esc_html__( 'Gedeactiveerd', 'bluem' )
+                    ''  => esc_html__( '(Make a selection)', 'bluem' ),
+                    '1' => esc_html__( 'Active', 'bluem' ),
+                    '0' => esc_html__( 'Disabled', 'bluem' )
             ],
             'type'        => "select"
     ];
@@ -1969,20 +1971,20 @@ function bluem_setup_incomplete() {
     }
 
     if ( $options == false ) {
-        $messages[] = esc_html__( "Account gegevens ontbreken", 'bluem' );
+        $messages[] = esc_html__( "Account details are missing", 'bluem' );
     } else {
         $valid_setup = true;
         $messages    = [];
         if ( ! array_key_exists( 'senderID', $options )
              || $options['senderID'] === ""
         ) {
-            $messages[]  = esc_html__( "SenderID ontbreekt", 'bluem' );
+            $messages[]  = esc_html__( "SenderID is missing", 'bluem' );
             $valid_setup = false;
         }
         if ( ! array_key_exists( 'test_accessToken', $options )
              || $options['test_accessToken'] === ""
         ) {
-            $messages[]  = esc_html__( "Test accessToken ontbreekt", 'bluem' );
+            $messages[]  = esc_html__( "Test accessToken is missing", 'bluem' );
             $valid_setup = false;
         }
 
@@ -1993,7 +1995,7 @@ function bluem_setup_incomplete() {
                      || $options['production_accessToken'] === ""
              )
         ) {
-            $messages[]  = esc_html__( "Production accessToken ontbreekt", 'bluem' );
+            $messages[]  = esc_html__( "Production accessToken is missing", 'bluem' );
             $valid_setup = false;
         }
 
@@ -2003,7 +2005,7 @@ function bluem_setup_incomplete() {
                      || $options['brandID'] === ""
              )
         ) {
-            $messages[]  = esc_html__( "eMandates brandID ontbreekt", 'bluem' );
+            $messages[]  = esc_html__( "eMandates brandID is missing", 'bluem' );
             $valid_setup = false;
         }
 
@@ -2013,7 +2015,7 @@ function bluem_setup_incomplete() {
                      || $options['merchantID'] === ""
              )
         ) {
-            $messages[]  = esc_html__( "eMandates merchantID ontbreekt", 'bluem' );
+            $messages[]  = esc_html__( "eMandates merchantID is missing", 'bluem' );
             $valid_setup = false;
         }
 
@@ -2021,8 +2023,64 @@ function bluem_setup_incomplete() {
              && ( ! array_key_exists( 'IDINBrandID', $options )
                   || $options['IDINBrandID'] === "" )
         ) {
-            $messages[]  = esc_html__( "iDIN BrandID ontbreekt", 'bluem' );
+            $messages[]  = esc_html__( "iDIN BrandID is missing", 'bluem' );
             $valid_setup = false;
+        }
+
+        // Validate payment brandIDs: iDEAL must be exactly SenderID + "Payment",
+        // other methods only need to start with a valid SenderID (S + digits).
+        if ( bluem_module_enabled( 'payments' ) ) {
+            $sender_id = $options['senderID'] ?? '';
+
+            // iDEAL: senderID must not be empty
+            if ($sender_id === '') {
+                $messages[] = sprintf(
+                    esc_html__('Your SenderID is not yet set, please add it in the settings', 'bluem')
+                );
+            }
+
+            // iDEAL, paymentsIDEALBrandID must be set
+            if ( empty( $options['paymentsIDEALBrandID'] ) ) {
+                $messages[]  = esc_html__( 'The Payments BrandID for iDEAL is missing.', 'bluem' );
+                $valid_setup = false;
+            } else {
+                // iDEAL: must be exactly <SenderID>Payment
+                if ( ! empty( $options['paymentsIDEALBrandID'] )
+                     && $options['paymentsIDEALBrandID'] !== $sender_id . 'Payment'
+                ) {
+                    $messages[]  = sprintf(
+                    /* translators: %1$s: the invalid brandID value %2$s: a valid BrandID value */
+                        esc_html__( 'The Payments BrandID for iDEAL ("%1$s") must match your SenderID + "Payment" (for example, %2$s).', 'bluem' ),
+                        esc_html( $options['paymentsIDEALBrandID'] ),
+                        esc_html( $sender_id . 'Payment' )
+                    );
+                    $valid_setup = false;
+                }
+            }
+
+            // Other payment methods: brandID must start with the configured SenderID
+            $other_brand_keys = [
+                'paymentsCreditcardBrandID'    => 'CreditCard',
+                'paymentsPayPalBrandID'        => 'PayPal',
+                'paymentsSofortBrandID'        => 'SOFORT',
+                'paymentsCarteBancaireBrandID' => 'Carte Bancaire',
+            ];
+
+            foreach ( $other_brand_keys as $option_key => $label ) {
+                if ( ! empty( $options[ $option_key ] )
+                     && ! empty( $sender_id )
+                     && strpos( $options[ $option_key ], $sender_id ) === false
+                ) {
+                    $messages[]  = sprintf(
+                    /* translators: %1$s: payment method label, %2$s: the invalid brandID value, %3$s: the expected SenderID prefix */
+                        esc_html__( 'The Payments BrandID for %1$s ("%2$s") must contain your SenderID ("%3$s").', 'bluem' ),
+                        esc_html( $label ),
+                        esc_html( $options[ $option_key ] ),
+                        esc_html( $sender_id )
+                    );
+                    $valid_setup = false;
+                }
+            }
         }
 
         /**
@@ -2037,19 +2095,19 @@ function bluem_setup_incomplete() {
                     case 'bluem_payments':
                         if ( $method->enabled === 'no' && bluem_module_enabled( 'payments' ) ) {
                             $msg = [
-                                    esc_html__( 'Je hebt de Bluem iDEAL ingeschakeld maar de betaalmethode nog niet binnen WooCommerce geactiveerd.', 'bluem' )
+                                    esc_html__( 'You have enabled Bluem iDEAL but the payment method has not yet been activated within WooCommerce.', 'bluem' )
                             ];
-                            bluem_display_module_notices( $msg, esc_html__( 'De Bluem integratie is nog niet volledig geactiveerd', 'bluem' ), ( ! empty( $_GET['page'] ) && $_GET['page'] !== 'wc-settings' ? esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) : '' ), esc_html__( 'Klik hier om naar de WooCommerce configuratie te gaan.', 'bluem' ) );
+                            bluem_display_module_notices( $msg, esc_html__( 'The Bluem integration has not been fully activated yet', 'bluem' ), ( ! empty( $_GET['page'] ) && $_GET['page'] !== 'wc-settings' ? esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) : '' ), esc_html__( 'Click here to go to the WooCommerce configuration.', 'bluem' ) );
                         }
                         break;
 
                     case 'bluem_mandates':
                         if ( $method->enabled === 'no' && bluem_module_enabled( 'mandates' ) ) {
                             $msg = [
-                                    esc_html__( 'Je hebt de Bluem mandates ingeschakeld maar de betaalmethode nog niet binnen WooCommerce geactiveerd.', 'bluem' )
+                                    esc_html__( 'You have enabled Bluem mandates but the payment method has not yet been activated within WooCommerce.', 'bluem' )
                             ];
-                            bluem_display_module_notices( $msg, esc_html__( 'De Bluem integratie is nog niet volledig geactiveerd', 'bluem' ),
-                                    ( ! empty( $_GET['page'] ) && $_GET['page'] !== 'wc-settings' ? esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) : '' ), esc_html__( 'Klik hier om naar de WooCommerce configuratie te gaan.', 'bluem' ) );
+                            bluem_display_module_notices( $msg, esc_html__( 'The Bluem integration has not been fully activated yet', 'bluem' ),
+                                    ( ! empty( $_GET['page'] ) && $_GET['page'] !== 'wc-settings' ? esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) : '' ), esc_html__( 'Click here to go to the WooCommerce configuration.', 'bluem' ) );
                         }
                         break;
                 }
@@ -2063,10 +2121,10 @@ function bluem_setup_incomplete() {
     bluem_display_module_notices(
             $messages,
             esc_html__(
-                    'De Bluem integratie is nog niet volledig ingesteld',
+                    'The Bluem integration has not been fully configured yet',
                     'bluem'
             ),
-            ( get_admin_page_title() !== "Bluem" ? admin_url( 'admin.php?page=bluem-settings' ) : '' ), esc_html__( 'Klik hier om de plugin verder in te stellen.', 'bluem' ) );
+            ( get_admin_page_title() !== "Bluem" ? admin_url( 'admin.php?page=bluem-settings' ) : '' ), esc_html__( 'Click here to continue configuring the plugin.', 'bluem' ) );
 }
 
 function bluem_display_module_notices( $notices, $title = '', $btn_link = '', $btn_title = '' ) {
@@ -2089,21 +2147,17 @@ function bluem_display_module_notices( $notices, $title = '', $btn_link = '', $b
 /*
  *  Adding Meta container admin shop_order pages
  */
-add_action( 'add_meta_boxes', 'bluem_order_requests_metabox' );
 
-/**
- * bluem_order_requests_metabox
- *
- * @return void
- */
-function bluem_order_requests_metabox() {
+add_action( 'add_meta_boxes_woocommerce_page_wc-orders', 'bluem_order_requests_metabox', 99, 1 );
+function bluem_order_requests_metabox( $order )
+{
     add_meta_box(
+            'woocommerce-shipping-details',
+            esc_html__('Bluem request(s)', 'bluem'),
             'bluem_order_requests_metabox_content',
-            esc_html__( 'Bluem request(s)', 'bluem' ),
-            'bluem_order_requests_metabox_content',
-            'shop_order',
+            'woocommerce_page_wc-orders',
             'normal',
-            'default'
+            'high'
     );
 }
 
@@ -2112,12 +2166,11 @@ function bluem_order_requests_metabox() {
  *
  * @return void
  */
-function bluem_order_requests_metabox_content() {
-    global $post;
+function bluem_order_requests_metabox_content($post) {
     $order_id = $post->ID;
 
-    //  requests from links:
     $requests_links = bluem_db_get_links_for_order( $order_id );
+
     $requests       = [];
     foreach ( $requests_links as $rql ) {
         $requests[] = bluem_db_get_request_by_id( $rql->request_id );
@@ -2155,7 +2208,7 @@ function bluem_dialogs_get_simple_header(): string {
 function bluem_dialogs_get_simple_footer( bool $include_link = true ): string {
     return (
            $include_link ?
-                   "<p><a href='" . esc_url( home_url() ) . "' target='_self' style='text-decoration:none;'>" . esc_html__( 'Ga terug naar de webshop', 'bluem' ) . "</a></p>" :
+                    "<p><a href='" . esc_url( home_url() ) . "' target='_self' style='text-decoration:none;'>" . esc_html__( 'Go back to the webshop', 'bluem' ) . "</a></p>" :
                    ""
            ) . "</div></body></html>";
 }
@@ -2214,7 +2267,7 @@ function bluem_admin_importexport() {
                 $import_data = null;
             }
             if ( is_null( $import_data ) ) {
-                $messages[] = esc_html__( "Kon niet importeren: de input is niet geldige JSON", 'bluem' );
+                $messages[] = esc_html__( "Could not import: the input is not valid JSON", 'bluem' );
                 $decoded    = false;
             }
         }
@@ -2229,7 +2282,7 @@ function bluem_admin_importexport() {
             }
             $messages[] = sprintf(
             /* translators: %s: number of settings */
-                    esc_html__( "Importeren is uitgevoerd: %s instellingen aangepast.", 'bluem' ),
+                    esc_html__( "Import completed: %s settings updated.", 'bluem' ),
                     $sett_count
             );
         }
