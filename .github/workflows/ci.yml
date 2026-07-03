@@ -26,11 +26,13 @@ jobs:
             - uses: actions/checkout@v2
 
             - uses: php-actions/composer@v5
+              with:
+                  php_version: 8.4
 
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v2
               with:
-                  php_version: 8.1
+                  php_version: 8.4
                   bootstrap: vendor/autoload.php
                   configuration: ./.github/workflows/phpunit.xml
             - run: echo "🍏 This job's status is ${{ job.status }}."
