@@ -23,7 +23,7 @@ jobs:
                   file_name: .env
                   fail_on_empty: false
 
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v7
 
             - uses: php-actions/composer@v6
               with:
