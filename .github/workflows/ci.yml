@@ -30,7 +30,7 @@ jobs:
                   php_version: 8.4
 
             - name: PHPUnit Tests
-              uses: php-actions/phpunit@v2
+              uses: php-actions/phpunit@v4
               with:
                   php_version: 8.4
                   bootstrap: vendor/autoload.php
