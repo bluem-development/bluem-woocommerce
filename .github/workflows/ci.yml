@@ -8,7 +8,7 @@ jobs:
 
         steps:
             - name: Make .envfile
-              uses: SpicyPizza/create-envfile@v1.3
+              uses: SpicyPizza/create-envfile@v2.0
               with:
                   envkey_BLUEM_SENDER_ID: ${{ secrets.TEST_SENDER_ID }}
                   envkey_BLUEM_ENV: "test"
