@@ -45,6 +45,14 @@ Your local environment (a WordPress website instance has to be running, at [loca
 make acceptance_test
 ```
 
+For the cheapest real-site smoke check, run only the Codeception smoke group:
+
+```bash
+make acceptance_smoke_test
+```
+
+See [docs/acceptance-testing-plan.md](docs/acceptance-testing-plan.md) for the Docker, WP-CLI, CI, and Playwright follow-up plan.
+
 # Installation
 <!-- If you want to install this plug-in, the easiest way is to use the WordPress plug-in directly from the WordPress plug-in directory here: -->
 
