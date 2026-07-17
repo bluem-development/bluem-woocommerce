@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce
- * Version: 1.4.0
+ * Version: 1.4.1
  * Plugin URI: https://bluem.nl/en/
  * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and much, much more
  * Author: Bluem Payment Services
@@ -411,8 +411,52 @@ function bluem_get_composer_dependency_version( $dependency_name ) {
         return $package['name'] === $dependency_name;
     } );
 
-    // Retrieve the version constraint of the specified dependency
+    if ( empty( $package_entry ) ) {
+        return false;
+    }
+
+    // Retrieve the locked version of the specified dependency.
     return reset( $package_entry )['version'];
+}
+
+/**
+ * Build environment details for Bluem support reports.
+ */
+function bluem_get_support_report_environment(): array {
+    if ( ! function_exists( 'get_plugin_data' ) ) {
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    }
+
+    $plugin_data = get_plugin_data( plugin_dir_path( __FILE__ ) . 'bluem.php' );
+
+    return [
+            'plugin_version'    => $plugin_data['Version'] ?? 'unknown',
+            'bluem_php_version' => bluem_get_composer_dependency_version( 'bluem-development/bluem-php' ) ?: 'unknown',
+            'php_version'       => PHP_VERSION,
+            'wordpress_version' => get_bloginfo( 'version' ),
+            'woocommerce_version' => class_exists( 'WooCommerce' ) && function_exists( 'WC' )
+                    ? WC()->version
+                    : 'not installed',
+            'site_url'          => home_url(),
+    ];
+}
+
+/**
+ * Build a compact stack trace without function arguments for support reports.
+ */
+function bluem_get_support_report_trace(): array {
+    $trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 12 );
+
+    return array_map(
+            static function ( $frame ) {
+                return [
+                        'function' => ( $frame['class'] ?? '' ) . ( $frame['type'] ?? '' ) . ( $frame['function'] ?? '' ),
+                        'file'     => $frame['file'] ?? '',
+                        'line'     => $frame['line'] ?? '',
+                ];
+            },
+            array_slice( $trace, 1 )
+    );
 }
 
 /**
@@ -1628,6 +1672,8 @@ function bluem_error_report_email( $data = [] ): bool {
 
     $data                  = (object) $data;
     $data->error_report_id = $error_report_id;
+    $data->environment     = $data->environment ?? bluem_get_support_report_environment();
+    $data->trace           = $data->trace ?? bluem_get_support_report_trace();
 
     $settings = get_option( 'bluem_woocommerce_options' );
 

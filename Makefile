@@ -106,20 +106,24 @@ check-tag:
 confirm:
 	@echo "$(BLUE)You are about to release a new version, namely \"$(PLUGIN_VERSION)\". Are you sure? [Y/n]$(NC)" && read ans && [ $${ans:-Y} = Y ]
 
+get-fresh-svn:
+	svn checkout $(SVN_URL) svn-directory
+	# https://plugins.svn.wordpress.org/bluem
+
 svn-check:
-	@#echo "$(BLUE)Checking SVN availability...$(NC)"
-	@#svn --version > /dev/null 2>&1 || (echo "$(RED)SVN not available. Please install SVN.$(NC)" && exit 1)
+	@echo "$(BLUE)Checking SVN availability...$(NC)"
+	@svn --version > /dev/null 2>&1 || (echo "$(RED)SVN not available. Please install SVN.$(NC)" && exit 1)
 
 repo-check:
-	@#echo "$(BLUE)Checking SVN repository availability...$(NC)"
-	@#svn info $(SVN_URL) > /dev/null 2>&1 || (echo "$(RED)Cannot access SVN repository. Check network or URL.$(NC)" && exit 1)
+	@echo "$(BLUE)Checking SVN repository availability...$(NC)"
+	@svn info $(SVN_URL) > /dev/null 2>&1 || (echo "$(RED)Cannot access SVN repository. Check network or URL.$(NC)" && exit 1)
 
 pre-deployment:
 	#make run-phpcbf
 	@echo "$(BLUE)Preparing build directory...$(NC)"
 	if [ -d "$(BUILD_DIR)" ]; then \
         if [ "$(BUILD_DIR)" != "/" ]; then \
-            rm -rf "$(BUILD_DIR)"/*; \
+            find "$(BUILD_DIR)" -mindepth 1 -maxdepth 1 -exec rm -rf {} +; \
         fi \
     else \
         mkdir -p "$(BUILD_DIR)"; \
@@ -129,11 +133,13 @@ pre-deployment:
 	@cd $(BUILD_DIR) && composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction || { echo "$(RED)Composer install failed!$(NC)"; exit 1; }
 	@cd $(BUILD_DIR) && composer clear-cache
 	@echo "$(BLUE)Removing unnecessary files from build directory...$(NC)"
-	@cd $(BUILD_DIR) && rm -rf README.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml codeception.yml Dockerfile loadenv.sh Makefile .php-cs-fixer.cache .phpunit.result.cache .travis.yml phpunit.xml psalm.xml .DS_STORE .svnignore loadenv.sh
+	@cd $(BUILD_DIR) && rm -rf README.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml codeception.yml Dockerfile loadenv.sh Makefile .php-cs-fixer.cache .php-cs-fixer.dist.php .phpunit.result.cache .travis.yml phpunit.xml psalm.xml .DS_STORE .svnignore .vscode loadenv.sh
 	@rm -rf $(BUILD_DIR)/vendor/bluem-development/bluem-php/examples $(BUILD_DIR)/vendor/bluem-development/bluem-php/tests $(BUILD_DIR)/vendor/bluem-development/bluem-php/.github
+	@rm -rf $(BUILD_DIR)/vendor/bluem-development/bluem-php/.githooks
 	@rm $(BUILD_DIR)/vendor/bluem-development/bluem-php/.env.example
 	@rm $(BUILD_DIR)/build.env
 	@rm $(BUILD_DIR)/vendor/bluem-development/bluem-php/.gitignore
+	@rm -rf $(BUILD_DIR)/vendor/robrichards/xmlseclibs/.github
 	@rm -rf $(BUILD_DIR)/vendor/selective/xmldsig/.github
 
 add-tag:
@@ -141,7 +147,7 @@ add-tag:
 	@echo "$(BLUE)Copying files to SVN tag directory...$(NC)"
 	@echo "Folder: $(SVN_DIR)/tags/$(PLUGIN_VERSION)"
 	if [ -d "$(SVN_DIR)/tags/$(PLUGIN_VERSION)" ]; then \
-		rm -rf "$(SVN_DIR)/tags/$(PLUGIN_VERSION)"/*; \
+		find "$(SVN_DIR)/tags/$(PLUGIN_VERSION)" -mindepth 1 -maxdepth 1 -exec rm -rf {} +; \
 	else \
 		mkdir -p "$(SVN_DIR)/tags/$(PLUGIN_VERSION)"; \
 	fi
@@ -159,11 +165,10 @@ add-tag:
 update-trunk:
 	@echo "$(BLUE)Also updating trunk files to  latest tag $(PLUGIN_VERSION)...$(NC)"
 	if [ -d "$(SVN_DIR)/trunk" ]; then \
-		rm -rf "$(SVN_DIR)/trunk"/*; \
+		find "$(SVN_DIR)/trunk" -mindepth 1 -maxdepth 1 -exec rm -rf {} +; \
 	else \
 		mkdir -p "$(SVN_DIR)/trunk"; \
 	fi
-	@rm -rf $(SVN_DIR)/trunk/*
 	@cp -R $(BUILD_DIR)/* $(SVN_DIR)/trunk/.
 	@echo "$(BLUE)Commit trunk to SVN to this latest tag $(PLUGIN_VERSION)...$(NC)"
 	@echo "$(RED) Don't forget to actually commit to SVN now."
@@ -180,10 +185,6 @@ commit-to-svn:
 	svn add $(SVN_DIR)/trunk --force
 	cd $(SVN_DIR); svn commit -m "Replaced trunk folder with version $(PLUGIN_VERSION)"
 	@echo "$(GREEN)Done!$(NC)"
-
-get-fresh-svn:
-	svn checkout $(SVN_URL) svn-directory
-	# https://plugins.svn.wordpress.org/bluem
 
 .PHONY: release
 release: commit-to-svn
