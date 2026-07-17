@@ -135,6 +135,7 @@ pre-deployment:
 	@echo "$(BLUE)Removing unnecessary files from build directory...$(NC)"
 	@cd $(BUILD_DIR) && rm -rf README.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml codeception.yml Dockerfile loadenv.sh Makefile .php-cs-fixer.cache .php-cs-fixer.dist.php .phpunit.result.cache .travis.yml phpunit.xml psalm.xml .DS_STORE .svnignore .vscode loadenv.sh
 	@rm -rf $(BUILD_DIR)/vendor/bluem-development/bluem-php/examples $(BUILD_DIR)/vendor/bluem-development/bluem-php/tests $(BUILD_DIR)/vendor/bluem-development/bluem-php/.github
+	@rm -rf $(BUILD_DIR)/vendor/bluem-development/bluem-php/.githooks
 	@rm $(BUILD_DIR)/vendor/bluem-development/bluem-php/.env.example
 	@rm $(BUILD_DIR)/build.env
 	@rm $(BUILD_DIR)/vendor/bluem-development/bluem-php/.gitignore
