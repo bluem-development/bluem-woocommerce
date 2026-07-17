@@ -123,7 +123,7 @@ pre-deployment:
 	@echo "$(BLUE)Preparing build directory...$(NC)"
 	if [ -d "$(BUILD_DIR)" ]; then \
         if [ "$(BUILD_DIR)" != "/" ]; then \
-            rm -rf "$(BUILD_DIR)"/*; \
+            find "$(BUILD_DIR)" -mindepth 1 -maxdepth 1 -exec rm -rf {} +; \
         fi \
     else \
         mkdir -p "$(BUILD_DIR)"; \
@@ -138,6 +138,7 @@ pre-deployment:
 	@rm $(BUILD_DIR)/vendor/bluem-development/bluem-php/.env.example
 	@rm $(BUILD_DIR)/build.env
 	@rm $(BUILD_DIR)/vendor/bluem-development/bluem-php/.gitignore
+	@rm -rf $(BUILD_DIR)/vendor/robrichards/xmlseclibs/.github
 	@rm -rf $(BUILD_DIR)/vendor/selective/xmldsig/.github
 
 add-tag:
@@ -145,7 +146,7 @@ add-tag:
 	@echo "$(BLUE)Copying files to SVN tag directory...$(NC)"
 	@echo "Folder: $(SVN_DIR)/tags/$(PLUGIN_VERSION)"
 	if [ -d "$(SVN_DIR)/tags/$(PLUGIN_VERSION)" ]; then \
-		rm -rf "$(SVN_DIR)/tags/$(PLUGIN_VERSION)"/*; \
+		find "$(SVN_DIR)/tags/$(PLUGIN_VERSION)" -mindepth 1 -maxdepth 1 -exec rm -rf {} +; \
 	else \
 		mkdir -p "$(SVN_DIR)/tags/$(PLUGIN_VERSION)"; \
 	fi
@@ -163,11 +164,10 @@ add-tag:
 update-trunk:
 	@echo "$(BLUE)Also updating trunk files to  latest tag $(PLUGIN_VERSION)...$(NC)"
 	if [ -d "$(SVN_DIR)/trunk" ]; then \
-		rm -rf "$(SVN_DIR)/trunk"/*; \
+		find "$(SVN_DIR)/trunk" -mindepth 1 -maxdepth 1 -exec rm -rf {} +; \
 	else \
 		mkdir -p "$(SVN_DIR)/trunk"; \
 	fi
-	@rm -rf $(SVN_DIR)/trunk/*
 	@cp -R $(BUILD_DIR)/* $(SVN_DIR)/trunk/.
 	@echo "$(BLUE)Commit trunk to SVN to this latest tag $(PLUGIN_VERSION)...$(NC)"
 	@echo "$(RED) Don't forget to actually commit to SVN now."
