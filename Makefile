@@ -106,13 +106,17 @@ check-tag:
 confirm:
 	@echo "$(BLUE)You are about to release a new version, namely \"$(PLUGIN_VERSION)\". Are you sure? [Y/n]$(NC)" && read ans && [ $${ans:-Y} = Y ]
 
+get-fresh-svn:
+	svn checkout $(SVN_URL) svn-directory
+	# https://plugins.svn.wordpress.org/bluem
+
 svn-check:
-	@#echo "$(BLUE)Checking SVN availability...$(NC)"
-	@#svn --version > /dev/null 2>&1 || (echo "$(RED)SVN not available. Please install SVN.$(NC)" && exit 1)
+	@echo "$(BLUE)Checking SVN availability...$(NC)"
+	@svn --version > /dev/null 2>&1 || (echo "$(RED)SVN not available. Please install SVN.$(NC)" && exit 1)
 
 repo-check:
-	@#echo "$(BLUE)Checking SVN repository availability...$(NC)"
-	@#svn info $(SVN_URL) > /dev/null 2>&1 || (echo "$(RED)Cannot access SVN repository. Check network or URL.$(NC)" && exit 1)
+	@echo "$(BLUE)Checking SVN repository availability...$(NC)"
+	@svn info $(SVN_URL) > /dev/null 2>&1 || (echo "$(RED)Cannot access SVN repository. Check network or URL.$(NC)" && exit 1)
 
 pre-deployment:
 	#make run-phpcbf
@@ -180,10 +184,6 @@ commit-to-svn:
 	svn add $(SVN_DIR)/trunk --force
 	cd $(SVN_DIR); svn commit -m "Replaced trunk folder with version $(PLUGIN_VERSION)"
 	@echo "$(GREEN)Done!$(NC)"
-
-get-fresh-svn:
-	svn checkout $(SVN_URL) svn-directory
-	# https://plugins.svn.wordpress.org/bluem
 
 .PHONY: release
 release: commit-to-svn

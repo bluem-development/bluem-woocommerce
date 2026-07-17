@@ -349,7 +349,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                     }
                 } elseif ($webhook_status === "Cancelled") {
                     $order->update_status(BLUEM_WC_STATUS_CANCELLED, esc_html__('Payment was canceled via webhook', 'bluem'));
-                } elseif ($webhook_status === "Open" || $webhook_status === "Pending") {
+                } elseif (in_array($webhook_status, [ self::PAYMENT_STATUS_NEW, "Open", "Pending" ], true)) {
                     // if the webhook is still open or pending, nothing has to be done yet
                 } elseif ($webhook_status === "Expired") {
                     $order->update_status(BLUEM_WC_STATUS_FAILED, esc_html__('Payment expired via webhook', 'bluem'));
@@ -565,7 +565,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             bluem_dialogs_render_prompt(esc_html__("You canceled the payment", 'bluem'));
             // terug naar order pagina om het opnieuw te proberen?
             exit;
-        } elseif ($statusCode === "Open" || $statusCode === "Pending") {
+        } elseif (in_array($statusCode, [ self::PAYMENT_STATUS_NEW, "Open", "Pending" ], true)) {
             bluem_transaction_notification_email(
                 $request_from_db->id
             );
@@ -587,7 +587,13 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                 [
                     'service'  => 'payments',
                     'function' => 'payments_callback',
-                    'message'  => "Payment failed: error or unknown status: " . $statusCode ?? '?',
+                    'message'  => "Payment failed: error or unknown status: " . ( $statusCode ?: '?' ),
+                    'status'   => $statusCode ?: null,
+                    'order_id' => $order->get_id(),
+                    'order_status' => $order->get_status(),
+                    'transactionID' => $transactionID,
+                    'entranceCode' => $entranceCode,
+                    'response' => $response,
                 ]
             );
             bluem_transaction_notification_email(

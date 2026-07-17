@@ -13,6 +13,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
 {
     public const PAYMENT_STATUS_SUCCESS = "Success";
     public const PAYMENT_STATUS_FAILURE = "Failure";
+    public const PAYMENT_STATUS_NEW = "New";
 
     /**
      * This boolean will cause more output to be generated for testing purposes. Keep it at false for the production environment or final testing
