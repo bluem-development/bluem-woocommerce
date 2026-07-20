@@ -13,9 +13,16 @@ compose() {
 }
 
 cleanup() {
+    local exit_code=$?
+
     if [[ -n "${current_project}" ]]; then
+        if (( exit_code != 0 )); then
+            compose logs --no-color wordpress db || true
+        fi
         compose down --volumes --remove-orphans >/dev/null 2>&1 || true
     fi
+
+    return "${exit_code}"
 }
 
 trap cleanup EXIT
