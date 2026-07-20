@@ -62,7 +62,7 @@ for hpos_mode in enabled disabled; do
     prepare_site
 
     if [[ "${hpos_mode}" == "enabled" ]]; then
-        wp wc hpos enable --for-new-shop
+        wp wc hpos enable
     else
         wp wc hpos disable
     fi
