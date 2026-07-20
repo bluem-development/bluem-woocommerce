@@ -21,6 +21,7 @@ help:
 	@printf '\- make acceptance_test\n'
 	@printf '\- make acceptance_translation_test\n'
 	@printf '\- make acceptance_smoke_test\n'
+	@printf '\- make integration_test\n'
 	@printf '\- make add_git_hooks\n'
 
 .PHONY: install
@@ -87,6 +88,11 @@ acceptance_check_site:
 acceptance_smoke_test: acceptance_prepare
 	@printf 'Acceptance smoke tests:\n';
 	php vendor/bin/codecept run Acceptance --group smoke --steps
+
+.PHONY: integration_test
+integration_test:
+	@printf 'HPOS/order-storage integration tests:\n';
+	bash ./scripts/run-hpos-integration-test.sh
 
 .PHONY: add_git_hooks
 add_git_hooks:

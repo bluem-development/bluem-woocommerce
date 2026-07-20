@@ -48,6 +48,18 @@ The smoke group currently checks:
 
 This is intentionally narrow. It should catch the most obvious site-breaking failures without turning every local change into a slow browser workflow.
 
+## HPOS/order-storage integration test
+
+The HPOS release work has a deterministic integration test that runs against real WordPress and WooCommerce containers. It creates an order through WooCommerce CRUD, persists Bluem transaction/entrance/mandate metadata, reloads the order, and queries it through the same custom query variables used by the gateway callbacks.
+
+Run both data-store modes with:
+
+```bash
+make integration_test
+```
+
+The test uses isolated Docker volumes and runs once with HPOS enabled and once with the legacy posts-based order store. It does not call the Bluem API or require merchant credentials. `WOOCOMMERCE_VERSION` can override the default WooCommerce test version when checking another release.
+
 ## Near-term hardening
 
 The preparation target now provides deterministic core setup and plugin activation.
