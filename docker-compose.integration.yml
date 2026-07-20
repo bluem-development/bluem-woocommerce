@@ -29,6 +29,7 @@ services:
       - db
       - wordpress
     image: wordpress:cli-php8.4
+    user: "0:0"
     entrypoint: ["wp"]
     working_dir: /var/www/html
     volumes:
