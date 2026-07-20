@@ -2,6 +2,30 @@
 
 This is a working backlog for refactors and cleanup discovered during the 1.4.1 release work. Priority 1 means highest value or risk reduction.
 
+## Shortcode Mandate Flow: Decisions From the Entrance-Code Fix
+
+The shortcode mandate flow was updated after a production report showed that its callback could lose the entrance code when user metadata or cookie storage was unavailable. The implementation is intentionally a small semantic correction, not a shortcode rewrite.
+
+Decisions made:
+
+- The `bluem_requests` database row is the authoritative record for an in-flight mandate, including `transaction_id`, `entrance_code`, status, and response payload.
+- The callback uses the returned `mandateID` as its correlation key. It must not replace that ID with a possibly stale value from user metadata or cookie storage.
+- User metadata and cookie-backed storage remain compatibility projections and fallbacks for legacy requests. Fallback values must match the returned mandate ID before they are used.
+- A missing request row is tolerated for older transactions, but status updates, payload writes, and transaction notifications must be skipped when there is no row.
+- A successful database-backed callback may refresh user metadata and cookie storage only when the request belongs to the current user. A guest request must not silently become associated with an unrelated logged-in user.
+- `New`, `Open`, and `Pending` are in-progress mandate states. They must not be treated as unknown failures.
+- The existing `[bluem_machtigingsformulier]` tag, markup, rewrite routes, cookie names, user-meta names, and procedural entrypoints remain stable for now.
+
+Future consolidation direction:
+
+- Keep the shortcode as a thin WordPress adapter while moving mandate correlation, request persistence, entrance-code resolution, and status decisions toward shared plain-PHP/domain services.
+- Do not merge shortcode behavior directly into the WooCommerce gateway class: shortcode mandates have no order and have different result-page behavior. Share transaction semantics and persistence contracts instead.
+- Preserve procedural wrapper functions during any future PHP file/class convention change so existing hooks, integrations, and shortcode consumers remain compatible while internals move.
+- Before removing user metadata or cookie storage, confirm that all legacy shortcode, instant-mandate, and third-party integration transactions have a database record and a migration/repair path.
+- Audit the WooCommerce gateway, instant mandate flow, and form rendering separately for the same status and request-resolution semantics. Do not assume that the current gateway callback is a complete reusable implementation; it still contains order-specific behavior and incomplete missing-row fallback handling.
+
+The next useful refactor slice is a small shared mandate-request resolver/status decision layer with WordPress adapters around it. Shortcode registration and presentation modernization remain explicitly out of scope for that slice.
+
 ## 1. Separate WordPress Glue From the Domain Layer
 
 Create a clearer boundary between WordPress/WooCommerce concerns and Bluem-specific domain behavior.
@@ -165,4 +189,3 @@ Suggested follow-up:
 - Add `make doctor`.
 - Add `make quick-check` for syntax, Composer validation, unit tests, and diff whitespace.
 - Document when acceptance tests require Docker/WordPress state.
-

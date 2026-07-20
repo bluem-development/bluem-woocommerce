@@ -24,6 +24,7 @@ function bluem_mandate_shortcode_execute(): void
     global $current_user;
 
     $storage = bluem_db_get_storage();
+    $storage = is_array($storage) ? $storage : [];
 
     if (isset($_POST['bluem-submitted'])) {
         $debtorReference = '';
@@ -277,6 +278,7 @@ function bluem_mandate_shortcode_callback(): void
     $bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_mandates_callback');
 
     $storage = bluem_db_get_storage();
+    $storage = is_array($storage) ? $storage : [];
 
     try {
         $bluem = new Bluem($bluem_config);
@@ -285,16 +287,11 @@ function bluem_mandate_shortcode_callback(): void
         // $e->getMessage();
     }
 
-    // @todo: .. then use request-based approach soon as first check, then fallback to user meta check.
-    if (!empty($current_user->ID)) {
-        $mandateID = get_user_meta($current_user->ID, 'bluem_latest_mandate_id', true);
-        $entranceCode = get_user_meta($current_user->ID, 'bluem_latest_mandate_entrance_code', true);
-    } else {
-        $mandateID = $storage['bluem_mandate_transaction_id'] ?? 0;
-        $entranceCode = $storage['bluem_mandate_entrance_code'] ?? '';
-    }
+    $mandateID = isset($_GET['mandateID'])
+        ? sanitize_text_field(wp_unslash($_GET['mandateID']))
+        : '';
 
-    if (!isset($_GET['mandateID'])) {
+    if (empty($mandateID)) {
         if ($bluem_config->thanksPageURL !== '') {
             wp_redirect(home_url($bluem_config->thanksPageURL) . '?result=false&reason=error');
             // echo "<p>An error occurred. The direct debit mandate has been canceled.</p>";
@@ -312,6 +309,40 @@ function bluem_mandate_shortcode_callback(): void
         exit;
     }
 
+    // The request database is the authoritative source for an in-flight mandate.
+    // User meta and cookie storage remain fallbacks for legacy requests.
+    $request_from_db = bluem_db_get_request_by_transaction_id_and_type(
+        $mandateID,
+        'mandates'
+    );
+    $entranceCode = '';
+    $entranceCodeSource = 'none';
+
+    if ($request_from_db !== false && !empty($request_from_db->entrance_code)) {
+        $entranceCode = $request_from_db->entrance_code;
+        $entranceCodeSource = 'database';
+    }
+
+    if (empty($entranceCode) && !empty($current_user->ID)) {
+        $userMetaMandateID = get_user_meta($current_user->ID, 'bluem_latest_mandate_id', true);
+        $userMetaEntranceCode = get_user_meta($current_user->ID, 'bluem_latest_mandate_entrance_code', true);
+
+        if ((string) $userMetaMandateID === (string) $mandateID && !empty($userMetaEntranceCode)) {
+            $entranceCode = $userMetaEntranceCode;
+            $entranceCodeSource = 'user_meta';
+        }
+    }
+
+    if (empty($entranceCode)) {
+        $storageMandateID = $storage['bluem_mandate_transaction_id'] ?? '';
+        $storageEntranceCode = $storage['bluem_mandate_entrance_code'] ?? '';
+
+        if ((string) $storageMandateID === (string) $mandateID && !empty($storageEntranceCode)) {
+            $entranceCode = $storageEntranceCode;
+            $entranceCodeSource = 'session_storage';
+        }
+    }
+
     if (empty($entranceCode)) {
         $errormessage = esc_html__('Error: EntranceCode is not set, so the mandate cannot be retrieved.', 'bluem');
         bluem_error_report_email(
@@ -319,6 +350,9 @@ function bluem_mandate_shortcode_callback(): void
                 'service' => 'mandates',
                 'function' => 'shortcode_callback',
                 'message' => $errormessage,
+                'mandate_id' => $mandateID,
+                'request_found' => $request_from_db !== false,
+                'entrance_code_source' => $entranceCodeSource,
             ]
         );
         bluem_dialogs_render_prompt($errormessage);
@@ -348,25 +382,22 @@ function bluem_mandate_shortcode_callback(): void
     $statusUpdateObject = $response->EMandateStatusUpdate;
     $statusCode = $statusUpdateObject->EMandateStatus->Status . '';
 
-    $request_from_db = bluem_db_get_request_by_transaction_id_and_type(
-        $mandateID,
-        'mandates'
-    );
+    if ($request_from_db !== false) {
+        if ($statusCode !== $request_from_db->status) {
+            bluem_db_update_request(
+                $request_from_db->id,
+                [
+                    'status' => $statusCode,
+                ]
+            );
+            // also update locally for email notification
+            $request_from_db->status = $statusCode;
+        }
 
-    if ($statusCode !== $request_from_db->status) {
-        bluem_db_update_request(
-            $request_from_db->id,
-            [
-                'status' => $statusCode,
-            ]
+        bluem_transaction_notification_email(
+            $request_from_db->id
         );
-        // also update locally for email notification
-        $request_from_db->status = $statusCode;
     }
-
-    bluem_transaction_notification_email(
-        $request_from_db->id
-    );
 
     // Handling the response.
     if ($statusCode === 'Success') {
@@ -374,16 +405,31 @@ function bluem_mandate_shortcode_callback(): void
         bluem_db_insert_storage(
             [
                 'bluem_mandate_transaction_id' => $mandateID,
+                'bluem_mandate_entrance_code' => $entranceCode,
             ]
         );
 
-        if (!empty($current_user)) {
+        if (!empty($current_user->ID)) {
+            $requestBelongsToUser = $request_from_db !== false
+                && (int) $request_from_db->user_id === (int) $current_user->ID;
+            $legacyUserMetaRequest = $request_from_db === false
+                && $entranceCodeSource === 'user_meta';
+
+            if (($requestBelongsToUser || $legacyUserMetaRequest) && current_user_can('edit_user', $current_user->ID)) {
+                update_user_meta($current_user->ID, 'bluem_mandates_validated', true);
+
+                if ($requestBelongsToUser) {
+                    update_user_meta($current_user->ID, 'bluem_latest_mandate_id', $mandateID);
+                    update_user_meta($current_user->ID, 'bluem_latest_mandate_entrance_code', $entranceCode);
+                }
+            }
+        } elseif (!empty($current_user)) {
             if (current_user_can('edit_user', $current_user->ID)) {
                 update_user_meta($current_user->ID, 'bluem_mandates_validated', true);
             }
         }
 
-        if ($request_from_db->payload !== '') {
+        if ($request_from_db !== false && $request_from_db->payload !== '') {
             try {
                 $newPayload = json_decode($request_from_db->payload);
             } catch (Throwable $th) {
@@ -393,7 +439,7 @@ function bluem_mandate_shortcode_callback(): void
             $newPayload = new Stdclass();
         }
 
-        if (isset($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport)) {
+        if ($request_from_db !== false && isset($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport)) {
             $newPayload->purchaseID = $response->EMandateStatusUpdate->EMandateStatus->PurchaseID . '';
             $newPayload->report = $response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport;
 
@@ -410,7 +456,7 @@ function bluem_mandate_shortcode_callback(): void
         // "You canceled the mandate signing";
         wp_redirect(home_url($bluem_config->thanksPageURL) . '?result=false&reason=cancelled');
         exit;
-    } elseif ($statusCode === 'Open' || $statusCode == 'Pending') {
+    } elseif ($statusCode === 'New' || $statusCode === 'Open' || $statusCode === 'Pending') {
         // "The mandate signing has not yet been confirmed. This may take a moment but happens automatically."
         wp_redirect(home_url($bluem_config->thanksPageURL) . '?result=false&reason=open');
         exit;
