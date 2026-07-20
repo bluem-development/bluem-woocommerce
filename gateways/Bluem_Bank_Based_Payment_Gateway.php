@@ -137,11 +137,12 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $user_meta = get_user_meta($user_id);
 
         $order_id    = $order->get_id();
-        $customer_id = get_post_meta($order_id, '_customer_user', true);
+        $customer_id = $order->get_customer_id();
 
         $entranceCode = $this->bluem->CreateEntranceCode();
 
-        update_post_meta($order_id, 'bluem_entrancecode', $entranceCode);
+        $order->update_meta_data('bluem_entrancecode', $entranceCode);
+        $order->save();
         if (! is_null($customer_id) && $customer_id !== "" && (int) $customer_id !== 0) {
             $description = sprintf(
                 /* translators:
@@ -256,11 +257,12 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             $order->add_order_note(esc_html__("Payment process initiated", 'bluem'));
 
             $transactionID = "" . $response->PaymentTransactionResponse->TransactionID;
-            update_post_meta($order_id, 'bluem_transactionid', $transactionID);
+            $order->update_meta_data('bluem_transactionid', $transactionID);
             $paymentReference = "" . $response->PaymentTransactionResponse->paymentReference;
-            update_post_meta($order_id, 'bluem_payment_reference', $paymentReference);
+            $order->update_meta_data('bluem_payment_reference', $paymentReference);
             $debtorReference = "" . $response->PaymentTransactionResponse->debtorReference;
-            update_post_meta($order_id, 'bluem_debtor_Reference', $debtorReference);
+            $order->update_meta_data('bluem_debtor_Reference', $debtorReference);
+            $order->save();
 
             // redirect cast to string, for AJAX response handling
             $transactionURL = ($response->PaymentTransactionResponse->TransactionURL . "");
@@ -457,7 +459,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         }
         $user_id = $order->get_user_id();
 
-        $transactionID = get_post_meta($order->get_id(), 'bluem_transactionid', true);
+        $transactionID = $order->get_meta('bluem_transactionid');
         if (empty($transactionID)) {
             $errormessage = sprintf(
                 /* translators: %s: entranceCode */

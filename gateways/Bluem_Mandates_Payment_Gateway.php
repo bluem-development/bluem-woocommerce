@@ -58,22 +58,6 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             [$this, 'bluem_mandates_callback']
         );
 
-        // ********** Allow filtering Orders based on MandateID **********
-        add_filter(
-            'woocommerce_order_data_store_cpt_get_orders_query',
-            function ($query, $query_vars) {
-                if (!empty($query_vars['bluem_mandateid'])) {
-                    $query['meta_query'][] = [
-                        'key' => 'bluem_mandateid',
-                        'value' => esc_attr($query_vars['bluem_mandateid']),
-                    ];
-                }
-
-                return $query;
-            },
-            10,
-            2
-        );
     }
 
     /**
@@ -211,16 +195,15 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 ) {
                     // successfully used previous mandate in current order,
                     // lets annotate that order with the corresponding metadata
-                    update_post_meta(
-                        $order_id,
+                    $order->update_meta_data(
                         'bluem_entrancecode',
                         $bluem_latest_mandate_entrance_code
                     );
-                    update_post_meta(
-                        $order_id,
+                    $order->update_meta_data(
                         'bluem_mandateid',
                         $bluem_latest_mandate_id
                     );
+                    $order->save();
 
                     if ($retrieved_request_from_db) {
                         bluem_db_request_log(
@@ -428,8 +411,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         }
         $entranceCode = $attrs['entranceCode'] . "";
 
-        update_post_meta($order_id, 'bluem_entrancecode', esc_attr($entranceCode));
-        update_post_meta($order_id, 'bluem_mandateid', esc_attr($mandate_id));
+        $order->update_meta_data('bluem_entrancecode', $entranceCode);
+        $order->update_meta_data('bluem_mandateid', $mandate_id);
+        $order->save();
 
         // https://docs.woocommerce.com/document/managing-orders/
         // Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled',

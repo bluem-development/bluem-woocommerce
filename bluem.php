@@ -47,6 +47,21 @@ function bluem_load_plugin_textdomain(): void {
 
 add_action( 'plugins_loaded', 'bluem_load_plugin_textdomain', 1 );
 
+// Declare compatibility with WooCommerce High-Performance Order Storage.
+// This must run before WooCommerce initializes its feature configuration.
+add_action(
+    'before_woocommerce_init',
+    static function (): void {
+        if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+            \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+                'custom_order_tables',
+                __FILE__,
+                true
+            );
+        }
+    }
+);
+
 if ( ! defined( "BLUEM_LOCAL_DATE_FORMAT" ) ) {
     define( "BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s" );
 }
