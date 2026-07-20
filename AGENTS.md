@@ -91,22 +91,27 @@ Be careful with hidden files and vendored development metadata.
 The Makefile cleanup should prevent these from entering `build/`, `svn-directory/tags/<version>/`, or `svn-directory/trunk/`:
 
 - top-level hidden development files such as `.vscode`, `.php-cs-fixer.dist.php`, `.phpunit.result.cache`, `.travis.yml`, `.svnignore`;
+- internal repository instructions and support artifacts: `AGENTS.md`, `error-report.md`, and `docs/`;
 - vendor `.github` directories;
 - `vendor/bluem-development/bluem-php/.githooks`;
 - `vendor/bluem-development/bluem-php/examples`;
 - `vendor/bluem-development/bluem-php/tests`;
 - local build/repo files such as `README.md`, `Makefile`, `Dockerfile`, `docker-compose.yml`, `codeception.yml`, `phpunit.xml`, `psalm.xml`, `loadenv.sh`, and `build.env`.
+- vendor development metadata such as the Bluem PHP package's `AGENTS.md`, `Makefile`, `README.md`, `changelog.md`, `composer.json`, `composer.lock`, `phpcs.xml`, `phpcs.xml.dist`, `phpunit.xml`, and `rector.php`, plus xmlseclibs' README, Composer, changelog, and PHPUnit files.
+
+Keep the top-level `composer.json` and `composer.lock` in the production package: the plugin reads `composer.lock` at runtime when enriching support reports, and both files document the shipped dependency contract. Only development metadata inside `vendor/` is removed.
 
 Before committing to SVN, verify:
 
 ```bash
 find build svn-directory/tags/1.4.1 svn-directory/trunk -name '.*' -print
 find build svn-directory/tags/1.4.1 svn-directory/trunk -path '*/.github*' -print
+find build svn-directory/tags/1.4.1 svn-directory/trunk \( -name 'AGENTS.md' -o -name 'error-report.md' -o -path '*/docs' -o -name 'README.md' -o -name 'Makefile' -o -name 'phpunit.xml' -o -name 'phpcs.xml' -o -name 'phpcs.xml.dist' -o -name 'rector.php' -o -name 'changelog.md' \) -print
 svn status svn-directory | rg '^\?|^!' || true
 rg -n "Version: 1\.4\.1|Stable tag: 1\.4\.1|\"bluem-development/bluem-php\": \"\^2\.6\.1\"" svn-directory/tags/1.4.1 svn-directory/trunk -S --glob '!vendor/**'
 ```
 
-Expected hidden-file output should be empty unless there is a deliberate production file with a hidden name. SVN status should have intentional `A`, `M`, and `D` entries only; no `?` or `!`.
+The first three package checks should be empty unless there is a deliberate production file with that name. SVN status should have intentional `A`, `M`, and `D` entries only; no `?` or `!`. If a previous staging attempt left `!` entries after regenerating a package, remove those stale scheduled paths with `svn delete --force` before reviewing the final status.
 
 ## Observability
 
@@ -117,4 +122,3 @@ Avoid logging secrets or access tokens.
 ## Refactor Planning
 
 See [docs/refactor-wishlist.md](docs/refactor-wishlist.md) for the prioritized technical wishlist gathered during the 1.4.1 release work.
-
