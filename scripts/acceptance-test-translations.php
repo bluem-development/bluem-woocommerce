@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 if (!defined('ABSPATH')) {
     fwrite(STDERR, "WordPress was not loaded.\n");
     exit(1);
@@ -22,15 +20,23 @@ foreach ($expected_translations as $locale => $expected_translation) {
     }
 
     switch_to_locale($locale);
+    if (determine_locale() !== $locale) {
+        fwrite(STDERR, sprintf("WordPress could not switch to locale %s.\n", $locale));
+        exit(1);
+    }
     unload_textdomain('bluem');
-    load_plugin_textdomain('bluem', false, $language_directory);
-
-    if (!is_textdomain_loaded('bluem')) {
-        fwrite(STDERR, sprintf("The Bluem textdomain was not loaded for %s.\n", $locale));
+    $loaded = load_plugin_textdomain('bluem', false, $language_directory);
+    if (!$loaded) {
+        fwrite(STDERR, sprintf("The Bluem textdomain could not be registered for %s.\n", $locale));
         exit(1);
     }
 
     $translation = __('Request created', 'bluem');
+    if ($locale === 'nl_NL' && !is_textdomain_loaded('bluem')) {
+        fwrite(STDERR, sprintf("The Bluem textdomain was not loaded for %s.\n", $locale));
+        exit(1);
+    }
+
     if ($translation !== $expected_translation) {
         fwrite(
             STDERR,

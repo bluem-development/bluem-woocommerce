@@ -19,6 +19,7 @@ help:
 	@printf '\- make test\n'
 	@printf '\- make unit_test\n'
 	@printf '\- make acceptance_test\n'
+	@printf '\- make acceptance_translation_test\n'
 	@printf '\- make acceptance_smoke_test\n'
 	@printf '\- make add_git_hooks\n'
 
@@ -28,7 +29,7 @@ install:
 
 .PHONY: translations
 translations:
-	wp i18n make-pot . languages/bluem.pot --skip-js --domain=bluem --exclude="svn-directory,build,docker,vendor"
+	wp i18n make-pot . languages/bluem.pot --skip-js --domain=bluem --exclude="svn-directory,build,docker,vendor,scripts"
 	msgmerge --update --no-fuzzy-matching --backup=none languages/bluem-nl_NL.po languages/bluem.pot
 	msgmerge --update --no-fuzzy-matching --backup=none languages/bluem-en_US.po languages/bluem.pot
 	msgfmt --check languages/bluem-nl_NL.po -o languages/bluem-nl_NL.mo

@@ -2,7 +2,7 @@
 Contributors: bluempaymentservices
 Tags: Bluem,Payments,iDIN,iDEAL,eMandates
 Requires at least: 6.0
-Tested up to: 7.0.0
+Tested up to: 7.0.2
 Requires PHP: 8.4
 Stable tag: 1.4.3
 License: GPLv3

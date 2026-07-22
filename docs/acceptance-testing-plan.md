@@ -50,9 +50,9 @@ This is intentionally narrow. It should catch the most obvious site-breaking fai
 
 ## Near-term hardening
 
-The next step is deterministic site setup. The current suite still depends on the state already present in `docker/db_data`, which is useful while experimenting but not good enough for CI.
-
-Add a setup layer that can:
+The preparation target now provides deterministic core setup and plugin activation.
+The remaining hardening work is to extend that setup only when individual tests need
+additional WooCommerce state or plugin configuration:
 
 - start the Docker services
 - wait for WordPress to respond
@@ -64,20 +64,8 @@ Add a setup layer that can:
 
 Prefer WP-CLI for this setup. A one-off `wordpress:cli` container can run against the same Docker network and database as the WordPress container.
 
-Suggested target shape:
-
-```make
-acceptance_prepare:
-	docker compose up -d
-	# wait for db and WordPress
-	# run wp core install if needed
-	# activate required plugins
-
-acceptance_smoke_test: acceptance_prepare
-	php vendor/bin/codecept run Acceptance --group smoke --steps
-```
-
-The smoke and full acceptance targets prepare the Docker site before running.
+The smoke, full acceptance, and translation targets all prepare the Docker site
+before running.
 
 Keep the smoke target fast and boring. Add richer flows under separate groups, for example `settings`, `checkout`, or `callbacks`.
 

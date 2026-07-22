@@ -13,7 +13,7 @@ wpcli() {
 
 installed=0
 for attempt in $(seq 1 30); do
-    if wpcli db check >/dev/null 2>&1; then
+    if wpcli db check --skip-ssl >/dev/null 2>&1; then
         if wpcli core is-installed >/dev/null 2>&1; then
             installed=1
             break
@@ -44,5 +44,6 @@ if [ "$installed" -ne 1 ]; then
     exit 1
 fi
 
+wpcli language core install nl_NL
 wpcli plugin activate bluem
 wpcli plugin is-active bluem
