@@ -51,6 +51,13 @@ For the cheapest real-site smoke check, run only the Codeception smoke group:
 make acceptance_smoke_test
 ```
 
+To prepare the Docker WordPress site and verify the compiled Dutch and English
+plugin translations directly through WordPress:
+
+```bash
+make acceptance_translation_test
+```
+
 See [docs/acceptance-testing-plan.md](docs/acceptance-testing-plan.md) for the Docker, WP-CLI, CI, and Playwright follow-up plan.
 
 # Installation
@@ -348,8 +355,13 @@ To actually release a new version, follow these steps:
 
 ## Updating language POT file
 
-Run this command to create/update the language file
+Run the translation target to regenerate the POT file, merge the Dutch catalog,
+and compile both the Dutch and English catalogs:
 
 ```bash
-php -d memory_limit=512M ~/wp-cli.phar i18n make-pot . languages/bluem.pot --skip-js --domain=bluem --exclude="svn-directory,build,docker,vendor"
+make translations
 ```
+
+The English catalog intentionally uses each English source string as its own
+translation. WordPress uses the compiled `.mo` files at runtime; keep the POT,
+PO, and MO files in `languages/` together when packaging a release.

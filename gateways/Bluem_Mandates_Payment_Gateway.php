@@ -688,7 +688,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             $response = $this->bluem->MandateStatus($mandateID, $entranceCode);
         } catch (Exception $e) {
             $errormessage = sprintf(
-                /* translators: %s: error message */
+                /* translators: %s: error message or status returned by Bluem */
                 esc_html__("Error retrieving status: %s. Please contact the webshop and mention this status.", "bluem"),
                 $e->getMessage()
             );
@@ -706,7 +706,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 
         if (!$response->Status()) {
             $errormessage = sprintf(
-                /* translators: %s: error message */
+                /* translators: %s: error message or status returned by Bluem */
                 esc_html__("Error retrieving status: %s. Please contact the webshop and mention this status.", "bluem"),
                 esc_html($response->Error())
             );

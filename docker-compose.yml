@@ -34,3 +34,16 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
+  wpcli:
+    depends_on:
+      - wordpress
+    image: wordpress:cli-php8.4
+    volumes:
+      - ./docker/wordpress:/var/www/html
+      - ./docker/plugins:/var/www/html/wp-content/plugins
+      - ./scripts:/opt/bluem-scripts:ro
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress

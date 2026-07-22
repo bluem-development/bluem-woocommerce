@@ -2036,9 +2036,9 @@ function bluem_checkout_idin_notice(): void
     // <p>Identification is required before you can place this order</p>";
 
     if ($validation_needed && bluem_checkout_check_idin_validated_filter() == false) {
-        bluem_idin_generate_notice_e('Verifieer eerst je identiteit.', true);
+        bluem_idin_generate_notice_e(esc_html__('Verify your identity first.', 'bluem'), true);
         // esc_html_e(
-        // "Verifieer eerst je identiteit via de mijn account pagina",
+        // "Verify your identity first via the My Account page",
         // "woocommerce"
         // );
         // return;

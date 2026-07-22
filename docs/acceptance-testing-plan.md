@@ -2,6 +2,29 @@
 
 This plan keeps the first useful acceptance suite cheap: prove that a real WordPress site still responds, that wp-admin is reachable, and that the Bluem admin page can be opened after logging in.
 
+## Docker preparation and translation test
+
+The Docker Compose setup includes a WP-CLI service. The preparation target
+copies the current production package into Docker, starts WordPress and MySQL,
+installs WordPress when necessary, and activates the Bluem plugin:
+
+```bash
+make acceptance_prepare
+```
+
+The translation integration test then switches locales inside WordPress and
+checks that the compiled plugin catalogs are loaded:
+
+```bash
+make acceptance_translation_test
+```
+
+It verifies:
+
+- `bluem-nl_NL.mo` exists and translates `Request created` to `Verzoek aangemaakt`;
+- `bluem-en_US.mo` exists and returns the English source string;
+- the `bluem` textdomain is loaded for both locales.
+
 ## Current smoke test
 
 Run:
@@ -27,9 +50,9 @@ This is intentionally narrow. It should catch the most obvious site-breaking fai
 
 ## Near-term hardening
 
-The next step is deterministic site setup. The current suite still depends on the state already present in `docker/db_data`, which is useful while experimenting but not good enough for CI.
-
-Add a setup layer that can:
+The preparation target now provides deterministic core setup and plugin activation.
+The remaining hardening work is to extend that setup only when individual tests need
+additional WooCommerce state or plugin configuration:
 
 - start the Docker services
 - wait for WordPress to respond
@@ -41,20 +64,8 @@ Add a setup layer that can:
 
 Prefer WP-CLI for this setup. A one-off `wordpress:cli` container can run against the same Docker network and database as the WordPress container.
 
-Suggested target shape:
-
-```make
-acceptance_prepare:
-	docker compose up -d
-	# wait for db and WordPress
-	# run wp core install if needed
-	# activate required plugins
-
-acceptance_smoke_test: acceptance_prepare
-	php vendor/bin/codecept run Acceptance --group smoke --steps
-```
-
-The current `acceptance_smoke_test` target only has a cheap readiness check. After `acceptance_prepare` exists, make the smoke target depend on it instead of asking the developer to prepare the site manually.
+The smoke, full acceptance, and translation targets all prepare the Docker site
+before running.
 
 Keep the smoke target fast and boring. Add richer flows under separate groups, for example `settings`, `checkout`, or `callbacks`.
 

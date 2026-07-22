@@ -202,7 +202,7 @@ function bluem_render_request_user(object $r, array $users_by_id): void
 
     <?php
     } else {
-        esc_html_e('Gastgebruiker/onbekend', 'bluem');
+        esc_html_e('Guest / unknown', 'bluem');
     }
 }
 

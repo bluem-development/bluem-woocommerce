@@ -2,13 +2,13 @@
 
 /**
  * Plugin Name: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce
- * Version: 1.4.2
+ * Version: 1.4.3
  * Plugin URI: https://bluem.nl/en/
  * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and much, much more
  * Author: Bluem Payment Services
  * Author URI: https://bluem.nl
  * Requires at least: 6.0
- * Tested up to: 7.0.0
+ * Tested up to: 7.0.2
  * Requires PHP: 8.4
  *
  * License: GPL v3
@@ -33,6 +33,19 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
+
+/**
+ * Load the plugin translations before plugin initialization callbacks run.
+ */
+function bluem_load_plugin_textdomain(): void {
+    load_plugin_textdomain(
+        'bluem',
+        false,
+        dirname( plugin_basename( __FILE__ ) ) . '/languages'
+    );
+}
+
+add_action( 'plugins_loaded', 'bluem_load_plugin_textdomain', 1 );
 
 if ( ! defined( "BLUEM_LOCAL_DATE_FORMAT" ) ) {
     define( "BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s" );
@@ -685,7 +698,7 @@ function bluem_update_request_by_id( $request_id ) {
 
             if ( ! $response->ReceivedResponse() ) {
                 $errormessage = sprintf(
-                /* translators: %s: error status */
+                /* translators: %s: error message or status returned by Bluem */
                         wp_kses_post( __( 'Error retrieving status: %s<br>Please contact the webshop and mention this status.', 'bluem' ) ),
                         esc_html( $response->Error() )
                 );
@@ -747,7 +760,7 @@ function bluem_update_request_by_id( $request_id ) {
             }
         } catch ( Exception $e ) {
             $errormessage = sprintf(
-            /* translators: %s: error status */
+            /* translators: %s: error message or status returned by Bluem */
                     wp_kses_post( __( 'Error retrieving status: %s<br>Please contact the webshop and mention this status.', 'bluem' ) ),
                     esc_html( $response->Error() )
             );
@@ -767,7 +780,7 @@ function bluem_update_request_by_id( $request_id ) {
 
             if ( ! $response->Status() ) {
                 $errormessage = sprintf(
-                /* translators: %s: error status */
+                /* translators: %s: error message or status returned by Bluem */
                         wp_kses_post( __( 'Error retrieving status: %s<br>Please contact the webshop and mention this status.', 'bluem' ) ),
                         esc_html( $response->Error() )
                 );
@@ -846,7 +859,7 @@ function bluem_update_request_by_id( $request_id ) {
             }
         } catch ( Exception $e ) {
             $errormessage = sprintf(
-            /* translators: %s: error status */
+            /* translators: %s: error message or status returned by Bluem */
                     wp_kses_post( __( 'Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem' ) ),
                     esc_html( $response->Error() )
             );
@@ -866,7 +879,7 @@ function bluem_update_request_by_id( $request_id ) {
 
             if ( ! $response->Status() ) {
                 $errormessage = printf(
-                /* translators: %s: error status */
+                /* translators: %s: error message or status returned by Bluem */
                         wp_kses_post( __( 'Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem' ) ),
                         esc_html( $response->Error() )
                 );
@@ -926,7 +939,7 @@ function bluem_update_request_by_id( $request_id ) {
             }
         } catch ( Exception $e ) {
             $errormessage = sprintf(
-            /* translators: %s: error status */
+            /* translators: %s: error message or status returned by Bluem */
                     wp_kses_post( __( 'Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem' ) ),
                     esc_html( $response->Error() )
             );

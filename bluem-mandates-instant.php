@@ -206,7 +206,7 @@ function bluem_mandates_instant_callback()
 
     if (!$response->Status()) {
         $errormessage = sprintf(
-            /* translators: %s: error status */
+            /* translators: %s: error message or status returned by Bluem */
             esc_html__('Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem'),
             $response->Error()
         );

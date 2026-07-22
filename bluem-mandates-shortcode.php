@@ -364,7 +364,7 @@ function bluem_mandate_shortcode_callback(): void
     if (!$response->Status()) {
         $errormessage
             = sprintf(
-                /* translators: %s: error status */
+                /* translators: %s: error message or status returned by Bluem */
                 esc_html__('Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem'),
                 $response->Error()
             );
