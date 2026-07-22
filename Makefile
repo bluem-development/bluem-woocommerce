@@ -4,6 +4,9 @@
 
 PLUGIN_VERSION ?= $(NEW_TAG)
 ACCEPTANCE_URL ?= http://localhost:8000
+WP_ADMIN_USER ?= wordpress
+WP_ADMIN_PASSWORD ?= wordpress
+WP_ADMIN_EMAIL ?= wordpress@example.com
 
 plugin_version:
 	echo "Version is $(PLUGIN_VERSION)"
@@ -52,9 +55,24 @@ unit_test:
 	./vendor/bin/phpunit
 
 .PHONY: acceptance_test
-acceptance_test:
+acceptance_test: acceptance_prepare
 	@printf 'Acceptance tests:\n';
 	php vendor/bin/codecept run --steps
+
+.PHONY: acceptance_prepare
+acceptance_prepare: copy-to-docker
+	@printf 'Starting Docker WordPress test site:\n';
+	docker compose up -d db wordpress
+	WP_ACCEPTANCE_URL="$(ACCEPTANCE_URL)" \
+	WP_ACCEPTANCE_ADMIN_USER="$(WP_ADMIN_USER)" \
+	WP_ACCEPTANCE_ADMIN_PASSWORD="$(WP_ADMIN_PASSWORD)" \
+	WP_ACCEPTANCE_ADMIN_EMAIL="$(WP_ADMIN_EMAIL)" \
+	bash ./scripts/acceptance-prepare.sh
+
+.PHONY: acceptance_translation_test
+acceptance_translation_test: acceptance_prepare
+	@printf 'Translation integration tests:\n';
+	docker compose run --rm wpcli eval-file /opt/bluem-scripts/acceptance-test-translations.php --allow-root
 
 .PHONY: acceptance_check_site
 acceptance_check_site:
@@ -65,7 +83,7 @@ acceptance_check_site:
 	}
 
 .PHONY: acceptance_smoke_test
-acceptance_smoke_test: acceptance_check_site
+acceptance_smoke_test: acceptance_prepare
 	@printf 'Acceptance smoke tests:\n';
 	php vendor/bin/codecept run Acceptance --group smoke --steps
 

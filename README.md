@@ -51,6 +51,13 @@ For the cheapest real-site smoke check, run only the Codeception smoke group:
 make acceptance_smoke_test
 ```
 
+To prepare the Docker WordPress site and verify the compiled Dutch and English
+plugin translations directly through WordPress:
+
+```bash
+make acceptance_translation_test
+```
+
 See [docs/acceptance-testing-plan.md](docs/acceptance-testing-plan.md) for the Docker, WP-CLI, CI, and Playwright follow-up plan.
 
 # Installation
