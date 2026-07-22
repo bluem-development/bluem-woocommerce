@@ -348,8 +348,13 @@ To actually release a new version, follow these steps:
 
 ## Updating language POT file
 
-Run this command to create/update the language file
+Run the translation target to regenerate the POT file, merge the Dutch catalog,
+and compile both the Dutch and English catalogs:
 
 ```bash
-php -d memory_limit=512M ~/wp-cli.phar i18n make-pot . languages/bluem.pot --skip-js --domain=bluem --exclude="svn-directory,build,docker,vendor"
+make translations
 ```
+
+The English catalog intentionally uses each English source string as its own
+translation. WordPress uses the compiled `.mo` files at runtime; keep the POT,
+PO, and MO files in `languages/` together when packaging a release.

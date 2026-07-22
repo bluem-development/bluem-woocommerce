@@ -23,6 +23,14 @@ help:
 install:
 	composer install
 
+.PHONY: translations
+translations:
+	wp i18n make-pot . languages/bluem.pot --skip-js --domain=bluem --exclude="svn-directory,build,docker,vendor"
+	msgmerge --update --no-fuzzy-matching --backup=none languages/bluem-nl_NL.po languages/bluem.pot
+	msgmerge --update --no-fuzzy-matching --backup=none languages/bluem-en_US.po languages/bluem.pot
+	msgfmt --check languages/bluem-nl_NL.po -o languages/bluem-nl_NL.mo
+	msgfmt --check languages/bluem-en_US.po -o languages/bluem-en_US.mo
+
 .PHONY: lint
 lint:
 	echo "Ensure that you ran composer install in the tools/php-cs-fixer folder first, otherwise the php-cs-fixer will not be available."

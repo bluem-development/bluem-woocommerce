@@ -21,7 +21,7 @@ class BluemActivationNotifier
     {
         $data = $this->createReportData();
 
-        $author_name = 'Administratie van ' . esc_attr(get_bloginfo('name'));
+        $author_name = esc_html__('Administration of', 'bluem') . ' ' . esc_attr(get_bloginfo('name'));
         $author_email = esc_attr(
             get_option('admin_email')
         );
@@ -65,12 +65,12 @@ class BluemActivationNotifier
         $data->{'Website name'} = esc_attr(get_bloginfo('name'));
         $data->{'Website URL'} = esc_attr(get_bloginfo('url'));
         $data->{'Admin email'} = esc_attr(get_bloginfo('admin_email'));
-        $data->{'Company name'} = $bluem_registration['company']['name'] ?? 'Company name onbekend';
-        $data->{'Company telephone'} = $bluem_registration['company']['telephone'] ?? 'Company telephone onbekend';
-        $data->{'Company email'} = $bluem_registration['company']['email'] ?? 'Company email onbekend';
-        $data->{'Tech name'} = $bluem_registration['tech_contact']['name'] ?? 'Tech name onbekend';
-        $data->{'Tech telephone'} = $bluem_registration['tech_contact']['telephone'] ?? 'Tech telephone onbekend';
-        $data->{'Tech email'} = $bluem_registration['tech_contact']['email'] ?? 'Tech email onbekend';
+        $data->{'Company name'} = $bluem_registration['company']['name'] ?? esc_html__('Company name unknown', 'bluem');
+        $data->{'Company telephone'} = $bluem_registration['company']['telephone'] ?? esc_html__('Company telephone unknown', 'bluem');
+        $data->{'Company email'} = $bluem_registration['company']['email'] ?? esc_html__('Company email unknown', 'bluem');
+        $data->{'Tech name'} = $bluem_registration['tech_contact']['name'] ?? esc_html__('Tech name unknown', 'bluem');
+        $data->{'Tech telephone'} = $bluem_registration['tech_contact']['telephone'] ?? esc_html__('Tech telephone unknown', 'bluem');
+        $data->{'Tech email'} = $bluem_registration['tech_contact']['email'] ?? esc_html__('Tech email unknown', 'bluem');
         $data->{'WooCommerce version'} = class_exists('WooCommerce') ? WC()->version : esc_html__('WooCommerce not installed', 'bluem');
         $data->{'WordPress version'} = get_bloginfo('version');
         $data->{'Bluem PHP-library'} = $dependency_bluem_php_version;

@@ -7,25 +7,26 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bluem-"
 "woocommerce\n"
 "POT-Creation-Date: 2026-07-22T10:53:05+00:00\n"
-"PO-Revision-Date: 2026-07-22 12:45+0200\n"
+"PO-Revision-Date: 2026-07-22 12:53+0200\n"
 "Last-Translator: Bluem Payment Services <pluginsupport@bluem.nl>\n"
-"Language-Team: Dutch <pluginsupport@bluem.nl>\n"
-"Language: nl_NL\n"
+"Language-Team: English <pluginsupport@bluem.nl>\n"
+"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: bluem\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
 #: bluem.php
 msgid "Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce"
-msgstr "Bluem ePayments, eMandates & iDIN voor WordPress & WooCommerce"
+msgstr "Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce"
 
 #. Plugin URI of the plugin
 #: bluem.php
 msgid "https://bluem.nl/en/"
-msgstr "https://bluem.nl/"
+msgstr "https://bluem.nl/en/"
 
 #. Description of the plugin
 #: bluem.php
@@ -33,8 +34,8 @@ msgid ""
 "Bluem integration for WordPress and WooCommerce for Payments, eMandates, "
 "iDIN identity verification and much, much more"
 msgstr ""
-"Bluem-integratie voor WordPress en WooCommerce voor betalingen, eMandates, "
-"iDIN-identificatie en meer"
+"Bluem integration for WordPress and WooCommerce for Payments, eMandates, "
+"iDIN identity verification and much, much more"
 
 #. Author of the plugin
 #: bluem.php
@@ -48,106 +49,105 @@ msgstr "https://bluem.nl"
 
 #: bluem-db.php:163
 msgid "Request created"
-msgstr "Verzoek aangemaakt"
+msgstr "Request created"
 
 #. translators: %s: data object in JSON, don't translate it.
 #: bluem-db.php:389
 #, php-format
 msgid "Transaction updated. New data: %s"
-msgstr "Transactie bijgewerkt. Nieuwe gegevens: %s"
+msgstr "Transaction updated. New data: %s"
 
 #: bluem-idin.php:77
 msgid "IDIN Scenario"
-msgstr "iDIN-scenario"
+msgstr "IDIN Scenario"
 
 #: bluem-idin.php:78
 msgid ""
 "Do you want to perform an age check or full address check during checkout?"
 msgstr ""
-"Wilt u tijdens het afrekenen een leeftijdscontrole of volledige "
-"adrescontrole uitvoeren?"
+"Do you want to perform an age check or full address check during checkout?"
 
 #: bluem-idin.php:82
 msgid "Do not perform an identity check during checkout"
-msgstr "Geen identiteitscontrole uitvoeren tijdens het afrekenen"
+msgstr "Do not perform an identity check during checkout"
 
 #: bluem-idin.php:83
 msgid "Check the minimum age using an AgeCheckRequest"
-msgstr "Controleer de minimumleeftijd met een AgeCheckRequest"
+msgstr "Check the minimum age using an AgeCheckRequest"
 
 #: bluem-idin.php:84
 msgid ""
 "Perform a full identity check and save it, but do NOT block checkout if the "
 "minimum age has not been reached"
 msgstr ""
-"Voer een volledige identiteitscontrole uit en sla deze op, maar blokkeer "
-"afrekenen NIET als de minimumleeftijd niet is bereikt"
+"Perform a full identity check and save it, but do NOT block checkout if the "
+"minimum age has not been reached"
 
 #: bluem-idin.php:85
 msgid ""
 "Perform a full identity check, save it AND block checkout if the minimum age "
 "has not been reached"
 msgstr ""
-"Voer een volledige identiteitscontrole uit, sla deze op EN blokkeer "
-"afrekenen als de minimumleeftijd niet is bereikt"
+"Perform a full identity check, save it AND block checkout if the minimum age "
+"has not been reached"
 
 #: bluem-idin.php:92
 msgid "Age verification per product"
-msgstr "Leeftijdscontrole per product"
+msgstr "Age verification per product"
 
 #: bluem-idin.php:93
 msgid ""
 "Do you want to enable age verification per product? (WooCommerce required)"
 msgstr ""
-"Wilt u leeftijdscontrole per product inschakelen? (WooCommerce vereist)"
+"Do you want to enable age verification per product? (WooCommerce required)"
 
 #: bluem-idin.php:97
 msgid "Do NOT perform age checks per product"
-msgstr "Geen leeftijdscontroles per product uitvoeren"
+msgstr "Do NOT perform age checks per product"
 
 #: bluem-idin.php:98
 msgid "Perform age checks per product"
-msgstr "Leeftijdscontroles per product uitvoeren"
+msgstr "Perform age checks per product"
 
 #: bluem-idin.php:104
 msgid "Minimum age"
-msgstr "Minimumleeftijd"
+msgstr "Minimum age"
 
 #: bluem-idin.php:105
 msgid ""
 "What is the minimum age, in years? If the plugin checks age, this value is "
 "used to perform the check."
 msgstr ""
-"Wat is de minimumleeftijd in jaren? Als de plugin leeftijd controleert, "
-"wordt deze waarde gebruikt."
+"What is the minimum age, in years? If the plugin checks age, this value is "
+"used to perform the check."
 
 #: bluem-idin.php:112
 msgid "Request name?"
-msgstr "Naam opvragen?"
+msgstr "Request name?"
 
 #: bluem-idin.php:113
 msgid ""
 "If you perform a full identity check,\n"
 "                do you want to request the name?"
 msgstr ""
-"Wilt u bij een volledige identiteitscontrole\n"
-"                de naam opvragen?"
+"If you perform a full identity check,\n"
+"                do you want to request the name?"
 
 #: bluem-idin.php:124
 msgid "Request address?"
-msgstr "Adres opvragen?"
+msgstr "Request address?"
 
 #: bluem-idin.php:125
 msgid ""
 "If you perform a full identity check,\n"
 "                do you want to request the residential address?"
 msgstr ""
-"Wilt u bij een volledige identiteitscontrole\n"
-"                het woonadres opvragen?"
+"If you perform a full identity check,\n"
+"                do you want to request the residential address?"
 
 #: bluem-idin.php:136
 msgid "Request date of birth?"
-msgstr "Geboortedatum opvragen?"
+msgstr "Request date of birth?"
 
 #: bluem-idin.php:137
 msgid ""
@@ -156,110 +156,110 @@ msgid ""
 "ALWAYS requested\n"
 "                if you also check the minimum age"
 msgstr ""
-"Wilt u bij een volledige identiteitscontrole\n"
-"                de geboortedatum opvragen? Deze waarde wordt ALTIJD "
-"opgevraagd\n"
-"                als u ook de minimumleeftijd controleert"
+"If you perform a full identity check,\n"
+"                do you want to request the date of birth? This value is "
+"ALWAYS requested\n"
+"                if you also check the minimum age"
 
 #: bluem-idin.php:149
 msgid "Request gender?"
-msgstr "Geslacht opvragen?"
+msgstr "Request gender?"
 
 #: bluem-idin.php:150
 msgid ""
 "If you perform a full identity check,\n"
 "                do you want to request the gender?"
 msgstr ""
-"Wilt u bij een volledige identiteitscontrole\n"
-"                het geslacht opvragen?"
+"If you perform a full identity check,\n"
+"                do you want to request the gender?"
 
 #: bluem-idin.php:161
 msgid "Request phone number?"
-msgstr "Telefoonnummer opvragen?"
+msgstr "Request phone number?"
 
 #: bluem-idin.php:162
 msgid ""
 "If you perform a full identity check,\n"
 "                do you want to request the phone number?"
 msgstr ""
-"Wilt u bij een volledige identiteitscontrole\n"
-"                het telefoonnummer opvragen?"
+"If you perform a full identity check,\n"
+"                do you want to request the phone number?"
 
 #: bluem-idin.php:173
 msgid "Request email address?"
-msgstr "E-mailadres opvragen?"
+msgstr "Request email address?"
 
 #: bluem-idin.php:174
 msgid ""
 "If you perform a full identity check,\n"
 "                do you want to request the email address?"
 msgstr ""
-"Wilt u bij een volledige identiteitscontrole\n"
-"                het e-mailadres opvragen?"
+"If you perform a full identity check,\n"
+"                do you want to request the email address?"
 
 #: bluem-idin.php:185
 msgid "Message for successful identification via shortcode"
-msgstr "Bericht bij geslaagde identificatie via shortcode"
+msgstr "Message for successful identification via shortcode"
 
 #: bluem-idin.php:186 bluem-idin.php:193
 msgid "A concise description is sufficient."
-msgstr "Een korte omschrijving is voldoende."
+msgstr "A concise description is sufficient."
 
 #: bluem-idin.php:187
 msgid "Your identification has been received successfully. Thank you."
-msgstr "Uw identificatie is succesvol ontvangen. Dank u wel."
+msgstr "Your identification has been received successfully. Thank you."
 
 #: bluem-idin.php:192
 msgid "Message for failed identification via shortcode"
-msgstr "Bericht bij mislukte identificatie via shortcode"
+msgstr "Message for failed identification via shortcode"
 
 #: bluem-idin.php:194
 msgid "An error occurred. The identification was canceled."
-msgstr "Er is een fout opgetreden. De identificatie is geannuleerd."
+msgstr "An error occurred. The identification was canceled."
 
 #: bluem-idin.php:200
 msgid "URL from which identification starts"
-msgstr "URL waar de identificatie start"
+msgstr "URL from which identification starts"
 
 #: bluem-idin.php:201
 msgid ""
 "of the page where the identification process is displayed, for example an "
 "account page. The user returns to this page after the process."
 msgstr ""
-"van de pagina waarop het identificatieproces wordt getoond, bijvoorbeeld een "
-"accountpagina. De gebruiker keert na het proces terug naar deze pagina."
+"of the page where the identification process is displayed, for example an "
+"account page. The user returns to this page after the process."
 
 #: bluem-idin.php:214
 msgid "Restrict shortcode to logged-in users"
-msgstr "Shortcode beperken tot ingelogde gebruikers"
+msgstr "Restrict shortcode to logged-in users"
 
 #: bluem-idin.php:215
 msgid ""
 "Should the iDIN form via shortcode be visible to everyone or only logged-in "
 "users?"
 msgstr ""
-"Moet het iDIN-formulier via shortcode zichtbaar zijn voor iedereen of alleen "
-"voor ingelogde gebruikers?"
+"Should the iDIN form via shortcode be visible to everyone or only logged-in "
+"users?"
 
 #: bluem-idin.php:219
 msgid "For everyone"
-msgstr "Voor iedereen"
+msgstr "For everyone"
 
 #: bluem-idin.php:220
 msgid "Only for logged-in visitors"
-msgstr "Alleen voor ingelogde bezoekers"
+msgstr "Only for logged-in visitors"
 
 #: bluem-idin.php:226
 msgid "Request description format"
-msgstr "Formaat verzoekomschrijving"
+msgstr "Request description format"
 
 #: bluem-idin.php:233
 msgid "Possible input fields: "
-msgstr "Mogelijke invoervelden: "
+msgstr "Possible input fields: "
 
 #: bluem-idin.php:236
 msgid "Note: maximum 128 characters. Allowed characters:"
-msgstr "Let op: maximaal 128 tekens. Toegestane tekens:"
+msgstr "Note: maximum 128 characters. Allowed characters:"
 
 #: bluem-idin.php:238
 msgid ""
@@ -267,23 +267,23 @@ msgid ""
 "            an identification request must follow, with automatically filled "
 "fields. This value is also shown in the Bluem portal as the 'Subject' text."
 msgstr ""
-"Voer het formaat in voor de omschrijving van\n"
-"            een identificatieverzoek, met automatisch ingevulde velden. Deze "
-"waarde wordt ook in het Bluem-portaal getoond als onderwerp."
+"Enter the format that the description of\n"
+"            an identification request must follow, with automatically filled "
+"fields. This value is also shown in the Bluem portal as the 'Subject' text."
 
 #: bluem-idin.php:243
 msgid "Example current value"
-msgstr "Voorbeeld huidige waarde"
+msgstr "Example current value"
 
 #. translators: %s: username tag template
 #: bluem-idin.php:247
 #, php-format
 msgid "Identification %s"
-msgstr "Identificatie %s"
+msgstr "Identification %s"
 
 #: bluem-idin.php:252
 msgid "Identification status in emails"
-msgstr "Identificatiestatus in e-mails"
+msgstr "Identification status in emails"
 
 #: bluem-idin.php:253
 msgid ""
@@ -291,13 +291,13 @@ msgid ""
 "            in the order notification email to the customer and to yourself? "
 "<strong>Note: this currently only works for logged-in customers</strong>"
 msgstr ""
-"Moet de identificatiestatus worden getoond\n"
-"            in de bestelnotificatie aan de klant en aan uzelf? <strong>Let "
-"op: dit werkt momenteel alleen voor ingelogde klanten</strong>"
+"Should the identification status be shown\n"
+"            in the order notification email to the customer and to yourself? "
+"<strong>Note: this currently only works for logged-in customers</strong>"
 
 #: bluem-idin.php:264
 msgid "Identification address in emails"
-msgstr "Identificatieadres in e-mails"
+msgstr "Identification address in emails"
 
 #: bluem-idin.php:265
 msgid ""
@@ -305,13 +305,13 @@ msgid ""
 "            in the order notification email to the customer and to yourself? "
 "<strong>Note: this currently only works for logged-in customers</strong>"
 msgstr ""
-"Moet het identificatieadres worden getoond\n"
-"            in de bestelnotificatie aan de klant en aan uzelf? <strong>Let "
-"op: dit werkt momenteel alleen voor ingelogde klanten</strong>"
+"Should the identification address be shown\n"
+"            in the order notification email to the customer and to yourself? "
+"<strong>Note: this currently only works for logged-in customers</strong>"
 
 #: bluem-idin.php:276
 msgid "Identification name in emails"
-msgstr "Identificatienaam in e-mails"
+msgstr "Identification name in emails"
 
 #: bluem-idin.php:277
 msgid ""
@@ -319,13 +319,13 @@ msgid ""
 "            in the order notification email to the customer and to yourself? "
 "<strong>Note: this currently only works for logged-in customers</strong>"
 msgstr ""
-"Moet de identificatienaam worden getoond\n"
-"            in de bestelnotificatie aan de klant en aan uzelf? <strong>Let "
-"op: dit werkt momenteel alleen voor ingelogde klanten</strong>"
+"Should the identification name be shown\n"
+"            in the order notification email to the customer and to yourself? "
+"<strong>Note: this currently only works for logged-in customers</strong>"
 
 #: bluem-idin.php:288
 msgid "Identification date of birth in emails"
-msgstr "Geboortedatum uit identificatie in e-mails"
+msgstr "Identification date of birth in emails"
 
 #: bluem-idin.php:289
 msgid ""
@@ -333,100 +333,105 @@ msgid ""
 "            in the order notification email to the customer and to yourself? "
 "<strong>Note: this currently only works for logged-in customers</strong>"
 msgstr ""
-"Moet de geboortedatum uit de identificatie worden getoond\n"
-"            in de bestelnotificatie aan de klant en aan uzelf? <strong>Let "
-"op: dit werkt momenteel alleen voor ingelogde klanten</strong>"
+"Should the identification date of birth be shown\n"
+"            in the order notification email to the customer and to yourself? "
+"<strong>Note: this currently only works for logged-in customers</strong>"
 
 #: bluem-idin.php:300
 msgid "Text on identification button"
-msgstr "Tekst op identificatieknop"
+msgstr "Text on identification button"
 
 #: bluem-idin.php:301 bluem-idin.php:308 bluem-idin.php:315 bluem-idin.php:322
 #: bluem-idin.php:329 bluem-idin.php:336
 msgid ""
 "What should appear on the button in frames where identification is required?"
-msgstr "Welke tekst moet op de knop staan waar identificatie vereist is?"
+msgstr ""
+"What should appear on the button in frames where identification is required?"
 
 #: bluem-idin.php:302 bluem-idin.php:2106 bluem-idin.php:2502
 #: bluem-idin.php:2507
 msgid "Click here to identify yourself"
-msgstr "Identificeer uzelf"
+msgstr "Click here to identify yourself"
 
 #: bluem-idin.php:307
 msgid ""
 "Text in Identify frame (below checkout) when no valid identification is "
 "known yet but is required"
 msgstr ""
-"Tekst in identificatieblok onder afrekenen wanneer nog geen geldige "
-"identificatie bekend is maar wel vereist is"
+"Text in Identify frame (below checkout) when no valid identification is "
+"known yet but is required"
 
 #: bluem-idin.php:309 bluem-idin.php:1928
 msgid ""
 "Your age is unknown or insufficient. You cannot complete this order. Please "
 "contact webshop support if you have questions."
 msgstr ""
-"Uw leeftijd is onbekend of onvoldoende. U kunt deze bestelling niet "
-"afronden. Neem bij vragen contact op met de webshop."
+"Your age is unknown or insufficient. You cannot complete this order. Please "
+"contact webshop support if you have questions."
 
 #: bluem-idin.php:314
 msgid ""
 "Text in popup above checkout when no valid identification is known yet but "
 "is required"
 msgstr ""
-"Tekst in pop-up boven afrekenen wanneer nog geen geldige identificatie "
-"bekend is maar wel vereist is"
+"Text in popup above checkout when no valid identification is known yet but "
+"is required"
 
 #: bluem-idin.php:316 bluem-idin.php:1940 bluem-idin.php:2117
 msgid ""
 "We have not been able to retrieve your age yet. Complete the identification "
 "procedure first."
 msgstr ""
-"Wij konden uw leeftijd nog niet ophalen. Rond eerst de identificatie af."
+"We have not been able to retrieve your age yet. Complete the identification "
+"procedure first."
 
 #: bluem-idin.php:321
 msgid ""
 "Text in popup above checkout when an invalid identification is returned "
 "after requesting it"
 msgstr ""
-"Tekst in pop-up boven afrekenen wanneer na opvragen een ongeldige "
-"identificatie terugkomt"
+"Text in popup above checkout when an invalid identification is returned "
+"after requesting it"
 
 #: bluem-idin.php:323 bluem-idin.php:2112
 msgid "Your age is insufficient. You cannot complete this order."
-msgstr "Uw leeftijd is onvoldoende. U kunt deze bestelling niet afronden."
+msgstr "Your age is insufficient. You cannot complete this order."
 
 #: bluem-idin.php:328
 msgid ""
 "Text in frame below checkout once a valid identification procedure has been "
 "completed"
 msgstr ""
-"Tekst in het blok onder afrekenen nadat een geldige identificatie is voltooid"
+"Text in frame below checkout once a valid identification procedure has been "
+"completed"
 
 #: bluem-idin.php:330 bluem-idin.php:1934
 msgid "Your age has been verified, thank you."
-msgstr "Uw leeftijd is gecontroleerd. Dank u wel."
+msgstr "Your age has been verified, thank you."
 
 #: bluem-idin.php:335
 msgid ""
 "Text in popup above checkout once a valid identification procedure has been "
 "completed"
 msgstr ""
-"Tekst in pop-up boven afrekenen nadat een geldige identificatie is voltooid"
+"Text in popup above checkout once a valid identification procedure has been "
+"completed"
 
 #: bluem-idin.php:337 bluem-idin.php:2123
 msgid "Your age has been verified."
-msgstr "Uw leeftijd is gecontroleerd."
+msgstr "Your age has been verified."
 
 #: bluem-idin.php:342
 msgid "Explanation frame about identification"
-msgstr "Uitlegblok over identificatie"
+msgstr "Explanation frame about identification"
 
 #: bluem-idin.php:344
 msgid ""
 "Write an explanation here, with optional links, to tell customers/users "
 "about iDIN and its importance."
 msgstr ""
-"Schrijf hier een uitleg, eventueel met links, over iDIN en het belang ervan."
+"Write an explanation here, with optional links, to tell customers/users "
+"about iDIN and its importance."
 
 #: bluem-idin.php:345
 msgid ""
@@ -437,61 +442,60 @@ msgid ""
 "most two minutes and the result is saved for future transactions if you are "
 "logged in as a returning customer."
 msgstr ""
-"**Identificatie is sinds 1 juli 2021 verplicht in winkels waar producten "
-"worden verkocht waarvoor klantidentificatie vereist is.**\n"
+"**Identification has been mandatory since July 1, 2021 in stores where "
+"products are sold that require customer identity verification.**\n"
 "            \n"
-"De methode die hier wordt gebruikt is veilig, snel en eenvoudig, net als "
-"iDEAL. Het duurt maximaal twee minuten en het resultaat wordt opgeslagen "
-"voor toekomstige transacties als u bent ingelogd als terugkerende klant."
+"The method used here is safe, fast and easy, just like iDEAL. It takes at "
+"most two minutes and the result is saved for future transactions if you are "
+"logged in as a returning customer."
 
 #: bluem-idin.php:355
 msgid "Filter identification to take place only in the Netherlands"
-msgstr "Identificatie beperken tot Nederland"
+msgstr "Filter identification to take place only in the Netherlands"
 
 #: bluem-idin.php:356
 msgid ""
 "If this value is set to yes, checkout checks the user's location (based on "
 "IP) and only checks for iDIN data for Dutch IPs."
 msgstr ""
-"Als deze waarde op ja staat, controleert afrekenen de locatie van de "
-"gebruiker op basis van IP en worden iDIN-gegevens alleen gecontroleerd voor "
-"Nederlandse IP-adressen."
+"If this value is set to yes, checkout checks the user's location (based on "
+"IP) and only checks for iDIN data for Dutch IPs."
 
 #: bluem-idin.php:363
 msgid "Do you want to show the identification notice at the top of checkout?"
-msgstr "Wilt u de identificatiemelding bovenaan afrekenen tonen?"
+msgstr "Do you want to show the identification notice at the top of checkout?"
 
 #: bluem-idin.php:364
 msgid ""
 "Do you also want to show the identification required message as a notice at "
 "the top of checkout?"
 msgstr ""
-"Wilt u de melding dat identificatie vereist is ook bovenaan afrekenen tonen?"
+"Do you also want to show the identification required message as a notice at "
+"the top of checkout?"
 
 #: bluem-idin.php:375
 msgid "Here you can configure all important details for iDIN (Identification)."
 msgstr ""
-"Hier configureert u alle belangrijke instellingen voor iDIN (identificatie)."
+"Here you can configure all important details for iDIN (Identification)."
 
 #: bluem-idin.php:379
 msgid "Automatic check:"
-msgstr "Automatische controle:"
+msgstr "Automatic check:"
 
 #: bluem-idin.php:388
 msgid "No automatic check is performed"
-msgstr "Er wordt geen automatische controle uitgevoerd"
+msgstr "No automatic check is performed"
 
 #: bluem-idin.php:393
 msgid "A minimum age check is performed during checkout"
-msgstr "Er wordt tijdens het afrekenen een minimumleeftijd gecontroleerd"
+msgstr "A minimum age check is performed during checkout"
 
 #: bluem-idin.php:398
 msgid ""
 "A full identity check is performed before checkout becomes available\n"
 "                        "
 msgstr ""
-"Er wordt een volledige identiteitscontrole uitgevoerd voordat afrekenen "
-"beschikbaar wordt\n"
+"A full identity check is performed before checkout becomes available\n"
 "                        "
 
 #: bluem-idin.php:407
@@ -499,28 +503,28 @@ msgid ""
 "A full identity check and age check are performed before checkout becomes "
 "available"
 msgstr ""
-"Er wordt een volledige identiteits- en leeftijdscontrole uitgevoerd voordat "
-"afrekenen beschikbaar wordt"
+"A full identity check and age check are performed before checkout becomes "
+"available"
 
 #: bluem-idin.php:420
 msgid ""
 "These details are currently requested during the full identity check before "
 "checkout:"
 msgstr ""
-"Deze gegevens worden momenteel opgevraagd tijdens de volledige "
-"identiteitscontrole voor het afrekenen:"
+"These details are currently requested during the full identity check before "
+"checkout:"
 
 #: bluem-idin.php:436
 msgid "Initiate an iDIN request yourself on a page"
-msgstr "Zelf een iDIN-verzoek starten op een pagina"
+msgstr "Initiate an iDIN request yourself on a page"
 
 #: bluem-idin.php:439
 msgid ""
 "The iDIN form also works as a shortcode that you can place on a page, post "
 "or in a template. The shortcode is as follows:"
 msgstr ""
-"Het iDIN-formulier werkt ook als shortcode die u op een pagina, in een "
-"bericht of template kunt plaatsen. De shortcode is:"
+"The iDIN form also works as a shortcode that you can place on a page, post "
+"or in a template. The shortcode is as follows:"
 
 #: bluem-idin.php:443
 msgid ""
@@ -528,9 +532,9 @@ msgid ""
 "status of the identification procedure. If no identification has been "
 "performed, a button will appear to start it."
 msgstr ""
-"Na plaatsing verschijnt op deze pagina een blok met de status van de "
-"identificatie. Als er nog geen identificatie is uitgevoerd, verschijnt een "
-"knop om deze te starten."
+"Once you have placed it, a block becomes visible on this page showing the "
+"status of the identification procedure. If no identification has been "
+"performed, a button will appear to start it."
 
 #: bluem-idin.php:447
 msgid ""
@@ -538,17 +542,17 @@ msgid ""
 "the page marked below\n"
 "        as iDINPageURL"
 msgstr ""
-"Na succesvolle identificatie via Bluem keert de gebruiker terug naar de "
-"pagina hieronder\n"
-"        gemarkeerd als iDINPageURL"
+"After successfully completing identification via Bluem, the user returns to "
+"the page marked below\n"
+"        as iDINPageURL"
 
 #: bluem-idin.php:453
 msgid "current value:"
-msgstr "huidige waarde:"
+msgstr "current value:"
 
 #: bluem-idin.php:464
 msgid "Where can I find the details?"
-msgstr "Waar vind ik de gegevens?"
+msgstr "Where can I find the details?"
 
 #: bluem-idin.php:468
 msgid ""
@@ -556,41 +560,41 @@ msgid ""
 "can see these fields when\n"
 "        viewing a user."
 msgstr ""
-"Na identificatie worden gegevens als metadata in het gebruikersprofiel "
-"opgeslagen. U ziet deze velden wanneer u\n"
-"        een gebruiker bekijkt."
+"Details are saved as metadata in the user profile after identification. You "
+"can see these fields when\n"
+"        viewing a user."
 
 #: bluem-idin.php:474
 msgid "For example, look at"
-msgstr "Bekijk bijvoorbeeld"
+msgstr "For example, look at"
 
 #: bluem-idin.php:476
 msgid "your own profile"
-msgstr "uw eigen profiel"
+msgstr "your own profile"
 
 #: bluem-idin.php:481
 msgid "Identity settings and preferences"
-msgstr "Identiteitsinstellingen en voorkeuren"
+msgstr "Identity settings and preferences"
 
 #: bluem-idin.php:845
 msgid "Your identification request has been received. Thank you."
-msgstr "Uw identificatieverzoek is ontvangen. Dank u wel."
+msgstr "Your identification request has been received. Thank you."
 
 #: bluem-idin.php:874
 msgid "An error occurred. Your request has been canceled."
-msgstr "Er is een fout opgetreden. Uw verzoek is geannuleerd."
+msgstr "An error occurred. Your request has been canceled."
 
 #: bluem-idin.php:882
 msgid "Try again"
-msgstr "Opnieuw proberen"
+msgstr "Try again"
 
 #: bluem-idin.php:887
 msgid "You have not completed the identification procedure yet."
-msgstr "U hebt de identificatie nog niet voltooid."
+msgstr "You have not completed the identification procedure yet."
 
 #: bluem-idin.php:891
 msgid "Identify"
-msgstr "Identificeren"
+msgstr "Identify"
 
 #: bluem-idin.php:957
 msgid ""
@@ -599,10 +603,10 @@ msgid ""
 "                This is required before you can complete an identification.\n"
 "                Go back to the store and try again."
 msgstr ""
-"Fout: bluem_idin_entrance_code van de gebruiker of uit de Bluem-sessieopslag "
-"ontbreekt.\n"
-"                Dit is vereist voordat u een identificatie kunt voltooien.\n"
-"                Ga terug naar de winkel en probeer het opnieuw."
+"Error: bluem_idin_entrance_code from the user or Bluem session storage is "
+"missing.\n"
+"                This is required before you can complete an identification.\n"
+"                Go back to the store and try again."
 
 #: bluem-idin.php:984
 msgid ""
@@ -610,85 +614,85 @@ msgid ""
 "missing. This is required before you can complete an identification. Go back "
 "to the store and try again."
 msgstr ""
-"Fout: bluem_idin_transaction_id van de gebruiker of uit de Bluem-"
-"sessieopslag ontbreekt. Dit is vereist voordat u een identificatie kunt "
-"voltooien. Ga terug naar de winkel en probeer het opnieuw."
+"Error: bluem_idin_transaction_id from the user or Bluem session storage is "
+"missing. This is required before you can complete an identification. Go back "
+"to the store and try again."
 
 #. translators: %1$s: transaction ID %2$s: entranceCode
 #: bluem-idin.php:1011
 #, php-format
 msgid "Error: could not find request with %1$s and entranceCode %2$s"
-msgstr "Fout: geen verzoek gevonden met %1$s en entranceCode %2$s"
+msgstr "Error: could not find request with %1$s and entranceCode %2$s"
 
 #: bluem-idin.php:1295 bluem-idin.php:1309 bluem-interface.php:593
 #: bluem-interface.php:626 views/settings.php:35 views/settings.php:36
 #: views/status.php:128
 msgid "Identity"
-msgstr "Identiteit"
+msgstr "Identity"
 
 #: bluem-idin.php:1312
 msgid "No requests performed yet."
-msgstr "Nog geen verzoeken uitgevoerd."
+msgstr "No requests performed yet."
 
 #: bluem-idin.php:1318
 msgid "Bluem iDIN transaction details"
-msgstr "Bluem iDIN-transactiegegevens"
+msgstr "Bluem iDIN transaction details"
 
 #: bluem-idin.php:1327
 msgid "Most recent Entrance code for Bluem iDIN requests"
-msgstr "Meest recente entranceCode voor Bluem iDIN-verzoeken"
+msgstr "Most recent Entrance code for Bluem iDIN requests"
 
 #: bluem-idin.php:1342
 msgid ""
 "The most recent transaction ID: this is used when performing the next "
 "identification."
 msgstr ""
-"Het meest recente transactie-ID: dit wordt gebruikt bij de volgende "
-"identificatie."
+"The most recent transaction ID: this is used when performing the next "
+"identification."
 
 #: bluem-idin.php:1356
 msgid "The most recent transaction URL"
-msgstr "De meest recente transactie-URL"
+msgstr "The most recent transaction URL"
 
 #: bluem-idin.php:1370
 msgid "Last time verification was performed"
-msgstr "Laatste keer dat verificatie is uitgevoerd"
+msgstr "Last time verification was performed"
 
 #: bluem-idin.php:1383
 msgid "Bank response for age check, if applicable"
-msgstr "Bankrespons voor leeftijdscontrole, indien van toepassing"
+msgstr "Bank response for age check, if applicable"
 
 #: bluem-idin.php:1399
 msgid "Age check has not been performed yet"
-msgstr "Leeftijdscontrole is nog niet uitgevoerd"
+msgstr "Age check has not been performed yet"
 
 #: bluem-idin.php:1407
 msgid "Age found to be insufficient"
-msgstr "Leeftijd is onvoldoende bevonden"
+msgstr "Age found to be insufficient"
 
 #: bluem-idin.php:1416
 msgid "Age found to be sufficient"
-msgstr "Leeftijd is voldoende bevonden"
+msgstr "Age found to be sufficient"
 
 #: bluem-idin.php:1428
 msgid "CustomerID returned by the bank"
-msgstr "CustomerID teruggegeven door de bank"
+msgstr "CustomerID returned by the bank"
 
 #: bluem-idin.php:1446
 msgid "iDIN responses"
-msgstr "iDIN-responses"
+msgstr "iDIN responses"
 
 #: bluem-idin.php:1458
 msgid "Identification has not been performed yet"
-msgstr "Identificatie is nog niet uitgevoerd"
+msgstr "Identification has not been performed yet"
 
 #: bluem-idin.php:1466
 msgid "Identification performed successfully"
-msgstr "Identificatie succesvol uitgevoerd"
+msgstr "Identification performed successfully"
 
 #: bluem-idin.php:1471
 msgid "Status and results of iDIN requests"
-msgstr "Status en resultaten van iDIN-verzoeken"
+msgstr "Status and results of iDIN requests"
 
 #. translators: %s: Error message
 #: bluem-idin.php:1699
@@ -697,74 +701,74 @@ msgid ""
 "Error: the Bluem plugin is not configured correctly. Please contact your "
 "system administrator. Error message: %s"
 msgstr ""
-"Fout: de Bluem-plugin is niet correct geconfigureerd. Neem contact op met uw "
-"systeembeheerder. Foutmelding: %s"
+"Error: the Bluem plugin is not configured correctly. Please contact your "
+"system administrator. Error message: %s"
 
 #: bluem-idin.php:1709
 msgid "No valid iDIN categories configured"
-msgstr "Geen geldige iDIN-categorieen geconfigureerd"
+msgstr "No valid iDIN categories configured"
 
 #: bluem-idin.php:1812 bluem-idin.php:1838
 msgid ""
 "Something went wrong while creating the transaction. Please provide the "
 "information below to the website administrator:"
 msgstr ""
-"Er is iets misgegaan bij het aanmaken van de transactie. Geef onderstaande "
-"informatie door aan de websitebeheerder:"
+"Something went wrong while creating the transaction. Please provide the "
+"information below to the website administrator:"
 
 #. translators: %s: Error message
 #: bluem-idin.php:1820
 #, php-format
 msgid "iDIN error: %s"
-msgstr "iDIN-fout: %s"
+msgstr "iDIN error: %s"
 
 #: bluem-idin.php:1824 bluem-idin.php:1843
 msgid "General error"
-msgstr "Algemene fout"
+msgstr "General error"
 
 #: bluem-idin.php:1944
 msgid "Identification"
-msgstr "Identificatie"
+msgstr "Identification"
 
 #: bluem-idin.php:2039
 msgid "Verify your identity first."
-msgstr "Verifieer eerst uw identiteit."
+msgstr "Verify your identity first."
 
 #: bluem-idin.php:2338 bluem-interface.php:451
 msgid "Yes"
-msgstr "Ja"
+msgstr "Yes"
 
 #: bluem-idin.php:2341
 msgid "Yes, as guest user"
-msgstr "Ja, als gastgebruiker"
+msgstr "Yes, as guest user"
 
 #: bluem-idin.php:2346
 msgid "Identity verified"
-msgstr "Identiteit geverifieerd"
+msgstr "Identity verified"
 
 #: bluem-idin.php:2376 bluem-idin.php:2381
 msgid "Address from verification"
-msgstr "Adres uit verificatie"
+msgstr "Address from verification"
 
 #: bluem-idin.php:2382 bluem-idin.php:2417 bluem-idin.php:2441
 msgid "Unknown"
-msgstr "Onbekend"
+msgstr "Unknown"
 
 #: bluem-idin.php:2411 bluem-idin.php:2416
 msgid "Name from verification"
-msgstr "Naam uit verificatie"
+msgstr "Name from verification"
 
 #: bluem-idin.php:2435 bluem-idin.php:2440
 msgid "Date of birth from verification"
-msgstr "Geboortedatum uit verificatie"
+msgstr "Date of birth from verification"
 
 #: bluem-idin.php:2513
 msgid ""
 "iDIN is an essential part of the shopping process for our webshop. If you "
 "see this frame, identification is essential for your purchase or interaction."
 msgstr ""
-"iDIN is een essentieel onderdeel van het bestelproces in onze webshop. Ziet "
-"u dit blok, dan is identificatie noodzakelijk voor uw aankoop of handeling."
+"iDIN is an essential part of the shopping process for our webshop. If you "
+"see this frame, identification is essential for your purchase or interaction."
 
 #. translators: %1$s: url  to more information %2$s: button text
 #: bluem-idin.php:2540
@@ -778,7 +782,7 @@ msgstr ""
 
 #: bluem-idin.php:2552
 msgid "What is this?"
-msgstr "Wat is dit?"
+msgstr "What is this?"
 
 #. translators: %1$s: checkout url %2$s: more information popup %3$s: checkout url
 #: bluem-idin.php:2558
@@ -800,21 +804,21 @@ msgid ""
 msgstr ""
 "<div id=\"idin_info_popup\" class=\"bluem-idin-overlay\">\n"
 "                <div class=\"bluem-idin-popup\">\n"
-"                <h4>Uitleg over verplichte identificatie</h4>\n"
+"                <h4>Explanation of required identification</h4>\n"
 "                <a class=\"bluem-idin-popup-close bluem-idin-popup-close-"
 "icon\" href=\"%1$s#\">&times;</a>\n"
 "                    <div class=\"bluem-idin-popup-content\">\n"
 "                        %2$s\n"
 "                        <hr>\n"
 "                        <a class=\"bluem-idin-popup-close\" "
-"href=\"%3$s#\">Klik hier om dit venster te sluiten</a>\n"
+"href=\"%3$s#\">Click here to close this frame</a>\n"
 "                    </div>\n"
 "                </div>\n"
 "            </div></div></div>"
 
 #: bluem-idin.php:2615
 msgid "Identity linked to user by logging in"
-msgstr "Identiteit gekoppeld aan gebruiker door inloggen"
+msgstr "Identity linked to user by logging in"
 
 #. translators: %s: error code
 #: bluem-integrations.php:1008
@@ -823,8 +827,8 @@ msgid ""
 "Something went wrong while creating the Gravity Forms transaction, error "
 "code: %s"
 msgstr ""
-"Er is iets misgegaan bij het aanmaken van de Gravity Forms-transactie, "
-"foutcode: %s"
+"Something went wrong while creating the Gravity Forms transaction, error "
+"code: %s"
 
 #: bluem-integrations.php:1039
 msgid ""
@@ -833,10 +837,10 @@ msgid ""
 "\t    Check the plugin settings. Please contact the shop and provide your "
 "contact details."
 msgstr ""
-"Fout: de Gravity Forms-integratie is niet actief, maar er is toch een "
-"callback ontvangen. \n"
-"\t    Controleer de plugininstellingen. Neem contact op met de winkel en "
-"vermeld uw contactgegevens."
+"Error: the Gravity Forms integration is not active, but a callback was "
+"received anyway. \n"
+"\t    Check the plugin settings. Please contact the shop and provide your "
+"contact details."
 
 #: bluem-integrations.php:1047
 msgid ""
@@ -845,32 +849,32 @@ msgid ""
 "\t\t\tTry correcting the settings. If that does not work,\n"
 "\t\t\tplease contact plugin support and provide your contact details."
 msgstr ""
-"Fout: de Bluem-configuratie is niet correct, hoewel Gravity Forms actief "
-"is. \n"
-"\t\t\tProbeer de instellingen te corrigeren. Lukt dat niet,\n"
-"\t\t\tneem dan contact op met plugin-support en vermeld uw contactgegevens."
+"Error: the Bluem configuration is not correct even though Gravity Forms is "
+"active. \n"
+"\t\t\tTry correcting the settings. If that does not work,\n"
+"\t\t\tplease contact plugin support and provide your contact details."
 
 #. translators: %s: Name of the category (Bluem service)
 #: bluem-interface.php:32
 #, php-format
 msgid "No transactions yet for %s"
-msgstr "Nog geen transacties voor %s"
+msgstr "No transactions yet for %s"
 
 #: bluem-interface.php:44
 msgid "Request"
-msgstr "Verzoek"
+msgstr "Request"
 
 #: bluem-interface.php:45 views/request.php:58
 msgid "User"
-msgstr "Gebruiker"
+msgstr "User"
 
 #: bluem-interface.php:46 views/request.php:68 views/request.php:90
 msgid "Date"
-msgstr "Datum"
+msgstr "Date"
 
 #: bluem-interface.php:47
 msgid "Additional info"
-msgstr "Aanvullende informatie"
+msgstr "Additional info"
 
 #: bluem-interface.php:48 bluem-interface.php:391 bluem-interface.php:693
 #: bluem.php:398 bluem.php:399 views/request.php:74 views/request.php:92
@@ -881,27 +885,27 @@ msgstr "Status"
 #: bluem-interface.php:84 gateways/Bluem_Bank_Based_Payment_Gateway.php:156
 #: views/request.php:48 views/request.php:110
 msgid "Order"
-msgstr "Bestelling"
+msgstr "Order"
 
 #: bluem-interface.php:97 bluem-interface.php:371 views/request.php:34
 msgid "Customer reference"
-msgstr "Klantreferentie"
+msgstr "Customer reference"
 
 #: bluem-interface.php:123
 msgid "Created"
-msgstr "Aangemaakt"
+msgstr "Created"
 
 #: bluem-interface.php:133
 msgid "Completed successfully"
-msgstr "Succesvol voltooid"
+msgstr "Completed successfully"
 
 #: bluem-interface.php:142
 msgid "Cancelled"
-msgstr "Geannuleerd"
+msgstr "Cancelled"
 
 #: bluem-interface.php:148
 msgid "Expired"
-msgstr "Verlopen"
+msgstr "Expired"
 
 #: bluem-interface.php:156
 msgid "Open"
@@ -909,35 +913,35 @@ msgstr "Open"
 
 #: bluem-interface.php:163
 msgid "Awaiting processing"
-msgstr "Wacht op verwerking"
+msgstr "Awaiting processing"
 
 #: bluem-interface.php:170
 msgid "Processing"
-msgstr "In verwerking"
+msgstr "Processing"
 
 #: bluem-interface.php:178
 msgid "Insufficient"
-msgstr "Onvoldoende"
+msgstr "Insufficient"
 
 #: bluem-interface.php:184
 msgid "Failed"
-msgstr "Mislukt"
+msgstr "Failed"
 
 #: bluem-interface.php:205 views/request.php:64
 msgid "Guest / unknown"
-msgstr "Gast / onbekend"
+msgstr "Guest / unknown"
 
 #: bluem-interface.php:220
 msgid "Need help?"
-msgstr "Hulp nodig?"
+msgstr "Need help?"
 
 #: bluem-interface.php:225 bluem-interface.php:699
 msgid "Manual"
-msgstr "Handleiding"
+msgstr "Manual"
 
 #: bluem-interface.php:234 bluem-interface.php:706
 msgid "E-mail support"
-msgstr "E-mailsupport"
+msgstr "E-mail support"
 
 #: bluem-interface.php:279
 msgid "CustomerID"
@@ -945,55 +949,55 @@ msgstr "CustomerID"
 
 #: bluem-interface.php:290
 msgid "Address"
-msgstr "Adres"
+msgstr "Address"
 
 #: bluem-interface.php:305
 msgid "Birth date"
-msgstr "Geboortedatum"
+msgstr "Birth date"
 
 #: bluem-interface.php:315
 msgid "Email"
-msgstr "E-mail"
+msgstr "Email"
 
 #: bluem-interface.php:324
 msgid "Phone no."
-msgstr "Tel.nr."
+msgstr "Phone no."
 
 #: bluem-interface.php:336
 msgid "Bluem mode"
-msgstr "Bluem-modus"
+msgstr "Bluem mode"
 
 #: bluem-interface.php:360 views/request.php:29
 msgid "Transaction number"
-msgstr "Transactienummer"
+msgstr "Transaction number"
 
 #: bluem-interface.php:381
 msgid "Time"
-msgstr "Tijd"
+msgstr "Time"
 
 #: bluem-interface.php:451
 msgid "No"
-msgstr "Nee"
+msgstr "No"
 
 #: bluem-interface.php:468 bluem-interface.php:534
 msgid "Name"
-msgstr "Naam"
+msgstr "Name"
 
 #: bluem-interface.php:469 bluem-interface.php:535
 msgid "Value"
-msgstr "Waarde"
+msgstr "Value"
 
 #: bluem-interface.php:501
 msgid "Form entry"
-msgstr "Formulierinzending"
+msgstr "Form entry"
 
 #: bluem-interface.php:505
 msgid "View"
-msgstr "Bekijken"
+msgstr "View"
 
 #: bluem-interface.php:540
 msgid "Form ID"
-msgstr "Formulier-ID"
+msgstr "Form ID"
 
 #: bluem-interface.php:569 bluem-interface.php:608 views/settings.php:23
 #: views/settings.php:24 views/status.php:120
@@ -1023,31 +1027,31 @@ msgstr "SOFORT"
 #: bluem-interface.php:597 bluem-interface.php:629 views/settings.php:40
 #: views/settings.php:41
 msgid "Integrations"
-msgstr "Integraties"
+msgstr "Integrations"
 
 #: bluem-interface.php:600
 msgid "Unknown type"
-msgstr "Onbekend type"
+msgstr "Unknown type"
 
 #: bluem-interface.php:611
 msgid "iDEAL payments"
-msgstr "iDEAL-betalingen"
+msgstr "iDEAL payments"
 
 #: bluem-interface.php:614
 msgid "Credit card payments"
-msgstr "Creditcardbetalingen"
+msgstr "Credit card payments"
 
 #: bluem-interface.php:617
 msgid "PayPal payments"
-msgstr "PayPal-betalingen"
+msgstr "PayPal payments"
 
 #: bluem-interface.php:620
 msgid "Carte Bancaire payments"
-msgstr "Carte Bancaire-betalingen"
+msgstr "Carte Bancaire payments"
 
 #: bluem-interface.php:623
 msgid "SOFORT payments"
-msgstr "SOFORT-betalingen"
+msgstr "SOFORT payments"
 
 #: bluem-interface.php:649
 msgid "Home"
@@ -1055,24 +1059,24 @@ msgstr "Home"
 
 #: bluem-interface.php:660 bluem.php:362 bluem.php:363
 msgid "Activation"
-msgstr "Activatie"
+msgstr "Activation"
 
 #: bluem-interface.php:671 bluem.php:371 bluem.php:372 views/requests.php:9
 msgid "Transactions"
-msgstr "Transacties"
+msgstr "Transactions"
 
 #: bluem-interface.php:682 bluem.php:309 bluem.php:322 bluem.php:380
 #: bluem.php:381 views/settings.php:8
 msgid "Settings"
-msgstr "Instellingen"
+msgstr "Settings"
 
 #: bluem-mandates-instant.php:20
 msgid "Error: no debtorReference specified"
-msgstr "Fout: geen debtorReference opgegeven"
+msgstr "Error: no debtorReference specified"
 
 #: bluem-mandates-instant.php:53
 msgid "Direct debit mandate "
-msgstr "Incassomachtiging "
+msgstr "Direct debit mandate "
 
 #: bluem-mandates-instant.php:79
 msgid ""
@@ -1080,22 +1084,21 @@ msgid ""
 "                Please provide the information below to the website "
 "administrator:"
 msgstr ""
-"Er is iets misgegaan bij het aanmaken van de transactie.<br>\n"
-"                Geef onderstaande informatie door aan de websitebeheerder:"
+"Something went wrong while creating the transaction.<br>\n"
+"                Please provide the information below to the website "
+"administrator:"
 
 #: bluem-mandates-instant.php:180 bluem-mandates-shortcode.php:300
 msgid ""
 "Error: no valid mandate ID was returned during callback. Please contact the "
 "webshop and mention your contact details."
 msgstr ""
-"Fout: er is geen geldig mandaat-ID teruggegeven tijdens de callback. Neem "
-"contact op met de webshop en vermeld uw contactgegevens."
+"Error: no valid mandate ID was returned during callback. Please contact the "
+"webshop and mention your contact details."
 
 #: bluem-mandates-instant.php:193 bluem-mandates-shortcode.php:347
 msgid "Error: EntranceCode is not set, so the mandate cannot be retrieved."
-msgstr ""
-"Fout: EntranceCode is niet ingesteld, waardoor het mandaat niet kan worden "
-"opgehaald."
+msgstr "Error: EntranceCode is not set, so the mandate cannot be retrieved."
 
 #. translators: %s: error message or status returned by Bluem
 #: bluem-mandates-instant.php:210 bluem-mandates-shortcode.php:368
@@ -1108,32 +1111,32 @@ msgid ""
 "Error retrieving status: %s. Please contact the webshop and mention this "
 "status."
 msgstr ""
-"Fout bij ophalen van status: %s. Neem contact op met de webshop en vermeld "
-"deze status."
+"Error retrieving status: %s. Please contact the webshop and mention this "
+"status."
 
 #: bluem-mandates-instant.php:280
 msgid ""
 "Error: the signing succeeded but no response URI was specified. Please "
 "contact the website to report this technical issue."
 msgstr ""
-"Fout: de ondertekening is geslaagd, maar er is geen response-URI opgegeven. "
-"Neem contact op met de website om dit technische probleem te melden."
+"Error: the signing succeeded but no response URI was specified. Please "
+"contact the website to report this technical issue."
 
 #: bluem-mandates-instant.php:298
 msgid "Error: the transaction was canceled. Please try again."
-msgstr "Fout: de transactie is geannuleerd. Probeer het opnieuw."
+msgstr "Error: the transaction was canceled. Please try again."
 
 #: bluem-mandates-instant.php:309
 msgid ""
 "Error: the transaction is still open. This may take a moment. Refresh this "
 "page regularly to check the status."
 msgstr ""
-"Fout: de transactie staat nog open. Dit kan even duren. Vernieuw deze pagina "
-"regelmatig om de status te controleren."
+"Error: the transaction is still open. This may take a moment. Refresh this "
+"page regularly to check the status."
 
 #: bluem-mandates-instant.php:320
 msgid "Error: the transaction has expired. Please try again."
-msgstr "Fout: de transactie is verlopen. Probeer het opnieuw."
+msgstr "Error: the transaction has expired. Please try again."
 
 #. translators: %s: status code
 #: bluem-mandates-instant.php:331
@@ -1142,8 +1145,8 @@ msgid ""
 "Error: unknown or invalid status received: %s<br>Please contact the webshop "
 "and mention this status; the user has been redirected back to the site."
 msgstr ""
-"Fout: onbekende of ongeldige status ontvangen: %s<br>Neem contact op met de "
-"webshop en vermeld deze status; de gebruiker is teruggeleid naar de site."
+"Error: unknown or invalid status received: %s<br>Please contact the webshop "
+"and mention this status; the user has been redirected back to the site."
 
 #: bluem-mandates-shortcode.php:187
 msgid ""
@@ -1151,8 +1154,9 @@ msgid ""
 "            Please provide the information below to the website "
 "administrator:"
 msgstr ""
-"Er is iets misgegaan bij het aanmaken van de transactie.<br>\n"
-"            Geef onderstaande informatie door aan de websitebeheerder:"
+"Something went wrong while creating the transaction.<br>\n"
+"            Please provide the information below to the website "
+"administrator:"
 
 #. translators: %s: error status
 #: bluem-mandates-shortcode.php:476
@@ -1161,28 +1165,28 @@ msgid ""
 "Error: unknown or invalid status received: %s. Please contact the webshop "
 "and mention this status; the user has been redirected back to the site."
 msgstr ""
-"Fout: onbekende of ongeldige status ontvangen: %s. Neem contact op met de "
-"webshop en vermeld deze status; de gebruiker is teruggeleid naar de site."
+"Error: unknown or invalid status received: %s. Please contact the webshop "
+"and mention this status; the user has been redirected back to the site."
 
 #: bluem-mandates-shortcode.php:595
 msgid "Thank you for your mandate with mandate ID:"
-msgstr "Dank u voor uw mandaat met mandaat-ID:"
+msgstr "Thank you for your mandate with mandate ID:"
 
 #: bluem-mandates-shortcode.php:599
 msgid "You still need to issue a direct debit mandate."
-msgstr "U moet nog een incassomachtiging afgeven."
+msgstr "You still need to issue a direct debit mandate."
 
 #: bluem-mandates-shortcode.php:602
 msgid "required"
-msgstr "verplicht"
+msgstr "required"
 
 #: bluem-mandates-shortcode.php:609
 msgid "Start mandate process"
-msgstr "Mandaatproces starten"
+msgstr "Start mandate process"
 
 #: bluem-payments.php:220
 msgid "ePayments transacties"
-msgstr "ePayments-transacties"
+msgstr "ePayments transacties"
 
 #. translators: %s: the link to settings page
 #: bluem.php:307
@@ -1193,10 +1197,10 @@ msgid ""
 "            If you do not use WooCommerce, you can disable this notice and "
 "WooCommerce-related functionality in the %s."
 msgstr ""
-"De Bluem-integratie is sterk afhankelijk van WooCommerce. Installeer en/of "
-"activeer deze plugin. <br/>\n"
-"            Gebruikt u WooCommerce niet, dan kunt u deze melding en "
-"WooCommerce-functionaliteit uitschakelen in de %s."
+"The Bluem integration depends heavily on WooCommerce - install and/or "
+"activate this plugin. <br/>\n"
+"            If you do not use WooCommerce, you can disable this notice and "
+"WooCommerce-related functionality in the %s."
 
 #: bluem.php:320
 msgid ""
@@ -1204,9 +1208,9 @@ msgid ""
 "routing.<br>\n"
 "        Select any option except 'Plain' in Permalinks."
 msgstr ""
-"De Bluem-integratie is voor routing afhankelijk van de WordPress-"
-"permalinkinstelling.<br>\n"
-"        Kies bij Permalinks een andere optie dan 'Eenvoudig'."
+"The Bluem integration depends on the WordPress permalink setting because of "
+"routing.<br>\n"
+"        Select any option except 'Plain' in Permalinks."
 
 #: bluem.php:335 bluem.php:336 bluem.php:352 bluem.php:353
 msgid "Bluem"
@@ -1223,45 +1227,45 @@ msgid ""
 "Error retrieving status: %s<br>Please contact the webshop and mention this "
 "status."
 msgstr ""
-"Fout bij ophalen van status: %s<br>Neem contact op met de webshop en vermeld "
-"deze status."
+"Error retrieving status: %s<br>Please contact the webshop and mention this "
+"status."
 
 #: bluem.php:819
 msgid "Authorization has been received"
-msgstr "Machtiging is ontvangen"
+msgstr "Authorization has been received"
 
 #: bluem.php:820 bluem.php:919
 msgid "Payment process completed"
-msgstr "Betaalproces voltooid"
+msgstr "Payment process completed"
 
 #: bluem.php:845
 msgid "Authorization has been canceled"
-msgstr "Machtiging is geannuleerd"
+msgstr "Authorization has been canceled"
 
 #: bluem.php:851
 msgid "Authorization has expired"
-msgstr "Machtiging is verlopen"
+msgstr "Authorization has expired"
 
 #: bluem.php:857 gateways/Bluem_Mandates_Payment_Gateway.php:807
 msgid "Authorization failed: error or unknown status"
-msgstr "Machtiging mislukt: fout of onbekende status"
+msgstr "Authorization failed: error or unknown status"
 
 #: bluem.php:918
 msgid "Payment has been received"
-msgstr "Betaling is ontvangen"
+msgstr "Payment has been received"
 
 #: bluem.php:925 gateways/Bluem_Bank_Based_Payment_Gateway.php:563
 msgid "Payment has been canceled"
-msgstr "Betaling is geannuleerd"
+msgstr "Payment has been canceled"
 
 #: bluem.php:931 gateways/Bluem_Bank_Based_Payment_Gateway.php:538
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:581
 msgid "Payment has expired"
-msgstr "Betaling is verlopen"
+msgstr "Payment has expired"
 
 #: bluem.php:937 gateways/Bluem_Bank_Based_Payment_Gateway.php:589
 msgid "Payment failed: error or unknown status"
-msgstr "Betaling mislukt: fout of onbekende status"
+msgstr "Payment failed: error or unknown status"
 
 #: bluem.php:1108
 msgid ""
@@ -1278,10 +1282,10 @@ msgstr ""
 "<p><a id=\"tab_general\"></a>\n"
 "    <div class=\"notice notice-warning inline\" style=\"padding:10px;\">\n"
 "    <span class=\"dashicons dashicons-unlock\"></span>\n"
-"    Let op:\n"
-"    U hebt een geactiveerd account bij Bluem nodig.\n"
-"    De gegevens die u per e-mail ontvangt, kunt u hieronder\n"
-"    en per specifiek onderdeel invoeren.\n"
+"    Notice:\n"
+"    You need an activated account with Bluem.\n"
+"    The details you receive by email can be entered below\n"
+"    and for each specific component.\n"
 "    </div>\n"
 "    </p>"
 
@@ -1293,66 +1297,63 @@ msgid ""
 "    and preferences.<br />"
 msgstr ""
 "<div class=\"notice notice-info inline\" style=\"padding:10px;\">\n"
-"    Hebt u de plugin al op een andere website geinstalleerd?<br />\n"
-"    Gebruik dan de import-/exportfunctie om dezelfde instellingen\n"
-"    en voorkeuren te laden.<br />"
+"    Have you already installed the plugin on another website?<br />\n"
+"    Then use the import / export function to load the same settings\n"
+"    and preferences.<br />"
 
 #. translators: %s: url to import/export page
 #: bluem.php:1127
 #, php-format
 msgid "Go to <a href=\"%s\" class=\"\">import or export settings</a>.</div>"
-msgstr ""
-"Ga naar <a href=\"%s\" class=\"\">instellingen importeren of exporteren</a>."
-"</div>"
+msgstr "Go to <a href=\"%s\" class=\"\">import or export settings</a>.</div>"
 
 #: bluem.php:1152
 msgid "Manage components of this plugin"
-msgstr "Onderdelen van deze plugin beheren"
+msgstr "Manage components of this plugin"
 
 #: bluem.php:1158
 msgid "eMandates active"
-msgstr "eMandates actief"
+msgstr "eMandates active"
 
 #: bluem.php:1165
 msgid "ePayments active"
-msgstr "ePayments actief"
+msgstr "ePayments active"
 
 #: bluem.php:1172
 msgid "iDIN active"
-msgstr "iDIN actief"
+msgstr "iDIN active"
 
 #: bluem.php:1179
 msgid "Warn in admin environment if plugin has not yet been set up properly"
-msgstr ""
-"Waarschuwen in de beheeromgeving als de plugin nog niet goed is ingesteld"
+msgstr "Warn in admin environment if plugin has not yet been set up properly"
 
 #: bluem.php:1187
 msgid "General settings"
-msgstr "Algemene instellingen"
+msgstr "General settings"
 
 #: bluem.php:1209
 msgid "eMandates settings"
-msgstr "eMandates-instellingen"
+msgstr "eMandates settings"
 
 #: bluem.php:1234
 msgid "ePayments settings"
-msgstr "ePayments-instellingen"
+msgstr "ePayments settings"
 
 #: bluem.php:1260
 msgid "eIdentity settings"
-msgstr "eIdentity-instellingen"
+msgstr "eIdentity settings"
 
 #: bluem.php:1285
 msgid "Integration settings"
-msgstr "Integratie-instellingen"
+msgstr "Integration settings"
 
 #: bluem.php:1348
 msgid "Bluem components"
-msgstr "Bluem-onderdelen"
+msgstr "Bluem components"
 
 #: bluem.php:1354
 msgid "Configure?"
-msgstr "Configureren?"
+msgstr "Configure?"
 
 #. translators: %s: link to bluem settings
 #: bluem.php:1360
@@ -1362,21 +1363,21 @@ msgid ""
 "                    settings</a> to change the behavior of each Bluem "
 "component."
 msgstr ""
-"Ga naar de <a href=\"%s\">\n"
-"                    instellingen</a> om het gedrag van elk Bluem-onderdeel "
-"te wijzigen."
+"Go to the <a href=\"%s\">\n"
+"                    settings</a> to change the behavior of each Bluem "
+"component."
 
 #: bluem.php:1523
 msgid "Choose the active mode"
-msgstr "Kies de actieve modus"
+msgstr "Choose the active mode"
 
 #: bluem.php:1524
 msgid ""
 "Enter which mode you want to use: prod, test or acc for the production "
 "(live), test or acceptance environment."
 msgstr ""
-"Voer in welke modus u wilt gebruiken: prod, test of acc voor de productie-, "
-"test- of acceptatieomgeving."
+"Enter which mode you want to use: prod, test or acc for the production "
+"(live), test or acceptance environment."
 
 #: bluem.php:1537
 msgid "Bluem Sender ID"
@@ -1384,32 +1385,33 @@ msgstr "Bluem Sender ID"
 
 #: bluem.php:1538
 msgid "The Sender ID issued by Bluem. Starts with an S, followed by a number."
-msgstr ""
-"De door Bluem verstrekte Sender ID. Begint met een S, gevolgd door een "
-"nummer."
+msgstr "The Sender ID issued by Bluem. Starts with an S, followed by a number."
 
 #: bluem.php:1545
 msgid "Access Token for Testing"
-msgstr "Access Token voor testen"
+msgstr "Access Token for Testing"
 
 #: bluem.php:1546
 msgid ""
 "The access token used to communicate with Bluem for the test environment."
-msgstr "Het access token voor communicatie met Bluem in de testomgeving."
+msgstr ""
+"The access token used to communicate with Bluem for the test environment."
 
 #: bluem.php:1553
 msgid "Access Token for Production"
-msgstr "Access Token voor productie"
+msgstr "Access Token for Production"
 
 #: bluem.php:1554
 msgid ""
 "The access token used to communicate with Bluem for the production "
 "environment."
-msgstr "Het access token voor communicatie met Bluem in de productieomgeving."
+msgstr ""
+"The access token used to communicate with Bluem for the production "
+"environment."
 
 #: bluem.php:1560
 msgid "Test mode return status"
-msgstr "Retourstatus testmodus"
+msgstr "Test mode return status"
 
 #: bluem.php:1561
 msgid ""
@@ -1417,98 +1419,99 @@ msgid ""
 "request? Possible values: none, success, cancelled, expired, failure, open, "
 "pending"
 msgstr ""
-"Welke status wilt u ontvangen voor een TEST-transactie of statusverzoek? "
-"Mogelijke waarden: none, success, cancelled, expired, failure, open, pending"
+"Which status do you want to receive for a TEST transaction or status "
+"request? Possible values: none, success, cancelled, expired, failure, open, "
+"pending"
 
 #: bluem.php:1577
 msgid "Use WooCommerce?"
-msgstr "WooCommerce gebruiken?"
+msgstr "Use WooCommerce?"
 
 #: bluem.php:1578
 msgid ""
 "Set this to \"Do not use WooCommerce\" if you want to use this plugin on "
 "this site without WooCommerce functionality."
 msgstr ""
-"Stel dit in op \"WooCommerce niet gebruiken\" als u deze plugin op deze site "
-"zonder WooCommerce-functionaliteit wilt gebruiken."
+"Set this to \"Do not use WooCommerce\" if you want to use this plugin on "
+"this site without WooCommerce functionality."
 
 #: bluem.php:1590
 msgid "Report errors to the developers"
-msgstr "Fouten melden aan de ontwikkelaars"
+msgstr "Report errors to the developers"
 
 #: bluem.php:1591
 msgid ""
 "Help us resolve issues quickly and minimize downtime by forwarding non-"
 "personal technical notifications."
 msgstr ""
-"Help ons problemen snel op te lossen en downtime te beperken door niet-"
-"persoonlijke technische meldingen door te sturen."
+"Help us resolve issues quickly and minimize downtime by forwarding non-"
+"personal technical notifications."
 
 #: bluem.php:1595
 msgid "Yes, forward errors to the developers"
-msgstr "Ja, stuur fouten door naar de ontwikkelaars"
+msgstr "Yes, forward errors to the developers"
 
 #: bluem.php:1596
 msgid "No error reporting by email"
-msgstr "Geen foutmeldingen per e-mail"
+msgstr "No error reporting by email"
 
 #: bluem.php:1602
 msgid "Email notification for the website owner for each new transaction?"
-msgstr "E-mailmelding aan de website-eigenaar voor elke nieuwe transactie?"
+msgstr "Email notification for the website owner for each new transaction?"
 
 #: bluem.php:1607
 msgid "No email notification (default)"
-msgstr "Geen e-mailmelding (standaard)"
+msgstr "No email notification (default)"
 
 #: bluem.php:1608
 msgid "Send a notification for each transaction to "
-msgstr "Stuur voor elke transactie een melding naar "
+msgstr "Send a notification for each transaction to "
 
 #: bluem.php:1649
 msgid "Age verification"
-msgstr "Leeftijdscontrole"
+msgstr "Age verification"
 
 #: bluem.php:1652
 msgid "Enable"
-msgstr "Inschakelen"
+msgstr "Enable"
 
 #: bluem.php:1653
 msgid "Disable"
-msgstr "Uitschakelen"
+msgstr "Disable"
 
 #. translators: %s: website name
 #: bluem.php:1705 bluem.php:1804
 #, php-format
 msgid "Administration of %s"
-msgstr "Administratie van %s"
+msgstr "Administration of %s"
 
 #: bluem.php:1713
 msgid "Error notification in Bluem "
-msgstr "Foutmelding in Bluem "
+msgstr "Error notification in Bluem "
 
 #. translators: %1$s: admin name %2$s: admin email address
 #: bluem.php:1720
 #, php-format
 msgid "Error in Bluem plugin. %1$s <%2$s>,"
-msgstr "Fout in Bluem-plugin. %1$s <%2$s>,"
+msgstr "Error in Bluem plugin. %1$s <%2$s>,"
 
 #. translators: %s: admin email address
 #: bluem.php:1751
 #, php-format
 msgid "Sent error report mail to %s"
-msgstr "Foutrapport per e-mail verzonden naar %s"
+msgstr "Sent error report mail to %s"
 
 #. translators: %s: website url
 #: bluem.php:1767
 #, php-format
 msgid "Go to the site at %s to view this request in detail."
-msgstr "Ga naar de site op %s om dit verzoek in detail te bekijken."
+msgstr "Go to the site at %s to view this request in detail."
 
 #. translators: %s: author name
 #: bluem.php:1821
 #, php-format
 msgid "Dear %s,"
-msgstr "Geachte %s,"
+msgstr "Dear %s,"
 
 #. translators: %s: type of request
 #: bluem.php:1826
@@ -1517,77 +1520,78 @@ msgid ""
 "<p>A new Bluem %s request has been processed with the following details:</"
 "p><p>"
 msgstr ""
-"<p>Een nieuw Bluem %s-verzoek is verwerkt met de volgende gegevens:</p><p>"
+"<p>A new Bluem %s request has been processed with the following details:</"
+"p><p>"
 
 #: bluem.php:1831
 msgid "More details"
-msgstr "Meer details"
+msgstr "More details"
 
 #: bluem.php:1831
 msgid "See admin interface"
-msgstr "Bekijk beheeromgeving"
+msgstr "See admin interface"
 
 #. translators: %s: email of admin
 #: bluem.php:1865
 #, php-format
 msgid "Sent notification mail to %s"
-msgstr "Notificatie-e-mail verzonden naar %s"
+msgstr "Sent notification mail to %s"
 
 #: bluem.php:1913
 msgid ""
 "Tip: Improve efficiency by only enabling the services that are relevant for "
 "your website."
 msgstr ""
-"Tip: werk efficienter door alleen diensten in te schakelen die relevant zijn "
-"voor uw website."
+"Tip: Improve efficiency by only enabling the services that are relevant for "
+"your website."
 
 #: bluem.php:1959
 msgid "(Make a selection)"
-msgstr "(Maak een keuze)"
+msgstr "(Make a selection)"
 
 #: bluem.php:1960
 msgid "Active"
-msgstr "Actief"
+msgstr "Active"
 
 #: bluem.php:1961
 msgid "Disabled"
-msgstr "Uitgeschakeld"
+msgstr "Disabled"
 
 #: bluem.php:2033
 msgid "Account details are missing"
-msgstr "Accountgegevens ontbreken"
+msgstr "Account details are missing"
 
 #: bluem.php:2040
 msgid "SenderID is missing"
-msgstr "SenderID ontbreekt"
+msgstr "SenderID is missing"
 
 #: bluem.php:2046
 msgid "Test accessToken is missing"
-msgstr "Test-accessToken ontbreekt"
+msgstr "Test accessToken is missing"
 
 #: bluem.php:2057
 msgid "Production accessToken is missing"
-msgstr "Productie-accessToken ontbreekt"
+msgstr "Production accessToken is missing"
 
 #: bluem.php:2067
 msgid "eMandates brandID is missing"
-msgstr "eMandates brandID ontbreekt"
+msgstr "eMandates brandID is missing"
 
 #: bluem.php:2077
 msgid "eMandates merchantID is missing"
-msgstr "eMandates merchantID ontbreekt"
+msgstr "eMandates merchantID is missing"
 
 #: bluem.php:2085
 msgid "iDIN BrandID is missing"
-msgstr "iDIN BrandID ontbreekt"
+msgstr "iDIN BrandID is missing"
 
 #: bluem.php:2097
 msgid "Your SenderID is not yet set, please add it in the settings"
-msgstr "Uw SenderID is nog niet ingesteld. Voeg deze toe in de instellingen."
+msgstr "Your SenderID is not yet set, please add it in the settings"
 
 #: bluem.php:2103
 msgid "The Payments BrandID for iDEAL is missing."
-msgstr "De Payments BrandID voor iDEAL ontbreekt."
+msgstr "The Payments BrandID for iDEAL is missing."
 
 #. translators: %1$s: the invalid brandID value %2$s: a valid BrandID value
 #: bluem.php:2112
@@ -1596,8 +1600,8 @@ msgid ""
 "The Payments BrandID for iDEAL (\"%1$s\") must match your SenderID + "
 "\"Payment\" (for example, %2$s)."
 msgstr ""
-"De Payments BrandID voor iDEAL (\"%1$s\") moet overeenkomen met uw SenderID "
-"+ \"Payment\" (bijvoorbeeld %2$s)."
+"The Payments BrandID for iDEAL (\"%1$s\") must match your SenderID + "
+"\"Payment\" (for example, %2$s)."
 
 #. translators: %1$s: payment method label, %2$s: the invalid brandID value, %3$s: the expected SenderID prefix
 #: bluem.php:2135
@@ -1606,91 +1610,91 @@ msgid ""
 "The Payments BrandID for %1$s (\"%2$s\") must contain your SenderID "
 "(\"%3$s\")."
 msgstr ""
-"De Payments BrandID voor %1$s (\"%2$s\") moet uw SenderID (\"%3$s\") "
-"bevatten."
+"The Payments BrandID for %1$s (\"%2$s\") must contain your SenderID "
+"(\"%3$s\")."
 
 #: bluem.php:2157
 msgid ""
 "You have enabled Bluem iDEAL but the payment method has not yet been "
 "activated within WooCommerce."
 msgstr ""
-"U hebt Bluem iDEAL ingeschakeld, maar de betaalmethode is nog niet "
-"geactiveerd in WooCommerce."
+"You have enabled Bluem iDEAL but the payment method has not yet been "
+"activated within WooCommerce."
 
 #: bluem.php:2159 bluem.php:2168
 msgid "The Bluem integration has not been fully activated yet"
-msgstr "De Bluem-integratie is nog niet volledig geactiveerd"
+msgstr "The Bluem integration has not been fully activated yet"
 
 #: bluem.php:2159 bluem.php:2169
 msgid "Click here to go to the WooCommerce configuration."
-msgstr "Klik hier om naar de WooCommerce-configuratie te gaan."
+msgstr "Click here to go to the WooCommerce configuration."
 
 #: bluem.php:2166
 msgid ""
 "You have enabled Bluem mandates but the payment method has not yet been "
 "activated within WooCommerce."
 msgstr ""
-"U hebt Bluem-mandaten ingeschakeld, maar de betaalmethode is nog niet "
-"geactiveerd in WooCommerce."
+"You have enabled Bluem mandates but the payment method has not yet been "
+"activated within WooCommerce."
 
 #: bluem.php:2182
 msgid "The Bluem integration has not been fully configured yet"
-msgstr "De Bluem-integratie is nog niet volledig geconfigureerd"
+msgstr "The Bluem integration has not been fully configured yet"
 
 #: bluem.php:2186
 msgid "Click here to continue configuring the plugin."
-msgstr "Klik hier om verder te gaan met de pluginconfiguratie."
+msgstr "Click here to continue configuring the plugin."
 
 #: bluem.php:2215
 msgid "Bluem request(s)"
-msgstr "Bluem-verzoek(en)"
+msgstr "Bluem request(s)"
 
 #: bluem.php:2241
 msgid "No requests yet"
-msgstr "Nog geen verzoeken"
+msgstr "No requests yet"
 
 #: bluem.php:2270
 msgid "Go back to the webshop"
-msgstr "Terug naar de webshop"
+msgstr "Go back to the webshop"
 
 #: bluem.php:2329
 msgid "Could not import: the input is not valid JSON"
-msgstr "Importeren mislukt: de invoer is geen geldige JSON"
+msgstr "Could not import: the input is not valid JSON"
 
 #. translators: %s: number of settings
 #: bluem.php:2344
 #, php-format
 msgid "Import completed: %s settings updated."
-msgstr "Import voltooid: %s instellingen bijgewerkt."
+msgstr "Import completed: %s settings updated."
 
 #. translators: %1\$s: customer id %2\$s: order id
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:151
 #, php-format
 msgid "Customer %1$s, Order %2$s"
-msgstr "Klant %1$s, bestelling %2$s"
+msgstr "Customer %1$s, Order %2$s"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:253
 msgid "Awaiting Bluem Payment Signature"
-msgstr "Wacht op Bluem-betaalondertekening"
+msgstr "Awaiting Bluem Payment Signature"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:256
 msgid "Payment process initiated"
-msgstr "Betaalproces gestart"
+msgstr "Payment process initiated"
 
 #. translators: %s: error message returned by Bluem
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:301
 #, php-format
 msgid "No payment URL received from Bluem. Error: %s"
-msgstr "Geen betalings-URL ontvangen van Bluem. Fout: %s"
+msgstr "No payment URL received from Bluem. Error: %s"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:302
 msgid "Unknown error"
-msgstr "Onbekende fout"
+msgstr "Unknown error"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:332
 #: gateways/Bluem_Mandates_Payment_Gateway.php:523
 msgid "Error: No order found"
-msgstr "Fout: geen bestelling gevonden"
+msgstr "Error: No order found"
 
 #. translators: %s: order status
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:347
@@ -1699,36 +1703,36 @@ msgid ""
 "Received payment completed webhook notification, but status not updated - it "
 "was already %s"
 msgstr ""
-"Webhookmelding voor voltooide betaling ontvangen, maar status niet "
-"bijgewerkt; deze was al %s"
+"Received payment completed webhook notification, but status not updated - it "
+"was already %s"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:352
 msgid "Payment succeeded and was approved via webhook"
-msgstr "Betaling geslaagd en goedgekeurd via webhook"
+msgstr "Payment succeeded and was approved via webhook"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:355
 msgid "Payment was canceled via webhook"
-msgstr "Betaling geannuleerd via webhook"
+msgstr "Payment was canceled via webhook"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:359
 msgid "Payment expired via webhook"
-msgstr "Betaling verlopen via webhook"
+msgstr "Payment expired via webhook"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:361
 msgid "Payment failed: error or unknown status via webhook"
-msgstr "Betaling mislukt: fout of onbekende status via webhook"
+msgstr "Payment failed: error or unknown status via webhook"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:376
 msgid "Error: Exception"
-msgstr "Fout: exceptie"
+msgstr "Error: Exception"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:425
 msgid ""
 "Error: no valid entranceCode was returned during payment_callback. Please "
 "contact the webshop and mention your contact details."
 msgstr ""
-"Fout: er is geen geldige entranceCode teruggegeven tijdens payment_callback. "
-"Neem contact op met de webshop en vermeld uw contactgegevens."
+"Error: no valid entranceCode was returned during payment_callback. Please "
+"contact the webshop and mention your contact details."
 
 #. translators: %s entrancecode
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:444
@@ -1738,9 +1742,9 @@ msgid ""
 "            Please contact the webshop and mention the code %s with your "
 "details."
 msgstr ""
-"Fout: bestelling niet gevonden in de webshop.\n"
-"            Neem contact op met de webshop en vermeld de code %s bij uw "
-"gegevens."
+"Error: order not found in webshop.\n"
+"            Please contact the webshop and mention the code %s with your "
+"details."
 
 #. translators: %s: entranceCode
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:464
@@ -1749,12 +1753,12 @@ msgid ""
 "No transaction ID found. Please contact the webshop and mention the code %s "
 "with your details."
 msgstr ""
-"Geen transactie-ID gevonden. Neem contact op met de webshop en vermeld de "
-"code %s bij uw gegevens."
+"No transaction ID found. Please contact the webshop and mention the code %s "
+"with your details."
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:518
 msgid "Payment has been received (callback)"
-msgstr "Betaling is ontvangen (callback)"
+msgstr "Payment has been received (callback)"
 
 #. translators: %1$s: actual status %2$s: Entrance Code
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:522
@@ -1763,12 +1767,12 @@ msgid ""
 "Received payment completed callback, but status was already %1$s. "
 "EntranceCode: %2$s"
 msgstr ""
-"Callback voor voltooide betaling ontvangen, maar status was al %1$s. "
+"Received payment completed callback, but status was already %1$s. "
 "EntranceCode: %2$s"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:541
 msgid "Payment process not completed"
-msgstr "Betaalproces niet voltooid"
+msgstr "Payment process not completed"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:545
 msgid ""
@@ -1778,28 +1782,27 @@ msgid ""
 "                or contact the webshop\n"
 "                if the problem persists."
 msgstr ""
-"Er is iets misgegaan bij het betalen,\n"
-"                of u hebt het betaalproces niet voltooid.\n"
-"                <br>Probeer opnieuw te betalen vanuit uw "
-"bestellingsoverzicht\n"
-"                of neem contact op met de webshop\n"
-"                als het probleem blijft bestaan."
+"Something went wrong while paying,\n"
+"                or you did not complete the payment process.\n"
+"                <br>Try paying again from your order overview\n"
+"                or contact the webshop\n"
+"                if the problem persists."
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:569
 msgid "You canceled the payment"
-msgstr "U hebt de betaling geannuleerd"
+msgstr "You canceled the payment"
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:576
 msgid ""
 "The payment has not been confirmed yet. This may take a moment but happens "
 "automatically."
 msgstr ""
-"De betaling is nog niet bevestigd. Dit kan even duren, maar gebeurt "
-"automatisch."
+"The payment has not been confirmed yet. This may take a moment but happens "
+"automatically."
 
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:586
 msgid "Error: the payment or payment request has expired"
-msgstr "Fout: de betaling of het betaalverzoek is verlopen"
+msgstr "Error: the payment or payment request has expired"
 
 #. translators: %s: status code
 #: gateways/Bluem_Bank_Based_Payment_Gateway.php:609
@@ -1808,145 +1811,141 @@ msgid ""
 "Error: unknown or invalid status received: %s.\n"
 "                        Please contact the webshop and mention this status."
 msgstr ""
-"Fout: onbekende of ongeldige status ontvangen: %s.\n"
-"                        Neem contact op met de webshop en vermeld deze "
-"status."
+"Error: unknown or invalid status received: %s.\n"
+"                        Please contact the webshop and mention this status."
 
 #: gateways/Bluem_CarteBancaire_Payment_Gateway.php:15
 msgid "Bluem payments via Carte Bancaire"
-msgstr "Bluem-betalingen via Carte Bancaire"
+msgstr "Bluem payments via Carte Bancaire"
 
 #: gateways/Bluem_CarteBancaire_Payment_Gateway.php:16
 msgid "Pay easily, quickly and safely via Carte Bancaire"
-msgstr "Betaal eenvoudig, snel en veilig via Carte Bancaire"
+msgstr "Pay easily, quickly and safely via Carte Bancaire"
 
 #: gateways/Bluem_Creditcard_Payment_Gateway.php:15
 msgid "Bluem payments via Credit Card"
-msgstr "Bluem-betalingen via creditcard"
+msgstr "Bluem payments via Credit Card"
 
 #: gateways/Bluem_Creditcard_Payment_Gateway.php:16
 msgid "Pay easily, quickly and safely via Credit Card"
-msgstr "Betaal eenvoudig, snel en veilig via creditcard"
+msgstr "Pay easily, quickly and safely via Credit Card"
 
 #: gateways/Bluem_iDEAL_Payment_Gateway.php:16
 msgid "Bluem payments via iDEAL"
-msgstr "Bluem-betalingen via iDEAL"
+msgstr "Bluem payments via iDEAL"
 
 #: gateways/Bluem_iDEAL_Payment_Gateway.php:17
 msgid "Pay easily, quickly and safely via iDEAL"
-msgstr "Betaal eenvoudig, snel en veilig via iDEAL"
+msgstr "Pay easily, quickly and safely via iDEAL"
 
 #: gateways/Bluem_iDEAL_Payment_Gateway.php:64
 #: gateways/Bluem_Mandates_Payment_Gateway.php:315
 msgid "Select a bank:"
-msgstr "Selecteer een bank:"
+msgstr "Select a bank:"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:21
 msgid "eMandate Payment Gateway for WordPress - WooCommerce."
-msgstr "eMandate Payment Gateway voor WordPress - WooCommerce."
+msgstr "eMandate Payment Gateway for WordPress - WooCommerce."
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:25
 msgid "Bluem Digital Direct Debit Mandate (eMandate)"
-msgstr "Bluem digitale incassomachtiging (eMandate)"
+msgstr "Bluem Digital Direct Debit Mandate (eMandate)"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:31
 msgid "Bluem Business Direct Debit Mandate (eMandate)"
-msgstr "Bluem zakelijke incassomachtiging (eMandate)"
+msgstr "Bluem Business Direct Debit Mandate (eMandate)"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:33
 msgid "Bluem Consumer Direct Debit Mandate (eMandate)"
-msgstr "Bluem particuliere incassomachtiging (eMandate)"
+msgstr "Bluem Consumer Direct Debit Mandate (eMandate)"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:110
 msgid "Enable the Bluem eMandate Gateway"
-msgstr "Bluem eMandate Gateway inschakelen"
+msgstr "Enable the Bluem eMandate Gateway"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:118
 msgid "This determines the title the user sees during checkout."
-msgstr "Dit bepaalt de titel die de gebruiker ziet tijdens het afrekenen."
+msgstr "This determines the title the user sees during checkout."
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:119
 msgid "Direct debit mandate for business Rabobank, ING or ABN AMRO accounts"
-msgstr ""
-"Incassomachtiging voor zakelijke Rabobank-, ING- of ABN AMRO-rekeningen"
+msgstr "Direct debit mandate for business Rabobank, ING or ABN AMRO accounts"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:124
 msgid "This determines the description the user sees during checkout."
-msgstr ""
-"Dit bepaalt de beschrijving die de gebruiker ziet tijdens het afrekenen."
+msgstr "This determines the description the user sees during checkout."
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:125
 msgid "Issue a B2B eMandate for a direct debit for your order."
-msgstr "Geef een B2B eMandate af voor incasso van uw bestelling."
+msgstr "Issue a B2B eMandate for a direct debit for your order."
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:198
 msgid "No / invalid bluem response for existing mandate"
-msgstr "Geen of ongeldige Bluem-respons voor bestaand mandaat"
+msgstr "No / invalid bluem response for existing mandate"
 
 #. translators: %s: order id
 #: gateways/Bluem_Mandates_Payment_Gateway.php:230
 #, php-format
 msgid "Utilized this request for a payment for another order with ID %s"
-msgstr ""
-"Dit verzoek gebruikt voor een betaling voor een andere bestelling met ID %s"
+msgstr "Utilized this request for a payment for another order with ID %s"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:272
 msgid "Existing mandate found, but not valid"
-msgstr "Bestaand mandaat gevonden, maar niet geldig"
+msgstr "Existing mandate found, but not valid"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:274
 msgid "Existing mandate is not a successful mandate"
-msgstr "Bestaand mandaat is geen succesvol mandaat"
+msgstr "Existing mandate is not a successful mandate"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:277
 msgid "Not ready, no metadata"
-msgstr "Niet gereed, geen metadata"
+msgstr "Not ready, no metadata"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:345
 msgid "Direct debit mandate"
-msgstr "Incassomachtiging"
+msgstr "Direct debit mandate"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:440
 msgid "Awaiting Bluem eMandate Signature"
-msgstr "Wacht op Bluem eMandate-ondertekening"
+msgstr "Awaiting Bluem eMandate Signature"
 
 #. translators: %1/$s: order id, %2/$s: user id
 #: gateways/Bluem_Mandates_Payment_Gateway.php:458
 #, php-format
 msgid "Mandate request for order %1$s by user %2$s"
-msgstr "Mandaatverzoek voor bestelling %1$s door gebruiker %2$s"
+msgstr "Mandate request for order %1$s by user %2$s"
 
 #. translators: %s: mandate id
 #: gateways/Bluem_Mandates_Payment_Gateway.php:581
 #, php-format
 msgid "Authorization (Mandate ID %s) was successful and approved; via webhook"
-msgstr "Machtiging (mandaat-ID %s) is geslaagd en goedgekeurd via webhook"
+msgstr "Authorization (Mandate ID %s) was successful and approved; via webhook"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:587
 msgid "Authorization has been canceled; via webhook"
-msgstr "Machtiging is geannuleerd via webhook"
+msgstr "Authorization has been canceled; via webhook"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:591
 msgid "Authorization has expired; via webhook"
-msgstr "Machtiging is verlopen via webhook"
+msgstr "Authorization has expired; via webhook"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:593
 msgid "Authorization failed: error or unknown status; via webhook"
-msgstr "Machtiging mislukt: fout of onbekende status via webhook"
+msgstr "Authorization failed: error or unknown status; via webhook"
 
 #. translators: %s: exception message
 #: gateways/Bluem_Mandates_Payment_Gateway.php:603
 #, php-format
 msgid "Error: Exception: %s"
-msgstr "Fout: exceptie: %s"
+msgstr "Error: Exception: %s"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:644
 msgid ""
 "Error: no mandate ID was returned during mandates_callback. Please contact "
 "the webshop and mention your contact details."
 msgstr ""
-"Fout: er is geen mandaat-ID teruggegeven tijdens mandates_callback. Neem "
-"contact op met de webshop en vermeld uw contactgegevens."
+"Error: no mandate ID was returned during mandates_callback. Please contact "
+"the webshop and mention your contact details."
 
 #. translators: %s: error code
 #: gateways/Bluem_Mandates_Payment_Gateway.php:660
@@ -1955,8 +1954,8 @@ msgid ""
 "Error: mandate not found in webshop orders. Please contact the webshop and "
 "mention the code %s with your details."
 msgstr ""
-"Fout: mandaat niet gevonden in webshopbestellingen. Neem contact op met de "
-"webshop en vermeld de code %s bij uw gegevens."
+"Error: mandate not found in webshop orders. Please contact the webshop and "
+"mention the code %s with your details."
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:765
 msgid ""
@@ -1967,36 +1966,36 @@ msgid ""
 "                    After that, the mandate will be approved and this\n"
 "                    will be reflected on this site."
 msgstr ""
-"Uw mandaat wacht op goedkeuring van\n"
-"                    een andere ondertekenaar namens uw organisatie.\n"
-"                    Deze persoon moet inloggen bij internetbankieren\n"
-"                    en dit mandaat ook goedkeuren.\n"
-"                    Daarna is het mandaat goedgekeurd en wordt dit\n"
-"                    zichtbaar op deze site."
+"Your mandate is waiting for approval from\n"
+"                    another signer on behalf of your organization.\n"
+"                    This person must log in to online banking\n"
+"                    and also approve this mandate.\n"
+"                    After that, the mandate will be approved and this\n"
+"                    will be reflected on this site."
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:776
 msgid "Approval was interrupted or canceled"
-msgstr "Goedkeuring is onderbroken of geannuleerd"
+msgstr "Approval was interrupted or canceled"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:782
 msgid "You canceled the mandate signing"
-msgstr "U hebt de mandaatondertekening geannuleerd"
+msgstr "You canceled the mandate signing"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:786
 msgid ""
 "The mandate signing has not been confirmed yet. This may take a moment but "
 "happens automatically."
 msgstr ""
-"De mandaatondertekening is nog niet bevestigd. Dit kan even duren, maar "
-"gebeurt automatisch."
+"The mandate signing has not been confirmed yet. This may take a moment but "
+"happens automatically."
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:793
 msgid "Request has expired"
-msgstr "Verzoek is verlopen"
+msgstr "Request has expired"
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:801
 msgid "Error: the mandate or mandate request has expired"
-msgstr "Fout: het mandaat of mandaatverzoek is verlopen"
+msgstr "Error: the mandate or mandate request has expired"
 
 #. translators: %s: error status code
 #: gateways/Bluem_Mandates_Payment_Gateway.php:811
@@ -2005,14 +2004,14 @@ msgid ""
 "Error: unknown or invalid status received: %s. Please contact the webshop "
 "and mention this status."
 msgstr ""
-"Fout: onbekende of ongeldige status ontvangen: %s. Neem contact op met de "
-"webshop en vermeld deze status."
+"Error: unknown or invalid status received: %s. Please contact the webshop "
+"and mention this status."
 
 #: gateways/Bluem_Mandates_Payment_Gateway.php:910
 msgid ""
 "Authorization must be signed again because the mandate amount is too low"
 msgstr ""
-"Machtiging moet opnieuw worden ondertekend omdat het mandaatbedrag te laag is"
+"Authorization must be signed again because the mandate amount is too low"
 
 #. translators: %1$s: order total plus 10%, %3$s: max allowed amount, %3$s: URL to payment page
 #: gateways/Bluem_Mandates_Payment_Gateway.php:918
@@ -2026,13 +2025,13 @@ msgid ""
 "href=\"%3$s\" target=\"_self\">Click here to return to the payment page and "
 "issue a new mandate</a></p>"
 msgstr ""
-"<p>De door u afgegeven incassomachtiging is niet toereikend voor het "
-"incasseren van het factuurbedrag van uw bestelling.</p>\n"
-"<p>De geschatte factuurwaarde van uw bestelling is EUR %1$s. De ingestelde "
-"incassomachtiging is EUR %2$s. Wij adviseren uw incassomachtiging te "
-"verhogen of \"onbeperkt\" te kiezen.</p><p><a href=\"%3$s\" "
-"target=\"_self\">Klik hier om terug te gaan naar de betaalpagina en een "
-"nieuw mandaat af te geven</a></p>"
+"<p>The automatic direct debit mandate you issued is not sufficient for "
+"collecting the invoice amount of your order.</p>\n"
+"<p>The estimated invoice value of your order is EUR %1$s. The automatic "
+"direct debit mandate you configured is EUR %2$s. We recommend increasing "
+"your automatic direct debit mandate or choosing \"unlimited\".</p><p><a "
+"href=\"%3$s\" target=\"_self\">Click here to return to the payment page and "
+"issue a new mandate</a></p>"
 
 #. translators: %1$s: order max amount, %2$s: order link, %3$s: order id, %4$s: order amount,
 #: gateways/Bluem_Mandates_Payment_Gateway.php:935
@@ -2043,10 +2042,10 @@ msgid ""
 "correction is &euro; %4$s. The user is prompted to create a new mandate to "
 "fulfill this order."
 msgstr ""
-"Gebruiker probeerde dit mandaat te gebruiken met maximumbedrag &euro; %1$s, "
-"maar het totaalbedrag van bestelling <a href=\"%2$s\" target=\"_self\">ID "
-"%3$s</a> inclusief correctie is &euro; %4$s. De gebruiker wordt gevraagd een "
-"nieuw mandaat aan te maken voor deze bestelling."
+"User tried to give use this mandate with maxamount &euro; %1$s, but the "
+"Order <a href=\"%2$s\" target=\"_self\">ID %3$s</a> grand total including "
+"correction is &euro; %4$s. The user is prompted to create a new mandate to "
+"fulfill this order."
 
 #. translators: %1$s: mandate id, %2$s: request id
 #: gateways/Bluem_Mandates_Payment_Gateway.php:1001
@@ -2055,119 +2054,120 @@ msgid ""
 "Authorization (Mandate ID %1$s, Request ID %2$s) has been obtained and "
 "approved"
 msgstr ""
-"Machtiging (mandaat-ID %1$s, verzoek-ID %2$s) is verkregen en goedgekeurd"
+"Authorization (Mandate ID %1$s, Request ID %2$s) has been obtained and "
+"approved"
 
 #: gateways/Bluem_Payment_Gateway.php:143
 msgid "Enable/disable"
-msgstr "In-/uitschakelen"
+msgstr "Enable/disable"
 
 #: gateways/Bluem_Payment_Gateway.php:150
 msgid "Displayed title"
-msgstr "Getoonde titel"
+msgstr "Displayed title"
 
 #: gateways/Bluem_Payment_Gateway.php:152
 msgid "This is the title the user sees during checkout."
-msgstr "Dit is de titel die de gebruiker ziet tijdens het afrekenen."
+msgstr "This is the title the user sees during checkout."
 
 #: gateways/Bluem_Payment_Gateway.php:156 views/request.php:25
 msgid "Description"
-msgstr "Beschrijving"
+msgstr "Description"
 
 #: gateways/Bluem_Payment_Gateway.php:158
 msgid "This is the description the user sees during checkout."
-msgstr "Dit is de beschrijving die de gebruiker ziet tijdens het afrekenen."
+msgstr "This is the description the user sees during checkout."
 
 #: gateways/Bluem_PayPal_Payment_Gateway.php:14
 msgid "Bluem payments via PayPal"
-msgstr "Bluem-betalingen via PayPal"
+msgstr "Bluem payments via PayPal"
 
 #: gateways/Bluem_PayPal_Payment_Gateway.php:15
 msgid "Pay easily, quickly and safely via PayPal"
-msgstr "Betaal eenvoudig, snel en veilig via PayPal"
+msgstr "Pay easily, quickly and safely via PayPal"
 
 #: gateways/Bluem_Sofort_Payment_Gateway.php:14
 msgid "Bluem payments via SOFORT"
-msgstr "Bluem-betalingen via SOFORT"
+msgstr "Bluem payments via SOFORT"
 
 #: gateways/Bluem_Sofort_Payment_Gateway.php:15
 msgid "Pay easily, quickly and safely via SOFORT"
-msgstr "Betaal eenvoudig, snel en veilig via SOFORT"
+msgstr "Pay easily, quickly and safely via SOFORT"
 
 #: src/Observability/BluemActivationNotifier.php:24
 msgid "Administration of"
-msgstr "Administratie van"
+msgstr "Administration of"
 
 #: src/Observability/BluemActivationNotifier.php:68
 msgid "Company name unknown"
-msgstr "Bedrijfsnaam onbekend"
+msgstr "Company name unknown"
 
 #: src/Observability/BluemActivationNotifier.php:69
 msgid "Company telephone unknown"
-msgstr "Telefoonnummer bedrijf onbekend"
+msgstr "Company telephone unknown"
 
 #: src/Observability/BluemActivationNotifier.php:70
 msgid "Company email unknown"
-msgstr "E-mailadres bedrijf onbekend"
+msgstr "Company email unknown"
 
 #: src/Observability/BluemActivationNotifier.php:71
 msgid "Tech name unknown"
-msgstr "Naam technisch contact onbekend"
+msgstr "Tech name unknown"
 
 #: src/Observability/BluemActivationNotifier.php:72
 msgid "Tech telephone unknown"
-msgstr "Telefoonnummer technisch contact onbekend"
+msgstr "Tech telephone unknown"
 
 #: src/Observability/BluemActivationNotifier.php:73
 msgid "Tech email unknown"
-msgstr "E-mailadres technisch contact onbekend"
+msgstr "Tech email unknown"
 
 #: src/Observability/BluemActivationNotifier.php:74 views/home.php:58
 msgid "WooCommerce not installed"
-msgstr "WooCommerce niet geinstalleerd"
+msgstr "WooCommerce not installed"
 
 #: views/activate.php:12
 msgid "Welcome to Bluem!"
-msgstr "Welkom bij Bluem!"
+msgstr "Welcome to Bluem!"
 
 #: views/activate.php:15
 msgid "Thank you for using the Bluem WordPress WooCommerce plugin."
-msgstr "Dank u voor het gebruik van de Bluem WordPress WooCommerce-plugin."
+msgstr "Thank you for using the Bluem WordPress WooCommerce plugin."
 
 #: views/activate.php:16
 msgid "To continue, please fill in the details below."
-msgstr "Vul onderstaande gegevens in om door te gaan."
+msgstr "To continue, please fill in the details below."
 
 #: views/activate.php:19
 msgid ""
 "If you have already filled this in before, you are seeing this screen again "
 "because the plugin has been reactivated."
 msgstr ""
-"Hebt u dit eerder ingevuld, dan ziet u dit scherm opnieuw omdat de plugin "
-"opnieuw is geactiveerd."
+"If you have already filled this in before, you are seeing this screen again "
+"because the plugin has been reactivated."
 
 #: views/activate.php:25
 msgid "The plugin has been activated"
-msgstr "De plugin is geactiveerd"
+msgstr "The plugin has been activated"
 
 #: views/activate.php:28
 msgid "Next steps:"
-msgstr "Volgende stappen:"
+msgstr "Next steps:"
 
 #: views/activate.php:35
 msgid "WooCommerce payment methods"
-msgstr "WooCommerce-betaalmethoden"
+msgstr "WooCommerce payment methods"
 
 #: views/activate.php:37
 msgid "Activate and manage payment methods in WooCommerce settings"
-msgstr "Activeer en beheer betaalmethoden in de WooCommerce-instellingen"
+msgstr "Activate and manage payment methods in WooCommerce settings"
 
 #: views/activate.php:44
 msgid "WooCommerce settings"
-msgstr "WooCommerce-instellingen"
+msgstr "WooCommerce settings"
 
 #: views/activate.php:46
 msgid "View the transaction overview"
-msgstr "Bekijk het transactieoverzicht"
+msgstr "View the transaction overview"
 
 #: views/activate.php:51
 msgid ""
@@ -2175,16 +2175,17 @@ msgid ""
 "will also find the integration options for Gravity Forms and ContactForm 7 "
 "there."
 msgstr ""
-"Ga naar Instellingen en beheer de specifieke instellingen per betaalmethode."
-"<br>Daar vindt u ook de integratieopties voor Gravity Forms en ContactForm 7."
+"Go to Settings and manage the specific settings per payment method.<br>You "
+"will also find the integration options for Gravity Forms and ContactForm 7 "
+"there."
 
 #: views/activate.php:62 views/activate.php:220
 msgid "Please fill in all required fields correctly."
-msgstr "Vul alle verplichte velden correct in."
+msgstr "Please fill in all required fields correctly."
 
 #: views/activate.php:68
 msgid "Account details"
-msgstr "Accountgegevens"
+msgstr "Account details"
 
 #: views/activate.php:73
 msgid "SenderID"
@@ -2192,27 +2193,27 @@ msgstr "SenderID"
 
 #: views/activate.php:80
 msgid "Test token"
-msgstr "Testtoken"
+msgstr "Test token"
 
 #: views/activate.php:87
 msgid "Production token"
-msgstr "Productietoken"
+msgstr "Production token"
 
 #: views/activate.php:96
 msgid "Account required"
-msgstr "Account vereist"
+msgstr "Account required"
 
 #: views/activate.php:99
 msgid "An account is required to use our services."
-msgstr "Voor het gebruik van onze diensten is een account vereist."
+msgstr "An account is required to use our services."
 
 #: views/activate.php:103
 msgid "For more information:"
-msgstr "Voor meer informatie:"
+msgstr "For more information:"
 
 #: views/activate.php:106
 msgid "Bluem website"
-msgstr "Bluem-website"
+msgstr "Bluem website"
 
 #: views/activate.php:107
 msgid "bluem.nl"
@@ -2220,60 +2221,59 @@ msgstr "bluem.nl"
 
 #: views/activate.php:110
 msgid "Call Bluem"
-msgstr "Bel Bluem"
+msgstr "Call Bluem"
 
 #: views/activate.php:113
 msgid "Email Bluem"
-msgstr "E-mail Bluem"
+msgstr "Email Bluem"
 
 #: views/activate.php:116
 msgid ""
 "Enter the account details as provided by Bluem.<br />For more information, "
 "contact your account manager.<br />Leave fields empty to provide them later."
 msgstr ""
-"Voer de accountgegevens in zoals verstrekt door Bluem.<br />Neem voor meer "
-"informatie contact op met uw accountmanager.<br />Laat velden leeg om ze "
-"later in te vullen."
+"Enter the account details as provided by Bluem.<br />For more information, "
+"contact your account manager.<br />Leave fields empty to provide them later."
 
 #: views/activate.php:121
 msgid "Company details"
-msgstr "Bedrijfsgegevens"
+msgstr "Company details"
 
 #: views/activate.php:127
 msgid "Company name"
-msgstr "Bedrijfsnaam"
+msgstr "Company name"
 
 #: views/activate.php:133 views/activate.php:165
 msgid "Phone number"
-msgstr "Telefoonnummer"
+msgstr "Phone number"
 
 #: views/activate.php:139 views/activate.php:171
 msgid "Email address"
-msgstr "E-mailadres"
+msgstr "Email address"
 
 #: views/activate.php:148
 msgid "Fill in your company profile."
-msgstr "Vul uw bedrijfsprofiel in."
+msgstr "Fill in your company profile."
 
 #: views/activate.php:152
 msgid "Technical contact"
-msgstr "Technisch contact"
+msgstr "Technical contact"
 
 #: views/activate.php:159
 msgid "First and last name"
-msgstr "Voor- en achternaam"
+msgstr "First and last name"
 
 #: views/activate.php:180
 msgid ""
 "Fill in the details of the technical contact. We will notify this person in "
 "case of important updates."
 msgstr ""
-"Vul de gegevens van het technische contact in. Wij informeren deze persoon "
-"bij belangrijke updates."
+"Fill in the details of the technical contact. We will notify this person in "
+"case of important updates."
 
 #: views/activate.php:184
 msgid "Save"
-msgstr "Opslaan"
+msgstr "Save"
 
 #: views/home.php:39
 msgid "Bluem Payments & Identity Services"
@@ -2281,59 +2281,59 @@ msgstr "Bluem Payments & Identity Services"
 
 #: views/home.php:41
 msgid "Make payments easy!"
-msgstr "Maak betalen eenvoudig!"
+msgstr "Make payments easy!"
 
 #: views/home.php:43
 msgid ""
 "With the Bluem WordPress plugin, you can easily integrate online payments, "
 "identity checks and age verifications on your website."
 msgstr ""
-"Met de Bluem WordPress-plugin integreert u eenvoudig online betalingen, "
-"identiteitscontroles en leeftijdsverificaties op uw website."
+"With the Bluem WordPress plugin, you can easily integrate online payments, "
+"identity checks and age verifications on your website."
 
 #: views/home.php:45
 msgid "Bluem Dashboard"
-msgstr "Bluem-dashboard"
+msgstr "Bluem Dashboard"
 
 #: views/home.php:46
 msgid ""
 "All transactions are also visible in the <a href=\"https://viamijnbank.net/"
 "\" target=\"_blank\">viamijnbank.net dashboard</a>."
 msgstr ""
-"Alle transacties zijn ook zichtbaar in het <a href=\"https://viamijnbank.net/"
-"\" target=\"_blank\">viamijnbank.net-dashboard</a>."
+"All transactions are also visible in the <a href=\"https://viamijnbank.net/"
+"\" target=\"_blank\">viamijnbank.net dashboard</a>."
 
 #: views/home.php:50
 msgid "Plugin version"
-msgstr "Pluginversie"
+msgstr "Plugin version"
 
 #: views/home.php:50
 msgid "Version"
-msgstr "Versie"
+msgstr "Version"
 
 #: views/home.php:52
 msgid "View details"
-msgstr "Details bekijken"
+msgstr "View details"
 
 #: views/home.php:56
 msgid "Technical information"
-msgstr "Technische informatie"
+msgstr "Technical information"
 
 #: views/home.php:56
 msgid "WordPress version:"
-msgstr "WordPress-versie:"
+msgstr "WordPress version:"
 
 #: views/home.php:58
 msgid "WooCommerce version:"
-msgstr "WooCommerce-versie:"
+msgstr "WooCommerce version:"
 
 #: views/home.php:60
 msgid "Bluem PHP library version:"
-msgstr "Bluem PHP-libraryversie:"
+msgstr "Bluem PHP library version:"
 
 #: views/home.php:62
 msgid "PHP version:"
-msgstr "PHP-versie:"
+msgstr "PHP version:"
 
 #. translators: %s: logo html
 #: views/importexport.php:25
@@ -2343,72 +2343,71 @@ msgstr "%s Import / export"
 
 #: views/importexport.php:54
 msgid "← Back to all settings"
-msgstr "← Terug naar alle instellingen"
+msgstr "← Back to all settings"
 
 #: views/importexport.php:62
 msgid "Export"
-msgstr "Exporteren"
+msgstr "Export"
 
 #: views/importexport.php:64
 msgid "Copy and paste the information below to export your settings."
-msgstr ""
-"Kopieer en plak onderstaande informatie om uw instellingen te exporteren."
+msgstr "Copy and paste the information below to export your settings."
 
 #: views/importexport.php:74 views/importexport.php:93
 msgid "Import"
-msgstr "Importeren"
+msgstr "Import"
 
 #: views/importexport.php:77
 msgid "Upload your settings here."
-msgstr "Upload hier uw instellingen."
+msgstr "Upload your settings here."
 
 #: views/importexport.php:91
 msgid "Warning! Existing settings will be overwritten."
-msgstr "Waarschuwing: bestaande instellingen worden overschreven."
+msgstr "Warning! Existing settings will be overwritten."
 
 #: views/request.php:8
 msgid "Transaction details"
-msgstr "Transactiegegevens"
+msgstr "Transaction details"
 
 #: views/request.php:19
 msgid "Transaction"
-msgstr "Transactie"
+msgstr "Transaction"
 
 #: views/request.php:51
 msgid "View order"
-msgstr "Bestelling bekijken"
+msgstr "View order"
 
 #: views/request.php:78
 msgid "Update status"
-msgstr "Status bijwerken"
+msgstr "Update status"
 
 #: views/request.php:86
 msgid "Linked orders"
-msgstr "Gekoppelde bestellingen"
+msgstr "Linked orders"
 
 #: views/request.php:91
 msgid "Order number"
-msgstr "Bestelnummer"
+msgstr "Order number"
 
 #: views/request.php:93
 msgid "Total amount"
-msgstr "Totaalbedrag"
+msgstr "Total amount"
 
 #: views/request.php:129
 msgid "Events"
-msgstr "Gebeurtenissen"
+msgstr "Events"
 
 #: views/request.php:140
 msgid "New data:"
-msgstr "Nieuwe gegevens:"
+msgstr "New data:"
 
 #: views/request.php:164
 msgid "Transaction link"
-msgstr "Transactielink"
+msgstr "Transaction link"
 
 #: views/request.php:169
 msgid "View transaction"
-msgstr "Transactie bekijken"
+msgstr "View transaction"
 
 #: views/request.php:186
 msgid "Extra details"
@@ -2416,80 +2415,79 @@ msgstr "Extra details"
 
 #: views/request.php:198
 msgid "More information"
-msgstr "Meer informatie"
+msgstr "More information"
 
 #: views/request.php:203
 msgid "on the viamijnbank.net dashboard"
-msgstr "op het viamijnbank.net-dashboard"
+msgstr "on the viamijnbank.net dashboard"
 
 #: views/request.php:213
 msgid "Administration"
-msgstr "Administratie"
+msgstr "Administration"
 
 #: views/request.php:217
 msgid "Are you sure you want to delete this transaction?"
-msgstr "Weet u zeker dat u deze transactie wilt verwijderen?"
+msgstr "Are you sure you want to delete this transaction?"
 
 #: views/request.php:218
 msgid "Delete this request immediately"
-msgstr "Dit verzoek direct verwijderen"
+msgstr "Delete this request immediately"
 
 #: views/request.php:222
 msgid "Warning"
-msgstr "Waarschuwing"
+msgstr "Warning"
 
 #: views/request.php:224
 msgid "This data will be permanently deleted!"
-msgstr "Deze gegevens worden permanent verwijderd."
+msgstr "This data will be permanently deleted!"
 
 #: views/request.php:232
 msgid "Additional notes on working with iDIN results programmatically:"
-msgstr ""
-"Aanvullende opmerkingen voor programmatisch werken met iDIN-resultaten:"
+msgstr "Additional notes on working with iDIN results programmatically:"
 
 #: views/request.php:236
 msgid ""
 "You can check whether validation was successful by using the following PHP "
 "code in a plugin or template:"
 msgstr ""
-"U kunt met de volgende PHP-code in een plugin of template controleren of "
-"validatie is geslaagd:"
+"You can check whether validation was successful by using the following PHP "
+"code in a plugin or template:"
 
 #: views/request.php:251
 msgid ""
 "You can retrieve these results as an object by using the following PHP code "
 "in a plugin or template:"
 msgstr ""
-"U kunt deze resultaten als object ophalen met de volgende PHP-code in een "
-"plugin of template:"
+"You can retrieve these results as an object by using the following PHP code "
+"in a plugin or template:"
 
 #: views/request.php:258
 msgid "Display the results or store them elsewhere:"
-msgstr "Toon de resultaten of sla ze elders op:"
+msgstr "Display the results or store them elsewhere:"
 
 #: views/request.php:269
 msgid "Request not found"
-msgstr "Verzoek niet gevonden"
+msgstr "Request not found"
 
 #: views/requests.php:55
 msgid "transaction(s) shown"
-msgstr "transactie(s) getoond"
+msgstr "transaction(s) shown"
 
 #: views/requests.php:57
 msgid "Click a transaction for more detailed information."
-msgstr "Klik op een transactie voor meer informatie."
+msgstr "Click a transaction for more detailed information."
 
 #: views/requests.php:58
 msgid ""
 "View more information about all transactions in the <a href=\"https://"
 "viamijnbank.net/\" target=\"_blank\">viamijnbank.net dashboard</a>."
 msgstr ""
-"Bekijk meer informatie over alle transacties in het <a href=\"https://"
-"viamijnbank.net/\" target=\"_blank\">viamijnbank.net-dashboard</a>."
+"View more information about all transactions in the <a href=\"https://"
+"viamijnbank.net/\" target=\"_blank\">viamijnbank.net dashboard</a>."
 
 #: views/settings.php:15 views/settings.php:16
 msgid "General"
-msgstr "Algemeen"
+msgstr "General"
 
 #: views/settings.php:18 views/settings.php:19
 msgid "Account"
@@ -2497,39 +2495,39 @@ msgstr "Account"
 
 #: views/settings.php:29 views/settings.php:30 views/status.php:124
 msgid "Payments"
-msgstr "Betalingen"
+msgstr "Payments"
 
 #: views/settings.php:106
 msgid "Save changes"
-msgstr "Wijzigingen opslaan"
+msgstr "Save changes"
 
 #: views/status.php:44
 msgid ""
 "Cannot access the PHP error log. Either the log does not exist, logging is "
 "disabled, or the required read permissions are missing."
 msgstr ""
-"Geen toegang tot het PHP-foutenlog. Het log bestaat niet, logging is "
-"uitgeschakeld of de vereiste leesrechten ontbreken."
+"Cannot access the PHP error log. Either the log does not exist, logging is "
+"disabled, or the required read permissions are missing."
 
 #: views/status.php:63 views/status.php:66
 msgid ""
 "Cannot access the WordPress debug log. Either the log does not exist, "
 "logging is disabled, or the required read permissions are missing."
 msgstr ""
-"Geen toegang tot het WordPress-debuglog. Het log bestaat niet, logging is "
-"uitgeschakeld of de vereiste leesrechten ontbreken."
+"Cannot access the WordPress debug log. Either the log does not exist, "
+"logging is disabled, or the required read permissions are missing."
 
 #: views/status.php:92
 msgid ""
 "Cannot access the WooCommerce logs. Either the log does not exist, logging "
 "is disabled, or the required read permissions are missing."
 msgstr ""
-"Geen toegang tot de WooCommerce-logs. Het log bestaat niet, logging is "
-"uitgeschakeld of de vereiste leesrechten ontbreken."
+"Cannot access the WooCommerce logs. Either the log does not exist, logging "
+"is disabled, or the required read permissions are missing."
 
 #: views/status.php:110 views/status.php:115
 msgid "System"
-msgstr "Systeem"
+msgstr "System"
 
 #: views/status.php:111 views/status.php:166
 msgid "Logs"
@@ -2537,11 +2535,11 @@ msgstr "Logs"
 
 #: views/status.php:117
 msgid "The following payment methods are enabled"
-msgstr "De volgende betaalmethoden zijn ingeschakeld"
+msgstr "The following payment methods are enabled"
 
 #: views/status.php:134 views/status.php:140
 msgid "Refresh rewrite rules"
-msgstr "Rewrite-regels vernieuwen"
+msgstr "Refresh rewrite rules"
 
 #: views/status.php:135
 msgid ""
@@ -2549,26 +2547,26 @@ msgid ""
 "register the Bluem pages. This generally allows the website to serve the "
 "modern form of pages."
 msgstr ""
-"Zijn er problemen met het tonen van pluginpagina's op uw site? Klik "
-"hieronder om de Bluem-pagina's opnieuw te registreren. Meestal kan de "
-"website daarna de moderne paginavorm tonen."
+"Are there problems displaying plugin pages on your site? Click below to re-"
+"register the Bluem pages. This generally allows the website to serve the "
+"modern form of pages."
 
 #: views/status.php:147
 msgid "Refreshed rewrite rules successfully"
-msgstr "Rewrite-regels succesvol vernieuwd"
+msgstr "Refreshed rewrite rules successfully"
 
 #: views/status.php:152
 msgid "Available Bluem rules"
-msgstr "Beschikbare Bluem-regels"
+msgstr "Available Bluem rules"
 
 #: views/status.php:168
 msgid "PHP errors"
-msgstr "PHP-fouten"
+msgstr "PHP errors"
 
 #: views/status.php:171
 msgid "WordPress debug log"
-msgstr "WordPress-debuglog"
+msgstr "WordPress debug log"
 
 #: views/status.php:174
 msgid "WooCommerce error logs"
-msgstr "WooCommerce-foutlogs"
+msgstr "WooCommerce error logs"

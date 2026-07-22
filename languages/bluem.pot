@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-02T19:13:59+00:00\n"
+"POT-Creation-Date: 2026-07-22T10:53:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: bluem\n"
@@ -579,6 +579,10 @@ msgstr ""
 msgid "Identification"
 msgstr ""
 
+#: bluem-idin.php:2039
+msgid "Verify your identity first."
+msgstr ""
+
 #: bluem-idin.php:2338
 #: bluem-interface.php:451
 msgid "Yes"
@@ -695,8 +699,8 @@ msgstr ""
 #: bluem-interface.php:48
 #: bluem-interface.php:391
 #: bluem-interface.php:693
-#: bluem.php:385
-#: bluem.php:386
+#: bluem.php:398
+#: bluem.php:399
 #: views/request.php:74
 #: views/request.php:92
 #: views/status.php:103
@@ -753,7 +757,8 @@ msgid "Failed"
 msgstr ""
 
 #: bluem-interface.php:205
-msgid "Gastgebruiker/onbekend"
+#: views/request.php:64
+msgid "Guest / unknown"
 msgstr ""
 
 #: bluem-interface.php:220
@@ -893,23 +898,23 @@ msgid "Home"
 msgstr ""
 
 #: bluem-interface.php:660
-#: bluem.php:349
-#: bluem.php:350
+#: bluem.php:362
+#: bluem.php:363
 msgid "Activation"
 msgstr ""
 
 #: bluem-interface.php:671
-#: bluem.php:358
-#: bluem.php:359
+#: bluem.php:371
+#: bluem.php:372
 #: views/requests.php:9
 msgid "Transactions"
 msgstr ""
 
 #: bluem-interface.php:682
-#: bluem.php:296
 #: bluem.php:309
-#: bluem.php:367
-#: bluem.php:368
+#: bluem.php:322
+#: bluem.php:380
+#: bluem.php:381
 #: views/settings.php:8
 msgid "Settings"
 msgstr ""
@@ -929,22 +934,22 @@ msgid ""
 msgstr ""
 
 #: bluem-mandates-instant.php:180
-#: bluem-mandates-shortcode.php:303
+#: bluem-mandates-shortcode.php:300
 msgid "Error: no valid mandate ID was returned during callback. Please contact the webshop and mention your contact details."
 msgstr ""
 
 #: bluem-mandates-instant.php:193
-#: bluem-mandates-shortcode.php:316
+#: bluem-mandates-shortcode.php:347
 msgid "Error: EntranceCode is not set, so the mandate cannot be retrieved."
 msgstr ""
 
-#. translators: %s: error status
+#. translators: %s: error message or status returned by Bluem
 #: bluem-mandates-instant.php:210
-#: bluem-mandates-shortcode.php:334
-#: bluem.php:806
-#: bluem.php:826
-#: bluem.php:886
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:479
+#: bluem-mandates-shortcode.php:368
+#: bluem.php:863
+#: bluem.php:883
+#: bluem.php:943
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:483
 #: gateways/Bluem_Mandates_Payment_Gateway.php:692
 #: gateways/Bluem_Mandates_Payment_Gateway.php:710
 #, php-format
@@ -973,31 +978,31 @@ msgstr ""
 msgid "Error: unknown or invalid status received: %s<br>Please contact the webshop and mention this status; the user has been redirected back to the site."
 msgstr ""
 
-#: bluem-mandates-shortcode.php:186
+#: bluem-mandates-shortcode.php:187
 msgid ""
 "Something went wrong while creating the transaction.<br>\n"
 "            Please provide the information below to the website administrator:"
 msgstr ""
 
 #. translators: %s: error status
-#: bluem-mandates-shortcode.php:430
+#: bluem-mandates-shortcode.php:476
 #, php-format
 msgid "Error: unknown or invalid status received: %s. Please contact the webshop and mention this status; the user has been redirected back to the site."
 msgstr ""
 
-#: bluem-mandates-shortcode.php:549
+#: bluem-mandates-shortcode.php:595
 msgid "Thank you for your mandate with mandate ID:"
 msgstr ""
 
-#: bluem-mandates-shortcode.php:553
+#: bluem-mandates-shortcode.php:599
 msgid "You still need to issue a direct debit mandate."
 msgstr ""
 
-#: bluem-mandates-shortcode.php:556
+#: bluem-mandates-shortcode.php:602
 msgid "required"
 msgstr ""
 
-#: bluem-mandates-shortcode.php:563
+#: bluem-mandates-shortcode.php:609
 msgid "Start mandate process"
 msgstr ""
 
@@ -1006,84 +1011,84 @@ msgid "ePayments transacties"
 msgstr ""
 
 #. translators: %s: the link to settings page
-#: bluem.php:294
+#: bluem.php:307
 #, php-format
 msgid ""
 "The Bluem integration depends heavily on WooCommerce - install and/or activate this plugin. <br/>\n"
 "            If you do not use WooCommerce, you can disable this notice and WooCommerce-related functionality in the %s."
 msgstr ""
 
-#: bluem.php:307
+#: bluem.php:320
 msgid ""
 "The Bluem integration depends on the WordPress permalink setting because of routing.<br>\n"
 "        Select any option except 'Plain' in Permalinks."
 msgstr ""
 
-#: bluem.php:322
-#: bluem.php:323
-#: bluem.php:339
-#: bluem.php:340
+#: bluem.php:335
+#: bluem.php:336
+#: bluem.php:352
+#: bluem.php:353
 msgid "Bluem"
 msgstr ""
 
-#: bluem.php:376
-#: bluem.php:377
+#: bluem.php:389
+#: bluem.php:390
 #: views/settings.php:45
 #: views/settings.php:47
 msgid "Import / export"
 msgstr ""
 
-#. translators: %s: error status
-#: bluem.php:645
-#: bluem.php:707
-#: bluem.php:727
+#. translators: %s: error message or status returned by Bluem
+#: bluem.php:702
+#: bluem.php:764
+#: bluem.php:784
 #, php-format
 msgid "Error retrieving status: %s<br>Please contact the webshop and mention this status."
 msgstr ""
 
-#: bluem.php:762
+#: bluem.php:819
 msgid "Authorization has been received"
 msgstr ""
 
-#: bluem.php:763
-#: bluem.php:862
+#: bluem.php:820
+#: bluem.php:919
 msgid "Payment process completed"
 msgstr ""
 
-#: bluem.php:788
+#: bluem.php:845
 msgid "Authorization has been canceled"
 msgstr ""
 
-#: bluem.php:794
+#: bluem.php:851
 msgid "Authorization has expired"
 msgstr ""
 
-#: bluem.php:800
+#: bluem.php:857
 #: gateways/Bluem_Mandates_Payment_Gateway.php:807
 msgid "Authorization failed: error or unknown status"
 msgstr ""
 
-#: bluem.php:861
+#: bluem.php:918
 msgid "Payment has been received"
 msgstr ""
 
-#: bluem.php:868
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:559
+#: bluem.php:925
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:563
 msgid "Payment has been canceled"
 msgstr ""
 
-#: bluem.php:874
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:534
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:577
+#: bluem.php:931
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:538
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:581
 msgid "Payment has expired"
 msgstr ""
 
-#: bluem.php:880
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:585
+#: bluem.php:937
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:589
 msgid "Payment failed: error or unknown status"
 msgstr ""
 
-#: bluem.php:1051
+#: bluem.php:1108
 msgid ""
 "<p><a id=\"tab_general\"></a>\n"
 "    <div class=\"notice notice-warning inline\" style=\"padding:10px;\">\n"
@@ -1096,7 +1101,7 @@ msgid ""
 "    </p>"
 msgstr ""
 
-#: bluem.php:1062
+#: bluem.php:1119
 msgid ""
 "<div class=\"notice notice-info inline\" style=\"padding:10px;\">\n"
 "    Have you already installed the plugin on another website?<br />\n"
@@ -1105,318 +1110,318 @@ msgid ""
 msgstr ""
 
 #. translators: %s: url to import/export page
-#: bluem.php:1070
+#: bluem.php:1127
 #, php-format
 msgid "Go to <a href=\"%s\" class=\"\">import or export settings</a>.</div>"
 msgstr ""
 
-#: bluem.php:1095
+#: bluem.php:1152
 msgid "Manage components of this plugin"
 msgstr ""
 
-#: bluem.php:1101
+#: bluem.php:1158
 msgid "eMandates active"
 msgstr ""
 
-#: bluem.php:1108
+#: bluem.php:1165
 msgid "ePayments active"
 msgstr ""
 
-#: bluem.php:1115
+#: bluem.php:1172
 msgid "iDIN active"
 msgstr ""
 
-#: bluem.php:1122
+#: bluem.php:1179
 msgid "Warn in admin environment if plugin has not yet been set up properly"
 msgstr ""
 
-#: bluem.php:1130
+#: bluem.php:1187
 msgid "General settings"
 msgstr ""
 
-#: bluem.php:1152
+#: bluem.php:1209
 msgid "eMandates settings"
 msgstr ""
 
-#: bluem.php:1177
+#: bluem.php:1234
 msgid "ePayments settings"
 msgstr ""
 
-#: bluem.php:1203
+#: bluem.php:1260
 msgid "eIdentity settings"
 msgstr ""
 
-#: bluem.php:1228
+#: bluem.php:1285
 msgid "Integration settings"
 msgstr ""
 
-#: bluem.php:1291
+#: bluem.php:1348
 msgid "Bluem components"
 msgstr ""
 
-#: bluem.php:1297
+#: bluem.php:1354
 msgid "Configure?"
 msgstr ""
 
 #. translators: %s: link to bluem settings
-#: bluem.php:1303
+#: bluem.php:1360
 #, php-format
 msgid ""
 "Go to the <a href=\"%s\">\n"
 "                    settings</a> to change the behavior of each Bluem component."
 msgstr ""
 
-#: bluem.php:1466
+#: bluem.php:1523
 msgid "Choose the active mode"
 msgstr ""
 
-#: bluem.php:1467
+#: bluem.php:1524
 msgid "Enter which mode you want to use: prod, test or acc for the production (live), test or acceptance environment."
 msgstr ""
 
-#: bluem.php:1480
+#: bluem.php:1537
 msgid "Bluem Sender ID"
 msgstr ""
 
-#: bluem.php:1481
+#: bluem.php:1538
 msgid "The Sender ID issued by Bluem. Starts with an S, followed by a number."
 msgstr ""
 
-#: bluem.php:1488
+#: bluem.php:1545
 msgid "Access Token for Testing"
 msgstr ""
 
-#: bluem.php:1489
+#: bluem.php:1546
 msgid "The access token used to communicate with Bluem for the test environment."
 msgstr ""
 
-#: bluem.php:1496
+#: bluem.php:1553
 msgid "Access Token for Production"
 msgstr ""
 
-#: bluem.php:1497
+#: bluem.php:1554
 msgid "The access token used to communicate with Bluem for the production environment."
 msgstr ""
 
-#: bluem.php:1503
+#: bluem.php:1560
 msgid "Test mode return status"
 msgstr ""
 
-#: bluem.php:1504
+#: bluem.php:1561
 msgid "Which status do you want to receive for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending"
 msgstr ""
 
-#: bluem.php:1520
+#: bluem.php:1577
 msgid "Use WooCommerce?"
 msgstr ""
 
-#: bluem.php:1521
+#: bluem.php:1578
 msgid "Set this to \"Do not use WooCommerce\" if you want to use this plugin on this site without WooCommerce functionality."
 msgstr ""
 
-#: bluem.php:1533
+#: bluem.php:1590
 msgid "Report errors to the developers"
 msgstr ""
 
-#: bluem.php:1534
+#: bluem.php:1591
 msgid "Help us resolve issues quickly and minimize downtime by forwarding non-personal technical notifications."
 msgstr ""
 
-#: bluem.php:1538
+#: bluem.php:1595
 msgid "Yes, forward errors to the developers"
 msgstr ""
 
-#: bluem.php:1539
+#: bluem.php:1596
 msgid "No error reporting by email"
 msgstr ""
 
-#: bluem.php:1545
+#: bluem.php:1602
 msgid "Email notification for the website owner for each new transaction?"
 msgstr ""
 
-#: bluem.php:1550
+#: bluem.php:1607
 msgid "No email notification (default)"
 msgstr ""
 
-#: bluem.php:1551
+#: bluem.php:1608
 msgid "Send a notification for each transaction to "
 msgstr ""
 
-#: bluem.php:1592
+#: bluem.php:1649
 msgid "Age verification"
 msgstr ""
 
-#: bluem.php:1595
+#: bluem.php:1652
 msgid "Enable"
 msgstr ""
 
-#: bluem.php:1596
+#: bluem.php:1653
 msgid "Disable"
 msgstr ""
 
 #. translators: %s: website name
-#: bluem.php:1646
-#: bluem.php:1745
+#: bluem.php:1705
+#: bluem.php:1804
 #, php-format
 msgid "Administration of %s"
 msgstr ""
 
-#: bluem.php:1654
+#: bluem.php:1713
 msgid "Error notification in Bluem "
 msgstr ""
 
 #. translators: %1$s: admin name %2$s: admin email address
-#: bluem.php:1661
+#: bluem.php:1720
 #, php-format
 msgid "Error in Bluem plugin. %1$s <%2$s>,"
 msgstr ""
 
 #. translators: %s: admin email address
-#: bluem.php:1692
+#: bluem.php:1751
 #, php-format
 msgid "Sent error report mail to %s"
 msgstr ""
 
 #. translators: %s: website url
-#: bluem.php:1708
+#: bluem.php:1767
 #, php-format
 msgid "Go to the site at %s to view this request in detail."
 msgstr ""
 
 #. translators: %s: author name
-#: bluem.php:1762
+#: bluem.php:1821
 #, php-format
 msgid "Dear %s,"
 msgstr ""
 
 #. translators: %s: type of request
-#: bluem.php:1767
+#: bluem.php:1826
 #, php-format
 msgid "<p>A new Bluem %s request has been processed with the following details:</p><p>"
 msgstr ""
 
-#: bluem.php:1772
+#: bluem.php:1831
 msgid "More details"
 msgstr ""
 
-#: bluem.php:1772
+#: bluem.php:1831
 msgid "See admin interface"
 msgstr ""
 
 #. translators: %s: email of admin
-#: bluem.php:1806
+#: bluem.php:1865
 #, php-format
 msgid "Sent notification mail to %s"
 msgstr ""
 
-#: bluem.php:1854
+#: bluem.php:1913
 msgid "Tip: Improve efficiency by only enabling the services that are relevant for your website."
 msgstr ""
 
-#: bluem.php:1900
+#: bluem.php:1959
 msgid "(Make a selection)"
 msgstr ""
 
-#: bluem.php:1901
+#: bluem.php:1960
 msgid "Active"
 msgstr ""
 
-#: bluem.php:1902
+#: bluem.php:1961
 msgid "Disabled"
 msgstr ""
 
-#: bluem.php:1974
+#: bluem.php:2033
 msgid "Account details are missing"
 msgstr ""
 
-#: bluem.php:1981
+#: bluem.php:2040
 msgid "SenderID is missing"
 msgstr ""
 
-#: bluem.php:1987
+#: bluem.php:2046
 msgid "Test accessToken is missing"
 msgstr ""
 
-#: bluem.php:1998
+#: bluem.php:2057
 msgid "Production accessToken is missing"
 msgstr ""
 
-#: bluem.php:2008
+#: bluem.php:2067
 msgid "eMandates brandID is missing"
 msgstr ""
 
-#: bluem.php:2018
+#: bluem.php:2077
 msgid "eMandates merchantID is missing"
 msgstr ""
 
-#: bluem.php:2026
+#: bluem.php:2085
 msgid "iDIN BrandID is missing"
 msgstr ""
 
-#: bluem.php:2038
+#: bluem.php:2097
 msgid "Your SenderID is not yet set, please add it in the settings"
 msgstr ""
 
-#: bluem.php:2044
+#: bluem.php:2103
 msgid "The Payments BrandID for iDEAL is missing."
 msgstr ""
 
 #. translators: %1$s: the invalid brandID value %2$s: a valid BrandID value
-#: bluem.php:2053
+#: bluem.php:2112
 #, php-format
 msgid "The Payments BrandID for iDEAL (\"%1$s\") must match your SenderID + \"Payment\" (for example, %2$s)."
 msgstr ""
 
 #. translators: %1$s: payment method label, %2$s: the invalid brandID value, %3$s: the expected SenderID prefix
-#: bluem.php:2076
+#: bluem.php:2135
 #, php-format
 msgid "The Payments BrandID for %1$s (\"%2$s\") must contain your SenderID (\"%3$s\")."
 msgstr ""
 
-#: bluem.php:2098
+#: bluem.php:2157
 msgid "You have enabled Bluem iDEAL but the payment method has not yet been activated within WooCommerce."
 msgstr ""
 
-#: bluem.php:2100
-#: bluem.php:2109
+#: bluem.php:2159
+#: bluem.php:2168
 msgid "The Bluem integration has not been fully activated yet"
 msgstr ""
 
-#: bluem.php:2100
-#: bluem.php:2110
+#: bluem.php:2159
+#: bluem.php:2169
 msgid "Click here to go to the WooCommerce configuration."
 msgstr ""
 
-#: bluem.php:2107
+#: bluem.php:2166
 msgid "You have enabled Bluem mandates but the payment method has not yet been activated within WooCommerce."
 msgstr ""
 
-#: bluem.php:2123
+#: bluem.php:2182
 msgid "The Bluem integration has not been fully configured yet"
 msgstr ""
 
-#: bluem.php:2127
+#: bluem.php:2186
 msgid "Click here to continue configuring the plugin."
 msgstr ""
 
-#: bluem.php:2156
+#: bluem.php:2215
 msgid "Bluem request(s)"
 msgstr ""
 
-#: bluem.php:2182
+#: bluem.php:2241
 msgid "No requests yet"
 msgstr ""
 
-#: bluem.php:2211
+#: bluem.php:2270
 msgid "Go back to the webshop"
 msgstr ""
 
-#: bluem.php:2270
+#: bluem.php:2329
 msgid "Could not import: the input is not valid JSON"
 msgstr ""
 
 #. translators: %s: number of settings
-#: bluem.php:2285
+#: bluem.php:2344
 #, php-format
 msgid "Import completed: %s settings updated."
 msgstr ""
@@ -1435,43 +1440,53 @@ msgstr ""
 msgid "Payment process initiated"
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:328
+#. translators: %s: error message returned by Bluem
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:301
+#, php-format
+msgid "No payment URL received from Bluem. Error: %s"
+msgstr ""
+
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:302
+msgid "Unknown error"
+msgstr ""
+
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:332
 #: gateways/Bluem_Mandates_Payment_Gateway.php:523
 msgid "Error: No order found"
 msgstr ""
 
 #. translators: %s: order status
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:343
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:347
 #, php-format
 msgid "Received payment completed webhook notification, but status not updated - it was already %s"
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:348
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:352
 msgid "Payment succeeded and was approved via webhook"
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:351
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:355
 msgid "Payment was canceled via webhook"
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:355
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:359
 msgid "Payment expired via webhook"
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:357
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:361
 msgid "Payment failed: error or unknown status via webhook"
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:372
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:376
 msgid "Error: Exception"
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:421
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:425
 msgid "Error: no valid entranceCode was returned during payment_callback. Please contact the webshop and mention your contact details."
 msgstr ""
 
 #. translators: %s entrancecode
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:440
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:444
 #, php-format
 msgid ""
 "Error: order not found in webshop.\n"
@@ -1479,26 +1494,26 @@ msgid ""
 msgstr ""
 
 #. translators: %s: entranceCode
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:460
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:464
 #, php-format
 msgid "No transaction ID found. Please contact the webshop and mention the code %s with your details."
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:514
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:518
 msgid "Payment has been received (callback)"
 msgstr ""
 
 #. translators: %1$s: actual status %2$s: Entrance Code
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:518
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:522
 #, php-format
 msgid "Received payment completed callback, but status was already %1$s. EntranceCode: %2$s"
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:537
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:541
 msgid "Payment process not completed"
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:541
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:545
 msgid ""
 "Something went wrong while paying,\n"
 "                or you did not complete the payment process.\n"
@@ -1507,20 +1522,20 @@ msgid ""
 "                if the problem persists."
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:565
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:569
 msgid "You canceled the payment"
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:572
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:576
 msgid "The payment has not been confirmed yet. This may take a moment but happens automatically."
 msgstr ""
 
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:582
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:586
 msgid "Error: the payment or payment request has expired"
 msgstr ""
 
 #. translators: %s: status code
-#: gateways/Bluem_Bank_Based_Payment_Gateway.php:599
+#: gateways/Bluem_Bank_Based_Payment_Gateway.php:609
 #, php-format
 msgid ""
 "Error: unknown or invalid status received: %s.\n"
@@ -1722,24 +1737,24 @@ msgstr ""
 msgid "Authorization (Mandate ID %1$s, Request ID %2$s) has been obtained and approved"
 msgstr ""
 
-#: gateways/Bluem_Payment_Gateway.php:142
+#: gateways/Bluem_Payment_Gateway.php:143
 msgid "Enable/disable"
 msgstr ""
 
-#: gateways/Bluem_Payment_Gateway.php:149
+#: gateways/Bluem_Payment_Gateway.php:150
 msgid "Displayed title"
 msgstr ""
 
-#: gateways/Bluem_Payment_Gateway.php:151
+#: gateways/Bluem_Payment_Gateway.php:152
 msgid "This is the title the user sees during checkout."
 msgstr ""
 
-#: gateways/Bluem_Payment_Gateway.php:155
+#: gateways/Bluem_Payment_Gateway.php:156
 #: views/request.php:25
 msgid "Description"
 msgstr ""
 
-#: gateways/Bluem_Payment_Gateway.php:157
+#: gateways/Bluem_Payment_Gateway.php:158
 msgid "This is the description the user sees during checkout."
 msgstr ""
 
@@ -1757,6 +1772,34 @@ msgstr ""
 
 #: gateways/Bluem_Sofort_Payment_Gateway.php:15
 msgid "Pay easily, quickly and safely via SOFORT"
+msgstr ""
+
+#: src/Observability/BluemActivationNotifier.php:24
+msgid "Administration of"
+msgstr ""
+
+#: src/Observability/BluemActivationNotifier.php:68
+msgid "Company name unknown"
+msgstr ""
+
+#: src/Observability/BluemActivationNotifier.php:69
+msgid "Company telephone unknown"
+msgstr ""
+
+#: src/Observability/BluemActivationNotifier.php:70
+msgid "Company email unknown"
+msgstr ""
+
+#: src/Observability/BluemActivationNotifier.php:71
+msgid "Tech name unknown"
+msgstr ""
+
+#: src/Observability/BluemActivationNotifier.php:72
+msgid "Tech telephone unknown"
+msgstr ""
+
+#: src/Observability/BluemActivationNotifier.php:73
+msgid "Tech email unknown"
 msgstr ""
 
 #: src/Observability/BluemActivationNotifier.php:74
@@ -1992,10 +2035,6 @@ msgstr ""
 
 #: views/request.php:51
 msgid "View order"
-msgstr ""
-
-#: views/request.php:64
-msgid "Guest / unknown"
 msgstr ""
 
 #: views/request.php:78

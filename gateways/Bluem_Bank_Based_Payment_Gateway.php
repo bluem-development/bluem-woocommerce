@@ -296,7 +296,11 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         }
 
         return [
-            'message' => 'Geen betalings-URL teruggekregen van Bluem. Fout: ' . ($response->Error() ?? 'Onbekende fout'),
+            'message' => sprintf(
+                /* translators: %s: error message returned by Bluem */
+                esc_html__('No payment URL received from Bluem. Error: %s', 'bluem'),
+                $response->Error() ?? esc_html__('Unknown error', 'bluem')
+            ),
             'result' => 'failure',
         ];
     }
@@ -475,7 +479,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         if (! $response->Status()) {
             $errormessage = sprintf(
-                /* translators: %s: error message */
+                /* translators: %s: error message or status returned by Bluem */
                 esc_html__("Error retrieving status: %s. Please contact the webshop and mention this status.", 'bluem'),
                 $response->Error()
             );
