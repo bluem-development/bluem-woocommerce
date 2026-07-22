@@ -1,0 +1,46 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - integration_db:/var/lib/mysql
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:php8.4-apache
+    ports:
+      - "8001:80"
+    volumes:
+      - integration_wordpress:/var/www/html
+      - .:/var/www/html/wp-content/plugins/bluem-woocommerce:ro
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+
+  wpcli:
+    depends_on:
+      - db
+      - wordpress
+    image: wordpress:cli-php8.4
+    user: "0:0"
+    entrypoint: ["wp"]
+    working_dir: /var/www/html
+    volumes:
+      - integration_wordpress:/var/www/html
+      - .:/var/www/html/wp-content/plugins/bluem-woocommerce:ro
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+
+volumes:
+  integration_db:
+  integration_wordpress:

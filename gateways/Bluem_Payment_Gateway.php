@@ -11,6 +11,19 @@ use Bluem\BluemPHP\Bluem;
 #[AllowDynamicProperties]
 abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem_Payment_Gateway_Interface
 {
+    /**
+     * Custom order query variables used by Bluem callbacks.
+     *
+     * @var array<string, string>
+     */
+    private const ORDER_QUERY_META_KEYS = [
+        'bluem_transactionid' => 'bluem_transactionid',
+        'bluem_entrancecode' => 'bluem_entrancecode',
+        'bluem_mandateid'    => 'bluem_mandateid',
+    ];
+
+    private static bool $order_query_filters_registered = false;
+
     public const PAYMENT_STATUS_SUCCESS = "Success";
     public const PAYMENT_STATUS_FAILURE = "Failure";
     public const PAYMENT_STATUS_NEW = "New";
@@ -77,6 +90,8 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
                 'process_admin_options',
             ]);
 
+            self::register_order_query_filters();
+
             // ********** CREATING plugin URLs for specific functions **********
             // using WooCommerce's builtin webhook possibilities. This action creates an accessible URL wc-api/bluem_payments_webhook and one for the callback as well
             // reference: https://rudrastyh.com/woocommerce/payment-gateway-plugin.html#gateway_class
@@ -86,35 +101,91 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
             // @todo: should be implemented on a specific payment gateway instead of here, as the webhook & callback actions can differ.
             // The functions can be implemented generically (on bank_based level) but the action should be registered concretely
 
-            // ********** Allow filtering Orders based on TransactionID **********
-            add_filter(
-                'woocommerce_order_data_store_cpt_get_orders_query',
-                function ($query, $query_vars) {
-                    if (!empty($query_vars['bluem_transactionid'])) {
-                        $query['meta_query'][] = [
-                            'key' => 'bluem_transactionid',
-                            'value' => esc_attr($query_vars['bluem_transactionid']),
-                        ];
-                    }
-
-                    return $query;
-                },
-                10,
-                2
-            );
-
-            // ********** Allow filtering Orders based on EntranceCode **********
-            add_filter('woocommerce_order_data_store_cpt_get_orders_query', function ($query, $query_vars) {
-                if (!empty($query_vars['bluem_entrancecode'])) {
-                    $query['meta_query'][] = [
-                        'key' => 'bluem_entrancecode',
-                        'value' => esc_attr($query_vars['bluem_entrancecode']),
-                    ];
-                }
-
-                return $query;
-            }, 9, 2);
         }
+    }
+
+    /**
+     * Register order query adapters for both WooCommerce data stores.
+     *
+     * WooCommerce uses different query filters for HPOS and the legacy
+     * posts-based order store. Keeping the Bluem query variables stable lets
+     * callback code remain unchanged while translating them to order meta in
+     * either datastore.
+     */
+    private static function register_order_query_filters(): void
+    {
+        if ( self::$order_query_filters_registered ) {
+            return;
+        }
+
+        add_filter(
+            'woocommerce_order_query_args',
+            [ self::class, 'add_hpos_order_query_meta' ]
+        );
+        add_filter(
+            'woocommerce_order_data_store_cpt_get_orders_query',
+            [ self::class, 'add_legacy_order_query_meta' ],
+            10,
+            2
+        );
+
+        self::$order_query_filters_registered = true;
+    }
+
+    /**
+     * Translate Bluem query variables for HPOS.
+     *
+     * @param array<string, mixed> $query_args
+     * @return array<string, mixed>
+     */
+    public static function add_hpos_order_query_meta(array $query_args): array
+    {
+        foreach ( self::ORDER_QUERY_META_KEYS as $query_var => $meta_key ) {
+            if ( empty( $query_args[ $query_var ] ) ) {
+                continue;
+            }
+
+            if ( ! isset( $query_args['meta_query'] ) || ! is_array( $query_args['meta_query'] ) ) {
+                $query_args['meta_query'] = [];
+            }
+
+            $query_args['meta_query'][] = [
+                'key'     => $meta_key,
+                'value'   => sanitize_text_field( (string) $query_args[ $query_var ] ),
+                'compare' => '=',
+            ];
+            unset( $query_args[ $query_var ] );
+        }
+
+        return $query_args;
+    }
+
+    /**
+     * Translate Bluem query variables for the legacy posts-based order store.
+     *
+     * @param array<string, mixed> $query
+     * @param array<string, mixed> $query_vars
+     * @return array<string, mixed>
+     */
+    public static function add_legacy_order_query_meta(array $query, array $query_vars): array
+    {
+        foreach ( self::ORDER_QUERY_META_KEYS as $query_var => $meta_key ) {
+            if ( empty( $query_vars[ $query_var ] ) ) {
+                continue;
+            }
+
+            if ( ! isset( $query['meta_query'] ) || ! is_array( $query['meta_query'] ) ) {
+                $query['meta_query'] = [];
+            }
+
+            $query['meta_query'][] = [
+                'key'     => $meta_key,
+                'value'   => sanitize_text_field( (string) $query_vars[ $query_var ] ),
+                'compare' => '=',
+            ];
+        }
+
+        return $query;
     }
 
     /**
