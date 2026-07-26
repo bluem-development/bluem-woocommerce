@@ -4,7 +4,7 @@ Tags: Bluem,Payments,iDIN,iDEAL,eMandates
 Requires at least: 6.0
 Tested up to: 7.0.2
 Requires PHP: 8.4
-Stable tag: 1.5.2
+Stable tag: 1.5.3
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -79,6 +79,7 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
+- 1.5.3: Fixed a PHP syntax error in the shared bank-based payment gateway.
 - 1.5.2: Declared WooCommerce HPOS compatibility early during initialization and added automated coverage for HPOS and legacy order storage.
 - 1.5.1: Added a readable payment type to the Bluem request details shown on WooCommerce order pages.
 - 1.5.1: Relaxed payment BrandID validation to support custom BrandIDs.
