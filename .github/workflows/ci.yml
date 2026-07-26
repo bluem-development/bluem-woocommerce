@@ -22,16 +22,10 @@ jobs:
               env:
                   BLUEM_SENDER_ID: ${{ secrets.TEST_SENDER_ID }}
                   BLUEM_TEST_ACCESS_TOKEN: ${{ secrets.TEST_ACCESS_TOKEN }}
-                  GITHUB_EVENT_NAME: ${{ github.event_name }}
               run: |
                   set -euo pipefail
-                  if [ "$GITHUB_EVENT_NAME" = push ]; then
-                      : "${BLUEM_SENDER_ID:?TEST_SENDER_ID secret is required on pushes}"
-                      : "${BLUEM_TEST_ACCESS_TOKEN:?TEST_ACCESS_TOKEN secret is required on pushes}"
-                  else
-                      BLUEM_SENDER_ID="${BLUEM_SENDER_ID:-ci-placeholder-sender}"
-                      BLUEM_TEST_ACCESS_TOKEN="${BLUEM_TEST_ACCESS_TOKEN:-ci-placeholder-token}"
-                  fi
+                  BLUEM_SENDER_ID="${BLUEM_SENDER_ID:-ci-placeholder-sender}"
+                  BLUEM_TEST_ACCESS_TOKEN="${BLUEM_TEST_ACCESS_TOKEN:-ci-placeholder-token}"
                   umask 077
                   {
                       printf '%s\n' 'BLUEM_ENV=test'

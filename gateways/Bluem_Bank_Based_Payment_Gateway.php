@@ -162,7 +162,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $debtorReference = $order_id;
         $amount          = $order->get_total();
         $currency        = self::EURO_CURRENCY; // @todo: get dynamically from order
-        $dueDateTime     =  new DateTimeImmutable() ->modify('+1 day');
+        $dueDateTime     = (new DateTimeImmutable())->modify('+1 day');
 
         try {
             $request = $this->bluem->CreatePaymentRequest(
