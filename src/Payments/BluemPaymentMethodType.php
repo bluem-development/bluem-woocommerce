@@ -27,6 +27,17 @@ final class BluemPaymentMethodType extends AbstractPaymentMethodType
         if (function_exists('WC') && WC()->payment_gateways()) {
             $gateways = WC()->payment_gateways()->payment_gateways;
             $this->gateway = $gateways[$this->name] ?? null;
+
+            // WooCommerce normally stores gateway instances with numeric array
+            // keys, so resolve the integration by the gateway object's ID too.
+            if (null === $this->gateway) {
+                foreach ($gateways as $gateway) {
+                    if ($this->name === ($gateway->id ?? null)) {
+                        $this->gateway = $gateway;
+                        break;
+                    }
+                }
+            }
         }
     }
 

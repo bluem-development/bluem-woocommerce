@@ -4,7 +4,7 @@ Tags: Bluem,Payments,iDIN,iDEAL,eMandates
 Requires at least: 6.0
 Tested up to: 7.0.2
 Requires PHP: 8.4
-Stable tag: 1.5
+Stable tag: 1.5.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -79,7 +79,7 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
-- 1.5: Added WooCommerce Cart and Checkout Blocks payment integrations for ePayments and eMandates, HPOS-compatible order correlation, and callback hardening with focused unit coverage.
+- 1.5.0: Added WooCommerce Cart and Checkout Blocks payment integrations for ePayments and eMandates, HPOS-compatible order correlation, callback hardening, and upgraded the Bluem PHP validation dependency.
 - 1.4.3: Completed English and Dutch translation catalogs, compiled language files, and loaded the plugin text domain.
 - 1.4.2: Fixed shortcode mandate callbacks to resolve entrance codes from database-backed request records, retained safe legacy fallbacks, guarded missing legacy request data, and treated the valid `New` status as in progress.
 - 1.4.1: Updated Bluem PHP library to 2.6.1, enriched Bluem support error notifications with plugin/PHP/runtime context and trace details, and handled the valid payment status `New` as an in-progress callback state.

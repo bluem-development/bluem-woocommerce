@@ -125,7 +125,10 @@ namespace Unit {
             ];
             $GLOBALS['bluem_test_woocommerce'] = new \BluemTestWooCommerce(
                 new \BluemTestPaymentGateways([
-                    'bluem_payments_ideal' => (object) ['enabled' => 'yes'],
+                    7 => (object) [
+                        'id' => 'bluem_payments_ideal',
+                        'enabled' => 'yes',
+                    ],
                 ])
             );
 
@@ -179,6 +182,51 @@ namespace Unit {
             ] as $gateway_id) {
                 self::assertStringContainsString("'{$gateway_id}'", $script);
             }
+        }
+
+        public function testBluemPaymentSchemaIsWellFormed(): void
+        {
+            $schema = __DIR__ . '/../../vendor/bluem-development/bluem-php/validation/EPayment.xsd';
+            $document = new \DOMDocument();
+
+            self::assertFileExists($schema);
+            self::assertTrue(
+                $document->load($schema),
+                'The Bluem ePayment XSD must remain well-formed XML.'
+            );
+        }
+
+        public function testBluemCanValidateAGeneratedPaymentRequest(): void
+        {
+            $bluem = new \Bluem\BluemPHP\Bluem((object) [
+                'environment' => 'test',
+                'senderID' => 'S12345',
+                'brandID' => 'BLUEM_BRANDID',
+                'test_accessToken' => 'BLUEM_TEST_ACCESS_TOKEN',
+                'IDINBrandID' => 'BLUEM_BRANDID',
+                'merchantID' => 'BLUEM_MERCHANTID',
+                'merchantReturnURLBase' => 'BLUEM_MERCHANTRETURNURLBASE',
+                'production_accessToken' => '',
+                'expectedReturnStatus' => 'success',
+                'eMandateReason' => 'eMandateReason',
+                'sequenceType' => 'OOFF',
+                'localInstrumentCode' => 'B2B',
+            ]);
+            $request = $bluem->CreatePaymentRequest(
+                'Payment test',
+                'order123',
+                12.34,
+                null,
+                'EUR',
+                null,
+                'https://example.test/return'
+            );
+            $validator = new \Bluem\BluemPHP\Validators\BluemXMLValidator();
+
+            self::assertTrue(
+                $validator->validate($request->RequestContext(), $request->XmlString()),
+                implode('; ', $validator->errorDetails ?? [])
+            );
         }
     }
 }

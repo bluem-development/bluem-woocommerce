@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "98d0e86d3589f90e2e4842e597d85a23",
+    "content-hash": "f3660ab06e316adb5dbf557cdcdd12d6",
     "packages": [
         {
             "name": "bluem-development/bluem-php",
-            "version": "2.6.1",
+            "version": "2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bluem-development/bluem-php.git",
-                "reference": "6ae0908e7942a199dcf6725518001c2cf6dafb7b"
+                "reference": "886abfe31326fa253824174bff58fc674937f91b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/6ae0908e7942a199dcf6725518001c2cf6dafb7b",
-                "reference": "6ae0908e7942a199dcf6725518001c2cf6dafb7b",
+                "url": "https://api.github.com/repos/bluem-development/bluem-php/zipball/886abfe31326fa253824174bff58fc674937f91b",
+                "reference": "886abfe31326fa253824174bff58fc674937f91b",
                 "shasum": ""
             },
             "require": {
@@ -70,9 +70,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bluem-development/bluem-php",
-                "source": "https://github.com/bluem-development/bluem-php/tree/2.6.1"
+                "source": "https://github.com/bluem-development/bluem-php/tree/2.7.1"
             },
-            "time": "2026-07-17T20:12:24+00:00"
+            "time": "2026-07-25T08:11:16+00:00"
         },
         {
             "name": "robrichards/xmlseclibs",
