@@ -6,6 +6,8 @@ if (!defined('ABSPATH')) {
 
 require_once __DIR__ . '/Bluem_Payment_Gateway_Interface.php';
 
+use Bluem\Wordpress\Payments\BluemOrderQuery;
+
 use Bluem\BluemPHP\Bluem;
 
 #[AllowDynamicProperties]
@@ -91,6 +93,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
                 'woocommerce_order_data_store_cpt_get_orders_query',
                 function ($query, $query_vars) {
                     if (!empty($query_vars['bluem_transactionid'])) {
+                        $query['meta_query'] = $query['meta_query'] ?? [];
                         $query['meta_query'][] = [
                             'key' => 'bluem_transactionid',
                             'value' => esc_attr($query_vars['bluem_transactionid']),
@@ -106,6 +109,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
             // ********** Allow filtering Orders based on EntranceCode **********
             add_filter('woocommerce_order_data_store_cpt_get_orders_query', function ($query, $query_vars) {
                 if (!empty($query_vars['bluem_entrancecode'])) {
+                    $query['meta_query'] = $query['meta_query'] ?? [];
                     $query['meta_query'][] = [
                         'key' => 'bluem_entrancecode',
                         'value' => esc_attr($query_vars['bluem_entrancecode']),
@@ -114,6 +118,10 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
 
                 return $query;
             }, 9, 2);
+
+            // The equivalent query adapter for HPOS. The CPT hook above is
+            // intentionally retained for legacy order storage.
+            add_filter('woocommerce_order_query_args', [BluemOrderQuery::class, 'mapHposArgs']);
         }
     }
 
@@ -210,5 +218,13 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
     public function process_payment($order_id)
     {
         //
+    }
+
+    /**
+     * Additional data exposed to the Cart and Checkout Blocks integration.
+     */
+    public function get_block_payment_method_data(): array
+    {
+        return [];
     }
 }

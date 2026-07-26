@@ -9,6 +9,8 @@ use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 
 include_once __DIR__ . '/Bluem_Payment_Gateway.php';
 
+use Bluem\Wordpress\Payments\BluemOrderQuery;
+
 class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
 {
     protected $_show_fields = false;
@@ -74,6 +76,8 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             10,
             2
         );
+
+        add_filter('woocommerce_order_query_args', [BluemOrderQuery::class, 'mapHposArgs']);
     }
 
     /**
@@ -134,11 +138,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
      */
     private function _checkExistingMandate($order)
     {
-        global $current_user;
-
         $order_id = $order->get_id();
 
-        $user_id = $current_user->ID;
+        $user_id = $order->get_customer_id();
 
         $retrieved_request_from_db = false;
 
@@ -211,16 +213,15 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 ) {
                     // successfully used previous mandate in current order,
                     // lets annotate that order with the corresponding metadata
-                    update_post_meta(
-                        $order_id,
+                    $order->update_meta_data(
                         'bluem_entrancecode',
                         $bluem_latest_mandate_entrance_code
                     );
-                    update_post_meta(
-                        $order_id,
+                    $order->update_meta_data(
                         'bluem_mandateid',
                         $bluem_latest_mandate_id
                     );
+                    $order->save();
 
                     if ($retrieved_request_from_db) {
                         bluem_db_request_log(
@@ -327,6 +328,41 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         return true;
     }
 
+    public function get_block_payment_method_data(): array
+    {
+        $options = get_option('bluem_woocommerce_options');
+        $use_debtor_wallet = !empty($options['mandatesUseDebtorWallet'])
+            && '1' === $options['mandatesUseDebtorWallet'];
+
+        return [
+            'use_debtor_wallet' => $use_debtor_wallet,
+            'bics' => $use_debtor_wallet ? $this->getBlockBics('Mandates') : [],
+            'bic_label' => esc_html__('Select a bank:', 'bluem'),
+            'bic_placeholder' => esc_html__('Select a bank', 'bluem'),
+            'bic_required_message' => esc_html__('Please select a bank.', 'bluem'),
+        ];
+    }
+
+    private function getBlockBics(string $context): array
+    {
+        if (null === $this->bluem) {
+            return [];
+        }
+
+        try {
+            $bics = $this->bluem->retrieveBICsForContext($context);
+        } catch (Exception $e) {
+            return [];
+        }
+
+        return array_values(array_map(static function ($bic): array {
+            return [
+                'id' => (string) $bic->issuerID,
+                'name' => (string) $bic->issuerName,
+            ];
+        }, $bics));
+    }
+
     /**
      * Process payment through Bluem portal
      *
@@ -359,7 +395,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         // $user_id = $order->get_user_id();
         // $user_id = get_post_meta($order_id, '_customer_user', true);
         // improved retrieval of user id:
-        $user_id = $current_user->ID;
+        $user_id = $order->get_customer_id();
 
         $settings = get_option('bluem_woocommerce_options');
 
@@ -428,8 +464,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         }
         $entranceCode = $attrs['entranceCode'] . "";
 
-        update_post_meta($order_id, 'bluem_entrancecode', esc_attr($entranceCode));
-        update_post_meta($order_id, 'bluem_mandateid', esc_attr($mandate_id));
+        $order->update_meta_data('bluem_entrancecode', esc_attr($entranceCode));
+        $order->update_meta_data('bluem_mandateid', esc_attr($mandate_id));
+        $order->save();
 
         // https://docs.woocommerce.com/document/managing-orders/
         // Possible statuses: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled',
@@ -676,13 +713,26 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             "mandates"
         );
 
-        if (!$request_from_db) {
-            // @todo: give an error, as this transaction has clearly not been saved
-
+        if ($request_from_db) {
+            $entranceCode = $request_from_db->entrance_code;
+        } else {
+            // Legacy orders may not have a request-table row. The order
+            // metadata is the safe fallback correlation key in that case.
             $entranceCode = $order->get_meta('bluem_entrancecode');
         }
 
-        $entranceCode = $request_from_db->entrance_code;
+        if (empty($entranceCode)) {
+            $errormessage = esc_html__('No entrance code found for this mandate. Please contact the webshop.', 'bluem');
+            bluem_error_report_email([
+                'service' => 'mandates',
+                'function' => 'mandates_callback',
+                'message' => $errormessage,
+                'order_id' => $order->get_id(),
+                'mandateID' => $mandateID,
+            ]);
+            bluem_dialogs_render_prompt($errormessage);
+            exit;
+        }
 
         try {
             $response = $this->bluem->MandateStatus($mandateID, $entranceCode);
@@ -725,7 +775,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
 
         // $request_from_db = bluem_db_get_request_by_transaction_id($mandateID);
-        if ($statusCode !== $request_from_db->status) {
+        if ($request_from_db && $statusCode !== $request_from_db->status) {
             bluem_db_update_request(
                 $request_from_db->id,
                 [
@@ -734,7 +784,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             );
         }
         if ($statusCode === "Success") {
-            if ($request_from_db->id !== "") {
+            if ($request_from_db && $request_from_db->id !== "") {
                 $new_data = [];
                 if (isset($response->EMandateStatusUpdate->EMandateStatus->PurchaseID)) {
                     $new_data['purchaseID'] = $response
@@ -776,9 +826,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 esc_html__('Approval was interrupted or canceled', 'bluem')
             );
 
-            bluem_transaction_notification_email(
-                $request_from_db->id
-            );
+            if ($request_from_db) {
+                bluem_transaction_notification_email($request_from_db->id);
+            }
             bluem_dialogs_render_prompt(esc_html__("You canceled the mandate signing", 'bluem'));
             // terug naar order pagina om het opnieuw te proberen?
             exit;
@@ -793,9 +843,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 esc_html__('Request has expired', 'bluem')
             );
 
-            bluem_transaction_notification_email(
-                $request_from_db->id
-            );
+            if ($request_from_db) {
+                bluem_transaction_notification_email($request_from_db->id);
+            }
 
             bluem_dialogs_render_prompt(
                 esc_html__("Error: the mandate or mandate request has expired", 'bluem')
@@ -865,7 +915,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
                 "mandates"
             );
 
-            $request_id = $request_from_db->id;
+            $request_id = $request_from_db ? $request_from_db->id : '';
         }
 
         if ($maxAmountEnabled) {

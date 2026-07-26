@@ -137,11 +137,12 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $user_meta = get_user_meta($user_id);
 
         $order_id    = $order->get_id();
-        $customer_id = get_post_meta($order_id, '_customer_user', true);
+        $customer_id = $order->get_customer_id();
 
         $entranceCode = $this->bluem->CreateEntranceCode();
 
-        update_post_meta($order_id, 'bluem_entrancecode', $entranceCode);
+        $order->update_meta_data('bluem_entrancecode', $entranceCode);
+        $order->save();
         if (! is_null($customer_id) && $customer_id !== "" && (int) $customer_id !== 0) {
             $description = sprintf(
                 /* translators:
@@ -256,11 +257,12 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             $order->add_order_note(esc_html__("Payment process initiated", 'bluem'));
 
             $transactionID = "" . $response->PaymentTransactionResponse->TransactionID;
-            update_post_meta($order_id, 'bluem_transactionid', $transactionID);
+            $order->update_meta_data('bluem_transactionid', $transactionID);
             $paymentReference = "" . $response->PaymentTransactionResponse->paymentReference;
-            update_post_meta($order_id, 'bluem_payment_reference', $paymentReference);
+            $order->update_meta_data('bluem_payment_reference', $paymentReference);
             $debtorReference = "" . $response->PaymentTransactionResponse->debtorReference;
-            update_post_meta($order_id, 'bluem_debtor_Reference', $debtorReference);
+            $order->update_meta_data('bluem_debtor_Reference', $debtorReference);
+            $order->save();
 
             // redirect cast to string, for AJAX response handling
             $transactionURL = ($response->PaymentTransactionResponse->TransactionURL . "");
@@ -457,7 +459,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         }
         $user_id = $order->get_user_id();
 
-        $transactionID = get_post_meta($order->get_id(), 'bluem_transactionid', true);
+        $transactionID = $order->get_meta('bluem_transactionid', true);
         if (empty($transactionID)) {
             $errormessage = sprintf(
                 /* translators: %s: entranceCode */
@@ -475,7 +477,25 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             die();
         }
 
-        $response = $this->bluem->PaymentStatus($transactionID, $entranceCode);
+        try {
+            $response = $this->bluem->PaymentStatus($transactionID, $entranceCode);
+        } catch (Exception $e) {
+            $errormessage = sprintf(
+                /* translators: %s: error message */
+                esc_html__('Error retrieving status: %s. Please contact the webshop and mention this status.', 'bluem'),
+                $e->getMessage()
+            );
+            bluem_error_report_email([
+                'service' => 'payments',
+                'function' => 'payments_callback',
+                'message' => $errormessage,
+                'order_id' => $order->get_id(),
+                'transactionID' => $transactionID,
+                'entranceCode' => $entranceCode,
+            ]);
+            bluem_dialogs_render_prompt($errormessage);
+            exit;
+        }
 
         if (! $response->Status()) {
             $errormessage = sprintf(
@@ -502,7 +522,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
 
         $request_from_db = bluem_db_get_request_by_transaction_id($transactionID);
 
-        if ($statusCode !== $request_from_db->status) {
+        if ($request_from_db && $statusCode !== $request_from_db->status) {
             bluem_db_update_request(
                 $request_from_db->id,
                 [
@@ -524,13 +544,15 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                         $_GET['entranceCode'] ?? ''));
             }
 
-            bluem_transaction_notification_email(
-                $request_from_db->id
-            );
+            if ($request_from_db) {
+                bluem_transaction_notification_email($request_from_db->id);
+            }
 
             // Remove cart
             global $woocommerce;
-            $woocommerce->cart->empty_cart();
+            if (isset($woocommerce->cart) && is_object($woocommerce->cart)) {
+                $woocommerce->cart->empty_cart();
+            }
 
             $this->thank_you_page($order->get_id());
         } elseif ($statusCode === self::PAYMENT_STATUS_FAILURE) {
@@ -539,9 +561,9 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             }
 
             $order->add_order_note(esc_html__("Payment process not completed", 'bluem'));
-            bluem_transaction_notification_email(
-                $request_from_db->id
-            );
+            if ($request_from_db) {
+                bluem_transaction_notification_email($request_from_db->id);
+            }
             $errormessage = wp_kses_post(__("Something went wrong while paying,
                 or you did not complete the payment process.
                 <br>Try paying again from your order overview
@@ -563,25 +585,25 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             $order->update_status(BLUEM_WC_STATUS_CANCELLED, esc_html__('Payment has been canceled', 'bluem'));
 
 
-            bluem_transaction_notification_email(
-                $request_from_db->id
-            );
+            if ($request_from_db) {
+                bluem_transaction_notification_email($request_from_db->id);
+            }
             bluem_dialogs_render_prompt(esc_html__("You canceled the payment", 'bluem'));
             // terug naar order pagina om het opnieuw te proberen?
             exit;
         } elseif (in_array($statusCode, [ self::PAYMENT_STATUS_NEW, "Open", "Pending" ], true)) {
-            bluem_transaction_notification_email(
-                $request_from_db->id
-            );
+            if ($request_from_db) {
+                bluem_transaction_notification_email($request_from_db->id);
+            }
             bluem_dialogs_render_prompt(esc_html__("The payment has not been confirmed yet. This may take a moment but happens automatically.", 'bluem'));
             // callback pagina beschikbaar houden om het opnieuw te proberen?
             // is simpelweg SITE/wc-api/bluem_callback?transactionID=$transactionID
             exit;
         } elseif ($statusCode === "Expired") {
             $order->update_status(BLUEM_WC_STATUS_FAILED, esc_html__('Payment has expired', 'bluem'));
-            bluem_transaction_notification_email(
-                $request_from_db->id
-            );
+            if ($request_from_db) {
+                bluem_transaction_notification_email($request_from_db->id);
+            }
 
             bluem_dialogs_render_prompt(esc_html__("Error: the payment or payment request has expired", 'bluem'));
             exit;
@@ -600,9 +622,9 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                     'response' => $response,
                 ]
             );
-            bluem_transaction_notification_email(
-                $request_from_db->id
-            );
+            if ($request_from_db) {
+                bluem_transaction_notification_email($request_from_db->id);
+            }
             bluem_dialogs_render_prompt(
                 sprintf(
                     /* translators: %s: status code */

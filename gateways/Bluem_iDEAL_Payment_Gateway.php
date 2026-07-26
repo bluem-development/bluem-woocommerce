@@ -75,4 +75,39 @@ class Bluem_iDEAL_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
     {
         return true;
     }
+
+    public function get_block_payment_method_data(): array
+    {
+        $options = get_option('bluem_woocommerce_options');
+        $use_debtor_wallet = !empty($options['paymentsUseDebtorWallet'])
+            && '1' === $options['paymentsUseDebtorWallet'];
+
+        return [
+            'use_debtor_wallet' => $use_debtor_wallet,
+            'bics' => $use_debtor_wallet ? $this->getBlockBics('Payments') : [],
+            'bic_label' => esc_html__('Select a bank:', 'bluem'),
+            'bic_placeholder' => esc_html__('Select a bank', 'bluem'),
+            'bic_required_message' => esc_html__('Please select a bank.', 'bluem'),
+        ];
+    }
+
+    private function getBlockBics(string $context): array
+    {
+        if (null === $this->bluem) {
+            return [];
+        }
+
+        try {
+            $bics = $this->bluem->retrieveBICsForContext($context);
+        } catch (Exception $e) {
+            return [];
+        }
+
+        return array_values(array_map(static function ($bic): array {
+            return [
+                'id' => (string) $bic->issuerID,
+                'name' => (string) $bic->issuerName,
+            ];
+        }, $bics));
+    }
 }

@@ -4,7 +4,7 @@ Tags: Bluem,Payments,iDIN,iDEAL,eMandates
 Requires at least: 6.0
 Tested up to: 7.0.2
 Requires PHP: 8.4
-Stable tag: 1.4.3
+Stable tag: 1.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -59,6 +59,8 @@ ePayments is utilized as a Payment Gateway within WooCommerce. Enable it as a mo
 
 From that moment onwards you can utilize the gateway during checkout.
 
+The Bluem ePayment and eMandate gateways support both WooCommerce's classic checkout and the Cart and Checkout Blocks checkout. The iDIN checkout verification flow still requires the classic checkout.
+
 === Identity ===
 
 Available as automatic blocking for WooCommerce's checkout procedure and as shortcode (see next section).
@@ -77,6 +79,7 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
+- 1.5: Added WooCommerce Cart and Checkout Blocks payment integrations for ePayments and eMandates, HPOS-compatible order correlation, and callback hardening with focused unit coverage.
 - 1.4.3: Completed English and Dutch translation catalogs, compiled language files, and loaded the plugin text domain.
 - 1.4.2: Fixed shortcode mandate callbacks to resolve entrance codes from database-backed request records, retained safe legacy fallbacks, guarded missing legacy request data, and treated the valid `New` status as in progress.
 - 1.4.1: Updated Bluem PHP library to 2.6.1, enriched Bluem support error notifications with plugin/PHP/runtime context and trace details, and handled the valid payment status `New` as an in-progress callback state.

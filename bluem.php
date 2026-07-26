@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce
- * Version: 1.4.3
+ * Version: 1.5
  * Plugin URI: https://bluem.nl/en/
  * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and much, much more
  * Author: Bluem Payment Services
@@ -23,6 +23,21 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
+
+add_action('before_woocommerce_init', function () {
+    if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+            'cart_checkout_blocks',
+            __FILE__,
+            true
+        );
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+            'custom_order_tables',
+            __FILE__,
+            true
+        );
+    }
+});
 
 global $bluem_db_version;
 $bluem_db_version = 1.5;
@@ -73,6 +88,44 @@ require_once __DIR__ . '/bluem-interface.php';
 
 // integrations with external plugins
 require_once __DIR__ . '/bluem-integrations.php';
+
+add_action(
+    'woocommerce_blocks_payment_method_type_registration',
+    'bluem_register_blocks_payment_method_types'
+);
+
+/**
+ * Register the Bluem gateways with the Cart and Checkout Blocks payment API.
+ *
+ * The legacy WC_Payment_Gateway implementation remains responsible for
+ * processing the payment. The Blocks integration exposes loaded gateways in
+ * the modern checkout and supplies any payment-specific data to process_payment().
+ */
+function bluem_register_blocks_payment_method_types($payment_method_registry)
+{
+    if (!class_exists('Automattic\\WooCommerce\\Blocks\\Payments\\PaymentMethodRegistry')) {
+        return;
+    }
+
+    require_once __DIR__ . '/src/Payments/BluemPaymentMethodType.php';
+
+    if (!class_exists('Bluem\\Wordpress\\Payments\\BluemPaymentMethodType')) {
+        return;
+    }
+
+    foreach ([
+        'bluem_payments_ideal',
+        'bluem_payments_paypal',
+        'bluem_payments_creditcard',
+        'bluem_payments_sofort',
+        'bluem_payments_cartebancaire',
+        'bluem_mandates',
+    ] as $gateway_id) {
+        $payment_method_registry->register(
+            new \Bluem\Wordpress\Payments\BluemPaymentMethodType($gateway_id)
+        );
+    }
+}
 
 // Observability
 //require_once __DIR__ . '/Observability/SentryLogger.php';
