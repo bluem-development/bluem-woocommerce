@@ -357,6 +357,14 @@ function bluem_render_requests_list($requests)
                 <div class="bluem-request-list-item-row">
 
                     <span class="bluem-request-label">
+                        <?php esc_html_e('Type', 'bluem'); ?>:
+                    </span>
+                    <?php echo esc_html(bluem_get_request_type_label($r->type ?? '')); ?>
+
+                </div>
+                <div class="bluem-request-list-item-row">
+
+                    <span class="bluem-request-label">
                         <?php esc_html_e('Transaction number', 'bluem'); ?>:
 
                     </span>
@@ -398,6 +406,29 @@ function bluem_render_requests_list($requests)
         ?>
     </div>
 <?php
+}
+
+/**
+ * Return a readable label for the request type stored in the request table.
+ *
+ * @param mixed $type Request type stored by the payment or identity flow.
+ */
+function bluem_get_request_type_label($type): string
+{
+    $type = strtolower(trim((string) $type));
+
+    $labels = [
+        'ideal' => __('iDEAL', 'bluem'),
+        'creditcard' => __('Credit card', 'bluem'),
+        'paypal' => __('PayPal', 'bluem'),
+        'sofort' => __('SOFORT', 'bluem'),
+        'cartebancaire' => __('Carte Bancaire', 'bluem'),
+        'mandates' => __('eMandate', 'bluem'),
+        'payments' => __('Payment', 'bluem'),
+        'identity' => __('iDIN', 'bluem'),
+    ];
+
+    return $labels[$type] ?? ($type !== '' ? ucfirst($type) : __('Unknown', 'bluem'));
 }
 
 
