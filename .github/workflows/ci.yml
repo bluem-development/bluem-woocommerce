@@ -51,7 +51,11 @@ jobs:
                   php_version: 8.4
 
             - name: PHPUnit Tests
-              run: ./vendor/bin/phpunit --configuration ./.github/workflows/phpunit.xml
+              uses: php-actions/phpunit@v4
+              with:
+                  php_version: 8.4
+                  bootstrap: vendor/autoload.php
+                  configuration: ./.github/workflows/phpunit.xml
             - run: echo "🍏 This job's status is ${{ job.status }}."
 
     hpos-integration:
