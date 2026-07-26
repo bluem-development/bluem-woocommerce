@@ -76,6 +76,28 @@ additional WooCommerce state or plugin configuration:
 
 Prefer WP-CLI for this setup. A one-off `wordpress:cli` container can run against the same Docker network and database as the WordPress container.
 
+### Checkout and gateway registration coverage
+
+Add a separate `checkout` group after the smoke setup is stable. It should activate WooCommerce and Bluem, load the WooCommerce payment gateways, and verify that these Bluem gateway IDs are registered:
+
+- `bluem_payments_ideal`
+- `bluem_payments_paypal`
+- `bluem_payments_creditcard`
+- `bluem_payments_sofort`
+- `bluem_payments_cartebancaire`
+- `bluem_mandates`
+
+This test should not call the Bluem API. Its purpose is to catch missing gateway includes, PHP load errors, constructor failures, and WooCommerce registration regressions.
+
+Keep richer flows in separate groups:
+
+- `settings`: save and reload harmless plugin settings;
+- `callbacks`: exercise mocked callback/webhook responses and order-status transitions;
+- `checkout`: verify gateway registration and basic checkout rendering;
+- `hpos`: retain the existing HPOS and legacy order-storage integration coverage.
+
+Callback tests should explicitly cover `Success`, `Failure`, `Cancelled`, `Expired`, `New`, `Open`, and `Pending`, using mocked Bluem responses and no merchant credentials.
+
 The smoke, full acceptance, and translation targets all prepare the Docker site
 before running.
 

@@ -43,9 +43,7 @@ jobs:
             - name: Validate PHP and Composer configuration
               run: |
                   set -euo pipefail
-                  php -l bluem.php
-                  php -l gateways/Bluem_Payment_Gateway.php
-                  php -l gateways/Bluem_Bank_Based_Payment_Gateway.php
+                  find . \( -path './vendor' -o -path './build' -o -path './docker' -o -path './svn-directory' \) -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
                   composer validate --no-check-publish
 
             - uses: php-actions/composer@v6
