@@ -26,6 +26,21 @@ git diff --check
 
 The current unit suite is small, so passing it is useful but not enough to prove payment or WordPress behavior. For behavior touching callbacks, webhooks, settings, admin screens, or checkout, supplement with code-path review and, where possible, a local WordPress/WooCommerce smoke check.
 
+### CI-parity checks before release
+
+Before preparing an SVN release, run the same fast checks enforced by `.github/workflows/ci.yml`:
+
+```bash
+php -v
+find . \( -path './vendor' -o -path './build' -o -path './docker' -o -path './svn-directory' \) -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+composer validate --no-check-publish
+composer check-platform-reqs
+./vendor/bin/phpunit --configuration ./.github/workflows/phpunit.xml
+git diff --check
+```
+
+Run Composer and PHPUnit with PHP 8.4 or newer, matching the Composer requirement and the GitHub Actions `php_version: 8.4` configuration. Do not run PHPUnit directly from a PHP 8.3 host after installing dependencies with PHP 8.4; use a PHP 8.4 environment/container or the same PHPUnit action configuration as CI. The gateway-loading unit test must remain part of the Unit suite so all bank-based gateway files are loaded before release.
+
 ## Payment Status Notes
 
 Bluem ePayment status handling is business-critical. Do not assume every non-success status is a failure.
