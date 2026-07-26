@@ -36,3 +36,23 @@ jobs:
                   bootstrap: vendor/autoload.php
                   configuration: ./.github/workflows/phpunit.xml
             - run: echo "🍏 This job's status is ${{ job.status }}."
+
+    hpos-integration:
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: php-actions/composer@v6
+              with:
+                  php_version: 8.4
+
+            - name: HPOS and legacy order-storage integration tests
+              env:
+                  WOOCOMMERCE_VERSION: 10.9.4
+              run: make integration_test
+
+            - name: Show Docker diagnostics on failure
+              if: ${{ failure() }}
+              run: docker ps -a
