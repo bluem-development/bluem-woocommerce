@@ -10,15 +10,31 @@ if (!class_exists('WooCommerce') || !function_exists('wc_create_order')) {
 
 require_once WP_PLUGIN_DIR . '/bluem-woocommerce/gateways/Bluem_Payment_Gateway.php';
 
+use Bluem\Wordpress\Payments\BluemOrderQuery;
+
 // The gateway registers these during normal configured gateway boot. Registering
 // the public adapters directly keeps this test independent of merchant secrets.
 add_filter(
     'woocommerce_order_query_args',
-    [Bluem_Payment_Gateway::class, 'add_hpos_order_query_meta']
+    [BluemOrderQuery::class, 'mapHposArgs']
 );
 add_filter(
     'woocommerce_order_data_store_cpt_get_orders_query',
-    [Bluem_Payment_Gateway::class, 'add_legacy_order_query_meta'],
+    static function (array $query, array $query_vars): array {
+        foreach (['bluem_transactionid', 'bluem_entrancecode', 'bluem_mandateid'] as $key) {
+            if (empty($query_vars[$key])) {
+                continue;
+            }
+
+            $query['meta_query'] = $query['meta_query'] ?? [];
+            $query['meta_query'][] = [
+                'key' => $key,
+                'value' => esc_attr($query_vars[$key]),
+            ];
+        }
+
+        return $query;
+    },
     10,
     2
 );
