@@ -365,3 +365,16 @@ make translations
 The English catalog intentionally uses each English source string as its own
 translation. WordPress uses the compiled `.mo` files at runtime; keep the POT,
 PO, and MO files in `languages/` together when packaging a release.
+
+# Observability
+
+Version 1.5.2 includes a guarded Sentry PHP integration for Bluem errors and exceptions. The shipped DSN is an ingest-only public client key; it is not a Sentry API token. Events are filtered to Bluem plugin frames and scrubbed before sending.
+
+To override the project DSN or disable reporting in a deployment, define these in `wp-config.php` before the plugin loads:
+
+```php
+define('BLUEM_SENTRY_DSN', 'https://...');
+define('BLUEM_SENTRY_ENABLED', false);
+```
+
+The integration does not send request URLs, query strings, bodies, cookies, headers, user context, order identifiers, payment identifiers, raw Bluem responses, or access tokens.

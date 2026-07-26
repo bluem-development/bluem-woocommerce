@@ -4,7 +4,7 @@ Tags: Bluem,Payments,iDIN,iDEAL,eMandates
 Requires at least: 6.0
 Tested up to: 7.0.2
 Requires PHP: 8.4
-Stable tag: 1.5.3
+Stable tag: 1.5.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -20,6 +20,8 @@ Concretely, the plug-in delivers:
 - a shortcode, namely [bluem_machtigingsformulier] that allows (guest) users to perform an eMandate transaction request from any post or page (no WooCommerce plug-in necessary). The response is stored within the user profile metadata
 - a shortcode [bluem_identificatieformulier] that allows (guest) users to perform an iDIN eID request and store this information within the user profile metadata for further usage in third-party plugins or functions within your theme.
 - an extensive settings page that allows for enabling/disabling and configuration of specific services
+
+The plug-in also sends privacy-scrubbed technical error reports for Bluem code to Sentry. These reports contain technical exception and function information, but no customer, order, payment, request, or credential data. To disable this reporting, define `BLUEM_SENTRY_ENABLED` as `false` in `wp-config.php` before the plug-in is loaded.
 
 To use these features, you need to register as a Bluem customer. For more information, please visit https://www.bluem.nl
 
@@ -81,6 +83,8 @@ It is possible to programmatically block display and functionality on your site 
 == Changelog ==
 - 1.5.3: Fixed a PHP syntax error in the shared bank-based payment gateway.
 - 1.5.2: Declared WooCommerce HPOS compatibility early during initialization and added automated coverage for HPOS and legacy order storage.
+- 1.5.2: Added privacy-scrubbed Sentry error reporting for Bluem plugin errors and exceptions.
+- 1.5.4: Rebased Sentry observability work onto master and added SenderID Sentry tagging.
 - 1.5.1: Added a readable payment type to the Bluem request details shown on WooCommerce order pages.
 - 1.5.1: Relaxed payment BrandID validation to support custom BrandIDs.
 - 1.5.0: Added WooCommerce Cart and Checkout Blocks payment integrations for ePayments and eMandates, HPOS-compatible order correlation, callback hardening, and upgraded the Bluem PHP validation dependency.
