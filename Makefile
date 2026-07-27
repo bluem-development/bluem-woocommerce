@@ -105,7 +105,7 @@ acceptance_checkout_prepare: acceptance_prepare
 .PHONY: acceptance_checkout_test
 acceptance_checkout_test: acceptance_checkout_prepare
 	@printf 'Gateway registration and checkout acceptance tests:\n';
-	docker compose run --rm wpcli eval-file /opt/bluem-scripts/acceptance-test-gateways.php --allow-root
+	docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-gateways.php
 	php vendor/bin/codecept run Acceptance --group checkout --steps
 
 .PHONY: playwright_install
