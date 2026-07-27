@@ -23,7 +23,7 @@ class SettingsCest
 
         $I->amOnPage('/wp-admin/admin.php?page=bluem-settings');
         $I->seeInField('#bluem_woocommerce_settings_senderID', 'acceptance-settings-sender');
-        $I->seeOptionIsSelected('#bluem_woocommerce_settings_environment', 'prod');
+        $I->seeOptionIsSelected('#bluem_woocommerce_settings_environment', 'Production (live)');
     }
 
     private function login(AcceptanceTester $I): void

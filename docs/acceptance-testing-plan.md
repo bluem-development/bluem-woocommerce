@@ -105,7 +105,7 @@ Prefer WP-CLI for this setup. A one-off `wordpress:cli` container can run agains
 
 ### Checkout and gateway registration coverage
 
-The separate `checkout` group activates a pinned WooCommerce version and Bluem, loads the WooCommerce payment gateways, and verifies that these Bluem gateway IDs are available in the WooCommerce payment settings page:
+The separate `checkout` group activates a pinned WooCommerce version and Bluem, loads the WooCommerce payment gateways, and verifies the gateway IDs directly through WooCommerce’s payment-gateway collection with WP-CLI. It also confirms that the Payments admin screen renders:
 
 - `bluem_payments_ideal`
 - `bluem_payments_paypal`

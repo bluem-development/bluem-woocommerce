@@ -8,6 +8,7 @@ test('administrator can open Bluem settings', async ({ page }) => {
 
   await page.goto('/wp-admin/admin.php?page=bluem-settings');
   await expect(page.locator('h1')).toContainText('Settings');
+  await page.locator('a[data-tab="account"]').click();
   await expect(page.locator('#bluem_woocommerce_settings_senderID')).toBeVisible();
   await expect(page.locator('#bluem_woocommerce_settings_environment')).toBeVisible();
 });
