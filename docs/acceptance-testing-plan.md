@@ -71,6 +71,8 @@ additional WooCommerce state or plugin configuration:
 - install WordPress with known admin credentials when needed
 - activate WooCommerce when the plugin needs it
 - activate the Bluem plugin
+- seed isolated test options and mark the plugin registration complete so
+  admin acceptance tests do not depend on manual activation-form submission
 - set permalink structure and any required plugin options
 - create minimal sample data, such as a product or page only when a test needs it
 
