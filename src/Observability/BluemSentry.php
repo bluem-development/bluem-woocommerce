@@ -103,11 +103,12 @@ final class BluemSentry
 
         $data = is_object($data) ? get_object_vars($data) : (array) $data;
         $safe = self::sanitizeReportData($data);
+        $senderId = self::getSenderId();
         $messageValue = $data['message'] ?? 'Bluem error report';
         $message = self::redactMessage(is_scalar($messageValue) ? (string) $messageValue : 'Bluem error report');
 
         try {
-            \Sentry\withScope(static function (Scope $scope) use ($safe, $message): void {
+            \Sentry\withScope(static function (Scope $scope) use ($safe, $message, $senderId): void {
                 foreach (['component', 'operation', 'status'] as $tag) {
                     if (isset($safe[$tag])) {
                         $scope->setTag('bluem_' . $tag, $safe[$tag]);
@@ -118,12 +119,30 @@ final class BluemSentry
                     $scope->setTag('bluem_error_report_id', $safe['error_report_id']);
                 }
 
+                if ($senderId !== '') {
+                    $scope->setTag('bluem_sender_id', $senderId);
+                }
+
                 $scope->setContext('bluem', $safe);
                 \Sentry\captureMessage($message, Severity::error());
             });
         } catch (Throwable $exception) {
             // A failed telemetry request must never alter plugin behavior.
         }
+    }
+
+    private static function getSenderId(): string
+    {
+        if (!function_exists('get_option')) {
+            return '';
+        }
+
+        $options = get_option('bluem_woocommerce_options', []);
+        if (!is_array($options) || !isset($options['senderID']) || !is_scalar($options['senderID'])) {
+            return '';
+        }
+
+        return self::sanitizeIdentifier((string) $options['senderID']);
     }
 
     /**

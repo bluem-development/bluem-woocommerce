@@ -45,6 +45,13 @@ namespace Unit {
             );
         }
 
+        public function testSenderIdIsReadFromPluginSettingsForSentryTags(): void
+        {
+            self::assertStringContainsString("setTag('bluem_sender_id'", file_get_contents(
+                dirname(__DIR__, 2) . '/src/Observability/BluemSentry.php'
+            ));
+        }
+
         public function testMessageRedactsPersonalAndCredentialLikeValues(): void
         {
             $message = BluemSentry::redactMessage(
