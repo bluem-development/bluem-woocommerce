@@ -16,7 +16,7 @@ Implemented on the acceptance branch and wired into pull-request CI:
 
 Still planned:
 
-- Full mocked callback/webhook handler tests, including malformed or missing order correlation.
+- Full HTTP callback/webhook endpoint tests with mocked Bluem responses and order lookup.
 - WooCommerce gateway registration and checkout rendering coverage.
 - Harmless settings persistence coverage.
 - Browser-level Playwright coverage for JavaScript-dependent admin behavior.
@@ -122,13 +122,13 @@ Keep richer flows in separate groups:
 
 Callback tests should explicitly cover `Success`, `Failure`, `Cancelled`, `Expired`, `New`, `Open`, and `Pending`, using mocked Bluem responses and no merchant credentials.
 
-The first status-transition security layer is now covered by
-`BluemPaymentStatusTransitionTest`. It exercises the shared callback/webhook
-status resolver, verifies that in-progress statuses never fail orders, and
-ensures `Success` and `Failure` do not rewrite orders that are no longer
-pending. The next callback increment should exercise the full handler with
-mocked Bluem response and order objects, including malformed or missing
-transaction correlation data.
+The callback/webhook handler layer is now covered by
+`BluemPaymentStatusTransitionTest` and
+`BluemPaymentCallbackHandlerTest`. The tests use mocked order objects, cover
+all terminal and in-progress statuses, verify webhook-specific messages, and
+reject missing, blank, or non-scalar transaction correlation data before an
+order lookup. Full HTTP endpoint tests with mocked Bluem response objects remain
+the next callback increment.
 
 The smoke, full acceptance, and translation targets all prepare the Docker site
 before running.
