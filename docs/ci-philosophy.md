@@ -8,7 +8,7 @@ CI should provide fast, layered evidence rather than treating one green test com
 - **Unit behavior:** test deterministic logic and important contracts without WordPress, WooCommerce, Docker, or network dependencies.
 - **Load and registration safety:** load each payment gateway class and, in acceptance tests, verify that WooCommerce registers the expected gateway IDs.
 - **Integration behavior:** run the existing HPOS/legacy order-storage tests against real WordPress and WooCommerce containers.
-- **Acceptance behavior:** keep smoke tests small, then add separate `settings`, `checkout`, and `callbacks` groups as those flows become deterministic.
+- **Acceptance behavior:** keep smoke tests small, then add separate `settings`, `checkout`, and `callbacks` groups as those flows become deterministic. The smoke job and the first callback/status-transition layer are now implemented; full handler coverage remains open.
 
 ## Principles
 
@@ -19,6 +19,7 @@ CI should provide fast, layered evidence rather than treating one green test com
 - Reuse local Make targets in CI so local and hosted results exercise the same setup.
 - Upload Docker and Codeception diagnostics when integration or acceptance jobs fail.
 - Treat payment status handling as business-critical: `New`, `Open`, and `Pending` are in-progress states, not generic failures.
+- Keep acceptance setup self-contained: seed isolated placeholder options and complete the plugin registration guard through WP-CLI rather than relying on manual admin interaction.
 
 ## Release protection
 

@@ -2,6 +2,25 @@
 
 This plan keeps the first useful acceptance suite cheap: prove that a real WordPress site still responds, that wp-admin is reachable, and that the Bluem admin page can be opened after logging in.
 
+## Current implementation status
+
+Implemented on the acceptance branch and wired into pull-request CI:
+
+- Dockerized WordPress and MySQL preparation through `make acceptance_prepare`.
+- PHP 8.4 provisioning for the complete acceptance job.
+- Root WP-CLI execution for deterministic language installation in CI bind mounts.
+- Isolated test options and completed plugin registration, so admin tests require no manual activation-form submission.
+- Codeception smoke coverage for the public page, login form, and Bluem admin page.
+- Failure artifacts containing Docker diagnostics and Codeception output when available.
+- Unit coverage for callback/webhook payment-status transitions.
+
+Still planned:
+
+- Full mocked callback/webhook handler tests, including malformed or missing order correlation.
+- WooCommerce gateway registration and checkout rendering coverage.
+- Harmless settings persistence coverage.
+- Browser-level Playwright coverage for JavaScript-dependent admin behavior.
+
 ## Docker preparation and translation test
 
 The Docker Compose setup includes a WP-CLI service. The preparation target
@@ -45,6 +64,9 @@ The smoke group currently checks:
 - the public home page responds
 - the WordPress login page responds
 - the Bluem admin page can be opened by an authenticated admin
+
+The current smoke suite executes 3 tests with 7 assertions. The setup uses
+placeholder test values only and does not call the Bluem API.
 
 This is intentionally narrow. It should catch the most obvious site-breaking failures without turning every local change into a slow browser workflow.
 
@@ -131,8 +153,8 @@ Do not make GitHub Actions responsible for discovering how the WordPress setup s
 
 Recommended implementation order:
 
-- implement `acceptance_prepare` locally
-- verify `make acceptance_prepare` followed by `make acceptance_smoke_test`
+- [x] implement `acceptance_prepare` locally
+- [x] verify `make acceptance_prepare` followed by `make acceptance_smoke_test`
 - [x] update `.github/workflows/ci.yml` to run Dockerized WordPress
 - [x] run the same smoke target in CI
 - [x] upload Codeception output and Docker logs when the smoke test fails
