@@ -98,6 +98,14 @@ Keep richer flows in separate groups:
 
 Callback tests should explicitly cover `Success`, `Failure`, `Cancelled`, `Expired`, `New`, `Open`, and `Pending`, using mocked Bluem responses and no merchant credentials.
 
+The first status-transition security layer is now covered by
+`BluemPaymentStatusTransitionTest`. It exercises the shared callback/webhook
+status resolver, verifies that in-progress statuses never fail orders, and
+ensures `Success` and `Failure` do not rewrite orders that are no longer
+pending. The next callback increment should exercise the full handler with
+mocked Bluem response and order objects, including malformed or missing
+transaction correlation data.
+
 The smoke, full acceptance, and translation targets all prepare the Docker site
 before running.
 
