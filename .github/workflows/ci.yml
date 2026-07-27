@@ -16,6 +16,10 @@ concurrency:
 jobs:
     build-test:
         runs-on: ubuntu-latest
+        name: Build and unit tests (PHP ${{ matrix.php }})
+        strategy:
+            matrix:
+                php: ['8.4', '8.5']
 
         steps:
             - uses: actions/checkout@v7
@@ -50,12 +54,12 @@ jobs:
 
             - uses: php-actions/composer@v6
               with:
-                  php_version: 8.4
+                  php_version: ${{ matrix.php }}
 
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v4
               with:
-                  php_version: 8.4
+                  php_version: ${{ matrix.php }}
                   bootstrap: vendor/autoload.php
                   configuration: ./.github/workflows/phpunit.xml
             - run: echo "🍏 This job's status is ${{ job.status }}."
