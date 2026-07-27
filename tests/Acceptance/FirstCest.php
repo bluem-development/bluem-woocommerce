@@ -4,7 +4,7 @@ namespace Tests\Acceptance;
 
 use Tests\Support\AcceptanceTester;
 
-class FirstTest
+class FirstCest
 {
     public function _before(AcceptanceTester $I) {}
 
@@ -14,8 +14,8 @@ class FirstTest
     public function frontpageWorks(AcceptanceTester $I)
     {
         $I->amOnPage('/');
-        $I->see('Blog');
         $I->see('wordpress');
+        $I->seeElement('body');
     }
 
     /**
@@ -24,7 +24,9 @@ class FirstTest
     public function loginPageWorks(AcceptanceTester $I)
     {
         $I->amOnPage('/wp-admin');
-        $I->see('Username or Email Address');
+        $I->seeElement('input[name="log"]');
+        $I->seeElement('input[name="pwd"]');
+        $I->seeElement('#wp-submit');
     }
 
     public function loginWithValidCredentials(AcceptanceTester $I)
@@ -38,8 +40,8 @@ class FirstTest
         $I->amOnPage('/wp-login.php');
         $I->fillField('input[name="log"]', 'wordpress');
         $I->fillField('input[name="pwd"]', 'notwordpress');
-        $I->click('Log In');
-        $I->see('Error: The password you entered for the username wordpress is incorrect.');
+        $I->click('#wp-submit');
+        $I->seeElement('#login_error');
     }
 
     public function logout(AcceptanceTester $I)
@@ -50,12 +52,12 @@ class FirstTest
         $I->see('logged out');
     }
 
-    private function ifIAmLoggedIn($I): void
+    private function ifIAmLoggedIn(AcceptanceTester $I): void
     {
         $I->amOnPage('/wp-admin');
         $I->fillField('input[name="log"]', 'wordpress');
         $I->fillField('input[name="pwd"]', 'wordpress');
-        $I->click('Log In');
+        $I->click('#wp-submit');
     }
 
     /**

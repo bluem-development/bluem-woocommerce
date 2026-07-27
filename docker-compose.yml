@@ -38,6 +38,7 @@ services:
     depends_on:
       - wordpress
     image: wordpress:cli-php8.4
+    user: "0:0"
     volumes:
       - ./docker/wordpress:/var/www/html
       - ./docker/plugins:/var/www/html/wp-content/plugins
