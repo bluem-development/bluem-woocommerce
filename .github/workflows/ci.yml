@@ -85,9 +85,15 @@ jobs:
         steps:
             - uses: actions/checkout@v7
 
-            - uses: php-actions/composer@v6
+            - name: Set up PHP 8.4
+              uses: shivammathur/setup-php@v2
               with:
-                  php_version: 8.4
+                  php-version: '8.4'
+                  tools: composer:v2
+                  coverage: none
+
+            - name: Install PHP dependencies
+              run: composer install --no-interaction --prefer-dist
 
             - name: Run Dockerized acceptance smoke tests
               run: make acceptance_smoke_test
@@ -97,9 +103,9 @@ jobs:
               run: |
                   set +e
                   mkdir -p /tmp/bluem-acceptance-diagnostics
-                  docker compose ps -a > /tmp/bluem-acceptance-diagnostics/compose-ps.txt
-                  docker compose logs --no-color > /tmp/bluem-acceptance-diagnostics/compose-logs.txt
-                  cp -R tests/_output /tmp/bluem-acceptance-diagnostics/codeception-output
+                  docker compose ps -a > /tmp/bluem-acceptance-diagnostics/compose-ps.txt || true
+                  docker compose logs --no-color > /tmp/bluem-acceptance-diagnostics/compose-logs.txt || true
+                  cp -R tests/_output /tmp/bluem-acceptance-diagnostics/codeception-output 2>/dev/null || true
 
             - name: Upload acceptance diagnostics
               if: ${{ failure() }}
