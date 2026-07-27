@@ -13,13 +13,16 @@ Implemented on the acceptance branch and wired into pull-request CI:
 - Codeception smoke coverage for the public page, login form, and Bluem admin page.
 - Failure artifacts containing Docker diagnostics and Codeception output when available.
 - Unit coverage for callback/webhook payment-status transitions.
+- Unit coverage for legacy WooCommerce gateway registration, preserving existing gateways and registering all five payment gateways.
+- A separate `settings` acceptance group that saves and reloads harmless Bluem settings.
+- A separate WooCommerce-backed `checkout` acceptance group that verifies all five gateway links appear in WooCommerce payment settings without calling Bluem.
+- A Chromium Playwright job that verifies the JavaScript-capable Bluem settings page renders after administrator login.
 
 Still planned:
 
 - Full HTTP callback/webhook endpoint tests with mocked Bluem responses and order lookup.
-- WooCommerce gateway registration and checkout rendering coverage.
-- Harmless settings persistence coverage.
-- Browser-level Playwright coverage for JavaScript-dependent admin behavior.
+- A real cart/order checkout submission test once a deterministic product and payment fixture are added.
+- Broader Playwright interaction coverage for tabs, settings changes, and checkout UI behavior.
 
 ## Docker preparation and translation test
 
@@ -102,16 +105,23 @@ Prefer WP-CLI for this setup. A one-off `wordpress:cli` container can run agains
 
 ### Checkout and gateway registration coverage
 
-Add a separate `checkout` group after the smoke setup is stable. It should activate WooCommerce and Bluem, load the WooCommerce payment gateways, and verify that these Bluem gateway IDs are registered:
+The separate `checkout` group activates a pinned WooCommerce version and Bluem, loads the WooCommerce payment gateways, and verifies that these Bluem gateway IDs are available in the WooCommerce payment settings page:
 
 - `bluem_payments_ideal`
 - `bluem_payments_paypal`
 - `bluem_payments_creditcard`
 - `bluem_payments_sofort`
 - `bluem_payments_cartebancaire`
-- `bluem_mandates`
+- `bluem_mandates` is exposed to Blocks and remains covered by the existing Blocks compatibility unit tests; it is not a legacy payment gateway link.
 
-This test should not call the Bluem API. Its purpose is to catch missing gateway includes, PHP load errors, constructor failures, and WooCommerce registration regressions.
+Run the acceptance layers independently:
+
+```bash
+make acceptance_settings_test
+make acceptance_checkout_test
+```
+
+The checkout test does not call the Bluem API. Its purpose is to catch missing gateway includes, PHP load errors, constructor failures, and WooCommerce registration regressions.
 
 Keep richer flows in separate groups:
 
@@ -130,8 +140,9 @@ reject missing, blank, or non-scalar transaction correlation data before an
 order lookup. Full HTTP endpoint tests with mocked Bluem response objects remain
 the next callback increment.
 
-The smoke, full acceptance, and translation targets all prepare the Docker site
-before running.
+The smoke, settings, checkout, full acceptance, and translation targets all
+prepare the Docker site before running. Checkout preparation is intentionally
+separate so the fast smoke job does not need to install WooCommerce.
 
 Keep the smoke target fast and boring. Add richer flows under separate groups, for example `settings`, `checkout`, or `callbacks`.
 
@@ -179,9 +190,12 @@ Suggested CI shape:
 
 This should stay in the existing CI flow at first, or as a clearly named separate job such as `acceptance-smoke`. A separate job is cleaner once the suite starts pulling Docker logs or takes noticeably longer than PHPUnit.
 
-## Playwright next steps
+## Playwright browser coverage
 
-Do not add Playwright until the Codeception smoke path is stable and deterministic. Playwright is the right next layer when the test needs real browser behavior, JavaScript, screenshots, or reliable UI interaction with modern admin pages.
+Playwright runs as a separate CI job after reusing the same deterministic
+WordPress setup as Codeception. It is the right layer when the test needs real
+browser behavior, JavaScript, screenshots, or reliable UI interaction with
+modern admin pages.
 
 Recommended first Playwright scope:
 
@@ -192,7 +206,7 @@ Recommended first Playwright scope:
 - save one harmless setting and verify it persists
 - capture screenshots on failure
 
-Suggested files for the next implementation prompt:
+Implemented files:
 
 ```text
 package.json
@@ -200,15 +214,16 @@ playwright.config.ts
 tests/playwright/bluem-admin.spec.ts
 ```
 
-Suggested Make targets:
+The CI job installs Chromium, runs `npm run test:e2e`, and uploads Playwright
+traces, screenshots, and reports when available. The browser layer does not
+install WordPress or prepare sample data.
+
+Equivalent local commands:
 
 ```make
-playwright_install:
-	npm install
-	npx playwright install --with-deps chromium
-
-acceptance_browser_test:
-	npx playwright test
+ npm install
+ npx playwright install chromium
+ npm run test:e2e
 ```
 
 Suggested Playwright defaults:
@@ -241,4 +256,4 @@ Once local setup is repeatable, mirror the broader acceptance flow in GitHub Act
 - run `make acceptance_smoke_test`
 - upload Codeception output and container logs on failure
 
-Add Playwright to CI only after the Codeception smoke suite is stable. Browser tests should run as a second job or a clearly separate step so simple PHP/site boot failures stay easy to diagnose.
+Browser tests run as a second job so simple PHP/site boot failures stay easy to diagnose.

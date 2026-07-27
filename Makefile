@@ -21,6 +21,9 @@ help:
 	@printf '\- make acceptance_test\n'
 	@printf '\- make acceptance_translation_test\n'
 	@printf '\- make acceptance_smoke_test\n'
+	@printf '\- make acceptance_settings_test\n'
+	@printf '\- make acceptance_checkout_test\n'
+	@printf '\- make acceptance_browser_test\n'
 	@printf '\- make integration_test\n'
 	@printf '\- make add_git_hooks\n'
 
@@ -88,6 +91,31 @@ acceptance_check_site:
 acceptance_smoke_test: acceptance_prepare
 	@printf 'Acceptance smoke tests:\n';
 	php vendor/bin/codecept run Acceptance --group smoke --steps
+
+.PHONY: acceptance_settings_test
+acceptance_settings_test: acceptance_prepare
+	@printf 'Settings-flow acceptance tests:\n';
+	php vendor/bin/codecept run Acceptance --group settings --steps
+
+.PHONY: acceptance_checkout_prepare
+acceptance_checkout_prepare: acceptance_prepare
+	@printf 'Installing and preparing WooCommerce for checkout tests:\n';
+	bash ./scripts/acceptance-prepare-woocommerce.sh
+
+.PHONY: acceptance_checkout_test
+acceptance_checkout_test: acceptance_checkout_prepare
+	@printf 'Gateway registration and checkout acceptance tests:\n';
+	php vendor/bin/codecept run Acceptance --group checkout --steps
+
+.PHONY: playwright_install
+playwright_install:
+	npm install --no-audit --no-fund
+	npx playwright install chromium
+
+.PHONY: acceptance_browser_test
+acceptance_browser_test: acceptance_prepare playwright_install
+	@printf 'Playwright browser tests:\n';
+	npm run test:e2e
 
 .PHONY: integration_test
 integration_test:
@@ -166,7 +194,7 @@ pre-deployment:
 	@cd $(BUILD_DIR) && composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction || { echo "$(RED)Composer install failed!$(NC)"; exit 1; }
 	@cd $(BUILD_DIR) && composer clear-cache
 	@echo "$(BLUE)Removing unnecessary files from build directory...$(NC)"
-	@cd $(BUILD_DIR) && rm -rf README.md AGENTS.md docs error-report.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml docker-compose.integration.yml codeception.yml Dockerfile loadenv.sh Makefile .php-cs-fixer.cache .php-cs-fixer.dist.php .phpunit.result.cache .travis.yml phpunit.xml psalm.xml .DS_STORE .svnignore .vscode loadenv.sh
+	@cd $(BUILD_DIR) && rm -rf README.md AGENTS.md docs error-report.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml docker-compose.integration.yml codeception.yml Dockerfile loadenv.sh Makefile package.json package-lock.json playwright.config.ts .php-cs-fixer.cache .php-cs-fixer.dist.php .phpunit.result.cache .travis.yml phpunit.xml psalm.xml .DS_STORE .svnignore .vscode loadenv.sh
 	@rm -rf $(BUILD_DIR)/vendor/bluem-development/bluem-php/examples $(BUILD_DIR)/vendor/bluem-development/bluem-php/tests $(BUILD_DIR)/vendor/bluem-development/bluem-php/.github
 	@rm -rf $(BUILD_DIR)/vendor/bluem-development/bluem-php/.githooks
 	@rm -f $(BUILD_DIR)/vendor/bluem-development/bluem-php/.env.example
