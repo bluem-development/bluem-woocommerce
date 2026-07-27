@@ -66,6 +66,7 @@ jobs:
 
     hpos-integration:
         runs-on: ubuntu-latest
+        name: HPOS integration (PHP 8.4)
         timeout-minutes: 20
 
         steps:
@@ -86,6 +87,7 @@ jobs:
 
     acceptance-smoke:
         runs-on: ubuntu-latest
+        name: Acceptance smoke (PHP 8.4)
         timeout-minutes: 15
 
         steps:
@@ -123,6 +125,7 @@ jobs:
 
     acceptance-settings:
         runs-on: ubuntu-latest
+        name: Acceptance settings (PHP 8.4)
         timeout-minutes: 15
 
         steps:
@@ -152,6 +155,7 @@ jobs:
 
     acceptance-checkout:
         runs-on: ubuntu-latest
+        name: Acceptance checkout (PHP 8.4)
         timeout-minutes: 20
 
         steps:
@@ -181,6 +185,7 @@ jobs:
 
     browser-playwright:
         runs-on: ubuntu-latest
+        name: Browser Playwright (PHP 8.4 setup)
         timeout-minutes: 20
 
         steps:
