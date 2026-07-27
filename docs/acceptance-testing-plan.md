@@ -103,9 +103,19 @@ before running.
 
 Keep the smoke target fast and boring. Add richer flows under separate groups, for example `settings`, `checkout`, or `callbacks`.
 
-## GitHub Actions preliminary step
+## GitHub Actions acceptance smoke job
 
-Before adding Playwright, add the Dockerized smoke suite to GitHub Actions. This should be a small CI change once `acceptance_prepare` works locally.
+The Dockerized smoke suite now runs in a dedicated `acceptance-smoke` GitHub
+Actions job on pushes and pull requests. It calls the same
+`make acceptance_smoke_test` target used locally, so the job prepares WordPress,
+activates the production package, and runs the Codeception smoke group without
+requiring Bluem credentials. The job has a bounded timeout and uploads
+Codeception output and Docker diagnostics when it fails.
+
+The acceptance tests use Codeception's Cest convention: acceptance classes must
+be stored in files named `*Cest.php`. A file named `*Test.php` is not discovered
+by the acceptance suite and can otherwise make a smoke command report success
+with zero executed tests.
 
 Do not make GitHub Actions responsible for discovering how the WordPress setup should work. First make the local Make targets deterministic, then call those same targets from CI.
 
@@ -113,9 +123,9 @@ Recommended implementation order:
 
 - implement `acceptance_prepare` locally
 - verify `make acceptance_prepare` followed by `make acceptance_smoke_test`
-- update `.github/workflows/ci.yml` to start Dockerized WordPress
-- run the same smoke target in CI
-- upload Codeception output and Docker logs when the smoke test fails
+- [x] update `.github/workflows/ci.yml` to run Dockerized WordPress
+- [x] run the same smoke target in CI
+- [x] upload Codeception output and Docker logs when the smoke test fails
 
 Suggested CI shape:
 

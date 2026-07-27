@@ -77,3 +77,34 @@ jobs:
             - name: Show Docker diagnostics on failure
               if: ${{ failure() }}
               run: docker ps -a
+
+    acceptance-smoke:
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: php-actions/composer@v6
+              with:
+                  php_version: 8.4
+
+            - name: Run Dockerized acceptance smoke tests
+              run: make acceptance_smoke_test
+
+            - name: Collect acceptance diagnostics
+              if: ${{ failure() }}
+              run: |
+                  set +e
+                  mkdir -p /tmp/bluem-acceptance-diagnostics
+                  docker compose ps -a > /tmp/bluem-acceptance-diagnostics/compose-ps.txt
+                  docker compose logs --no-color > /tmp/bluem-acceptance-diagnostics/compose-logs.txt
+                  cp -R tests/_output /tmp/bluem-acceptance-diagnostics/codeception-output
+
+            - name: Upload acceptance diagnostics
+              if: ${{ failure() }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: acceptance-smoke-diagnostics
+                  path: /tmp/bluem-acceptance-diagnostics
+                  if-no-files-found: warn

@@ -44,6 +44,8 @@ if [ "$installed" -ne 1 ]; then
     exit 1
 fi
 
+wpcli language core install en_US
+wpcli site switch-language en_US
 wpcli language core install nl_NL
 wpcli plugin activate bluem
 wpcli plugin is-active bluem
