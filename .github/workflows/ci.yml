@@ -1,8 +1,10 @@
 name: CI
 
 on:
-    push:
     pull_request:
+    push:
+        branches:
+            - master
 
 permissions:
     contents: read
@@ -14,6 +16,10 @@ concurrency:
 jobs:
     build-test:
         runs-on: ubuntu-latest
+        name: Build and unit tests (PHP ${{ matrix.php }})
+        strategy:
+            matrix:
+                php: ['8.4', '8.5']
 
         steps:
             - uses: actions/checkout@v7
@@ -48,18 +54,19 @@ jobs:
 
             - uses: php-actions/composer@v6
               with:
-                  php_version: 8.4
+                  php_version: ${{ matrix.php }}
 
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v4
               with:
-                  php_version: 8.4
+                  php_version: ${{ matrix.php }}
                   bootstrap: vendor/autoload.php
                   configuration: ./.github/workflows/phpunit.xml
             - run: echo "🍏 This job's status is ${{ job.status }}."
 
     hpos-integration:
         runs-on: ubuntu-latest
+        name: HPOS integration (PHP 8.4)
         timeout-minutes: 20
 
         steps:
@@ -80,6 +87,7 @@ jobs:
 
     acceptance-smoke:
         runs-on: ubuntu-latest
+        name: Acceptance smoke (PHP 8.4)
         timeout-minutes: 15
 
         steps:
@@ -113,4 +121,95 @@ jobs:
               with:
                   name: acceptance-smoke-diagnostics
                   path: /tmp/bluem-acceptance-diagnostics
+                  if-no-files-found: warn
+
+    acceptance-settings:
+        runs-on: ubuntu-latest
+        name: Acceptance settings (PHP 8.4)
+        timeout-minutes: 15
+
+        steps:
+            - uses: actions/checkout@v7
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  tools: composer:v2
+                  coverage: none
+            - run: composer install --no-interaction --prefer-dist
+            - name: Run settings-flow acceptance tests
+              run: make acceptance_settings_test
+            - name: Collect settings diagnostics
+              if: ${{ failure() }}
+              run: |
+                  set +e
+                  mkdir -p /tmp/bluem-acceptance-settings-diagnostics
+                  docker compose ps -a > /tmp/bluem-acceptance-settings-diagnostics/compose-ps.txt || true
+                  docker compose logs --no-color > /tmp/bluem-acceptance-settings-diagnostics/compose-logs.txt || true
+                  cp -R tests/_output /tmp/bluem-acceptance-settings-diagnostics/codeception-output 2>/dev/null || true
+            - uses: actions/upload-artifact@v4
+              if: ${{ failure() }}
+              with:
+                  name: acceptance-settings-diagnostics
+                  path: /tmp/bluem-acceptance-settings-diagnostics
+                  if-no-files-found: warn
+
+    acceptance-checkout:
+        runs-on: ubuntu-latest
+        name: Acceptance checkout (PHP 8.4)
+        timeout-minutes: 20
+
+        steps:
+            - uses: actions/checkout@v7
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  tools: composer:v2
+                  coverage: none
+            - run: composer install --no-interaction --prefer-dist
+            - name: Run gateway and checkout acceptance tests
+              run: make acceptance_checkout_test
+            - name: Collect checkout diagnostics
+              if: ${{ failure() }}
+              run: |
+                  set +e
+                  mkdir -p /tmp/bluem-acceptance-checkout-diagnostics
+                  docker compose ps -a > /tmp/bluem-acceptance-checkout-diagnostics/compose-ps.txt || true
+                  docker compose logs --no-color > /tmp/bluem-acceptance-checkout-diagnostics/compose-logs.txt || true
+                  cp -R tests/_output /tmp/bluem-acceptance-checkout-diagnostics/codeception-output 2>/dev/null || true
+            - uses: actions/upload-artifact@v4
+              if: ${{ failure() }}
+              with:
+                  name: acceptance-checkout-diagnostics
+                  path: /tmp/bluem-acceptance-checkout-diagnostics
+                  if-no-files-found: warn
+
+    browser-playwright:
+        runs-on: ubuntu-latest
+        name: Browser Playwright (PHP 8.4 setup)
+        timeout-minutes: 20
+
+        steps:
+            - uses: actions/checkout@v7
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  tools: composer:v2
+                  coverage: none
+            - run: composer install --no-interaction --prefer-dist
+            - name: Prepare WordPress site
+              run: make acceptance_prepare
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+            - run: npm install --no-audit --no-fund
+            - run: npx playwright install --with-deps chromium
+            - name: Run Playwright browser tests
+              run: npm run test:e2e
+            - uses: actions/upload-artifact@v4
+              if: ${{ failure() }}
+              with:
+                  name: playwright-report
+                  path: |
+                      playwright-report
+                      test-results
                   if-no-files-found: warn

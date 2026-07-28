@@ -116,6 +116,49 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
     }
 
     /**
+     * Check that a callback or webhook has enough correlation data to locate
+     * exactly one payment order.
+     */
+    public static function hasValidPaymentCorrelation($transactionID, $entranceCode): bool
+    {
+        return is_scalar($transactionID)
+            && is_scalar($entranceCode)
+            && trim((string) $transactionID) !== ''
+            && trim((string) $entranceCode) !== '';
+    }
+
+    /**
+     * Apply a resolved payment transition to a WooCommerce order.
+     *
+     * @return string|null The new order status, or null when no transition is
+     *                     allowed for the current order state.
+     */
+    public static function applyPaymentStatusTransition($order, string $paymentStatus, string $context = 'callback'): ?string
+    {
+        $targetOrderStatus = self::resolvePaymentStatusTransition($paymentStatus, $order->get_status());
+        if ($targetOrderStatus === null) {
+            return null;
+        }
+
+        $message = match ($context . ':' . $paymentStatus) {
+            'callback:Success' => esc_html__('Payment has been received (callback)', 'bluem'),
+            'callback:Failure' => esc_html__('Payment has expired', 'bluem'),
+            'callback:Cancelled' => esc_html__('Payment has been canceled', 'bluem'),
+            'callback:Expired' => esc_html__('Payment has expired', 'bluem'),
+            'webhook:Success' => esc_html__('Payment succeeded and was approved via webhook', 'bluem'),
+            'webhook:Cancelled' => esc_html__('Payment was canceled via webhook', 'bluem'),
+            'webhook:Expired' => esc_html__('Payment expired via webhook', 'bluem'),
+            default => $context === 'webhook'
+                ? esc_html__('Payment failed: error or unknown status via webhook', 'bluem')
+                : esc_html__('Payment failed: error or unknown status', 'bluem'),
+        };
+
+        $order->update_status($targetOrderStatus, $message);
+
+        return $targetOrderStatus;
+    }
+
+    /**
      * Configuring a specific brandID for payments
      */
     protected function methodSpecificConfigurationMixin($config)
@@ -355,6 +398,12 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                     $transactionID = (string) $webhook->getTransactionID();
                 }
 
+                if (! self::hasValidPaymentCorrelation($transactionID, $entranceCode)) {
+                    http_response_code(400);
+                    echo esc_html__('Error: Missing payment correlation data', 'bluem');
+                    exit;
+                }
+
                 $order = $this->getOrder($transactionID);
                 if (is_null($order)) {
                     http_response_code(404);
@@ -363,7 +412,6 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                 }
                 $order_status = $order->get_status();
                 $targetOrderStatus = self::resolvePaymentStatusTransition($webhook_status, $order_status);
-
                 $user_id = $order->get_user_id();
 
                 $user_meta = get_user_meta($user_id);
@@ -379,15 +427,10 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                             )
                         );
                     } elseif ($targetOrderStatus === BLUEM_WC_STATUS_PROCESSING) {
-                        $order->update_status($targetOrderStatus, esc_html__('Payment succeeded and was approved via webhook', 'bluem'));
+                        self::applyPaymentStatusTransition($order, $webhook_status, 'webhook');
                     }
                 } elseif ($targetOrderStatus !== null) {
-                    $statusMessage = match ($webhook_status) {
-                        'Cancelled' => esc_html__('Payment was canceled via webhook', 'bluem'),
-                        'Expired' => esc_html__('Payment expired via webhook', 'bluem'),
-                        default => esc_html__('Payment failed: error or unknown status via webhook', 'bluem'),
-                    };
-                    $order->update_status($targetOrderStatus, $statusMessage);
+                    self::applyPaymentStatusTransition($order, $webhook_status, 'webhook');
                 }
                 http_response_code(200);
                 echo 'OK';
@@ -487,7 +530,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $user_id = $order->get_user_id();
 
         $transactionID = $order->get_meta('bluem_transactionid', true);
-        if (empty($transactionID)) {
+        if (! self::hasValidPaymentCorrelation($transactionID, $entranceCode)) {
             $errormessage = sprintf(
                 /* translators: %s: entranceCode */
                 esc_html__("No transaction ID found. Please contact the webshop and mention the code %s with your details.", 'bluem'),
@@ -564,7 +607,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         if ($statusCode === self::PAYMENT_STATUS_SUCCESS) {
             // Only update the payment status if it was not already 'processing'
             if ($targetOrderStatus === BLUEM_WC_STATUS_PROCESSING) {
-                $order->update_status($targetOrderStatus, esc_html__('Payment has been received (callback)', 'bluem'));
+                self::applyPaymentStatusTransition($order, $statusCode);
             } else {
                 $order->add_order_note(sprintf(
                     /* translators: %1$s: actual status %2$s: Entrance Code */
@@ -586,7 +629,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             $this->thank_you_page($order->get_id());
         } elseif ($statusCode === self::PAYMENT_STATUS_FAILURE) {
             if ($targetOrderStatus === BLUEM_WC_STATUS_FAILED) {
-                $order->update_status($targetOrderStatus, esc_html__('Payment has expired', 'bluem'));
+                self::applyPaymentStatusTransition($order, $statusCode);
             }
 
             $order->add_order_note(esc_html__("Payment process not completed", 'bluem'));
@@ -611,7 +654,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             );
             exit;
         } elseif ($statusCode === "Cancelled") {
-            $order->update_status($targetOrderStatus, esc_html__('Payment has been canceled', 'bluem'));
+            self::applyPaymentStatusTransition($order, $statusCode);
 
 
             if ($request_from_db) {
@@ -629,7 +672,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             // is simpelweg SITE/wc-api/bluem_callback?transactionID=$transactionID
             exit;
         } elseif ($statusCode === "Expired") {
-            $order->update_status($targetOrderStatus, esc_html__('Payment has expired', 'bluem'));
+            self::applyPaymentStatusTransition($order, $statusCode);
             if ($request_from_db) {
                 bluem_transaction_notification_email($request_from_db->id);
             }
@@ -637,7 +680,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             bluem_dialogs_render_prompt(esc_html__("Error: the payment or payment request has expired", 'bluem'));
             exit;
         } else {
-            $order->update_status($targetOrderStatus, esc_html__('Payment failed: error or unknown status', 'bluem'));
+            self::applyPaymentStatusTransition($order, $statusCode);
             bluem_error_report_email(
                 [
                     'service'  => 'payments',
