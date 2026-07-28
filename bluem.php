@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce
- * Version: 1.5.3
+ * Version: 1.5.4
  * Plugin URI: https://bluem.nl/en/
  * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and much, much more
  * Author: Bluem Payment Services
@@ -43,11 +43,16 @@ global $bluem_db_version;
 $bluem_db_version = 1.5;
 
 const BLUEM_WOOCOMMERCE_MANUAL_URL    = "https://codexology.notion.site/Bluem-voor-WordPress-en-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e";
+const BLUEM_PLUGIN_VERSION = '1.5.4';
 
 require __DIR__ . '/vendor/autoload.php';
 
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
+use Bluem\Wordpress\Observability\BluemSentry;
+
+// Initialize before loading the feature modules so uncaught Bluem errors can be captured.
+BluemSentry::initialize();
 
 /**
  * Load the plugin translations before plugin initialization callbacks run.
@@ -141,9 +146,6 @@ function bluem_register_blocks_payment_method_types($payment_method_registry)
         );
     }
 }
-
-// Observability
-//require_once __DIR__ . '/Observability/SentryLogger.php';
 
 const BLUEM_TRANSACTION_REQUEST_TYPES = [
         'mandates',
@@ -1755,6 +1757,9 @@ function bluem_error_report_email( $data = [] ): bool {
     $data->error_report_id = $error_report_id;
     $data->environment     = $data->environment ?? bluem_get_support_report_environment();
     $data->trace           = $data->trace ?? bluem_get_support_report_trace();
+
+    // Send only the observability class's allow-listed fields to Sentry.
+    BluemSentry::captureReport( $data );
 
     $settings = get_option( 'bluem_woocommerce_options' );
 
