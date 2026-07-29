@@ -51,6 +51,7 @@ use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
+use Bluem\Wordpress\Settings\BluemOptionLookup;
 
 // Initialize before loading the feature modules so uncaught Bluem errors can be captured.
 BluemSentry::initialize();
@@ -1423,13 +1424,7 @@ function bluem_woocommerce_show_general_profile_fields() {
 
 // Settings functions
 function bluem_woocommerce_get_option( $key ) {
-    $options = bluem_woocommerce_get_core_options();
-
-    if ( array_key_exists( $key, $options ) ) {
-        return $options[ $key ];
-    }
-
-    return false;
+    return (new BluemOptionLookup(bluem_woocommerce_get_core_options()))->get($key);
 }
 
 function bluem_woocommerce_settings_render_environment() {
