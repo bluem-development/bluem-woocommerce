@@ -50,6 +50,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
+use Bluem\Wordpress\Presentation\BluemRequestGrouper;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
 
 /**
@@ -1149,17 +1150,10 @@ function bluem_get_requests_per_type( $filters = [] ): array {
  * @return array
  */
 function bluem_sort_requests_per_type( $_requests ): array {
-    $requests = [];
-    foreach ( bluem_filter_request_types_enabled( BLUEM_TRANSACTION_REQUEST_TYPES ) as $type ) {
-        $requests[ $type ] = [];
-    }
-
-    foreach ( $_requests as $_r ) {
-        $requests[ ( $_r->type === 'payments' ? 'ideal' : $_r->type ) ][] = $_r;
-    }
-
-
-    return $requests;
+    return (new BluemRequestGrouper())->group(
+        $_requests,
+        bluem_filter_request_types_enabled( BLUEM_TRANSACTION_REQUEST_TYPES )
+    );
 }
 
 // @todo Deprecate this
