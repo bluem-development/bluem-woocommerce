@@ -51,6 +51,7 @@ use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
 use Bluem\Wordpress\Presentation\BluemRequestGrouper;
+use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
 
 /**
@@ -717,15 +718,9 @@ function bluem_requests_view(): void
 }
 
 function bluem_filter_request_types_enabled( array $types ): array {
-    return array_filter( $types, static function ( $type ) {
-        if ( $type === 'identity' ) {
-            $module_id = 'idin';
-        } else {
-            $module_id = $type;
-        }
-
-        return bluem_module_enabled( $module_id );
-    } );
+    return (new BluemEnabledRequestTypeFilter(
+        static fn($moduleId): bool => bluem_module_enabled($moduleId)
+    ))->filter($types);
 }
 
 
