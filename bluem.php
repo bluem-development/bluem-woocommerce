@@ -52,6 +52,7 @@ use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
 use Bluem\Wordpress\Presentation\BluemRequestGrouper;
 use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
+use Bluem\Wordpress\Support\BluemSupportReportEnvironment;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
 
 /**
@@ -560,18 +561,22 @@ function bluem_get_support_report_environment(): array {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
     }
 
-    $plugin_data = get_plugin_data( plugin_dir_path( __FILE__ ) . 'bluem.php' );
+    return (new BluemSupportReportEnvironment(
+        static function (): string {
+            $pluginData = get_plugin_data(plugin_dir_path(__FILE__) . 'bluem.php');
 
-    return [
-            'plugin_version'    => $plugin_data['Version'] ?? 'unknown',
-            'bluem_php_version' => bluem_get_composer_dependency_version( 'bluem-development/bluem-php' ) ?: 'unknown',
-            'php_version'       => PHP_VERSION,
-            'wordpress_version' => get_bloginfo( 'version' ),
-            'woocommerce_version' => class_exists( 'WooCommerce' ) && function_exists( 'WC' )
-                    ? WC()->version
-                    : 'not installed',
-            'site_url'          => home_url(),
-    ];
+            return $pluginData['Version'] ?? 'unknown';
+        },
+        static fn(): string => bluem_get_composer_dependency_version(
+            'bluem-development/bluem-php'
+        ) ?: 'unknown',
+        static fn(): string => PHP_VERSION,
+        static fn(): string => get_bloginfo('version'),
+        static fn(): string => class_exists('WooCommerce') && function_exists('WC')
+            ? WC()->version
+            : 'not installed',
+        static fn(): string => home_url()
+    ))->collect();
 }
 
 /**
