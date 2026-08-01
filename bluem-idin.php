@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) {
 use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Bluem\BluemPHP\Helpers\BluemIdentityCategoryList;
+use Bluem\Wordpress\Identity\BluemAgeCalculator;
 
 /**
  * Check if WooCommerce is activated
@@ -2248,10 +2249,7 @@ function bluem_checkout_check_idin_validated_filter(): bool
 
 function bluem_idin_get_age_based_on_date($birthday_string): int
 {
-    $birthdate_seconds = strtotime($birthday_string);
-    $now_seconds = time();
-
-    return (int) floor(($now_seconds - $birthdate_seconds) / 60 / 60 / 24 / 365);
+    return (new BluemAgeCalculator())->calculate($birthday_string);
 }
 
 function bluem_idin_get_verification_scenario(): int
