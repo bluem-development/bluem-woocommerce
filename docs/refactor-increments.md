@@ -21,6 +21,3 @@ functions as compatibility adapters during the migration.
 15. [ ] Extract mandate request and callback orchestration into a mandate workflow service.
 16. [ ] Extract Contact Form 7 and Gravity Forms flows into integration adapters.
 17. [ ] Move admin request rendering and navigation behind presentation services.
-
-The current increment is support-report environment collection, with WordPress
-and WooCommerce dependencies kept behind injectable readers.
