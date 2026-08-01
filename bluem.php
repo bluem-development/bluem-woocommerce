@@ -50,6 +50,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
+use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
 
 // Initialize before loading the feature modules so uncaught Bluem errors can be captured.
 BluemSentry::initialize();
@@ -479,27 +480,11 @@ add_action( 'admin_menu', 'bluem_register_menu', 9 );
  * Get composer dependency version.
  */
 function bluem_get_composer_dependency_version( $dependency_name ) {
-    // Path to the composer.lock file
-    $composer_lock_path = plugin_dir_path( __FILE__ ) . 'composer.lock';
+    $version = (new BluemComposerDependencyVersion(
+        plugin_dir_path( __FILE__ ) . 'composer.lock'
+    ))->getVersion((string) $dependency_name);
 
-    // Read and decode the contents of the composer.lock file
-    try {
-        $composer_lock = json_decode( file_get_contents( $composer_lock_path ), true, 512, JSON_THROW_ON_ERROR );
-    } catch ( JsonException $e ) {
-        return false;
-    }
-
-    // Find the package entry by the dependency name
-    $package_entry = array_filter( $composer_lock['packages'], function ( $package ) use ( $dependency_name ) {
-        return $package['name'] === $dependency_name;
-    } );
-
-    if ( empty( $package_entry ) ) {
-        return false;
-    }
-
-    // Retrieve the locked version of the specified dependency.
-    return reset( $package_entry )['version'];
+    return $version ?? false;
 }
 
 /**

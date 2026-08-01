@@ -4,6 +4,7 @@ if (! defined('ABSPATH')) {
 }
 
 use Bluem\Wordpress\Presentation\BluemRequestTypeLabeler;
+use Bluem\Wordpress\Presentation\BluemDateFormatter;
 // @todo create a language file and consistently localize everything
 
 function bluem_get_idin_logo_html(): string
@@ -743,13 +744,5 @@ function bluem_render_nav_header($active_page = '')
  */
 function bluem_get_formattedDate(string $requestTimestamp, string $format = 'd-m-Y H:i:s'): string
 {
-    try {
-        $dateTime = new DateTime($requestTimestamp);
-    } catch (Exception $e) {
-        return '';
-    }
-
-    $dateTime->setTimezone(new DateTimeZone('Europe/Amsterdam'));
-
-    return $dateTime->format($format);
+    return (new BluemDateFormatter())->format($requestTimestamp, $format);
 }
