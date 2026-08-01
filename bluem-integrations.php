@@ -6,6 +6,7 @@ if (! defined('ABSPATH')) {
 
 use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
+use Bluem\Wordpress\Settings\BluemIntegrationSettings;
 
 function bluem_woocommerce_integrations_settings_section()
 {
@@ -14,12 +15,7 @@ function bluem_woocommerce_integrations_settings_section()
 
 function bluem_woocommerce_get_integration_option($key)
 {
-    $options = bluem_woocommerce_get_integrations_options();
-    if (array_key_exists($key, $options)) {
-        return $options[$key];
-    }
-
-    return false;
+    return (new BluemIntegrationSettings(bluem_woocommerce_get_integrations_options()))->get($key);
 }
 
 function bluem_woocommerce_get_integrations_options()
