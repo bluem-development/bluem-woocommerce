@@ -50,6 +50,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
+use Bluem\Wordpress\Support\BluemPluginStatus;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
 
 /**
@@ -184,13 +185,7 @@ const BLUEM_TRANSACTION_REQUEST_TYPES = [
  */
 if ( ! function_exists( 'bluem_is_woocommerce_activated' ) ) {
     function bluem_is_woocommerce_activated(): bool {
-        $active_plugins = get_option( 'active_plugins' );
-
-        if ( in_array( 'woocommerce/woocommerce.php', $active_plugins ) ) {
-            return true;
-        }
-
-        return false;
+        return (new BluemPluginStatus())->isWooCommerceActive(get_option('active_plugins'));
     }
 }
 
@@ -199,13 +194,7 @@ if ( ! function_exists( 'bluem_is_woocommerce_activated' ) ) {
  */
 if ( ! function_exists( 'bluem_is_contactform7_activated' ) ) {
     function bluem_is_contactform7_activated(): bool {
-        $active_plugins = get_option( 'active_plugins' );
-
-        if ( in_array( 'contact-form-7/wp-contact-form-7.php', $active_plugins ) ) {
-            return true;
-        }
-
-        return false;
+        return (new BluemPluginStatus())->isContactForm7Active(get_option('active_plugins'));
     }
 }
 
@@ -220,10 +209,7 @@ if ( function_exists( 'bluem_is_contactform7_activated' ) ) {
  */
 if ( ! function_exists( 'bluem_is_gravityforms_activated' ) ) {
     function bluem_is_gravityforms_activated(): bool {
-        $active_plugins = get_option( 'active_plugins' );
-
-        return in_array( 'gravityforms', $active_plugins, true )
-               || in_array( 'gravityforms/gravityforms.php', $active_plugins, true );
+        return (new BluemPluginStatus())->isGravityFormsActive(get_option('active_plugins'));
     }
 }
 
@@ -232,13 +218,7 @@ if ( ! function_exists( 'bluem_is_gravityforms_activated' ) ) {
  */
 if ( ! function_exists( 'bluem_is_permalinks_enabled' ) ) {
     function bluem_is_permalinks_enabled(): bool {
-        $structure = get_option( 'permalink_structure' );
-
-        if ( ! empty( $structure ) ) {
-            return true;
-        }
-
-        return false;
+        return (new BluemPluginStatus())->hasPermalinks(get_option('permalink_structure'));
     }
 }
 
@@ -2418,7 +2398,9 @@ function bluem_admin_status() {
 }
 
 function bluem_woocommerce_is_woocommerce_active(): bool {
-    return in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
+    return (new BluemPluginStatus())->isWooCommerceActive(
+        apply_filters('active_plugins', get_option('active_plugins'))
+    );
 }
 
 
