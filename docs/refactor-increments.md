@@ -12,15 +12,15 @@ functions as compatibility adapters during the migration.
 6. [x] Extract Composer dependency version lookup into a testable support service.
 7. [ ] Extract support-report environment collection behind injectable WordPress and WooCommerce readers.
 8. [ ] Extract support-report trace normalization into a pure trace formatter.
-9. [ ] Extract core plugin option definitions and option lookup into a settings object.
-10. [ ] Extract payment, mandate, and iDIN settings access behind feature-specific settings objects.
-11. [ ] Extract Bluem request persistence from `bluem-db.php` into a request repository.
-12. [ ] Extract request logging and link persistence from `bluem-db.php` into focused repositories.
-13. [ ] Extract payment callback status resolution and order-transition orchestration.
-14. [ ] Extract iDIN validation and result handling into an identity workflow service.
-15. [ ] Extract mandate request and callback orchestration into a mandate workflow service.
-16. [ ] Extract Contact Form 7 and Gravity Forms flows into integration adapters.
-17. [ ] Move admin request rendering and navigation behind presentation services.
+9. [x] Extract core plugin option definitions and option lookup into a settings object.
+10. [x] Extract payment option lookup into a feature-specific settings object.
+11. [ ] Extract mandate and iDIN settings access behind feature-specific settings objects.
+12. [ ] Extract Bluem request persistence from `bluem-db.php` into a request repository.
+13. [ ] Extract request logging and link persistence from `bluem-db.php` into focused repositories.
+14. [ ] Extract payment callback status resolution and order-transition orchestration.
+15. [ ] Extract iDIN validation and result handling into an identity workflow service.
+16. [ ] Extract mandate request and callback orchestration into a mandate workflow service.
+17. [ ] Extract Contact Form 7 and Gravity Forms flows into integration adapters.
+18. [ ] Move admin request rendering and navigation behind presentation services.
 
-The next increment is support-report environment collection, with WordPress and
-WooCommerce dependencies kept behind injectable readers.
+The next increment is mandate and iDIN settings access.
