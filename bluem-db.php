@@ -3,6 +3,8 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
+use Bluem\Wordpress\Requests\BluemRequestFields;
 register_activation_hook(__FILE__, 'bluem_db_create_requests_table');
 // no need for a deactivation hook yet.
 
@@ -449,19 +451,7 @@ function bluem_db_validated_request($request): bool
  */
 function bluem_db_get_request_fields(): array
 {
-    return [
-        'id',
-        'entrance_code',
-        'transaction_id',
-        'transaction_url',
-        'user_id',
-        'timestamp',
-        'description',
-        'type',
-        'debtor_reference',
-        'order_id',
-        'payload',
-    ];
+    return (new BluemRequestFields())->all();
 }
 
 /**
