@@ -51,9 +51,9 @@ test('administrator can inspect the fixture order and Bluem transaction', async 
 
   await page.goto(`/wp-admin/admin.php?page=wc-orders&action=edit&id=${orderId}`);
   await expect(page.locator('body')).toContainText('Bluem request(s)');
-  await expect(page.locator('body')).toContainText('ACCEPTANCE-TRANSACTION-1');
+  await expect(page.locator('body')).toContainText('ACCEPTANCETX1');
 
   await page.goto(`/wp-admin/admin.php?page=bluem-transactions&request_id=${requestId}`);
-  await expect(page.locator('body')).toContainText('ACCEPTANCE-TRANSACTION-1');
+  await expect(page.locator('body')).toContainText('ACCEPTANCETX1');
   await expect(page.locator('body')).toContainText('Bluem acceptance fixture payment');
 });

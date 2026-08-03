@@ -13,9 +13,9 @@ if (!str_contains($contentType, 'type=')) {
 
 $transactionType = strtoupper((string) preg_replace('/.*type=([^; ]+).*/', '$1', $contentType));
 $isStatusRequest = $transactionType === 'PSX';
-$transactionId = 'ACCEPTANCE-TRANSACTION-1';
-$entranceCode = 'ACCEPTANCE-ENTRANCE-1';
-$debtorReference = 'ACCEPTANCE-ORDER-1';
+$transactionId = 'ACCEPTANCETX1';
+$entranceCode = 'ACCEPTANCEENTRANCE1';
+$debtorReference = 'ACCEPTANCEORDER1';
 
 header('Content-Type: application/xml; charset=UTF-8');
 

@@ -66,7 +66,7 @@ function bluem_woocommerce_create_client(object $config): Bluem {
         $transport = new \Bluem\Wordpress\Testing\BluemAcceptanceHttpTransport($mockEndpoint);
     }
 
-    if ($transport instanceof HttpTransportInterface) {
+    if ($transport instanceof \Bluem\BluemPHP\Transport\HttpTransportInterface) {
         return new Bluem($config, $transport);
     }
 
