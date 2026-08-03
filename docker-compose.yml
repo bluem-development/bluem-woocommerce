@@ -34,6 +34,7 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
+      BLUEM_ACCEPTANCE_MOCK_URL: ${BLUEM_ACCEPTANCE_MOCK_URL:-}
   wpcli:
     depends_on:
       - wordpress
@@ -48,3 +49,9 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
+      BLUEM_ACCEPTANCE_MOCK_URL: ${BLUEM_ACCEPTANCE_MOCK_URL:-}
+  mock-bluem:
+    image: php:8.4-cli
+    volumes:
+      - ./docker/mock-bluem:/var/www/mock:ro
+    command: php -S 0.0.0.0:8080 -t /var/www/mock

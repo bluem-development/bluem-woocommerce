@@ -24,6 +24,57 @@ Still planned:
 - A real cart/order checkout submission test once a deterministic product and payment fixture are added.
 - Broader Playwright interaction coverage for tabs, settings changes, and checkout UI behavior.
 
+## Broad isolated end-to-end flow
+
+Run the complete local regression flow with:
+
+```bash
+make acceptance_e2e_test
+```
+
+This target builds and copies the production-shaped plugin package, prepares
+WordPress and WooCommerce, creates a deterministic product/order/request
+fixture, runs the Codeception HTTP acceptance suite, follows a mocked Bluem
+payment creation and callback flow, and runs the Playwright admin checks.
+
+The flow covers:
+
+- opening the public, login, Bluem, WooCommerce, order, and transaction pages;
+- deactivating and reactivating Bluem through the WordPress plugin screen;
+- saving Bluem settings and a WooCommerce iDEAL gateway setting;
+- activating WooCommerce as the Bluem peer plugin and verifying all gateways;
+- rendering the Bluem request metabox on a fixture order;
+- opening a transaction list/detail view;
+- creating a payment through the real Bluem gateway code and handling a
+  successful callback over HTTP.
+
+The `mock-bluem` Compose service returns scoped XML fixtures based on the
+Bluem transaction content type. The plugin selects its injectable HTTP
+transport only when `BLUEM_ACCEPTANCE_MOCK_URL` is set, so the acceptance flow
+never contacts a Bluem host and normal local/production execution remains on
+the standard cURL transport.
+
+## Broad isolated end-to-end flow
+
+Run the full local regression flow with:
+
+```bash
+make acceptance_e2e_test
+```
+
+This target builds the current plugin package, starts WordPress, WooCommerce,
+MySQL, and a local Bluem mock service, then runs the existing Codeception suite,
+the mocked payment request/status flow, and the Playwright browser suite. The
+mock transport is selected only when `BLUEM_ACCEPTANCE_MOCK_URL` is set, so the
+normal plugin path remains unchanged and no Bluem hostname is contacted.
+
+The seeded fixture includes a product, pending order, linked Bluem payment
+request, and iDEAL gateway settings. The broad flow covers plugin deactivate /
+reactivate, admin and settings pages, WooCommerce activation and gateway
+registration, settings persistence, the order Bluem request metabox, the
+transaction detail page, payment request creation, mocked status retrieval,
+request persistence, and the resulting order transition to processing.
+
 ## Docker preparation and translation test
 
 The Docker Compose setup includes a WP-CLI service. The preparation target
