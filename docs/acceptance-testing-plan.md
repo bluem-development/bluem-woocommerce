@@ -53,6 +53,13 @@ The flow also exercises a mocked `Pending` callback and verifies that it keeps
 the order pending while persisting the in-progress request status. The browser
 transaction test opens the detail page and verifies the persisted transaction.
 
+The expanded flow also enables the mandate and iDIN modules for a separate
+non-checkout pass. It creates an eMandate through the WooCommerce mandate
+gateway, calls the mocked `SRX` status callback, and verifies the request row
+and order transition. It renders the `[bluem_identificatieformulier]` shortcode,
+creates an iDIN request through the shortcode entry point, calls the mocked
+`ISX` callback, and verifies the identity request reaches `Success`.
+
 The browser lifecycle test also completes the local Bluem activation form
 after reactivation because the plugin intentionally resets its setup guard on
 activation. The passing local run produced 8 Codeception tests with 18

@@ -30,6 +30,26 @@ Follow-up:
 
 Relevant code: `bluem.php`, `bluem_update_request_by_id()`.
 
+## iDIN shortcode callback URL relies on canonical slash redirect
+
+Status: observed during isolated testing; assess separately.
+
+The iDIN shortcode entry point generates a callback URL without a trailing
+slash. In the Docker WordPress environment, the corresponding rewrite route
+responds with a canonical 301 before the callback handler runs. The acceptance
+flow uses the canonical slash form so it tests the handler itself.
+
+Follow-up:
+
+- Confirm that Bluem follows the redirect for all iDIN callback flows.
+- Consider generating the canonical URL directly with `user_trailingslashit()`
+  or an equivalent WordPress URL helper.
+- Add a regression test for the externally generated callback URL if the
+  redirect is not guaranteed by the provider.
+
+Relevant code: `bluem_idin_execute()` and
+`bluem_get_idin_shortcode_callback_url()`.
+
 ## Plugin reactivation resets configuration state
 
 Status: observed in the Docker browser flow; intentionality is unclear.
