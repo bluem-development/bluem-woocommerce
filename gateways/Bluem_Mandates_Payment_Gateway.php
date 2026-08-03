@@ -382,7 +382,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         }
 
         try {
-            $this->bluem = new Bluem($this->bluem_config);
+            $this->bluem = bluem_woocommerce_create_client($this->bluem_config);
         } catch (Exception $e) {
             return [
                 'exception' => $e->getMessage(),
