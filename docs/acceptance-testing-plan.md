@@ -23,6 +23,10 @@ deterministic order/request fixtures, and the main Playwright admin
 interactions. Future extensions can add additional payment methods, webhook
 variants, and cart-level checkout submission scenarios.
 
+Potential plugin/library defects found while extending this flow are tracked
+separately in [docs/known-issues.md](known-issues.md), rather than being
+silently encoded as test setup behavior.
+
 
 ## Broad isolated end-to-end flow
 
@@ -44,6 +48,10 @@ reactivate, admin and settings pages, WooCommerce activation and gateway
 registration, settings persistence, the order Bluem request metabox, the
 transaction detail page, payment request creation, mocked status retrieval,
 request persistence, and the resulting order transition to processing.
+
+The flow also exercises a mocked `Pending` callback and verifies that it keeps
+the order pending while persisting the in-progress request status. The browser
+transaction test opens the detail page and verifies the persisted transaction.
 
 The browser lifecycle test also completes the local Bluem activation form
 after reactivation because the plugin intentionally resets its setup guard on
