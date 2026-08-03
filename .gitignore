@@ -23,6 +23,9 @@ docker
 /tests/Support/_generated/UnitTesterActions.php
 /.php-cs-fixer.cache
 /tests/_output/
+/test-results/
+/playwright-report/
+/blob-report/
 build
 tools
 tools/*
