@@ -23,6 +23,7 @@ help:
 	@printf '\- make acceptance_smoke_test\n'
 	@printf '\- make acceptance_settings_test\n'
 	@printf '\- make acceptance_checkout_test\n'
+	@printf '\- make acceptance_e2e_test\n'
 	@printf '\- make acceptance_browser_test\n'
 	@printf '\- make integration_test\n'
 	@printf '\- make add_git_hooks\n'
@@ -67,7 +68,7 @@ acceptance_test: acceptance_prepare
 .PHONY: acceptance_prepare
 acceptance_prepare: copy-to-docker
 	@printf 'Starting Docker WordPress test site:\n';
-	docker compose up -d db wordpress
+	docker compose up -d db wordpress mock-bluem
 	WP_ACCEPTANCE_URL="$(ACCEPTANCE_URL)" \
 	WP_ACCEPTANCE_ADMIN_USER="$(WP_ADMIN_USER)" \
 	WP_ACCEPTANCE_ADMIN_PASSWORD="$(WP_ADMIN_PASSWORD)" \
@@ -117,6 +118,22 @@ playwright_install:
 acceptance_browser_test: acceptance_prepare playwright_install
 	@printf 'Playwright browser tests:\n';
 	npm run test:e2e
+
+.PHONY: acceptance_e2e_test
+acceptance_e2e_test: playwright_install
+	@printf 'Broad isolated WordPress/WooCommerce end-to-end flow:\n';
+	@export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
+		$(MAKE) acceptance_checkout_prepare
+	@export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
+		php vendor/bin/codecept run Acceptance --steps
+	@export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
+		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-request-flow.php
+	@order_id=$$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_order_id); \
+		request_id=$$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_request_id); \
+		export WP_ACCEPTANCE_FIXTURE_ORDER_ID=$$order_id; \
+		export WP_ACCEPTANCE_FIXTURE_REQUEST_ID=$$request_id; \
+		export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
+		npm run test:e2e
 
 .PHONY: integration_test
 integration_test:
