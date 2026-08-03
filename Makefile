@@ -131,6 +131,11 @@ acceptance_e2e_test: playwright_install
 	@export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
 		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-in-progress-flow.php; \
 		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-prepare-fixtures.php
+	@export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
+		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-prepare-advanced-fixtures.php; \
+		docker compose run --rm wpcli --allow-root rewrite flush --hard; \
+		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-mandate-flow.php; \
+		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-identity-flow.php
 	@order_id=$$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_order_id); \
 		request_id=$$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_request_id); \
 		export WP_ACCEPTANCE_FIXTURE_ORDER_ID=$$order_id; \
