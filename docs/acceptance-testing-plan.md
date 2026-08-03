@@ -253,6 +253,19 @@ The CI job installs Chromium, runs `npm run test:e2e`, and uploads Playwright
 traces, screenshots, and reports when available. The browser layer does not
 install WordPress or prepare sample data.
 
+## Full isolated E2E CI job
+
+The complete `make acceptance_e2e_test` flow also runs in its own
+`acceptance-e2e` CI job. This is intentionally separate from the lightweight
+browser job: it prepares WooCommerce fixtures, starts the local Bluem mock,
+exercises the Codeception HTTP flow and the Playwright admin flow, and has a
+longer timeout and dedicated Docker/Codeception/Playwright diagnostics.
+
+The job has no Bluem credentials and sets the mock transport endpoint only for
+the test environment. It does not contact Bluem or create billable requests.
+Keeping it as a separate job gives pull requests broad regression protection
+without coupling the PHP unit matrix to Docker lifecycle or browser failures.
+
 Equivalent local commands:
 
 ```make

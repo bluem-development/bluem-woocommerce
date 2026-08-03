@@ -213,3 +213,51 @@ jobs:
                       playwright-report
                       test-results
                   if-no-files-found: warn
+
+    acceptance-e2e:
+        runs-on: ubuntu-latest
+        name: Isolated WordPress/WooCommerce E2E (PHP 8.4)
+        timeout-minutes: 35
+
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  tools: composer:v2
+                  coverage: none
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: 22
+
+            - name: Install PHP dependencies
+              run: composer install --no-interaction --prefer-dist
+
+            - name: Install Node dependencies
+              run: npm install --no-audit --no-fund
+
+            - name: Install Chromium system dependencies
+              run: npx playwright install --with-deps chromium
+
+            - name: Run isolated WordPress/WooCommerce E2E flow
+              run: make acceptance_e2e_test
+
+            - name: Collect E2E diagnostics
+              if: ${{ failure() }}
+              run: |
+                  set +e
+                  mkdir -p /tmp/bluem-acceptance-e2e-diagnostics
+                  docker compose ps -a > /tmp/bluem-acceptance-e2e-diagnostics/compose-ps.txt || true
+                  docker compose logs --no-color > /tmp/bluem-acceptance-e2e-diagnostics/compose-logs.txt || true
+                  cp -R tests/_output /tmp/bluem-acceptance-e2e-diagnostics/codeception-output 2>/dev/null || true
+                  cp -R test-results /tmp/bluem-acceptance-e2e-diagnostics/playwright-results 2>/dev/null || true
+
+            - name: Upload E2E diagnostics
+              if: ${{ failure() }}
+              uses: actions/upload-artifact@v7
+              with:
+                  name: acceptance-e2e-diagnostics
+                  path: /tmp/bluem-acceptance-e2e-diagnostics
+                  if-no-files-found: warn
