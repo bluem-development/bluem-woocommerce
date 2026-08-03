@@ -115,9 +115,13 @@ playwright_install:
 	npx playwright install chromium
 
 .PHONY: acceptance_browser_test
-acceptance_browser_test: acceptance_prepare playwright_install
+acceptance_browser_test: acceptance_checkout_prepare playwright_install
 	@printf 'Playwright browser tests:\n';
-	npm run test:e2e
+	@order_id=$$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_order_id); \
+		request_id=$$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_request_id); \
+		export WP_ACCEPTANCE_FIXTURE_ORDER_ID=$$order_id; \
+		export WP_ACCEPTANCE_FIXTURE_REQUEST_ID=$$request_id; \
+		npm run test:e2e
 
 .PHONY: acceptance_e2e_test
 acceptance_e2e_test: playwright_install
