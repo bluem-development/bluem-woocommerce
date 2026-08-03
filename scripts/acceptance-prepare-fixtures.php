@@ -69,13 +69,17 @@ update_option(
     false
 );
 
+$bluemOptions = get_option('bluem_woocommerce_options', []);
+$bluemOptions['paymentsIDEALBrandID'] = 'Payment';
+update_option('bluem_woocommerce_options', $bluemOptions, false);
+
 $requestId = (int) get_option('bluem_acceptance_fixture_request_id', 0);
 $request = $requestId > 0 ? bluem_db_get_request_by_id((string) $requestId) : false;
 if (!$request) {
     $requestId = bluem_db_create_request([
-        'entrance_code' => 'ACCEPTANCE-ENTRANCE-1',
-        'transaction_id' => 'ACCEPTANCE-TRANSACTION-1',
-        'transaction_url' => 'https://mock-bluem.invalid/payment/transaction/ACCEPTANCE-TRANSACTION-1',
+        'entrance_code' => 'ACCEPTANCEENTRANCE1',
+        'transaction_id' => 'ACCEPTANCETX1',
+        'transaction_url' => 'https://mock-bluem.invalid/payment/transaction/ACCEPTANCETX1',
         'user_id' => $admin->ID,
         'timestamp' => gmdate('Y-m-d H:i:s'),
         'description' => 'Bluem acceptance fixture payment',
@@ -91,7 +95,12 @@ if (!$request) {
     ]);
     update_option('bluem_acceptance_fixture_request_id', $requestId, false);
 } else {
-    bluem_db_update_request($request->id, ['status' => 'created']);
+    bluem_db_update_request($request->id, [
+        'entrance_code' => 'ACCEPTANCEENTRANCE1',
+        'transaction_id' => 'ACCEPTANCETX1',
+        'transaction_url' => 'https://mock-bluem.invalid/payment/transaction/ACCEPTANCETX1',
+        'status' => 'created',
+    ]);
 }
 
 WP_CLI::log(sprintf('Acceptance fixture order: %d', $order->get_id()));

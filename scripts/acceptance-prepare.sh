@@ -52,5 +52,5 @@ wpcli plugin is-active bluem
 
 # Complete the plugin's setup guard with isolated, non-production values so
 # acceptance tests do not require manual activation-form submission.
-wpcli option update bluem_woocommerce_options '{"environment":"test","senderID":"ci-acceptance-sender","test_accessToken":"ci-acceptance-token","production_accessToken":"ci-acceptance-production-token","expectedReturnStatus":"success","suppress_woo":"1","suppress_warning":"1","payments_enabled":"0","mandates_enabled":"0","idin_enabled":"0"}' --format=json
+wpcli option update bluem_woocommerce_options '{"environment":"test","senderID":"S0001","test_accessToken":"ci-acceptance-token","production_accessToken":"ci-acceptance-production-token","expectedReturnStatus":"success","suppress_woo":"1","suppress_warning":"1","payments_enabled":"0","mandates_enabled":"0","idin_enabled":"0"}' --format=json
 wpcli option update bluem_plugin_registration 1
