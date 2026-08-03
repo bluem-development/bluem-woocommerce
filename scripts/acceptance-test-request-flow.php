@@ -44,7 +44,7 @@ if ($transaction_id === '' || $entrance_code === '' || ! $request) {
     WP_CLI::error('Mocked Bluem payment did not persist transaction correlation data.');
 }
 
-$callback_url = home_url('wc-api/bluem_payments_ideal_callback?entranceCode=' . rawurlencode($entrance_code));
+$callback_url = home_url('wc-api/bluem_payments_ideal_callback/?entranceCode=' . rawurlencode($entrance_code));
 $callback_url = str_replace('http://localhost:8000', 'http://wordpress', $callback_url);
 $callback_response = wp_remote_get($callback_url, [
     'timeout' => 15,

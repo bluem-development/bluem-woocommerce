@@ -26,7 +26,7 @@ bluem_db_update_request($request_id, [
     'status' => 'created',
 ]);
 
-$callback_url = home_url('wc-api/bluem_payments_ideal_callback?entranceCode=ACCEPTANCEPENDINGENTRANCE');
+$callback_url = home_url('wc-api/bluem_payments_ideal_callback/?entranceCode=ACCEPTANCEPENDINGENTRANCE');
 $callback_url = str_replace('http://localhost:8000', 'http://wordpress', $callback_url);
 $callback_response = wp_remote_get($callback_url, [
     'timeout' => 15,

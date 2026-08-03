@@ -41,7 +41,7 @@ if (!$request) {
     WP_CLI::error('Mandate request was not persisted in the Bluem request table.');
 }
 
-$callback_url = home_url('wc-api/bluem_mandates_callback?mandateID=' . rawurlencode($mandate_id));
+$callback_url = home_url('wc-api/bluem_mandates_callback/?mandateID=' . rawurlencode($mandate_id));
 $callback_url = str_replace('http://localhost:8000', 'http://wordpress', $callback_url);
 $callback_response = wp_remote_get($callback_url, [
     'timeout' => 15,
