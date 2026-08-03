@@ -236,15 +236,21 @@ jobs:
                   tools: composer:v2
                   coverage: none
             - run: composer install --no-interaction --prefer-dist
-            - name: Prepare WordPress site
-              run: make acceptance_prepare
+            - name: Prepare WordPress and WooCommerce site
+              run: make acceptance_checkout_prepare
             - uses: actions/setup-node@v7
               with:
                   node-version: 22
             - run: npm install --no-audit --no-fund
             - run: npx playwright install --with-deps chromium
             - name: Run Playwright browser tests
-              run: npm run test:e2e
+              run: |
+                  set -euo pipefail
+                  order_id="$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_order_id)"
+                  request_id="$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_request_id)"
+                  WP_ACCEPTANCE_FIXTURE_ORDER_ID="$order_id" \
+                  WP_ACCEPTANCE_FIXTURE_REQUEST_ID="$request_id" \
+                  npm run test:e2e
             - uses: actions/upload-artifact@v7
               if: ${{ failure() }}
               with:
