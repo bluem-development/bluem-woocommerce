@@ -144,7 +144,7 @@ function bluem_mandate_shortcode_execute(): void
             $bluem_config->eMandateReason = 'Direct debit mandate ' . $debtorReference;
         }
 
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
 
         $mandate_id_counter = get_option('bluem_woocommerce_mandate_id_counter');
 
@@ -281,7 +281,7 @@ function bluem_mandate_shortcode_callback(): void
     $storage = is_array($storage) ? $storage : [];
 
     try {
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (Exception $e) {
         // @todo: deal with incorrectly setup Bluem
         // $e->getMessage();
