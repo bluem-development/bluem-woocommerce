@@ -17,9 +17,14 @@ $transactionId = 'ACCEPTANCETX1';
 $entranceCode = 'ACCEPTANCEENTRANCE1';
 $debtorReference = 'ACCEPTANCEORDER1';
 
+if ($isStatusRequest && preg_match('/<TransactionID>([^<]+)<\/TransactionID>/', $requestBody, $matches) === 1) {
+    $transactionId = (string) $matches[1];
+}
+
 header('Content-Type: application/xml; charset=UTF-8');
 
 if ($isStatusRequest) {
+    $status = $transactionId === 'ACCEPTANCEPENDING1' ? 'Pending' : 'Success';
     echo <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <EPaymentInterface createDateTime="2026-08-03T00:00:00Z" messageCount="1" mode="direct" senderID="acceptance" type="StatusUpdate" version="1.0">
@@ -28,7 +33,7 @@ if ($isStatusRequest) {
         <PaymentReference>ACCEPTANCE-PAYMENT-1</PaymentReference>
         <DebtorReference>{$debtorReference}</DebtorReference>
         <TransactionID>{$transactionId}</TransactionID>
-        <Status>Success</Status>
+        <Status>{$status}</Status>
         <Amount>12.34</Amount>
         <AmountPaid>12.34</AmountPaid>
         <Currency>EUR</Currency>
