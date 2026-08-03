@@ -45,6 +45,12 @@ registration, settings persistence, the order Bluem request metabox, the
 transaction detail page, payment request creation, mocked status retrieval,
 request persistence, and the resulting order transition to processing.
 
+The browser lifecycle test also completes the local Bluem activation form
+after reactivation because the plugin intentionally resets its setup guard on
+activation. The passing local run produced 8 Codeception tests with 18
+assertions, a mocked callback that returned HTTP 302 and moved the fixture
+order to `processing`, and 4 passing Chromium tests.
+
 ## Docker preparation and translation test
 
 The Docker Compose setup includes a WP-CLI service. The preparation target

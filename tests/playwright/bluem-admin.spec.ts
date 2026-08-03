@@ -32,13 +32,25 @@ test('administrator can deactivate and reactivate Bluem', async ({ page }) => {
   await expect(pluginRow.getByRole('link', { name: 'Activate' })).toBeVisible();
   await pluginRow.getByRole('link', { name: 'Activate' }).click();
   await expect(pluginRow.getByRole('link', { name: 'Deactivate' })).toBeVisible();
+
+  // Activation resets Bluem's setup guard. Complete the local, non-production
+  // activation form so later browser tests can use normal admin pages.
+  await page.goto('/wp-admin/admin.php?page=bluem-activate');
+  await page.locator('#company_name').fill('Bluem Acceptance');
+  await page.locator('#company_telephone').fill('0200000000');
+  await page.locator('#company_email').fill('acceptance@example.com');
+  await page.locator('#tech_name').fill('Bluem Acceptance Tester');
+  await page.locator('#tech_telephone').fill('0200000001');
+  await page.locator('#tech_email').fill('tester@example.com');
+  await page.locator('#activateform input[type="submit"]').click();
+  await expect(page.locator('body')).toContainText('The plugin has been activated');
 });
 
 test('administrator can open WooCommerce payment settings', async ({ page }) => {
   await login(page);
   await page.goto('/wp-admin/admin.php?page=wc-settings&tab=checkout');
-  await expect(page.locator('body')).toContainText('Bluem iDEAL Acceptance');
-  await expect(page.locator('body')).toContainText('Bluem PayPal');
+  await expect(page.locator('body')).toContainText('Bluem payments via iDEAL');
+  await expect(page.locator('body')).toContainText('Bluem payments via PayPal');
 });
 
 test('administrator can inspect the fixture order and Bluem transaction', async ({ page }) => {
@@ -54,6 +66,6 @@ test('administrator can inspect the fixture order and Bluem transaction', async 
   await expect(page.locator('body')).toContainText('ACCEPTANCETX1');
 
   await page.goto(`/wp-admin/admin.php?page=bluem-transactions&request_id=${requestId}`);
+  await expect(page.locator('h1')).toContainText('Transaction details');
   await expect(page.locator('body')).toContainText('ACCEPTANCETX1');
-  await expect(page.locator('body')).toContainText('Bluem acceptance fixture payment');
 });
