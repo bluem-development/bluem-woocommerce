@@ -38,6 +38,54 @@ final class BluemSentry
 
     private static bool $initialized = false;
 
+    public static function sendTestEvent(): string
+    {
+        self::initialize();
+        try {
+            \Sentry\withScope(static function (Scope $scope): void {
+                $scope->setTag('bluem_test', 'true');
+                \Sentry\captureMessage('Bluem Sentry diagnostic event', Severity::info());
+            });
+            return 'Test event queued for Sentry.';
+        } catch (Throwable $exception) {
+            return 'Test event failed: ' . $exception->getMessage();
+        }
+    }
+
+    public static function verifyDsnAndLogs(): string
+    {
+        self::initialize();
+        try {
+            if ( function_exists( 'Sentry\\logger' ) && is_object( \Sentry\logger() ) && method_exists( \Sentry\logger(), 'flush' ) ) {
+                \Sentry\logger()->info( 'Bluem Sentry diagnostic log', [ 'bluem_test' => 'true' ] );
+                \Sentry\logger()->flush();
+            }
+            \Sentry\withScope(static function (Scope $scope): void {
+                $scope->setTag('bluem_test', 'true');
+                \Sentry\captureMessage('Bluem Sentry DSN diagnostic event', Severity::info());
+            });
+            $client = \Sentry\SentrySdk::getCurrentHub()->getClient();
+            $result = $client ? $client->flush( 5 ) : null;
+            $flushed = $result && (string) $result->getStatus() === 'SUCCESS';
+            return $flushed ? 'Sentry accepted the diagnostic event/log and flushed both transports.' : 'The diagnostic event/log was queued, but the event transport did not flush successfully.';
+        } catch (Throwable $exception) {
+            return 'Sentry DSN/log test failed: ' . $exception->getMessage();
+        }
+    }
+
+    public static function sendTestMetric(): string
+    {
+        $parts = wp_parse_url( self::getDsn() ?? '' );
+        if ( ! $parts || empty( $parts['host'] ) || empty( $parts['user'] ) || empty( $parts['path'] ) ) return 'No valid Sentry DSN is configured.';
+        $body = "bluem.test.metric:1|c|#source:wordpress,bluem_test:true\n";
+        $envelope = wp_json_encode( [ 'event_id' => wp_generate_uuid4(), 'sent_at' => gmdate( 'c' ) ] ) . "\n";
+        $envelope .= wp_json_encode( [ 'type' => 'statsd', 'length' => strlen( $body ) ] ) . "\n" . $body;
+        $url = sprintf( 'https://%s/api/%s/envelope/?sentry_version=7&sentry_key=%s', $parts['host'], trim( $parts['path'], '/' ), rawurlencode( $parts['user'] ) );
+        $response = wp_remote_post( $url, [ 'timeout' => 10, 'headers' => [ 'Content-Type' => 'application/x-sentry-envelope' ], 'body' => $envelope ] );
+        if ( is_wp_error( $response ) ) return 'Metric failed: ' . $response->get_error_message();
+        return 'Sentry returned HTTP ' . wp_remote_retrieve_response_code( $response ) . ' for the test metric: ' . mb_substr( trim( wp_remote_retrieve_body( $response ) ), 0, 300 );
+    }
+
     /**
      * Initialize Sentry once, with only error-related integrations enabled.
      */
@@ -52,6 +100,7 @@ final class BluemSentry
         try {
             \Sentry\init([
                 'dsn' => self::getDsn(),
+                'enable_logs' => true,
                 'release' => 'bluem@' . self::getPluginVersion(),
                 'environment' => self::getEnvironment(),
                 'server_name' => 'bluem-plugin',
