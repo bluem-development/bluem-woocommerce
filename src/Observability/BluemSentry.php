@@ -38,72 +38,6 @@ final class BluemSentry
 
     private static bool $initialized = false;
 
-    public static function sendTestEvent(): string
-    {
-        self::initialize();
-        try {
-            \Sentry\withScope(static function (Scope $scope): void {
-                $scope->setTag('bluem_test', 'true');
-                \Sentry\captureMessage('Bluem Sentry diagnostic event', Severity::info());
-            });
-            return 'Test event queued for Sentry.';
-        } catch (Throwable $exception) {
-            return 'Test event failed: ' . $exception->getMessage();
-        }
-    }
-
-    public static function verifyDsnAndLogs(): string
-    {
-        self::initialize();
-        try {
-            if ( function_exists( 'Sentry\\logger' ) && is_object( \Sentry\logger() ) && method_exists( \Sentry\logger(), 'flush' ) ) {
-                \Sentry\logger()->info( 'Bluem Sentry diagnostic log', [ 'bluem_test' => 'true' ] );
-                \Sentry\logger()->flush();
-            }
-            \Sentry\withScope(static function (Scope $scope): void {
-                $scope->setTag('bluem_test', 'true');
-                \Sentry\captureMessage('Bluem Sentry DSN diagnostic event', Severity::info());
-            });
-            $client = \Sentry\SentrySdk::getCurrentHub()->getClient();
-            $result = $client ? $client->flush( 5 ) : null;
-            $flushed = $result && (string) $result->getStatus() === 'SUCCESS';
-            return $flushed ? 'Sentry accepted the diagnostic event/log and flushed both transports.' : 'The diagnostic event/log was queued, but the event transport did not flush successfully.';
-        } catch (Throwable $exception) {
-            return 'Sentry DSN/log test failed: ' . $exception->getMessage();
-        }
-    }
-
-    public static function sendTestMetric(): string
-    {
-        self::initialize();
-
-        try {
-            if ( ! function_exists( 'Sentry\\traceMetrics' ) ) {
-                return 'Metric failed: the installed Sentry SDK does not support trace metrics.';
-            }
-
-            \Sentry\withScope( static function ( Scope $scope ): void {
-                $scope->setTag( 'bluem_test', 'true' );
-                $attributes = [ 'my-attribute' => 'foo' ];
-
-                self::captureMetric( 'counter', 'test-counter', 10, $attributes );
-                self::captureMetric( 'gauge', 'test-gauge', 50.0, $attributes, \Sentry\Unit::millisecond() );
-                self::captureMetric( 'distribution', 'test-distribution', 20.0, $attributes, \Sentry\Unit::kilobyte() );
-                \Sentry\traceMetrics()->flush();
-            } );
-
-            $client = \Sentry\SentrySdk::getCurrentHub()->getClient();
-            $result = $client ? $client->flush( 5 ) : null;
-            $flushed = $result && (string) $result->getStatus() === 'SUCCESS';
-
-            return $flushed
-                ? 'Sentry accepted the test counter, gauge, and distribution metrics.'
-                : 'Test metrics were queued, but the Sentry transport did not flush successfully.';
-        } catch ( Throwable $exception ) {
-            return 'Metric failed: ' . $exception->getMessage();
-        }
-    }
-
     /**
      * Queue a production metric using Sentry's trace metrics API.
      *
@@ -125,23 +59,23 @@ final class BluemSentry
         self::initialize();
 
         try {
-            if ( ! function_exists( 'Sentry\\traceMetrics' ) ) {
+            if (! function_exists('Sentry\\traceMetrics')) {
                 return;
             }
 
             $metrics = \Sentry\traceMetrics();
-            switch ( $type ) {
+            switch ($type) {
                 case 'counter':
-                    $metrics->count( $name, $value, $attributes, $unit );
+                    $metrics->count($name, $value, $attributes, $unit);
                     break;
                 case 'gauge':
-                    $metrics->gauge( $name, $value, $attributes, $unit );
+                    $metrics->gauge($name, $value, $attributes, $unit);
                     break;
                 case 'distribution':
-                    $metrics->distribution( $name, $value, $attributes, $unit );
+                    $metrics->distribution($name, $value, $attributes, $unit);
                     break;
             }
-        } catch ( Throwable ) {
+        } catch (Throwable) {
             // Observability must remain non-blocking for checkout and callbacks.
         }
     }
