@@ -84,13 +84,12 @@ final class BluemSentry
 
             \Sentry\withScope( static function ( Scope $scope ): void {
                 $scope->setTag( 'bluem_test', 'true' );
-                $metrics = \Sentry\traceMetrics();
                 $attributes = [ 'my-attribute' => 'foo' ];
 
-                $metrics->count( 'test-counter', 10, $attributes );
-                $metrics->gauge( 'test-gauge', 50.0, $attributes, \Sentry\Unit::millisecond() );
-                $metrics->distribution( 'test-distribution', 20.0, $attributes, \Sentry\Unit::kilobyte() );
-                $metrics->flush();
+                self::captureMetric( 'counter', 'test-counter', 10, $attributes );
+                self::captureMetric( 'gauge', 'test-gauge', 50.0, $attributes, \Sentry\Unit::millisecond() );
+                self::captureMetric( 'distribution', 'test-distribution', 20.0, $attributes, \Sentry\Unit::kilobyte() );
+                \Sentry\traceMetrics()->flush();
             } );
 
             $client = \Sentry\SentrySdk::getCurrentHub()->getClient();
@@ -102,6 +101,48 @@ final class BluemSentry
                 : 'Test metrics were queued, but the Sentry transport did not flush successfully.';
         } catch ( Throwable $exception ) {
             return 'Metric failed: ' . $exception->getMessage();
+        }
+    }
+
+    /**
+     * Queue a production metric using Sentry's trace metrics API.
+     *
+     * Metrics remain buffered until the SDK flushes the current runtime
+     * context, or until traceMetrics()->flush() is called explicitly.
+     * Sentry failures must never affect plugin execution.
+     *
+     * @param 'counter'|'gauge'|'distribution' $type
+     * @param int|float                         $value
+     * @param array<string, int|float|string|bool> $attributes
+     */
+    public static function captureMetric(
+        string $type,
+        string $name,
+        int|float $value,
+        array $attributes = [],
+        ?\Sentry\Unit $unit = null
+    ): void {
+        self::initialize();
+
+        try {
+            if ( ! function_exists( 'Sentry\\traceMetrics' ) ) {
+                return;
+            }
+
+            $metrics = \Sentry\traceMetrics();
+            switch ( $type ) {
+                case 'counter':
+                    $metrics->count( $name, $value, $attributes, $unit );
+                    break;
+                case 'gauge':
+                    $metrics->gauge( $name, $value, $attributes, $unit );
+                    break;
+                case 'distribution':
+                    $metrics->distribution( $name, $value, $attributes, $unit );
+                    break;
+            }
+        } catch ( Throwable ) {
+            // Observability must remain non-blocking for checkout and callbacks.
         }
     }
 
