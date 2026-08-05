@@ -212,15 +212,6 @@ function bluem_db_initialize_session_storage(): array|false
     if (! $doing_cron && ! $headers_already) {
         setcookie('bluem_storage_token', $token, 0, '/', $path, false, true);
         setcookie('bluem_storage_secret', $secret, 0, '/', $path, false, true);
-    } else {
-        // Optional debug log to help triage sites where cookies cannot be set.
-        error_log(sprintf(
-            'bluem: skipped setcookie in initialize_session_storage; wp_doing_cron=%s; headers_sent=%s (%s:%d)',
-            $doing_cron ? '1' : '0',
-            $headers_already ? '1' : '0',
-            $file ?: 'unknown',
-            $line ?: 0
-        ));
     }
 
     return [$token, $secret];
@@ -303,15 +294,6 @@ function bluem_db_insert_storage($object)
         if (! $doing_cron && ! $headers_already) {
             setcookie('bluem_storage_token', $token, $expiration, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
             setcookie('bluem_storage_secret', $secret, $expiration, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
-        } else {
-            // Optional debug log to help triage sites where cookies cannot be set.
-            error_log(sprintf(
-                'bluem: skipped setcookie in insert_storage; wp_doing_cron=%s; headers_sent=%s (%s:%d)',
-                $doing_cron ? '1' : '0',
-                $headers_already ? '1' : '0',
-                $file ?: 'unknown',
-                $line ?: 0
-            ));
         }
 
         return true;
