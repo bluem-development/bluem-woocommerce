@@ -202,7 +202,7 @@ abstract class Bluem_Payment_Gateway extends WC_Payment_Gateway implements Bluem
     protected function validateAndEnableBluemConfiguration(): bool
     {
         try {
-            $this->bluem = new Bluem($this->bluem_config);
+            $this->bluem = bluem_woocommerce_create_client($this->bluem_config);
         } catch (Exception $e) {
             return false;
         }

@@ -52,6 +52,27 @@ use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
 
+/**
+ * Create a Bluem client while allowing acceptance tests to replace only its
+ * HTTP transport. Request construction and response parsing remain real.
+ *
+ * @param object $config Bluem configuration object.
+ */
+function bluem_woocommerce_create_client(object $config): Bluem {
+    $transport = apply_filters('bluem_woocommerce_http_transport', null, $config);
+
+    $mockEndpoint = getenv('BLUEM_ACCEPTANCE_MOCK_URL');
+    if ($transport === null && is_string($mockEndpoint) && $mockEndpoint !== '') {
+        $transport = new \Bluem\Wordpress\Testing\BluemAcceptanceHttpTransport($mockEndpoint);
+    }
+
+    if ($transport instanceof \Bluem\BluemPHP\Transport\HttpTransportInterface) {
+        return new Bluem($config, $transport);
+    }
+
+    return new Bluem($config);
+}
+
 // Initialize before loading the feature modules so uncaught Bluem errors can be captured.
 BluemSentry::initialize();
 
@@ -740,7 +761,7 @@ function bluem_update_request_by_id( $request_id ) {
         $bluem_config->environment = $bluem_env;
     }
 
-    $bluem = new Bluem( $bluem_config );
+    $bluem = bluem_woocommerce_create_client( $bluem_config );
 
     // Check for order
     if ( ! empty( $request->order_id ) ) {

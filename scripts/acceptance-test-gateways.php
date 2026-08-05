@@ -22,4 +22,9 @@ if ($missing !== []) {
     );
 }
 
+$idealSettings = get_option('woocommerce_bluem_payments_ideal_settings', []);
+if (($idealSettings['enabled'] ?? '') !== 'yes' || ($idealSettings['title'] ?? '') !== 'Bluem iDEAL Acceptance') {
+    WP_CLI::error('Bluem iDEAL acceptance settings were not persisted.');
+}
+
 WP_CLI::success('All expected Bluem WooCommerce gateways are registered.');

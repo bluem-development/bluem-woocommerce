@@ -237,7 +237,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                     $bluem_config->eMandateReason = 'eMandate ' . $debtorReference;
                 }
 
-                $bluem = new Bluem($bluem_config);
+                $bluem = bluem_woocommerce_create_client($bluem_config);
 
                 $mandate_id_counter = get_option('bluem_woocommerce_mandate_id_counter');
 
@@ -423,7 +423,7 @@ function bluem_woocommerce_integration_wpcf7_submit()
                 }
 
                 try {
-                    $bluem = new Bluem($bluem_config);
+                    $bluem = bluem_woocommerce_create_client($bluem_config);
                 } catch (InvalidBluemConfigurationException $e) {
                     exit('Error instantiating Bluem: Invalid configuration');
                 }
@@ -546,7 +546,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
     }
 
     try {
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (Exception $e) {
         // @todo: deal with incorrectly setup Bluem
     }
@@ -863,7 +863,7 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
             }
 
             try {
-                $bluem = new Bluem($bluem_config);
+                    $bluem = bluem_woocommerce_create_client($bluem_config);
             } catch (Exception $e) {
                 echo ('Could not process the Gravity Forms request correctly; check your settings.');
                 die();
@@ -1042,7 +1042,7 @@ function bluem_woocommerce_integration_gform_callback()
     }
 
     try {
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (Exception $e) {
         bluem_dialogs_render_prompt(esc_html__(
             "Error: the Bluem configuration is not correct even though Gravity Forms is active. 
