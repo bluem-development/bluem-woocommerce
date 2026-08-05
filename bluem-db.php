@@ -203,8 +203,16 @@ function bluem_db_initialize_session_storage(): array|false
 
     $path = sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME']));
 
-    setcookie('bluem_storage_token', $token, 0, '/', $path, false, true);
-    setcookie('bluem_storage_secret', $secret, 0, '/', $path, false, true);
+    // Avoid calling setcookie() when it's too late (headers already sent) or during WP cron
+    $doing_cron = function_exists('wp_doing_cron') && wp_doing_cron();
+    $file = null;
+    $line = null;
+    $headers_already = headers_sent($file, $line);
+
+    if (! $doing_cron && ! $headers_already) {
+        setcookie('bluem_storage_token', $token, 0, '/', $path, false, true);
+        setcookie('bluem_storage_secret', $secret, 0, '/', $path, false, true);
+    }
 
     return [$token, $secret];
 }
@@ -277,9 +285,16 @@ function bluem_db_insert_storage($object)
     $expiration = time() + (7 * 24 * 60 * 60); // 7 days
 
     if ($db_result !== false && isset($_SERVER['SERVER_NAME'])) {
-        // Set cookies for token and secret for
-        setcookie('bluem_storage_token', $token, $expiration, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
-        setcookie('bluem_storage_secret', $secret, $expiration, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
+        // Set cookies for token and secret when it is still safe to send headers.
+        $doing_cron = function_exists('wp_doing_cron') && wp_doing_cron();
+        $file = null;
+        $line = null;
+        $headers_already = headers_sent($file, $line);
+
+        if (! $doing_cron && ! $headers_already) {
+            setcookie('bluem_storage_token', $token, $expiration, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
+            setcookie('bluem_storage_secret', $secret, $expiration, '/', sanitize_text_field(wp_unslash($_SERVER['SERVER_NAME'])), false, true);
+        }
 
         return true;
     }
