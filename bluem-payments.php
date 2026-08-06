@@ -4,6 +4,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Bluem\Wordpress\Settings\BluemPaymentSettings;
+
 /*
  * This action hook registers our PHP class as a WooCommerce payment gateway
  */
@@ -48,12 +50,7 @@ function bluem_woocommerce_payments_settings_section()
 
 function bluem_woocommerce_get_payments_option($key)
 {
-    $options = bluem_woocommerce_get_payments_options();
-    if (array_key_exists($key, $options)) {
-        return $options[$key];
-    }
-
-    return false;
+    return (new BluemPaymentSettings(bluem_woocommerce_get_payments_options()))->get($key);
 }
 
 function bluem_woocommerce_get_payments_options()
