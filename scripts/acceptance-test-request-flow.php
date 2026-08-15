@@ -61,11 +61,22 @@ WP_CLI::log('Callback response: ' . wp_strip_all_tags(wp_remote_retrieve_body($c
 
 $order = new WC_Order($order->get_id());
 $request = bluem_db_get_request_by_transaction_id($transaction_id);
+$order_notes = wc_get_order_notes([
+    'order_id' => $order->get_id(),
+    'limit' => 3,
+    'orderby' => 'date_created',
+    'order' => 'DESC',
+]);
+$recent_notes = array_map(
+    static fn ($note) => wp_strip_all_tags($note->content),
+    $order_notes
+);
 WP_CLI::log(sprintf(
-    'Callback persistence: order %d status %s; request status %s.',
+    'Callback persistence: order %d status %s; request status %s; recent notes: %s.',
     $order->get_id(),
     $order->get_status(),
-    $request->status ?? 'not found'
+    $request->status ?? 'not found',
+    $recent_notes ? implode(' | ', $recent_notes) : 'none'
 ));
 if ($order->get_status() !== 'processing') {
     WP_CLI::error(sprintf(
