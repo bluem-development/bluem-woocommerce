@@ -10,8 +10,8 @@ functions as compatibility adapters during the migration.
 4. [x] Extract request grouping into `BluemRequestGrouper`.
 5. [x] Extract enabled request-type filtering into `BluemEnabledRequestTypeFilter`.
 6. [x] Extract Composer dependency version lookup into a testable support service.
-7. [ ] Extract support-report environment collection behind injectable WordPress and WooCommerce readers.
-8. [ ] Extract support-report trace normalization into a pure trace formatter.
+7. [x] Extract support-report environment collection behind injectable WordPress and WooCommerce readers.
+8. [x] Extract support-report trace normalization into a pure trace formatter.
 9. [x] Extract core plugin option lookup into a small settings accessor.
 10. [ ] Extract core plugin option definitions into a settings schema object.
 11. [ ] Extract payment, mandate, and iDIN settings access behind feature-specific settings objects.
@@ -23,4 +23,3 @@ functions as compatibility adapters during the migration.
 17. [ ] Extract Contact Form 7 and Gravity Forms flows into integration adapters.
 18. [ ] Move admin request rendering and navigation behind presentation services.
 
-The next increment is the larger core option schema extraction.

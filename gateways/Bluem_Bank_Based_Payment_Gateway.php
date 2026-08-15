@@ -35,7 +35,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
     public function __construct($id, $title, $description, $callback = null, $icon = '')
     {
         if (empty($callback)) {
-            $callback = home_url('wc-api/' . $this->id . '_callback');
+            $callback = bluem_woocommerce_route_url('wc-api/' . $this->id . '_callback');
         }
         parent::__construct(
             $id,
@@ -238,7 +238,10 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                 $dueDateTime->format('Y-m-d H:i:s'),
                 $currency,
                 $entranceCode,
-                home_url(sprintf('wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode))
+                bluem_woocommerce_route_url(
+                    'wc-api/' . $this->id . '_callback',
+                    ['entranceCode' => $entranceCode]
+                )
             );
         } catch (Exception $e) {
             return [
@@ -266,7 +269,10 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
         $request->paymentReference = str_replace('-', '', $request->paymentReference);
         $request->type_identifier  = "createTransaction";
         $request->dueDateTime      = $dueDateTime->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
-        $request->debtorReturnURL  = home_url(sprintf('wc-api/' . $this->id . '_callback?entranceCode=%s', $entranceCode));
+        $request->debtorReturnURL  = bluem_woocommerce_route_url(
+            'wc-api/' . $this->id . '_callback',
+            ['entranceCode' => $entranceCode]
+        );
 
 
         // allow third parties to add additional data to the request object through this additional action
