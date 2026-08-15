@@ -1045,10 +1045,8 @@ msgid ""
 "            If you do not use WooCommerce, you can disable this notice and WooCommerce-related functionality in the %s."
 msgstr ""
 
-#: bluem.php:373
-msgid ""
-"The Bluem integration depends on the WordPress permalink setting because of routing.<br>\n"
-"        Select any option except 'Plain' in Permalinks."
+#: bluem.php:434
+msgid "Bluem callbacks also work with the WordPress Plain permalink structure. We recommend a non-Plain permalink setting for more readable Bluem, WooCommerce and other integration URLs."
 msgstr ""
 
 #: bluem.php:388

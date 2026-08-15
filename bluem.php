@@ -243,6 +243,49 @@ if ( ! function_exists( 'bluem_is_permalinks_enabled' ) ) {
 }
 
 /**
+ * Build a Bluem callback or entry-point URL that works with both WordPress
+ * permalink modes.
+ *
+ * WooCommerce API callbacks accept their endpoint as a query argument, while
+ * Bluem's own routes have registered query variables. Use those forms when a
+ * site intentionally uses WordPress' Plain permalink structure.
+ */
+function bluem_woocommerce_route_url( string $route, array $query_args = [] ): string {
+    $route = trim( $route, '/' );
+
+    if ( bluem_is_permalinks_enabled() ) {
+        return add_query_arg( $query_args, home_url( $route ) );
+    }
+
+    if ( str_starts_with( $route, 'wc-api/' ) ) {
+        $query_args = [ 'wc-api' => substr( $route, strlen( 'wc-api/' ) ) ] + $query_args;
+
+        return add_query_arg( $query_args, home_url( '/' ) );
+    }
+
+    $route_query_vars = [
+        'bluem-woocommerce/idin_execute' => 'bluem_idin_shortcode_execute',
+        'bluem-woocommerce/idin_shortcode_callback' => 'bluem_idin_shortcode_callback',
+        'bluem-woocommerce/mandate_shortcode_execute' => 'bluem_mandate_shortcode_execute',
+        'bluem-woocommerce/mandate_shortcode_callback' => 'bluem_mandate_shortcode_callback',
+        'bluem-woocommerce/mandate_instant_request' => 'bluem_mandates_instant_request',
+        'bluem-woocommerce/mandates_instant_callback' => 'bluem_mandates_instant_callback',
+        'bluem-woocommerce/bluem_idin_webhook' => 'bluem_idin_webhook',
+        'bluem-woocommerce/bluem-integrations/wpcf7_mandate' => 'bluem_woocommerce_integration_wpcf7_ajax',
+        'bluem-woocommerce/bluem-integrations/wpcf7_callback' => 'bluem_woocommerce_integration_wpcf7_callback',
+        'bluem-woocommerce/bluem-integrations/gform_callback' => 'bluem_woocommerce_integration_gform_callback',
+    ];
+
+    if ( isset( $route_query_vars[ $route ] ) ) {
+        $query_args = [ $route_query_vars[ $route ] => 1 ] + $query_args;
+
+        return add_query_arg( $query_args, home_url( '/' ) );
+    }
+
+    return add_query_arg( $query_args, home_url( $route ) );
+}
+
+/**
  * Check if WooCommerce is active
  **/
 if ( ! bluem_is_woocommerce_activated() ) {
@@ -409,8 +452,7 @@ function bluem_woocommerce_no_permalinks_notice() {
     if ( is_admin() ) {
         echo '<div class="notice notice-warning is-dismissible">
         <p><span class="dashicons dashicons-warning"></span>';
-        echo wp_kses_post( __( 'The Bluem integration depends on the WordPress permalink setting because of routing.<br>
-        Select any option except \'Plain\' in Permalinks.', 'bluem' ) );
+        echo wp_kses_post( __( 'Bluem callbacks also work with the WordPress Plain permalink structure. We recommend a non-Plain permalink setting for more readable Bluem, WooCommerce and other integration URLs.', 'bluem' ) );
         echo '<a href="' . esc_url( admin_url( 'options-permalink.php' ) ) . '">' . esc_html__( 'Settings', 'bluem' ) . '</a>.</p>
         </div>';
     }

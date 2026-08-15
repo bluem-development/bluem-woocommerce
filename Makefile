@@ -24,6 +24,7 @@ help:
 	@printf '\- make acceptance_settings_test\n'
 	@printf '\- make acceptance_checkout_test\n'
 	@printf '\- make acceptance_e2e_test\n'
+	@printf '\- make acceptance_permalink_test\n'
 	@printf '\- make acceptance_browser_test\n'
 	@printf '\- make integration_test\n'
 	@printf '\- make add_git_hooks\n'
@@ -107,7 +108,13 @@ acceptance_checkout_prepare: acceptance_prepare
 acceptance_checkout_test: acceptance_checkout_prepare
 	@printf 'Gateway registration and checkout acceptance tests:\n';
 	docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-gateways.php
+	docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-permalink-routing.php
 	php vendor/bin/codecept run Acceptance --group checkout --steps
+
+.PHONY: acceptance_permalink_test
+acceptance_permalink_test: acceptance_checkout_prepare
+	@printf 'Permalink-independent callback acceptance tests:\n';
+	docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-permalink-routing.php
 
 .PHONY: playwright_install
 playwright_install:
