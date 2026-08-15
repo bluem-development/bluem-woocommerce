@@ -22,7 +22,7 @@ services:
   wordpress:
     depends_on:
       - db
-    image: wordpress:php8.4-apache
+    image: "${WORDPRESS_IMAGE:-wordpress:php8.4-apache}"
     volumes:
       - ./docker/wordpress:/var/www/html
       - ./docker/plugins:/var/www/html/wp-content/plugins
@@ -37,7 +37,7 @@ services:
   wpcli:
     depends_on:
       - wordpress
-    image: wordpress:cli-php8.4
+    image: "${WORDPRESS_CLI_IMAGE:-wordpress:cli-php8.4}"
     user: "0:0"
     volumes:
       - ./docker/wordpress:/var/www/html
