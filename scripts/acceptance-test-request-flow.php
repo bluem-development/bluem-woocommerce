@@ -59,7 +59,17 @@ WP_CLI::log('Callback HTTP status: ' . wp_remote_retrieve_response_code($callbac
 WP_CLI::log('Callback location: ' . (wp_remote_retrieve_header($callback_response, 'location') ?: ''));
 WP_CLI::log('Callback response: ' . wp_strip_all_tags(wp_remote_retrieve_body($callback_response)));
 
-$order = new WC_Order($order->get_id());
+$order_id = $order->get_id();
+// The callback runs in the WordPress container while this WP-CLI process has
+// already cached the pending order. Clear those local caches before asserting
+// the database state written by the callback.
+clean_post_cache($order_id);
+if (class_exists('Automattic\\WooCommerce\\Caches\\OrderCache')) {
+    wc_get_container()
+        ->get(Automattic\WooCommerce\Caches\OrderCache::class)
+        ->remove($order_id);
+}
+$order = wc_get_order($order_id);
 $request = bluem_db_get_request_by_transaction_id($transaction_id);
 $order_notes = wc_get_order_notes([
     'order_id' => $order->get_id(),

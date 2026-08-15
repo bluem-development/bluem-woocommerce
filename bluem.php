@@ -2241,14 +2241,24 @@ function bluem_display_module_notices( $notices, $title = '', $btn_link = '', $b
 // WooCommerce uses a different order-editor screen depending on whether HPOS
 // is enabled. Register the request information for both storage modes.
 add_action( 'add_meta_boxes_woocommerce_page_wc-orders', 'bluem_order_requests_metabox', 99, 1 );
-add_action( 'add_meta_boxes_shop_order', 'bluem_order_requests_metabox', 99, 1 );
-function bluem_order_requests_metabox( $order )
+add_action( 'add_meta_boxes', 'bluem_legacy_order_requests_metabox', 99, 2 );
+
+function bluem_legacy_order_requests_metabox( $post_type, $post )
+{
+    if ( $post_type !== 'shop_order' ) {
+        return;
+    }
+
+    bluem_order_requests_metabox( $post, 'shop_order' );
+}
+
+function bluem_order_requests_metabox( $order, $screen = 'woocommerce_page_wc-orders' )
 {
     add_meta_box(
             'woocommerce-shipping-details',
             esc_html__('Bluem request(s)', 'bluem'),
             'bluem_order_requests_metabox_content',
-            'woocommerce_page_wc-orders',
+            $screen,
             'normal',
             'high'
     );
