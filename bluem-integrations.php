@@ -117,7 +117,7 @@ function bluem_woocommerce_integration_wpcf7_javascript()
     }, false );
 
     document.addEventListener( "wpcf7mailsent", function ( event ) {
-        const url = "' . esc_url(home_url('bluem-woocommerce/bluem-integrations/wpcf7_mandate')) . '"
+        const url = "' . esc_url(bluem_woocommerce_route_url('bluem-woocommerce/bluem-integrations/wpcf7_mandate')) . '"
 
         var contact_form_id = event.detail.contactFormId;
         var inputs = event.detail.inputs;
@@ -224,7 +224,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
 
             // Check the sequence type or previous success results
             if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0) {
-                $bluem_config->merchantReturnURLBase = home_url(
+                $bluem_config->merchantReturnURLBase = bluem_woocommerce_route_url(
                     'bluem-woocommerce/bluem-integrations/wpcf7_callback'
                 );
 
@@ -407,7 +407,7 @@ function bluem_woocommerce_integration_wpcf7_submit()
 
             // Check the sequence type or previous success results
             if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0) {
-                $bluem_config->merchantReturnURLBase = home_url(
+                $bluem_config->merchantReturnURLBase = bluem_woocommerce_route_url(
                     'bluem-woocommerce/bluem-integrations/wpcf7_callback'
                 );
 
@@ -847,7 +847,7 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
 
         // Check the sequence type or previous success results
         if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0) {
-            $bluem_config->merchantReturnURLBase = home_url(
+            $bluem_config->merchantReturnURLBase = bluem_woocommerce_route_url(
                 'bluem-woocommerce/bluem-integrations/gform_callback'
             );
 
