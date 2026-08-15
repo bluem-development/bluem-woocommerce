@@ -31,7 +31,7 @@ function bluem_mandate_shortcode_execute(): void
 
         $bluem_config = bluem_woocommerce_get_config();
 
-        $bluem_config->merchantReturnURLBase = home_url(
+        $bluem_config->merchantReturnURLBase = bluem_woocommerce_route_url(
             'bluem-woocommerce/mandate_shortcode_callback'
         );
 
@@ -275,7 +275,7 @@ function bluem_mandate_shortcode_callback(): void
 
     $bluem_config = bluem_woocommerce_get_config();
 
-    $bluem_config->merchantReturnURLBase = home_url('wc-api/bluem_mandates_callback');
+    $bluem_config->merchantReturnURLBase = bluem_woocommerce_route_url('wc-api/bluem_mandates_callback');
 
     $storage = bluem_db_get_storage();
     $storage = is_array($storage) ? $storage : [];
@@ -499,7 +499,7 @@ function bluem_mandateform(): string
 
     $storage = bluem_db_get_storage();
 
-    $bluem_config->merchantReturnURLBase = home_url(
+    $bluem_config->merchantReturnURLBase = bluem_woocommerce_route_url(
         'wc-api/bluem_mandates_callback'
     );
 
@@ -595,7 +595,10 @@ function bluem_mandateform(): string
         return '<p>' . esc_html__('Thank you for your mandate with mandate ID:', 'bluem') . " <span class='bluem-mandate-id'>" . esc_attr($mandateID) . '</span></p>';
     } else {
         $nonce = wp_create_nonce('bluem-nonce');
-        $html = '<form action="' . home_url('bluem-woocommerce/mandate_shortcode_execute') . '?_wpnonce=' . $nonce . '" method="post">';
+        $html = '<form action="' . esc_url( bluem_woocommerce_route_url(
+            'bluem-woocommerce/mandate_shortcode_execute',
+            ['_wpnonce' => $nonce]
+        ) ) . '" method="post">';
         $html .= '<p>' . esc_html__('You still need to issue a direct debit mandate.', 'bluem') . '</p>';
 
         if (!empty($bluem_config->debtorReferenceFieldName)) {
