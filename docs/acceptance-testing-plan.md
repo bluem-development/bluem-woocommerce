@@ -18,11 +18,53 @@ Implemented on the acceptance branch and wired into pull-request CI:
 - A separate WooCommerce-backed `checkout` acceptance group that verifies all five gateway links appear in WooCommerce payment settings without calling Bluem.
 - A Chromium Playwright job that verifies the JavaScript-capable Bluem settings page renders after administrator login.
 
-Still planned:
+The broad local flow now covers the first HTTP payment creation/callback path,
+deterministic order/request fixtures, and the main Playwright admin
+interactions. Future extensions can add additional payment methods, webhook
+variants, and cart-level checkout submission scenarios.
 
-- Full HTTP callback/webhook endpoint tests with mocked Bluem responses and order lookup.
-- A real cart/order checkout submission test once a deterministic product and payment fixture are added.
-- Broader Playwright interaction coverage for tabs, settings changes, and checkout UI behavior.
+Potential plugin/library defects found while extending this flow are tracked
+separately in [docs/known-issues.md](known-issues.md), rather than being
+silently encoded as test setup behavior.
+
+
+## Broad isolated end-to-end flow
+
+Run the full local regression flow with:
+
+```bash
+make acceptance_e2e_test
+```
+
+This target builds the current plugin package, starts WordPress, WooCommerce,
+MySQL, and a local Bluem mock service, then runs the existing Codeception suite,
+the mocked payment request/status flow, and the Playwright browser suite. The
+mock transport is selected only when `BLUEM_ACCEPTANCE_MOCK_URL` is set, so the
+normal plugin path remains unchanged and no Bluem hostname is contacted.
+
+The seeded fixture includes a product, pending order, linked Bluem payment
+request, and iDEAL gateway settings. The broad flow covers plugin deactivate /
+reactivate, admin and settings pages, WooCommerce activation and gateway
+registration, settings persistence, the order Bluem request metabox, the
+transaction detail page, payment request creation, mocked status retrieval,
+request persistence, and the resulting order transition to processing.
+
+The flow also exercises a mocked `Pending` callback and verifies that it keeps
+the order pending while persisting the in-progress request status. The browser
+transaction test opens the detail page and verifies the persisted transaction.
+
+The expanded flow also enables the mandate and iDIN modules for a separate
+non-checkout pass. It creates an eMandate through the WooCommerce mandate
+gateway, calls the mocked `SRX` status callback, and verifies the request row
+and order transition. It renders the `[bluem_identificatieformulier]` shortcode,
+creates an iDIN request through the shortcode entry point, calls the mocked
+`ISX` callback, and verifies the identity request reaches `Success`.
+
+The browser lifecycle test also completes the local Bluem activation form
+after reactivation because the plugin intentionally resets its setup guard on
+activation. The passing local run produced 8 Codeception tests with 18
+assertions, a mocked callback that returned HTTP 302 and moved the fixture
+order to `processing`, and 4 passing Chromium tests.
 
 ## Docker preparation and translation test
 
@@ -217,6 +259,19 @@ tests/playwright/bluem-admin.spec.ts
 The CI job installs Chromium, runs `npm run test:e2e`, and uploads Playwright
 traces, screenshots, and reports when available. The browser layer does not
 install WordPress or prepare sample data.
+
+## Full isolated E2E CI job
+
+The complete `make acceptance_e2e_test` flow also runs in its own
+`acceptance-e2e` CI job. This is intentionally separate from the lightweight
+browser job: it prepares WooCommerce fixtures, starts the local Bluem mock,
+exercises the Codeception HTTP flow and the Playwright admin flow, and has a
+longer timeout and dedicated Docker/Codeception/Playwright diagnostics.
+
+The job has no Bluem credentials and sets the mock transport endpoint only for
+the test environment. It does not contact Bluem or create billable requests.
+Keeping it as a separate job gives pull requests broad regression protection
+without coupling the PHP unit matrix to Docker lifecycle or browser failures.
 
 Equivalent local commands:
 

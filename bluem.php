@@ -52,6 +52,27 @@ use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
 
+/**
+ * Create a Bluem client while allowing acceptance tests to replace only its
+ * HTTP transport. Request construction and response parsing remain real.
+ *
+ * @param object $config Bluem configuration object.
+ */
+function bluem_woocommerce_create_client(object $config): Bluem {
+    $transport = apply_filters('bluem_woocommerce_http_transport', null, $config);
+
+    $mockEndpoint = getenv('BLUEM_ACCEPTANCE_MOCK_URL');
+    if ($transport === null && is_string($mockEndpoint) && $mockEndpoint !== '') {
+        $transport = new \Bluem\Wordpress\Testing\BluemAcceptanceHttpTransport($mockEndpoint);
+    }
+
+    if ($transport instanceof \Bluem\BluemPHP\Transport\HttpTransportInterface) {
+        return new Bluem($config, $transport);
+    }
+
+    return new Bluem($config);
+}
+
 // Initialize before loading the feature modules so uncaught Bluem errors can be captured.
 BluemSentry::initialize();
 
@@ -740,7 +761,7 @@ function bluem_update_request_by_id( $request_id ) {
         $bluem_config->environment = $bluem_env;
     }
 
-    $bluem = new Bluem( $bluem_config );
+    $bluem = bluem_woocommerce_create_client( $bluem_config );
 
     // Check for order
     if ( ! empty( $request->order_id ) ) {
@@ -2217,14 +2238,27 @@ function bluem_display_module_notices( $notices, $title = '', $btn_link = '', $b
  *  Adding Meta container admin shop_order pages
  */
 
+// WooCommerce uses a different order-editor screen depending on whether HPOS
+// is enabled. Register the request information for both storage modes.
 add_action( 'add_meta_boxes_woocommerce_page_wc-orders', 'bluem_order_requests_metabox', 99, 1 );
-function bluem_order_requests_metabox( $order )
+add_action( 'add_meta_boxes', 'bluem_legacy_order_requests_metabox', 99, 2 );
+
+function bluem_legacy_order_requests_metabox( $post_type, $post )
+{
+    if ( $post_type !== 'shop_order' ) {
+        return;
+    }
+
+    bluem_order_requests_metabox( $post, 'shop_order' );
+}
+
+function bluem_order_requests_metabox( $order, $screen = 'woocommerce_page_wc-orders' )
 {
     add_meta_box(
             'woocommerce-shipping-details',
             esc_html__('Bluem request(s)', 'bluem'),
             'bluem_order_requests_metabox_content',
-            'woocommerce_page_wc-orders',
+            $screen,
             'normal',
             'high'
     );
@@ -2235,8 +2269,10 @@ function bluem_order_requests_metabox( $order )
  *
  * @return void
  */
-function bluem_order_requests_metabox_content($post) {
-    $order_id = $post->ID;
+function bluem_order_requests_metabox_content($order) {
+    $order_id = is_object($order) && method_exists($order, 'get_id')
+        ? $order->get_id()
+        : $order->ID;
 
     $requests_links = bluem_db_get_links_for_order( $order_id );
 

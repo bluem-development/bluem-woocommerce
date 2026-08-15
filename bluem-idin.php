@@ -926,7 +926,7 @@ function bluem_idin_shortcode_callback(): void
     $bluem_config->brandID = $bluem_config->IDINBrandID ?? $bluem_config->brandID ?? '';
 
     try {
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (Exception $e) {
         return;
         // @todo: deal with incorrectly configured Bluem here
@@ -1584,7 +1584,7 @@ function bluem_idin_validation_needed(): bool
     }
 
     try {
-        $bluem = new Bluem($bluem_config);
+    $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (Exception $e) {
         // @todo: deal with non-configured bluem brandID, or assert that is has been configured on a higher level
         return false;
@@ -1693,7 +1693,7 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
     $bluem_config->brandID = $bluem_config->IDINBrandID;
 
     try {
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (InvalidBluemConfigurationException $e) {
         printf(
             /* translators: %s: Error message */
