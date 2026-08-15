@@ -123,6 +123,14 @@ integration_test:
 	@printf 'HPOS/order-storage integration tests:\n';
 	bash ./scripts/run-hpos-integration-test.sh
 
+.PHONY: wordpress_7_1_compatibility_test
+wordpress_7_1_compatibility_test:
+	@printf 'WordPress 7.1 compatibility checks:\n';
+	$(MAKE) acceptance_smoke_test
+	$(MAKE) acceptance_settings_test
+	$(MAKE) acceptance_checkout_test
+	$(MAKE) integration_test
+
 .PHONY: add_git_hooks
 add_git_hooks:
 	sh ./scripts/add-git-hooks.sh
