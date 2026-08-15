@@ -114,14 +114,18 @@ playwright_install:
 	npm install --no-audit --no-fund
 	npx playwright install chromium
 
-.PHONY: acceptance_browser_test
-acceptance_browser_test: acceptance_checkout_prepare playwright_install
-	@printf 'Playwright browser tests:\n';
+.PHONY: acceptance_browser_run
+acceptance_browser_run:
 	@order_id=$$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_order_id); \
 		request_id=$$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_request_id); \
 		export WP_ACCEPTANCE_FIXTURE_ORDER_ID=$$order_id; \
 		export WP_ACCEPTANCE_FIXTURE_REQUEST_ID=$$request_id; \
 		npm run test:e2e
+
+.PHONY: acceptance_browser_test
+acceptance_browser_test: acceptance_checkout_prepare playwright_install
+	@printf 'Playwright browser tests:\n';
+	@$(MAKE) --no-print-directory acceptance_browser_run
 
 .PHONY: acceptance_e2e_test
 acceptance_e2e_test: playwright_install
@@ -140,12 +144,8 @@ acceptance_e2e_test: playwright_install
 		docker compose run --rm wpcli --allow-root rewrite flush --hard; \
 		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-mandate-flow.php; \
 		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-identity-flow.php
-	@order_id=$$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_order_id); \
-		request_id=$$(docker compose run --rm wpcli --allow-root option get bluem_acceptance_fixture_request_id); \
-		export WP_ACCEPTANCE_FIXTURE_ORDER_ID=$$order_id; \
-		export WP_ACCEPTANCE_FIXTURE_REQUEST_ID=$$request_id; \
-		export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
-		npm run test:e2e
+	@export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
+		$(MAKE) --no-print-directory acceptance_browser_run
 
 .PHONY: integration_test
 integration_test:
