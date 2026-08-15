@@ -53,6 +53,7 @@ use Bluem\Wordpress\Observability\BluemSentry;
 use Bluem\Wordpress\Presentation\BluemRequestGrouper;
 use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
+use Bluem\Wordpress\Support\BluemSupportReportTrace;
 
 /**
  * Create a Bluem client while allowing acceptance tests to replace only its
@@ -578,17 +579,8 @@ function bluem_get_support_report_environment(): array {
  * Build a compact stack trace without function arguments for support reports.
  */
 function bluem_get_support_report_trace(): array {
-    $trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 12 );
-
-    return array_map(
-            static function ( $frame ) {
-                return [
-                        'function' => ( $frame['class'] ?? '' ) . ( $frame['type'] ?? '' ) . ( $frame['function'] ?? '' ),
-                        'file'     => $frame['file'] ?? '',
-                        'line'     => $frame['line'] ?? '',
-                ];
-            },
-            array_slice( $trace, 1 )
+    return (new BluemSupportReportTrace())->format(
+        debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 12)
     );
 }
 
