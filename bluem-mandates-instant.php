@@ -40,7 +40,7 @@ function bluem_mandates_instant_request(): void
 
     // Check the sequence type or previous success results
     if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) === 0) {
-        $bluem_config->merchantReturnURLBase = home_url(
+        $bluem_config->merchantReturnURLBase = bluem_woocommerce_route_url(
             'bluem-woocommerce/mandates_instant_callback'
         );
 

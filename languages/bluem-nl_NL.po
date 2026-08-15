@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce 1.6.0\n"
+"Project-Id-Version: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce 1.6.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bluem-woocommerce\n"
 "Last-Translator: Bluem Payment Services <pluginsupport@bluem.nl>\n"
 "Language-Team: Dutch <pluginsupport@bluem.nl>\n"
@@ -1081,13 +1081,9 @@ msgstr ""
 "De Bluem-integratie is sterk afhankelijk van WooCommerce. Installeer en/of activeer deze plugin. <br/>\n"
 "            Gebruikt u WooCommerce niet, dan kunt u deze melding en WooCommerce-functionaliteit uitschakelen in de %s."
 
-#: bluem.php:373
-msgid ""
-"The Bluem integration depends on the WordPress permalink setting because of routing.<br>\n"
-"        Select any option except 'Plain' in Permalinks."
-msgstr ""
-"De Bluem-integratie is voor routing afhankelijk van de WordPress-permalinkinstelling.<br>\n"
-"        Kies bij Permalinks een andere optie dan 'Eenvoudig'."
+#: bluem.php:434
+msgid "Bluem callbacks also work with the WordPress Plain permalink structure. We recommend a non-Plain permalink setting for more readable Bluem, WooCommerce and other integration URLs."
+msgstr "Bluem-callbacks werken ook met de Plain-permalinkstructuur van WordPress. We raden een andere permalinkinstelling dan Plain aan voor beter leesbare URL’s van Bluem, WooCommerce en andere integraties."
 
 #: bluem.php:388
 #: bluem.php:389
