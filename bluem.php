@@ -2238,7 +2238,10 @@ function bluem_display_module_notices( $notices, $title = '', $btn_link = '', $b
  *  Adding Meta container admin shop_order pages
  */
 
+// WooCommerce uses a different order-editor screen depending on whether HPOS
+// is enabled. Register the request information for both storage modes.
 add_action( 'add_meta_boxes_woocommerce_page_wc-orders', 'bluem_order_requests_metabox', 99, 1 );
+add_action( 'add_meta_boxes_shop_order', 'bluem_order_requests_metabox', 99, 1 );
 function bluem_order_requests_metabox( $order )
 {
     add_meta_box(
@@ -2256,8 +2259,10 @@ function bluem_order_requests_metabox( $order )
  *
  * @return void
  */
-function bluem_order_requests_metabox_content($post) {
-    $order_id = $post->ID;
+function bluem_order_requests_metabox_content($order) {
+    $order_id = is_object($order) && method_exists($order, 'get_id')
+        ? $order->get_id()
+        : $order->ID;
 
     $requests_links = bluem_db_get_links_for_order( $order_id );
 

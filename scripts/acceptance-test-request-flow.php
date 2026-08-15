@@ -60,11 +60,24 @@ WP_CLI::log('Callback location: ' . (wp_remote_retrieve_header($callback_respons
 WP_CLI::log('Callback response: ' . wp_strip_all_tags(wp_remote_retrieve_body($callback_response)));
 
 $order = new WC_Order($order->get_id());
+$request = bluem_db_get_request_by_transaction_id($transaction_id);
+WP_CLI::log(sprintf(
+    'Callback persistence: order %d status %s; request status %s.',
+    $order->get_id(),
+    $order->get_status(),
+    $request->status ?? 'not found'
+));
 if ($order->get_status() !== 'processing') {
-    WP_CLI::error('Mocked Bluem Success callback did not move the order to processing. Status: ' . $order->get_status());
+    WP_CLI::error(sprintf(
+        'Mocked Bluem Success callback did not move order %d to processing. Order status: %s; request status: %s; transaction: %s; entrance code: %s.',
+        $order->get_id(),
+        $order->get_status(),
+        $request->status ?? 'not found',
+        $transaction_id,
+        $entrance_code
+    ));
 }
 
-$request = bluem_db_get_request_by_transaction_id($transaction_id);
 if (! $request || $request->status !== 'Success') {
     WP_CLI::error('Mocked Bluem Success callback did not persist the request status.');
 }
