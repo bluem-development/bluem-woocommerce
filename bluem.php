@@ -1413,7 +1413,7 @@ function bluem_woocommerce_show_general_profile_fields() {
                 printf(
                 /* translators: %s: link to bluem settings */
                         esc_html__( 'Go to the <a href="%s">
-                    settings</a> to change the behavior of each Bluem component.', 'bluem' ), esc_url( home_url( "wp-admin/admin.php?page=bluem-settings" ) ) );
+                    settings</a> to change the behavior of each Bluem component.', 'bluem' ), esc_url( admin_url( 'admin.php?page=bluem-settings' ) ) );
                 ?>
             </td>
         </tr>

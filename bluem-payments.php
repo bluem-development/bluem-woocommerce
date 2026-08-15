@@ -40,7 +40,7 @@ function bluem_woocommerce_payments_settings_section()
 {
     echo '<p><a id="tab_payments"></a>
 <strong>Note: in addition to configuring the functions below, you must also activate the payment methods in the
-<a href="' . (esc_url(home_url()) . 'wp-admin/admin.php?page=wc-settings&tab=checkout') . '" target="_blank">WooCommerce payment settings</a>.
+<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) . '" target="_blank">WooCommerce payment settings</a>.
 </strong><br>
     Here you can configure important details for ePayments transactions so you can easily receive payments.</p>
     <p>Read <a href="' . esc_url(BLUEM_WOOCOMMERCE_MANUAL_URL) . '" target="_blank">the manual</a> for more information.</p>';
