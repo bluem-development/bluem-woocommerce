@@ -47,6 +47,10 @@ fi
 wpcli language core install en_US
 wpcli site switch-language en_US
 wpcli language core install nl_NL
+# Bluem's WooCommerce callback endpoints use pretty URLs under /wc-api/.
+# A fresh WordPress installation defaults to the Plain permalink structure,
+# which routes those callback URLs to the front page instead of the gateway.
+wpcli rewrite structure '/%postname%/' --hard
 wpcli plugin activate bluem
 wpcli plugin is-active bluem
 

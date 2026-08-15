@@ -5,6 +5,7 @@ async function login(page: Page) {
   await page.locator('input[name="log"]').fill('wordpress');
   await page.locator('input[name="pwd"]').fill('wordpress');
   await page.locator('#wp-submit').click();
+  await expect(page.locator('#wpadminbar')).toBeVisible();
 }
 
 test('administrator can inspect the fixture order and Bluem transaction', async ({ page }) => {
@@ -28,7 +29,7 @@ test('administrator can deactivate and reactivate Bluem', async ({ page }) => {
   await login(page);
   await page.goto('/wp-admin/plugins.php');
 
-  const pluginRow = page.locator('#the-list tr').filter({ hasText: 'Bluem ePayments' });
+  const pluginRow = page.locator('#the-list tr[data-plugin="bluem/bluem.php"]:not(.plugin-update-tr)');
   await expect(pluginRow).toBeVisible();
   await pluginRow.getByRole('link', { name: 'Deactivate' }).click();
   await expect(pluginRow.getByRole('link', { name: 'Activate' })).toBeVisible();
