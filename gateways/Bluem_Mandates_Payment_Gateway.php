@@ -26,7 +26,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
             'bluem_mandates',
             esc_html__('Bluem Digital Direct Debit Mandate (eMandate)', 'bluem'),
             $methodDescription,
-            home_url('wc-api/bluem_mandates_callback')
+            bluem_woocommerce_route_url('wc-api/bluem_mandates_callback')
         );
 
         if (isset($this->bluem_config->localInstrumentCode) && $this->bluem_config->localInstrumentCode === "B2B") {

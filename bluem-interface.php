@@ -3,6 +3,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
+use Bluem\Wordpress\Presentation\BluemRequestTypeLabeler;
 use Bluem\Wordpress\Presentation\BluemDateFormatter;
 // @todo create a language file and consistently localize everything
 
@@ -417,20 +418,9 @@ function bluem_render_requests_list($requests)
  */
 function bluem_get_request_type_label($type): string
 {
-    $type = strtolower(trim((string) $type));
-
-    $labels = [
-        'ideal' => __('iDEAL', 'bluem'),
-        'creditcard' => __('Credit card', 'bluem'),
-        'paypal' => __('PayPal', 'bluem'),
-        'sofort' => __('SOFORT', 'bluem'),
-        'cartebancaire' => __('Carte Bancaire', 'bluem'),
-        'mandates' => __('eMandate', 'bluem'),
-        'payments' => __('Payment', 'bluem'),
-        'identity' => __('iDIN', 'bluem'),
-    ];
-
-    return $labels[$type] ?? ($type !== '' ? ucfirst($type) : __('Unknown', 'bluem'));
+    return (new BluemRequestTypeLabeler(
+        static fn(string $label): string => __($label, 'bluem')
+    ))->label($type);
 }
 
 
