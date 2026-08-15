@@ -53,6 +53,7 @@ use Bluem\Wordpress\Observability\BluemSentry;
 use Bluem\Wordpress\Presentation\BluemRequestGrouper;
 use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
+use Bluem\Wordpress\Support\BluemModuleStatus;
 use Bluem\Wordpress\Support\BluemSupportReportTrace;
 
 /**
