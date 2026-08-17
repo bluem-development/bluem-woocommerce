@@ -54,6 +54,7 @@ use Bluem\Wordpress\Presentation\BluemRequestGrouper;
 use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
 use Bluem\Wordpress\Support\BluemSupportReportEnvironment;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
+use Bluem\Wordpress\Settings\BluemOptionLookup;
 use Bluem\Wordpress\Support\BluemSupportReportTrace;
 
 /**
@@ -1472,13 +1473,7 @@ function bluem_woocommerce_show_general_profile_fields() {
 
 // Settings functions
 function bluem_woocommerce_get_option( $key ) {
-    $options = bluem_woocommerce_get_core_options();
-
-    if ( array_key_exists( $key, $options ) ) {
-        return $options[ $key ];
-    }
-
-    return false;
+    return (new BluemOptionLookup(bluem_woocommerce_get_core_options()))->get($key);
 }
 
 function bluem_woocommerce_settings_render_environment() {
