@@ -16,6 +16,7 @@ use Sentry\State\Scope;
 use Sentry\Severity;
 use Sentry\Stacktrace;
 use Throwable;
+use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -76,6 +77,12 @@ final class BluemSentry
                     ));
                 },
             ]);
+
+            \Sentry\configureScope(static function (Scope $scope): void {
+                foreach (self::getDiagnosticTags() as $tag => $value) {
+                    $scope->setTag('bluem_' . $tag, $value);
+                }
+            });
         } catch (Throwable $exception) {
             // Observability must never interfere with checkout or callbacks.
             self::$initialized = true;
@@ -376,6 +383,37 @@ final class BluemSentry
     private static function getPluginVersion(): string
     {
         return defined('BLUEM_PLUGIN_VERSION') ? BLUEM_PLUGIN_VERSION : 'unknown';
+    }
+
+    /**
+     * Return non-identifying runtime versions useful for compatibility diagnostics.
+     *
+     * @return array<string, string>
+     */
+    private static function getDiagnosticTags(): array
+    {
+        $tags = [
+            'plugin_version' => self::getPluginVersion(),
+            'php_version' => PHP_VERSION,
+            'php_sapi' => PHP_SAPI,
+        ];
+
+        if (function_exists('get_bloginfo')) {
+            $tags['wordpress_version'] = (string) get_bloginfo('version');
+        }
+
+        if (defined('WC_VERSION')) {
+            $tags['woocommerce_version'] = (string) WC_VERSION;
+        }
+
+        $bluemPhpVersion = (new BluemComposerDependencyVersion(
+            dirname(__DIR__, 2) . '/composer.lock'
+        ))->getVersion('bluem-development/bluem-php');
+        if ($bluemPhpVersion !== null) {
+            $tags['bluem_php_version'] = $bluemPhpVersion;
+        }
+
+        return $tags;
     }
 
     private static function getEnvironment(): string
