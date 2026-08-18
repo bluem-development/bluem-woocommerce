@@ -39,6 +39,48 @@ final class BluemSentry
     private static bool $initialized = false;
 
     /**
+     * Queue a production metric using Sentry's trace metrics API.
+     *
+     * Metrics remain buffered until the SDK flushes the current runtime
+     * context, or until traceMetrics()->flush() is called explicitly.
+     * Sentry failures must never affect plugin execution.
+     *
+     * @param 'counter'|'gauge'|'distribution' $type
+     * @param int|float                         $value
+     * @param array<string, int|float|string|bool> $attributes
+     */
+    public static function captureMetric(
+        string $type,
+        string $name,
+        int|float $value,
+        array $attributes = [],
+        ?\Sentry\Unit $unit = null
+    ): void {
+        self::initialize();
+
+        try {
+            if (! function_exists('Sentry\\traceMetrics')) {
+                return;
+            }
+
+            $metrics = \Sentry\traceMetrics();
+            switch ($type) {
+                case 'counter':
+                    $metrics->count($name, $value, $attributes, $unit);
+                    break;
+                case 'gauge':
+                    $metrics->gauge($name, $value, $attributes, $unit);
+                    break;
+                case 'distribution':
+                    $metrics->distribution($name, $value, $attributes, $unit);
+                    break;
+            }
+        } catch (Throwable) {
+            // Observability must remain non-blocking for checkout and callbacks.
+        }
+    }
+
+    /**
      * Initialize Sentry once, with only error-related integrations enabled.
      */
     public static function initialize(): void
