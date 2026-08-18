@@ -50,6 +50,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
+use Bluem\Wordpress\Users\BluemUserIndexer;
 use Bluem\Wordpress\Presentation\BluemRequestGrouper;
 use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
 use Bluem\Wordpress\Support\BluemSupportReportEnvironment;
@@ -1133,15 +1134,7 @@ function bluem_requests_view_with_filter( $filters = [], string $current_categor
  * @return void
  */
 function bluem_get_users_by_id(): array {
-    $users_by_id = [];
-
-    $users = get_users();
-
-    foreach ( $users as $user ) {
-        $users_by_id[ $user->ID ] = $user;
-    }
-
-    return $users_by_id;
+    return (new BluemUserIndexer())->index(get_users());
 }
 
 function bluem_get_requests_per_type( $filters = [] ): array {
