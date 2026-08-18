@@ -50,6 +50,7 @@ require __DIR__ . '/vendor/autoload.php';
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
+use Bluem\Wordpress\Presentation\BluemAdminTabResolver;
 use Bluem\Wordpress\Presentation\BluemRequestGrouper;
 use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
 use Bluem\Wordpress\Support\BluemSupportReportEnvironment;
@@ -1193,7 +1194,9 @@ function bluem_sort_requests_per_type( $_requests ): array {
 
 // @todo Deprecate this
 function bluem_woocommerce_tab( $default_tab = null ) {
-    return isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : $default_tab;
+    $tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : null;
+
+    return (new BluemAdminTabResolver())->resolve($tab, $default_tab);
 }
 
 /**
