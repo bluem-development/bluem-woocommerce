@@ -729,27 +729,24 @@ function bluem_requests_view(): void
         return;
         }
 
-        $filters         = [];
-        $enabled_modules = bluem_filter_request_types_enabled( BLUEM_TRANSACTION_REQUEST_TYPES );
-        if ( str_contains( $_GET['request_type'], ',' ) ) {
-            $multiple_filters = explode( ',', $_GET['request_type'] );
-            $filters          = array_intersect( $multiple_filters, BLUEM_TRANSACTION_REQUEST_TYPES );
+    $filters         = [];
+    $enabled_modules = array_values( bluem_filter_request_types_enabled( BLUEM_TRANSACTION_REQUEST_TYPES ) );
+    $request_type    = isset( $_GET['request_type'] ) && is_string( $_GET['request_type'] )
+        ? sanitize_text_field( wp_unslash( $_GET['request_type'] ) )
+        : '';
 
-            // fallback to first enabled module if no valid filter found
-            if ( count( $filters ) === 0 ) {
-                $filters = $enabled_modules[0];
-            }
+    if ( str_contains( $request_type, ',' ) ) {
+        $multiple_filters = explode( ',', $request_type );
+        $filters          = array_values( array_intersect( $multiple_filters, BLUEM_TRANSACTION_REQUEST_TYPES ) );
+    } elseif ( in_array( $request_type, BLUEM_TRANSACTION_REQUEST_TYPES, true ) ) {
+        $filters = [ $request_type ];
     }
 
-
-    if (count($filters) > 0) {
-        $current_category = $filters[0] ?? '';
-        } else if ( isset( $_GET['request_type'] ) && in_array( $_GET['request_type'], BLUEM_TRANSACTION_REQUEST_TYPES, true ) ) {
-            $filters          = [ $_GET['request_type'] ];
-        $current_category = $_GET['request_type'] ?? '';
-    } else if(!empty($enabled_modules[0])) {
-            $filters          = $enabled_modules[0];
-            $current_category = $enabled_modules[0];
+    if ( count( $filters ) > 0 ) {
+        $current_category = $filters[0];
+    } elseif ( ! empty( $enabled_modules ) ) {
+        $filters          = [ $enabled_modules[0] ];
+        $current_category = $enabled_modules[0];
     } else {
         $current_category = '';
         }
