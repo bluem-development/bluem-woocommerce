@@ -43,7 +43,7 @@ global $bluem_db_version;
 $bluem_db_version = 1.5;
 
 const BLUEM_WOOCOMMERCE_MANUAL_URL    = "https://codexology.notion.site/Bluem-voor-WordPress-en-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e";
-const BLUEM_PLUGIN_VERSION = '1.6.0';
+const BLUEM_PLUGIN_VERSION = '1.6.1';
 
 require __DIR__ . '/vendor/autoload.php';
 

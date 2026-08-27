@@ -81,6 +81,7 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
+- 1.6.1: Fixed incorrect WooCommerce order matching for Bluem payment and eMandate callbacks when HPOS is disabled.
 - 1.6.1: Fixed Bluem payment, mandate, identity, and integration callback URLs for sites using WordPress Plain permalinks.
 - 1.6.0: Confirmed compatibility with WordPress 7.1, including activation, Bluem settings, classic and Blocks payment gateways, shortcode rendering, and WooCommerce HPOS order administration paths.
 - 1.5.5: Prevented cookie header warnings by skipping cookie writes after headers are sent or during WP-Cron.

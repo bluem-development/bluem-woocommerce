@@ -12,6 +12,18 @@ namespace Automattic\WooCommerce\Blocks\Payments\Integrations {
     }
 }
 
+namespace Automattic\WooCommerce\Utilities {
+    final class OrderUtil
+    {
+        public static bool $custom_orders_table_enabled = true;
+
+        public static function custom_orders_table_usage_is_enabled(): bool
+        {
+            return self::$custom_orders_table_enabled;
+        }
+    }
+}
+
 namespace {
     if (!function_exists('get_option')) {
         function get_option($key, $default = false)
@@ -89,6 +101,7 @@ namespace Unit {
     {
         protected function setUp(): void
         {
+            \Automattic\WooCommerce\Utilities\OrderUtil::$custom_orders_table_enabled = true;
             $GLOBALS['bluem_test_options'] = [];
             $GLOBALS['bluem_test_registered_script'] = null;
             $GLOBALS['bluem_test_woocommerce'] = new \BluemTestWooCommerce(
@@ -114,6 +127,17 @@ namespace Unit {
             self::assertSame('bluem_transactionid', $result['meta_query'][1]['key']);
             self::assertSame('bluem_entrancecode', $result['meta_query'][2]['key']);
             self::assertSame('bluem_mandateid', $result['meta_query'][3]['key']);
+        }
+
+        public function testLegacyOrderStorageKeepsCustomCorrelationArguments(): void
+        {
+            \Automattic\WooCommerce\Utilities\OrderUtil::$custom_orders_table_enabled = false;
+
+            $arguments = [
+                'bluem_mandateid' => 'mandate-123',
+            ];
+
+            self::assertSame($arguments, BluemOrderQuery::mapHposArgs($arguments));
         }
 
         public function testBlocksPaymentMethodReadsGatewaySettingsAndRegistersItsScript(): void
