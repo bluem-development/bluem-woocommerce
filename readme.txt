@@ -82,7 +82,9 @@ It is possible to programmatically block display and functionality on your site 
 
 == Changelog ==
 - 1.6.2: Restored Bluem request details in the legacy WooCommerce order editor, made settings links reliable on WordPress installations in a subdirectory, and aligned the runtime plugin version with the released version. Expanded automated coverage for payment, mandate, identity, request-management, callback, permalink, and browser flows, and refactored internal request, settings, user, and support-report helpers without changing their public behavior.
-- 1.6.1: Fixed Bluem payment, mandate, identity, and integration callback URLs for sites using WordPress Plain permalinks.
+- 1.6.1: Fixed several small bugs:
+    - incorrect WooCommerce order matching for Bluem payment and eMandate callbacks when HPOS is disabled.
+    - Fixed Bluem payment, mandate, identity, and integration callback URLs for sites using WordPress Plain permalinks.
 - 1.6.0: Confirmed compatibility with WordPress 7.1, including activation, Bluem settings, classic and Blocks payment gateways, shortcode rendering, and WooCommerce HPOS order administration paths.
 - 1.5.5: Prevented cookie header warnings by skipping cookie writes after headers are sent or during WP-Cron.
 - 1.5.3: Fixed a PHP syntax error in the shared bank-based payment gateway.
