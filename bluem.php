@@ -43,7 +43,7 @@ global $bluem_db_version;
 $bluem_db_version = 1.5;
 
 const BLUEM_WOOCOMMERCE_MANUAL_URL    = "https://codexology.notion.site/Bluem-voor-WordPress-en-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e";
-const BLUEM_PLUGIN_VERSION = '1.6.0';
+const BLUEM_PLUGIN_VERSION = '1.6.1';
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -51,9 +51,12 @@ use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
 use Bluem\Wordpress\Presentation\BluemAdminTabResolver;
+use Bluem\Wordpress\Users\BluemUserIndexer;
 use Bluem\Wordpress\Presentation\BluemRequestGrouper;
 use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
+use Bluem\Wordpress\Support\BluemSupportReportEnvironment;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
+use Bluem\Wordpress\Settings\BluemOptionLookup;
 use Bluem\Wordpress\Support\BluemSupportReportTrace;
 
 /**
@@ -562,18 +565,22 @@ function bluem_get_support_report_environment(): array {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
     }
 
-    $plugin_data = get_plugin_data( plugin_dir_path( __FILE__ ) . 'bluem.php' );
+    return (new BluemSupportReportEnvironment(
+        static function (): string {
+            $pluginData = get_plugin_data(plugin_dir_path(__FILE__) . 'bluem.php');
 
-    return [
-            'plugin_version'    => $plugin_data['Version'] ?? 'unknown',
-            'bluem_php_version' => bluem_get_composer_dependency_version( 'bluem-development/bluem-php' ) ?: 'unknown',
-            'php_version'       => PHP_VERSION,
-            'wordpress_version' => get_bloginfo( 'version' ),
-            'woocommerce_version' => class_exists( 'WooCommerce' ) && function_exists( 'WC' )
-                    ? WC()->version
-                    : 'not installed',
-            'site_url'          => home_url(),
-    ];
+            return $pluginData['Version'] ?? 'unknown';
+        },
+        static fn(): string => bluem_get_composer_dependency_version(
+            'bluem-development/bluem-php'
+        ) ?: 'unknown',
+        static fn(): string => PHP_VERSION,
+        static fn(): string => get_bloginfo('version'),
+        static fn(): string => class_exists('WooCommerce') && function_exists('WC')
+            ? WC()->version
+            : 'not installed',
+        static fn(): string => home_url()
+    ))->collect();
 }
 
 /**
@@ -1128,15 +1135,7 @@ function bluem_requests_view_with_filter( $filters = [], string $current_categor
  * @return void
  */
 function bluem_get_users_by_id(): array {
-    $users_by_id = [];
-
-    $users = get_users();
-
-    foreach ( $users as $user ) {
-        $users_by_id[ $user->ID ] = $user;
-    }
-
-    return $users_by_id;
+    return (new BluemUserIndexer())->index(get_users());
 }
 
 function bluem_get_requests_per_type( $filters = [] ): array {
@@ -1470,13 +1469,7 @@ function bluem_woocommerce_show_general_profile_fields() {
 
 // Settings functions
 function bluem_woocommerce_get_option( $key ) {
-    $options = bluem_woocommerce_get_core_options();
-
-    if ( array_key_exists( $key, $options ) ) {
-        return $options[ $key ];
-    }
-
-    return false;
+    return (new BluemOptionLookup(bluem_woocommerce_get_core_options()))->get($key);
 }
 
 function bluem_woocommerce_settings_render_environment() {
