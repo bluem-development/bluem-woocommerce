@@ -41,6 +41,15 @@ if (!$request) {
     WP_CLI::error('Mandate request was not persisted in the Bluem request table.');
 }
 
+// Keep this callback assertion deterministic even when the preceding browser
+// settings flow has persisted optional mandate-limit fields. The callback
+// should exercise the unlimited-mandate path in this fixture.
+$options = get_option('bluem_woocommerce_options', []);
+$options['localInstrumentCode'] = 'CORE';
+$options['maxAmountEnabled'] = '0';
+$options['maxAmountFactor'] = '1';
+update_option('bluem_woocommerce_options', $options, false);
+
 $callback_url = home_url('wc-api/bluem_mandates_callback/?mandateID=' . rawurlencode($mandate_id));
 $callback_url = str_replace('http://localhost:8000', 'http://wordpress', $callback_url);
 $callback_response = wp_remote_get($callback_url, [
