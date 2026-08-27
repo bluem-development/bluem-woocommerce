@@ -47,4 +47,9 @@ if (!str_contains($idin_shortcode, 'bluem-woocommerce-button-idin')) {
     WP_CLI::error('The Bluem iDIN shortcode did not render its form.');
 }
 
-WP_CLI::success('Classic and Blocks gateways plus mandate and iDIN shortcodes are registered and render.');
+$idealSettings = get_option('woocommerce_bluem_payments_ideal_settings', []);
+if (($idealSettings['enabled'] ?? '') !== 'yes' || ($idealSettings['title'] ?? '') !== 'Bluem iDEAL Acceptance') {
+    WP_CLI::error('Bluem iDEAL acceptance settings were not persisted.');
+}
+
+WP_CLI::success('Classic and Blocks gateways plus mandate and iDIN shortcodes are registered, and iDEAL settings persist.');

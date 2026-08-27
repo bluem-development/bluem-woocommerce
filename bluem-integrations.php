@@ -117,7 +117,7 @@ function bluem_woocommerce_integration_wpcf7_javascript()
     }, false );
 
     document.addEventListener( "wpcf7mailsent", function ( event ) {
-        const url = "' . esc_url(home_url('bluem-woocommerce/bluem-integrations/wpcf7_mandate')) . '"
+        const url = "' . esc_url(bluem_woocommerce_route_url('bluem-woocommerce/bluem-integrations/wpcf7_mandate')) . '"
 
         var contact_form_id = event.detail.contactFormId;
         var inputs = event.detail.inputs;
@@ -224,7 +224,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
 
             // Check the sequence type or previous success results
             if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0) {
-                $bluem_config->merchantReturnURLBase = home_url(
+                $bluem_config->merchantReturnURLBase = bluem_woocommerce_route_url(
                     'bluem-woocommerce/bluem-integrations/wpcf7_callback'
                 );
 
@@ -237,7 +237,7 @@ function bluem_woocommerce_integration_wpcf7_ajax()
                     $bluem_config->eMandateReason = 'eMandate ' . $debtorReference;
                 }
 
-                $bluem = new Bluem($bluem_config);
+                $bluem = bluem_woocommerce_create_client($bluem_config);
 
                 $mandate_id_counter = get_option('bluem_woocommerce_mandate_id_counter');
 
@@ -407,7 +407,7 @@ function bluem_woocommerce_integration_wpcf7_submit()
 
             // Check the sequence type or previous success results
             if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0) {
-                $bluem_config->merchantReturnURLBase = home_url(
+                $bluem_config->merchantReturnURLBase = bluem_woocommerce_route_url(
                     'bluem-woocommerce/bluem-integrations/wpcf7_callback'
                 );
 
@@ -423,7 +423,7 @@ function bluem_woocommerce_integration_wpcf7_submit()
                 }
 
                 try {
-                    $bluem = new Bluem($bluem_config);
+                    $bluem = bluem_woocommerce_create_client($bluem_config);
                 } catch (InvalidBluemConfigurationException $e) {
                     exit('Error instantiating Bluem: Invalid configuration');
                 }
@@ -546,7 +546,7 @@ function bluem_woocommerce_integration_wpcf7_callback()
     }
 
     try {
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (Exception $e) {
         // @todo: deal with incorrectly setup Bluem
     }
@@ -847,7 +847,7 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
 
         // Check the sequence type or previous success results
         if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) == 0) {
-            $bluem_config->merchantReturnURLBase = home_url(
+            $bluem_config->merchantReturnURLBase = bluem_woocommerce_route_url(
                 'bluem-woocommerce/bluem-integrations/gform_callback'
             );
 
@@ -863,7 +863,7 @@ function bluem_woocommerce_integration_gform_submit($entry, $form)
             }
 
             try {
-                $bluem = new Bluem($bluem_config);
+                    $bluem = bluem_woocommerce_create_client($bluem_config);
             } catch (Exception $e) {
                 echo ('Could not process the Gravity Forms request correctly; check your settings.');
                 die();
@@ -1042,7 +1042,7 @@ function bluem_woocommerce_integration_gform_callback()
     }
 
     try {
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (Exception $e) {
         bluem_dialogs_render_prompt(esc_html__(
             "Error: the Bluem configuration is not correct even though Gravity Forms is active. 

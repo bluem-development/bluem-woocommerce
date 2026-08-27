@@ -40,7 +40,7 @@ function bluem_mandates_instant_request(): void
 
     // Check the sequence type or previous success results
     if ($bluem_config->sequenceType === 'OOFF' || sizeof($db_results) === 0) {
-        $bluem_config->merchantReturnURLBase = home_url(
+        $bluem_config->merchantReturnURLBase = bluem_woocommerce_route_url(
             'bluem-woocommerce/mandates_instant_callback'
         );
 
@@ -53,7 +53,7 @@ function bluem_mandates_instant_request(): void
             $bluem_config->eMandateReason = esc_html__('Direct debit mandate ', 'bluem') . $debtorReference;
         }
 
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
 
         $mandate_id_counter = get_option('bluem_woocommerce_mandate_id_counter');
 
@@ -161,7 +161,7 @@ function bluem_mandates_instant_callback()
     $bluem_config = bluem_woocommerce_get_config();
 
     try {
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (Exception $e) {
         // @todo: deal with incorrectly setup Bluem
     }

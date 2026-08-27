@@ -886,7 +886,7 @@ function bluem_idin_form(): string
         $html .= '</div>';
     } else {
         $html .= esc_html__('You have not completed the identification procedure yet.', 'bluem') . '<br>';
-        $html .= '<form action="' . home_url('bluem-woocommerce/idin_execute') . '" method="post">';
+        $html .= '<form action="' . esc_url( bluem_woocommerce_route_url('bluem-woocommerce/idin_execute') ) . '" method="post">';
         // @todo add custom fields
         $html .= '<p>';
         $html .= '<p><input type="submit" name="bluem_idin_submitted" class="bluem-woocommerce-button bluem-woocommerce-button-idin" value="' . esc_html__('Identify', 'bluem') . '.."></p>';
@@ -926,7 +926,7 @@ function bluem_idin_shortcode_callback(): void
     $bluem_config->brandID = $bluem_config->IDINBrandID ?? $bluem_config->brandID ?? '';
 
     try {
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (Exception $e) {
         return;
         // @todo: deal with incorrectly configured Bluem here
@@ -1584,7 +1584,7 @@ function bluem_idin_validation_needed(): bool
     }
 
     try {
-        $bluem = new Bluem($bluem_config);
+    $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (Exception $e) {
         // @todo: deal with non-configured bluem brandID, or assert that is has been configured on a higher level
         return false;
@@ -1693,7 +1693,7 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
     $bluem_config->brandID = $bluem_config->IDINBrandID;
 
     try {
-        $bluem = new Bluem($bluem_config);
+        $bluem = bluem_woocommerce_create_client($bluem_config);
     } catch (InvalidBluemConfigurationException $e) {
         printf(
             /* translators: %s: Error message */
@@ -1720,7 +1720,7 @@ function bluem_idin_execute($callback = null, $redirect = true, $redirect_page =
     }
 
     if (is_null($callback)) {
-        $callback = home_url('bluem-woocommerce/idin_shortcode_callback');
+        $callback = bluem_woocommerce_route_url('bluem-woocommerce/idin_shortcode_callback');
     }
 
     if ($redirect_page !== false) {
@@ -2536,7 +2536,7 @@ function bluem_idin_generate_notice(string $message = '', bool $button = false, 
         %1$s: url  to more information
         %2$s: button text */
                 __('<a href="%1$s" target="_self" class="button bluem-identify-button" style="display:inline-block">%2$s</a>', 'bluem'),
-                esc_url(home_url('bluem-woocommerce/idin_execute?redirect_to_checkout=true')),
+                esc_url(bluem_woocommerce_route_url('bluem-woocommerce/idin_execute', ['redirect_to_checkout' => 'true'])),
                 $identify_button_inner
             );
         $html .= '</div>';

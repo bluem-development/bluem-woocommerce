@@ -47,10 +47,14 @@ fi
 wpcli language core install en_US
 wpcli site switch-language en_US
 wpcli language core install nl_NL
+# Bluem's WooCommerce callback endpoints use pretty URLs under /wc-api/.
+# A fresh WordPress installation defaults to the Plain permalink structure,
+# which routes those callback URLs to the front page instead of the gateway.
+wpcli rewrite structure '/%postname%/' --hard
 wpcli plugin activate bluem
 wpcli plugin is-active bluem
 
 # Complete the plugin's setup guard with isolated, non-production values so
 # acceptance tests do not require manual activation-form submission.
-wpcli option update bluem_woocommerce_options '{"environment":"test","senderID":"ci-acceptance-sender","test_accessToken":"ci-acceptance-token","production_accessToken":"ci-acceptance-production-token","expectedReturnStatus":"success","suppress_woo":"1","suppress_warning":"1","payments_enabled":"0","mandates_enabled":"0","idin_enabled":"0"}' --format=json
+wpcli option update bluem_woocommerce_options '{"environment":"test","senderID":"S0001","test_accessToken":"ci-acceptance-token","production_accessToken":"ci-acceptance-production-token","expectedReturnStatus":"success","suppress_woo":"1","suppress_warning":"1","payments_enabled":"0","mandates_enabled":"0","idin_enabled":"0"}' --format=json
 wpcli option update bluem_plugin_registration 1

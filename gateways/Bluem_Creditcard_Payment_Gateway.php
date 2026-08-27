@@ -14,7 +14,7 @@ class Bluem_Creditcard_Payment_Gateway extends Bluem_Bank_Based_Payment_Gateway
             'bluem_payments_creditcard',
             esc_html__('Bluem payments via Credit Card', 'bluem'),
             esc_html__('Pay easily, quickly and safely via Credit Card', 'bluem'),
-            home_url('wc-api/bluem_payments_callback')
+            bluem_woocommerce_route_url('wc-api/bluem_payments_callback')
         );
 
         $options = get_option('bluem_woocommerce_options');

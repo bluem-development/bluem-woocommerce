@@ -50,7 +50,34 @@ require __DIR__ . '/vendor/autoload.php';
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
+use Bluem\Wordpress\Users\BluemUserIndexer;
+use Bluem\Wordpress\Presentation\BluemRequestGrouper;
+use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
+use Bluem\Wordpress\Support\BluemSupportReportEnvironment;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
+use Bluem\Wordpress\Settings\BluemOptionLookup;
+use Bluem\Wordpress\Support\BluemSupportReportTrace;
+
+/**
+ * Create a Bluem client while allowing acceptance tests to replace only its
+ * HTTP transport. Request construction and response parsing remain real.
+ *
+ * @param object $config Bluem configuration object.
+ */
+function bluem_woocommerce_create_client(object $config): Bluem {
+    $transport = apply_filters('bluem_woocommerce_http_transport', null, $config);
+
+    $mockEndpoint = getenv('BLUEM_ACCEPTANCE_MOCK_URL');
+    if ($transport === null && is_string($mockEndpoint) && $mockEndpoint !== '') {
+        $transport = new \Bluem\Wordpress\Testing\BluemAcceptanceHttpTransport($mockEndpoint);
+    }
+
+    if ($transport instanceof \Bluem\BluemPHP\Transport\HttpTransportInterface) {
+        return new Bluem($config, $transport);
+    }
+
+    return new Bluem($config);
+}
 
 // Initialize before loading the feature modules so uncaught Bluem errors can be captured.
 BluemSentry::initialize();
@@ -222,6 +249,49 @@ if ( ! function_exists( 'bluem_is_permalinks_enabled' ) ) {
 }
 
 /**
+ * Build a Bluem callback or entry-point URL that works with both WordPress
+ * permalink modes.
+ *
+ * WooCommerce API callbacks accept their endpoint as a query argument, while
+ * Bluem's own routes have registered query variables. Use those forms when a
+ * site intentionally uses WordPress' Plain permalink structure.
+ */
+function bluem_woocommerce_route_url( string $route, array $query_args = [] ): string {
+    $route = trim( $route, '/' );
+
+    if ( bluem_is_permalinks_enabled() ) {
+        return add_query_arg( $query_args, home_url( $route ) );
+    }
+
+    if ( str_starts_with( $route, 'wc-api/' ) ) {
+        $query_args = [ 'wc-api' => substr( $route, strlen( 'wc-api/' ) ) ] + $query_args;
+
+        return add_query_arg( $query_args, home_url( '/' ) );
+    }
+
+    $route_query_vars = [
+        'bluem-woocommerce/idin_execute' => 'bluem_idin_shortcode_execute',
+        'bluem-woocommerce/idin_shortcode_callback' => 'bluem_idin_shortcode_callback',
+        'bluem-woocommerce/mandate_shortcode_execute' => 'bluem_mandate_shortcode_execute',
+        'bluem-woocommerce/mandate_shortcode_callback' => 'bluem_mandate_shortcode_callback',
+        'bluem-woocommerce/mandate_instant_request' => 'bluem_mandates_instant_request',
+        'bluem-woocommerce/mandates_instant_callback' => 'bluem_mandates_instant_callback',
+        'bluem-woocommerce/bluem_idin_webhook' => 'bluem_idin_webhook',
+        'bluem-woocommerce/bluem-integrations/wpcf7_mandate' => 'bluem_woocommerce_integration_wpcf7_ajax',
+        'bluem-woocommerce/bluem-integrations/wpcf7_callback' => 'bluem_woocommerce_integration_wpcf7_callback',
+        'bluem-woocommerce/bluem-integrations/gform_callback' => 'bluem_woocommerce_integration_gform_callback',
+    ];
+
+    if ( isset( $route_query_vars[ $route ] ) ) {
+        $query_args = [ $route_query_vars[ $route ] => 1 ] + $query_args;
+
+        return add_query_arg( $query_args, home_url( '/' ) );
+    }
+
+    return add_query_arg( $query_args, home_url( $route ) );
+}
+
+/**
  * Check if WooCommerce is active
  **/
 if ( ! bluem_is_woocommerce_activated() ) {
@@ -388,8 +458,7 @@ function bluem_woocommerce_no_permalinks_notice() {
     if ( is_admin() ) {
         echo '<div class="notice notice-warning is-dismissible">
         <p><span class="dashicons dashicons-warning"></span>';
-        echo wp_kses_post( __( 'The Bluem integration depends on the WordPress permalink setting because of routing.<br>
-        Select any option except \'Plain\' in Permalinks.', 'bluem' ) );
+        echo wp_kses_post( __( 'Bluem callbacks also work with the WordPress Plain permalink structure. We recommend a non-Plain permalink setting for more readable Bluem, WooCommerce and other integration URLs.', 'bluem' ) );
         echo '<a href="' . esc_url( admin_url( 'options-permalink.php' ) ) . '">' . esc_html__( 'Settings', 'bluem' ) . '</a>.</p>
         </div>';
     }
@@ -495,35 +564,30 @@ function bluem_get_support_report_environment(): array {
         require_once ABSPATH . 'wp-admin/includes/plugin.php';
     }
 
-    $plugin_data = get_plugin_data( plugin_dir_path( __FILE__ ) . 'bluem.php' );
+    return (new BluemSupportReportEnvironment(
+        static function (): string {
+            $pluginData = get_plugin_data(plugin_dir_path(__FILE__) . 'bluem.php');
 
-    return [
-            'plugin_version'    => $plugin_data['Version'] ?? 'unknown',
-            'bluem_php_version' => bluem_get_composer_dependency_version( 'bluem-development/bluem-php' ) ?: 'unknown',
-            'php_version'       => PHP_VERSION,
-            'wordpress_version' => get_bloginfo( 'version' ),
-            'woocommerce_version' => class_exists( 'WooCommerce' ) && function_exists( 'WC' )
-                    ? WC()->version
-                    : 'not installed',
-            'site_url'          => home_url(),
-    ];
+            return $pluginData['Version'] ?? 'unknown';
+        },
+        static fn(): string => bluem_get_composer_dependency_version(
+            'bluem-development/bluem-php'
+        ) ?: 'unknown',
+        static fn(): string => PHP_VERSION,
+        static fn(): string => get_bloginfo('version'),
+        static fn(): string => class_exists('WooCommerce') && function_exists('WC')
+            ? WC()->version
+            : 'not installed',
+        static fn(): string => home_url()
+    ))->collect();
 }
 
 /**
  * Build a compact stack trace without function arguments for support reports.
  */
 function bluem_get_support_report_trace(): array {
-    $trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 12 );
-
-    return array_map(
-            static function ( $frame ) {
-                return [
-                        'function' => ( $frame['class'] ?? '' ) . ( $frame['type'] ?? '' ) . ( $frame['function'] ?? '' ),
-                        'file'     => $frame['file'] ?? '',
-                        'line'     => $frame['line'] ?? '',
-                ];
-            },
-            array_slice( $trace, 1 )
+    return (new BluemSupportReportTrace())->format(
+        debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 12)
     );
 }
 
@@ -695,15 +759,9 @@ function bluem_requests_view(): void
 }
 
 function bluem_filter_request_types_enabled( array $types ): array {
-    return array_filter( $types, static function ( $type ) {
-        if ( $type === 'identity' ) {
-            $module_id = 'idin';
-        } else {
-            $module_id = $type;
-        }
-
-        return bluem_module_enabled( $module_id );
-    } );
+    return (new BluemEnabledRequestTypeFilter(
+        static fn($moduleId): bool => bluem_module_enabled($moduleId)
+    ))->filter($types);
 }
 
 
@@ -740,7 +798,7 @@ function bluem_update_request_by_id( $request_id ) {
         $bluem_config->environment = $bluem_env;
     }
 
-    $bluem = new Bluem( $bluem_config );
+    $bluem = bluem_woocommerce_create_client( $bluem_config );
 
     // Check for order
     if ( ! empty( $request->order_id ) ) {
@@ -1076,15 +1134,7 @@ function bluem_requests_view_with_filter( $filters = [], string $current_categor
  * @return void
  */
 function bluem_get_users_by_id(): array {
-    $users_by_id = [];
-
-    $users = get_users();
-
-    foreach ( $users as $user ) {
-        $users_by_id[ $user->ID ] = $user;
-    }
-
-    return $users_by_id;
+    return (new BluemUserIndexer())->index(get_users());
 }
 
 function bluem_get_requests_per_type( $filters = [] ): array {
@@ -1128,17 +1178,10 @@ function bluem_get_requests_per_type( $filters = [] ): array {
  * @return array
  */
 function bluem_sort_requests_per_type( $_requests ): array {
-    $requests = [];
-    foreach ( bluem_filter_request_types_enabled( BLUEM_TRANSACTION_REQUEST_TYPES ) as $type ) {
-        $requests[ $type ] = [];
-    }
-
-    foreach ( $_requests as $_r ) {
-        $requests[ ( $_r->type === 'payments' ? 'ideal' : $_r->type ) ][] = $_r;
-    }
-
-
-    return $requests;
+    return (new BluemRequestGrouper())->group(
+        $_requests,
+        bluem_filter_request_types_enabled( BLUEM_TRANSACTION_REQUEST_TYPES )
+    );
 }
 
 // @todo Deprecate this
@@ -1413,7 +1456,7 @@ function bluem_woocommerce_show_general_profile_fields() {
                 printf(
                 /* translators: %s: link to bluem settings */
                         esc_html__( 'Go to the <a href="%s">
-                    settings</a> to change the behavior of each Bluem component.', 'bluem' ), esc_url( home_url( "wp-admin/admin.php?page=bluem-settings" ) ) );
+                    settings</a> to change the behavior of each Bluem component.', 'bluem' ), esc_url( admin_url( 'admin.php?page=bluem-settings' ) ) );
                 ?>
             </td>
         </tr>
@@ -1423,13 +1466,7 @@ function bluem_woocommerce_show_general_profile_fields() {
 
 // Settings functions
 function bluem_woocommerce_get_option( $key ) {
-    $options = bluem_woocommerce_get_core_options();
-
-    if ( array_key_exists( $key, $options ) ) {
-        return $options[ $key ];
-    }
-
-    return false;
+    return (new BluemOptionLookup(bluem_woocommerce_get_core_options()))->get($key);
 }
 
 function bluem_woocommerce_settings_render_environment() {
@@ -2217,14 +2254,27 @@ function bluem_display_module_notices( $notices, $title = '', $btn_link = '', $b
  *  Adding Meta container admin shop_order pages
  */
 
+// WooCommerce uses a different order-editor screen depending on whether HPOS
+// is enabled. Register the request information for both storage modes.
 add_action( 'add_meta_boxes_woocommerce_page_wc-orders', 'bluem_order_requests_metabox', 99, 1 );
-function bluem_order_requests_metabox( $order )
+add_action( 'add_meta_boxes', 'bluem_legacy_order_requests_metabox', 99, 2 );
+
+function bluem_legacy_order_requests_metabox( $post_type, $post )
+{
+    if ( $post_type !== 'shop_order' ) {
+        return;
+    }
+
+    bluem_order_requests_metabox( $post, 'shop_order' );
+}
+
+function bluem_order_requests_metabox( $order, $screen = 'woocommerce_page_wc-orders' )
 {
     add_meta_box(
             'woocommerce-shipping-details',
             esc_html__('Bluem request(s)', 'bluem'),
             'bluem_order_requests_metabox_content',
-            'woocommerce_page_wc-orders',
+            $screen,
             'normal',
             'high'
     );
@@ -2235,8 +2285,10 @@ function bluem_order_requests_metabox( $order )
  *
  * @return void
  */
-function bluem_order_requests_metabox_content($post) {
-    $order_id = $post->ID;
+function bluem_order_requests_metabox_content($order) {
+    $order_id = is_object($order) && method_exists($order, 'get_id')
+        ? $order->get_id()
+        : $order->ID;
 
     $requests_links = bluem_db_get_links_for_order( $order_id );
 
