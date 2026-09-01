@@ -5,33 +5,6 @@ namespace Bluem\Wordpress\Payments;
 final class BluemOrderQuery
 {
     /**
-     * Build a native WooCommerce metadata equality query for the active order
-     * datastore. The legacy CPT datastore uses meta_key/meta_value, whereas
-     * HPOS requires meta_query.
-     */
-    public static function metadataEquals(string $key, string $value): array
-    {
-        if (
-            class_exists('Automattic\\WooCommerce\\Utilities\\OrderUtil')
-            && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()
-        ) {
-            return [
-                'meta_query' => [
-                    [
-                        'key' => $key,
-                        'value' => $value,
-                    ],
-                ],
-            ];
-        }
-
-        return [
-            'meta_key' => $key,
-            'meta_value' => $value,
-        ];
-    }
-
-    /**
      * Translate Bluem's legacy custom order arguments into HPOS metadata
      * queries. The legacy CPT datastore continues to use its existing hook.
      */
