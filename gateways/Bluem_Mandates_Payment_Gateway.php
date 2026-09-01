@@ -653,21 +653,11 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
      */
     private function getOrder(string $mandateID)
     {
-        $orders = wc_get_orders([
+        $orders = wc_get_orders(array_merge([
             'orderby' => 'date',
             'order' => 'DESC',
             'limit' => 2,
-            // Use WooCommerce's native metadata query rather than the
-            // plugin-specific query argument. This keeps callback
-            // correlation safe even when gateway query filters have not yet
-            // been registered in the current request.
-            'meta_query' => [
-                [
-                    'key' => 'bluem_mandateid',
-                    'value' => $mandateID,
-                ],
-            ],
-        ]);
+        ], BluemOrderQuery::metadataEquals('bluem_mandateid', $mandateID)));
         // A callback must have exactly one correlated order. In particular,
         // do not fall back to the most recent order when no match exists.
         if (count($orders) !== 1) {

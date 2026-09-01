@@ -95,18 +95,12 @@ $unrelated_order->save();
 // The callback lookup uses this native WooCommerce query. It must select the
 // correlated order even when a newer order with unrelated mandate metadata
 // exists, in both legacy and HPOS order storage.
-$correlated_order_ids = array_map('intval', wc_get_orders([
+$correlated_order_ids = array_map('intval', wc_get_orders(array_merge([
     'limit' => 2,
     'return' => 'ids',
     'orderby' => 'date',
     'order' => 'DESC',
-    'meta_query' => [
-        [
-            'key' => 'bluem_mandateid',
-            'value' => $meta['bluem_mandateid'],
-        ],
-    ],
-]));
+], BluemOrderQuery::metadataEquals('bluem_mandateid', $meta['bluem_mandateid']))));
 
 if ($correlated_order_ids !== [$order_id]) {
     $unrelated_order->delete(true);
