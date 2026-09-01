@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce 1.6.2\n"
+"Project-Id-Version: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce 1.6.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bluem-woocommerce\n"
 "Last-Translator: Bluem Payment Services <pluginsupport@bluem.nl>\n"
 "Language-Team: Dutch <pluginsupport@bluem.nl>\n"
