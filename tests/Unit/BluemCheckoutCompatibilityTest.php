@@ -140,6 +140,22 @@ namespace Unit {
             self::assertSame($arguments, BluemOrderQuery::mapHposArgs($arguments));
         }
 
+        public function testNativeMetadataCorrelationUsesTheActiveOrderDatastore(): void
+        {
+            self::assertSame([
+                'meta_query' => [
+                    ['key' => 'bluem_mandateid', 'value' => 'mandate-123'],
+                ],
+            ], BluemOrderQuery::metadataEquals('bluem_mandateid', 'mandate-123'));
+
+            \Automattic\WooCommerce\Utilities\OrderUtil::$custom_orders_table_enabled = false;
+
+            self::assertSame([
+                'meta_key' => 'bluem_mandateid',
+                'meta_value' => 'mandate-123',
+            ], BluemOrderQuery::metadataEquals('bluem_mandateid', 'mandate-123'));
+        }
+
         public function testBlocksPaymentMethodReadsGatewaySettingsAndRegistersItsScript(): void
         {
             $GLOBALS['bluem_test_options']['woocommerce_bluem_payments_ideal_settings'] = [

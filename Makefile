@@ -144,12 +144,12 @@ acceptance_e2e_test: playwright_install
 	@export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
 		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-request-flow.php
 	@export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
-		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-in-progress-flow.php; \
+		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-in-progress-flow.php && \
 		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-prepare-fixtures.php
 	@export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
-		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-prepare-advanced-fixtures.php; \
-		docker compose run --rm wpcli --allow-root rewrite flush --hard; \
-		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-mandate-flow.php; \
+		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-prepare-advanced-fixtures.php && \
+		docker compose run --rm wpcli --allow-root rewrite flush --hard && \
+		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-mandate-flow.php && \
 		docker compose run --rm wpcli --allow-root eval-file /opt/bluem-scripts/acceptance-test-identity-flow.php
 	@export BLUEM_ACCEPTANCE_MOCK_URL=http://mock-bluem:8080/; \
 		$(MAKE) --no-print-directory acceptance_browser_run
@@ -239,7 +239,7 @@ pre-deployment:
 	@cd $(BUILD_DIR) && composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction || { echo "$(RED)Composer install failed!$(NC)"; exit 1; }
 	@cd $(BUILD_DIR) && composer clear-cache
 	@echo "$(BLUE)Removing unnecessary files from build directory...$(NC)"
-	@cd $(BUILD_DIR) && rm -rf README.md AGENTS.md docs error-report.md .git Makefile tools .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml docker-compose.integration.yml codeception.yml Dockerfile loadenv.sh Makefile package.json package-lock.json playwright.config.ts .php-cs-fixer.cache .php-cs-fixer.dist.php .phpunit.result.cache .travis.yml phpunit.xml psalm.xml .DS_STORE .svnignore .vscode loadenv.sh
+	@cd $(BUILD_DIR) && rm -rf README.md AGENTS.md docs error-report.md .git Makefile tools test-results playwright-report .env.sample .gitignore Dockerfile .env.sample .gitignore docker-compose.yml docker-compose.integration.yml codeception.yml Dockerfile loadenv.sh Makefile package.json package-lock.json playwright.config.ts .php-cs-fixer.cache .php-cs-fixer.dist.php .phpunit.result.cache .travis.yml phpunit.xml psalm.xml .DS_STORE .svnignore .vscode loadenv.sh
 	@rm -rf $(BUILD_DIR)/vendor/bluem-development/bluem-php/examples $(BUILD_DIR)/vendor/bluem-development/bluem-php/tests $(BUILD_DIR)/vendor/bluem-development/bluem-php/.github
 	@rm -rf $(BUILD_DIR)/vendor/bluem-development/bluem-php/.githooks
 	@rm -f $(BUILD_DIR)/vendor/bluem-development/bluem-php/.env.example
@@ -249,6 +249,7 @@ pre-deployment:
 	@rm -f $(BUILD_DIR)/vendor/robrichards/xmlseclibs/CHANGELOG.txt $(BUILD_DIR)/vendor/robrichards/xmlseclibs/README.md $(BUILD_DIR)/vendor/robrichards/xmlseclibs/composer.json $(BUILD_DIR)/vendor/robrichards/xmlseclibs/phpunit.xml
 	@rm -rf $(BUILD_DIR)/vendor/robrichards/xmlseclibs/.github
 	@rm -rf $(BUILD_DIR)/vendor/selective/xmldsig/.github
+	@find $(BUILD_DIR)/vendor -depth \( -type d \( -name .github -o -name docs -o -name examples -o -name tests \) -o -type f \( -name '.*' -o -name AGENTS.md -o -name README.md -o -name Makefile -o -name changelog.md -o -name composer.json -o -name composer.lock -o -name phpcs.xml -o -name phpcs.xml.dist -o -name phpunit.xml -o -name rector.php \) \) -exec rm -rf {} +
 
 add-tag:
 	make check-tag
