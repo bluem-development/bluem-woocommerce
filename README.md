@@ -303,7 +303,12 @@ If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsu
 // @todo: finish docblocking
 // deprecate function bluem_db_create_link soon
 
-# Releasse plan
+# Release plan
+
+Each release version maps to one immutable merged source commit, GitHub
+release/tag, and WordPress.org SVN tag. Before starting, confirm that the
+chosen version does not already exist remotely in GitHub or SVN. Never reuse or
+alter a published tag; make a new patch release instead.
 
 To actually release a new version, follow these steps:
 > Ensure you have SVN & Composer installed globally on your local machine.
@@ -327,7 +332,7 @@ To actually release a new version, follow these steps:
    make pre-deployment
     ```
 
-9. Copy these changes into the SVN directory in two places: the tags folder with your new tag and the trunk folder (which always contains the latest version). Use these commands to help you:
+9. Start from a clean, up-to-date SVN working copy. If an earlier attempt was interrupted or the checkout is dirty, create a fresh checkout rather than repairing it in place. Copy the reviewed package into both the new immutable tag and trunk:
    1. Copying the files to the tags folder:
 
       ```bash
@@ -340,17 +345,18 @@ To actually release a new version, follow these steps:
       make update-trunk
       ```
 
-   3. Commit the changes to the SVN repository:
+   3. Review the staged status and commit tag and trunk together in one atomic SVN commit:
 
       ```bash
-      make commit-to-svn
+      svn add --force svn-directory/tags/<version> svn-directory/trunk
+      svn status svn-directory
+      svn commit svn-directory -m "Release version <version>"
       ```
 
-      This command will commit the changes to the SVN repository, including the new tag and trunk updates.
-      > Note: this command will also automatically update the `readme.txt` file in the SVN repository with the new version number and changelog.
-      > It can take a little while before files are all committed.
-10. After the commit is successful, you can check the SVN repository to ensure that the new tag and trunk updates are present.
-11. The plug-in is now available in the WordPress plug-in directory and can be installed by users.
+      If the client reports a failed or interrupted commit, inspect the remote
+      tag and trunk before retrying: the server may have accepted it.
+10. Create the GitHub release for the same merged source version, then verify the remote GitHub release and SVN tag/trunk all contain the intended version and dependency changes.
+11. After the WordPress.org directory has processed the SVN commit, the plug-in is available to users.
 12. Enjoy your new release!
 
 ## Updating language POT file

@@ -245,20 +245,23 @@ pre-deployment:
 	@rm -f $(BUILD_DIR)/vendor/bluem-development/bluem-php/.env.example
 	@rm $(BUILD_DIR)/build.env
 	@rm -f $(BUILD_DIR)/vendor/bluem-development/bluem-php/.gitignore
-	@rm -f $(BUILD_DIR)/vendor/bluem-development/bluem-php/AGENTS.md $(BUILD_DIR)/vendor/bluem-development/bluem-php/Makefile $(BUILD_DIR)/vendor/bluem-development/bluem-php/README.md $(BUILD_DIR)/vendor/bluem-development/bluem-php/changelog.md $(BUILD_DIR)/vendor/bluem-development/bluem-php/composer.json $(BUILD_DIR)/vendor/bluem-development/bluem-php/composer.lock $(BUILD_DIR)/vendor/bluem-development/bluem-php/phpcs.xml $(BUILD_DIR)/vendor/bluem-development/bluem-php/phpcs.xml.dist $(BUILD_DIR)/vendor/bluem-development/bluem-php/phpunit.xml $(BUILD_DIR)/vendor/bluem-development/bluem-php/rector.php
+	@rm -f $(BUILD_DIR)/vendor/bluem-development/bluem-php/AGENTS.md $(BUILD_DIR)/vendor/bluem-development/bluem-php/Makefile $(BUILD_DIR)/vendor/bluem-development/bluem-php/README.md $(BUILD_DIR)/vendor/bluem-development/bluem-php/RELEASING.md $(BUILD_DIR)/vendor/bluem-development/bluem-php/v2-api-plan.md $(BUILD_DIR)/vendor/bluem-development/bluem-php/changelog.md $(BUILD_DIR)/vendor/bluem-development/bluem-php/composer.json $(BUILD_DIR)/vendor/bluem-development/bluem-php/composer.lock $(BUILD_DIR)/vendor/bluem-development/bluem-php/phpcs.xml $(BUILD_DIR)/vendor/bluem-development/bluem-php/phpcs.xml.dist $(BUILD_DIR)/vendor/bluem-development/bluem-php/phpunit.xml $(BUILD_DIR)/vendor/bluem-development/bluem-php/rector.php
 	@rm -f $(BUILD_DIR)/vendor/robrichards/xmlseclibs/CHANGELOG.txt $(BUILD_DIR)/vendor/robrichards/xmlseclibs/README.md $(BUILD_DIR)/vendor/robrichards/xmlseclibs/composer.json $(BUILD_DIR)/vendor/robrichards/xmlseclibs/phpunit.xml
 	@rm -rf $(BUILD_DIR)/vendor/robrichards/xmlseclibs/.github
 	@rm -rf $(BUILD_DIR)/vendor/selective/xmldsig/.github
-	@find $(BUILD_DIR)/vendor -depth \( -type d \( -name .github -o -name docs -o -name examples -o -name tests \) -o -type f \( -name '.*' -o -name AGENTS.md -o -name README.md -o -name Makefile -o -name changelog.md -o -name composer.json -o -name composer.lock -o -name phpcs.xml -o -name phpcs.xml.dist -o -name phpunit.xml -o -name rector.php \) \) -exec rm -rf {} +
+	@find $(BUILD_DIR)/vendor -depth \( -type d \( -name .github -o -name docs -o -name examples -o -name tests \) -o -type f \( -name '.*' -o -name AGENTS.md -o -name README.md -o -name RELEASING.md -o -name v2-api-plan.md -o -name Makefile -o -name changelog.md -o -name composer.json -o -name composer.lock -o -name phpcs.xml -o -name phpcs.xml.dist -o -name phpunit.xml -o -name rector.php \) \) -exec rm -rf {} +
 
 add-tag:
 	make check-tag
 	@echo "$(BLUE)Copying files to SVN tag directory...$(NC)"
 	@echo "Folder: $(SVN_DIR)/tags/$(PLUGIN_VERSION)"
-	if [ -d "$(SVN_DIR)/tags/$(PLUGIN_VERSION)" ]; then \
-		find "$(SVN_DIR)/tags/$(PLUGIN_VERSION)" -mindepth 1 -maxdepth 1 -exec rm -rf {} +; \
-	else \
-		mkdir -p "$(SVN_DIR)/tags/$(PLUGIN_VERSION)"; \
+	@if svn ls "$(SVN_URL)/tags/$(PLUGIN_VERSION)" > /dev/null 2>&1; then \
+		echo "$(RED)SVN tag $(PLUGIN_VERSION) already exists and is immutable. Choose a new version.$(NC)"; \
+		exit 1; \
+	fi
+	@if [ -e "$(SVN_DIR)/tags/$(PLUGIN_VERSION)" ]; then \
+		echo "$(RED)Local tag path already exists. Start from a clean SVN working copy.$(NC)"; \
+		exit 1; \
 	fi
 	@mkdir -p $(SVN_DIR)/tags/$(PLUGIN_VERSION)
 	@cp -R $(BUILD_DIR)/ $(SVN_DIR)/tags/$(PLUGIN_VERSION)/
@@ -286,13 +289,10 @@ update-trunk:
 #	@cd $(SVN_DIR)/trunk && svn commit -m "Updating trunk to version $(PLUGIN_VERSION)"
 
 commit-to-svn:
-	@echo "$(BLUE)Committing tag to SVN...$(NC)"
-	svn add $(SVN_DIR)/tags/$(PLUGIN_VERSION) --force
-	cd $(SVN_DIR); svn commit -m "Added tags/$(PLUGIN_VERSION)"
-	@echo "$(BLUE)Committing trunk to SVN...$(NC)"
-	#svn delete $(SVN_DIR)/trunk
-	svn add $(SVN_DIR)/trunk --force
-	cd $(SVN_DIR); svn commit -m "Replaced trunk folder with version $(PLUGIN_VERSION)"
+	@echo "$(BLUE)Staging and committing tag and trunk together...$(NC)"
+	svn add $(SVN_DIR)/tags/$(PLUGIN_VERSION) $(SVN_DIR)/trunk --force
+	svn status $(SVN_DIR)
+	svn commit $(SVN_DIR) -m "Release version $(PLUGIN_VERSION)"
 	@echo "$(GREEN)Done!$(NC)"
 
 .PHONY: release
