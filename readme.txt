@@ -4,7 +4,7 @@ Tags: Bluem,Payments,iDIN,iDEAL,eMandates
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.4
-Stable tag: 1.6.3
+Stable tag: 1.6.4
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -81,7 +81,7 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
-- 1.6.3: Reliably correlate eMandate callbacks with their matching WooCommerce order in both classic and HPOS storage, preventing a callback from updating a newer unrelated order. Added regression coverage for this callback sequence.
+- 1.6.4: Reliably correlate eMandate callbacks with their matching WooCommerce order in both classic and HPOS storage, preventing a callback from updating a newer unrelated order. Added regression coverage for this callback sequence and updated Bluem PHP to support the new itsme BIC for iDIN identity requests.
 - 1.6.2: Restored Bluem request details in the legacy WooCommerce order editor, made settings links reliable on WordPress installations in a subdirectory, and aligned the runtime plugin version with the released version. Expanded automated coverage for payment, mandate, identity, request-management, callback, permalink, and browser flows, and refactored internal request, settings, user, and support-report helpers without changing their public behavior.
 - 1.6.1: Fixed several small bugs:
     - incorrect WooCommerce order matching for Bluem payment and eMandate callbacks when HPOS is disabled.
