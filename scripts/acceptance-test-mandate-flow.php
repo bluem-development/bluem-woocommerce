@@ -89,6 +89,15 @@ if (is_wp_error($callback_response)) {
     WP_CLI::error('Mocked mandate callback request failed: ' . $callback_response->get_error_message());
 }
 
+// The callback is served by a separate WordPress HTTP request. Evict the
+// current WP-CLI process' object-cache entries before verifying its writes;
+// otherwise wc_get_order() can return the pre-callback objects from this
+// process even though the database was correctly updated by the callback.
+foreach ([$order_id, $interfering_order->get_id()] as $refresh_order_id) {
+    clean_post_cache($refresh_order_id);
+    wp_cache_delete($refresh_order_id, 'orders');
+}
+
 $order = wc_get_order($order_id);
 $interfering_order = wc_get_order($interfering_order->get_id());
 $request = bluem_db_get_request_by_id((string)$request->id);
