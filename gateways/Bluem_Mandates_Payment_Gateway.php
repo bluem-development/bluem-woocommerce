@@ -656,21 +656,9 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         $orders = wc_get_orders([
             'orderby' => 'date',
             'order' => 'DESC',
-            'limit' => 2,
-            // Use WooCommerce's native metadata query rather than the
-            // plugin-specific query argument. This keeps callback
-            // correlation safe even when gateway query filters have not yet
-            // been registered in the current request.
-            'meta_query' => [
-                [
-                    'key' => 'bluem_mandateid',
-                    'value' => $mandateID,
-                ],
-            ],
+            'bluem_mandateid' => $mandateID,
         ]);
-        // A callback must have exactly one correlated order. In particular,
-        // do not fall back to the most recent order when no match exists.
-        if (count($orders) !== 1) {
+        if (count($orders) == 0) {
             return null;
         }
 
@@ -787,12 +775,7 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
 
         // $request_from_db = bluem_db_get_request_by_transaction_id($mandateID);
-        if ($request_from_db) {
-            // The response is authoritative. Persist it unconditionally so
-            // callback handling cannot leave an otherwise completed mandate
-            // request marked as "created" because of a stale request object.
-            // wpdb treats an unchanged value as a no-op, so repeat callbacks
-            // remain idempotent.
+        if ($request_from_db && $statusCode !== $request_from_db->status) {
             bluem_db_update_request(
                 $request_from_db->id,
                 [
