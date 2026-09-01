@@ -83,6 +83,38 @@ foreach ($meta as $key => $value) {
     }
 }
 
+$unrelated_order = wc_create_order();
+if (is_wp_error($unrelated_order)) {
+    $reloaded_order->delete(true);
+    WP_CLI::error($unrelated_order->get_error_message());
+}
+
+$unrelated_order->update_meta_data('bluem_mandateid', 'integration-unrelated-mandate-' . wp_generate_uuid4());
+$unrelated_order->save();
+
+// The callback lookup uses this native WooCommerce query. It must select the
+// correlated order even when a newer order with unrelated mandate metadata
+// exists, in both legacy and HPOS order storage.
+$correlated_order_ids = array_map('intval', wc_get_orders([
+    'limit' => 2,
+    'return' => 'ids',
+    'orderby' => 'date',
+    'order' => 'DESC',
+    'meta_query' => [
+        [
+            'key' => 'bluem_mandateid',
+            'value' => $meta['bluem_mandateid'],
+        ],
+    ],
+]));
+
+if ($correlated_order_ids !== [$order_id]) {
+    $unrelated_order->delete(true);
+    $reloaded_order->delete(true);
+    WP_CLI::error('Native mandate metadata query selected an unrelated order.');
+}
+
+$unrelated_order->delete(true);
 $reloaded_order->delete(true);
 
-WP_CLI::success(sprintf('Order CRUD and %d Bluem metadata queries passed.', count($meta)));
+WP_CLI::success(sprintf('Order CRUD, %d Bluem metadata queries, and mandate callback correlation passed.', count($meta)));
