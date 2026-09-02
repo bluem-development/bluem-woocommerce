@@ -79,6 +79,30 @@ function bluem_woocommerce_create_client(object $config): Bluem {
     return new Bluem($config);
 }
 
+require_once __DIR__ . '/src/Observability/SentryTestingPage.php';
+add_action( 'admin_menu', [ \Bluem\Wordpress\Observability\SentryTestingPage::class, 'register' ] );
+
+/**
+ * Create a Bluem client while allowing acceptance tests to replace only its
+ * HTTP transport. Request construction and response parsing remain real.
+ *
+ * @param object $config Bluem configuration object.
+ */
+function bluem_woocommerce_create_client(object $config): Bluem {
+    $transport = apply_filters('bluem_woocommerce_http_transport', null, $config);
+
+    $mockEndpoint = getenv('BLUEM_ACCEPTANCE_MOCK_URL');
+    if ($transport === null && is_string($mockEndpoint) && $mockEndpoint !== '') {
+        $transport = new \Bluem\Wordpress\Testing\BluemAcceptanceHttpTransport($mockEndpoint);
+    }
+
+    if ($transport instanceof \Bluem\BluemPHP\Transport\HttpTransportInterface) {
+        return new Bluem($config, $transport);
+    }
+
+    return new Bluem($config);
+}
+
 // Initialize before loading the feature modules so uncaught Bluem errors can be captured.
 BluemSentry::initialize();
 
