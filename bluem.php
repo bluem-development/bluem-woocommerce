@@ -57,6 +57,8 @@ use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
 use Bluem\Wordpress\Support\BluemSupportReportEnvironment;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
 use Bluem\Wordpress\Settings\BluemOptionLookup;
+use Bluem\Wordpress\Settings\BluemCoreOptions;
+use Bluem\Wordpress\Settings\BluemConfigurationBuilder;
 use Bluem\Wordpress\Support\BluemSupportReportTrace;
 
 /**
@@ -1611,99 +1613,28 @@ function bluem_woocommerce_settings_render_input( $field ) {
  * @return array
  */
 function bluem_woocommerce_get_core_options(): array {
-    return [
-            'environment'                    => [
-                    'key'         => 'environment',
-                    'title'       => 'bluem_environment',
-                    'name'        => esc_html__( 'Choose the active mode', 'bluem' ),
-                    'description' => esc_html__( 'Enter which mode you want to use: prod, test or acc for the production (live), test or acceptance environment.', 'bluem' ),
-                    'type'        => 'select',
-                    'default'     => 'test',
-                    'options'     =>
-                            [
-                                    'test' => 'Test',
-                                    'prod' => "Production (live)",
-                            ]
-                // acceptance can be added later
-            ],
-            'senderID'                       => [
-                    'key'         => 'senderID',
-                    'title'       => 'bluem_senderID',
-                    'name'        => esc_html__( 'Bluem Sender ID', 'bluem' ),
-                    'description' => esc_html__( 'The Sender ID issued by Bluem. Starts with an S, followed by a number.', 'bluem' ),
-                    'default'     => ""
-            ],
-            'test_accessToken'               => [
-                    'key'         => 'test_accessToken',
-                    'title'       => 'bluem_test_accessToken',
-                    'type'        => 'password',
-                    'name'        => esc_html__( 'Access Token for Testing', 'bluem' ),
-                    'description' => esc_html__( 'The access token used to communicate with Bluem for the test environment.', 'bluem' ),
-                    'default'     => ''
-            ],
-            'production_accessToken'         => [
-                    'key'         => 'production_accessToken',
-                    'title'       => 'bluem_production_accessToken',
-                    'type'        => 'password',
-                    'name'        => esc_html__( 'Access Token for Production', 'bluem' ),
-                    'description' => esc_html__( 'The access token used to communicate with Bluem for the production environment.', 'bluem' ),
-                    'default'     => ''
-            ],
-            'expectedReturnStatus'           => [
-                    'key'         => 'expectedReturnStatus',
-                    'title'       => 'bluem_expectedReturnStatus',
-                    'name'        => esc_html__( 'Test mode return status', 'bluem' ),
-                    'description' => esc_html__( 'Which status do you want to receive for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending', 'bluem' ),
-                    'default'     => 'success',
-                    'type'        => 'select',
-                    'options'     => [
-                            'success'   => 'success',
-                            'cancelled' => 'cancelled',
-                            'expired'   => 'expired',
-                            'failure'   => 'failure',
-                            'open'      => 'open',
-                            'pending'   => 'pending',
-                            'none'      => 'none'
-                    ]
-            ],
-            'suppress_woo'                   => [
-                    'key'         => 'suppress_woo',
-                    'title'       => 'bluem_suppress_woo',
-                    'name'        => esc_html__( 'Use WooCommerce?', 'bluem' ),
-                    'description' => esc_html__( 'Set this to "Do not use WooCommerce" if you want to use this plugin on this site without WooCommerce functionality.', 'bluem' ),
-                    'type'        => 'select',
-                    'default'     => '0',
-                    'options'     =>
-                            [
-                                    '0' => "Use WooCommerce",
-                                    '1' => 'Do NOT use WooCommerce'
-                            ]
-            ],
-            'error_reporting_email'          => [
-                    'key'         => 'error_reporting_email',
-                    'title'       => 'bluem_error_reporting_email',
-                    'name'        => esc_html__( 'Report errors to the developers', 'bluem' ),
-                    'description' => esc_html__( "Help us resolve issues quickly and minimize downtime by forwarding non-personal technical notifications.", 'bluem' ),
-                    'type'        => 'select',
-                    'default'     => '1',
-                    'options'     => [
-                            '1' => esc_html__( 'Yes, forward errors to the developers', 'bluem' ),
-                            '0' => esc_html__( 'No error reporting by email', 'bluem' ),
-                    ],
-            ],
-            'transaction_notification_email' => [
-                    'key'         => 'transaction_notification_email',
-                    'title'       => 'bluem_transaction_notification_email',
-                    'name'        => esc_html__( 'Email notification for the website owner for each new transaction?', 'bluem' ),
-                    'description' => "Specify here whether you, as the website owner, want to automatically receive a notification email with transaction details",
-                    'type'        => 'select',
-                    'default'     => '0',
-                    'options'     => [
-                            '0' => esc_html__( 'No email notification (default)', 'bluem' ),
-                            '1' => esc_html__( 'Send a notification for each transaction to ', 'bluem' ) . esc_attr( get_option( 'admin_email' ) )
-                    ],
-            ],
-    ];
+    // Keep literal gettext calls in the WP adapter so catalog extraction stays intact.
+    return (new BluemCoreOptions([
+        'environment_name' => esc_html__( 'Choose the active mode', 'bluem' ),
+        'environment_description' => esc_html__( 'Enter which mode you want to use: prod, test or acc for the production (live), test or acceptance environment.', 'bluem' ),
+        'senderID_name' => esc_html__( 'Bluem Sender ID', 'bluem' ),
+        'senderID_description' => esc_html__( 'The Sender ID issued by Bluem. Starts with an S, followed by a number.', 'bluem' ),
+        'test_accessToken_name' => esc_html__( 'Access Token for Testing', 'bluem' ),
+        'test_accessToken_description' => esc_html__( 'The access token used to communicate with Bluem for the test environment.', 'bluem' ),
+        'production_accessToken_name' => esc_html__( 'Access Token for Production', 'bluem' ),
+        'production_accessToken_description' => esc_html__( 'The access token used to communicate with Bluem for the production environment.', 'bluem' ),
+        'expectedReturnStatus_name' => esc_html__( 'Test mode return status', 'bluem' ),
+        'expectedReturnStatus_description' => esc_html__( 'Which status do you want to receive for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending', 'bluem' ),
+        'suppress_woo_name' => esc_html__( 'Use WooCommerce?', 'bluem' ),
+        'suppress_woo_description' => esc_html__( 'Set this to "Do not use WooCommerce" if you want to use this plugin on this site without WooCommerce functionality.', 'bluem' ),
+        'error_reporting_email_name' => esc_html__( 'Report errors to the developers', 'bluem' ),
+        'error_reporting_email_description' => esc_html__( "Help us resolve issues quickly and minimize downtime by forwarding non-personal technical notifications.", 'bluem' ),
+        'error_reporting_email_1' => esc_html__( 'Yes, forward errors to the developers', 'bluem' ),
+        'error_reporting_email_0' => esc_html__( 'No error reporting by email', 'bluem' ),
+        'transaction_notification_email_name' => esc_html__( 'Email notification for the website owner for each new transaction?', 'bluem' ),
+        'transaction_notification_email_0' => esc_html__( 'No email notification (default)', 'bluem' ),
+        'transaction_notification_email_1' => esc_html__( 'Send a notification for each transaction to ', 'bluem' ) . esc_attr( get_option( 'admin_email' ) ),
+    ]))->get();
 }
 
 /**
@@ -1970,40 +1901,23 @@ function bluem_transaction_notification_email(
 }
 
 function bluem_woocommerce_get_config(): Stdclass {
-    $bluem_options = bluem_woocommerce_get_core_options();
+    $definitions = [bluem_woocommerce_get_core_options()];
 
-    if ( function_exists( 'bluem_woocommerce_get_mandates_options' ) ) {
-        $bluem_options = array_merge(
-                $bluem_options,
-                bluem_woocommerce_get_mandates_options()
-        );
+    foreach ([
+        'bluem_woocommerce_get_mandates_options',
+        'bluem_woocommerce_get_idin_options',
+        'bluem_woocommerce_get_payments_options',
+    ] as $provider) {
+        if (function_exists($provider)) {
+            $definitions[] = $provider();
+        }
     }
-    if ( function_exists( 'bluem_woocommerce_get_idin_options' ) ) {
-        $bluem_options = array_merge(
-                $bluem_options,
-                bluem_woocommerce_get_idin_options()
-        );
-    }
-    if ( function_exists( 'bluem_woocommerce_get_payments_options' ) ) {
-        $bluem_options = array_merge(
-                $bluem_options,
-                bluem_woocommerce_get_payments_options()
-        );
-    }
+    $definitions[] = bluem_woocommerce_get_integrations_options();
 
-    $bluem_options = array_merge(
-            $bluem_options,
-            bluem_woocommerce_get_integrations_options()
+    return (new BluemConfigurationBuilder())->build(
+        get_option('bluem_woocommerce_options'),
+        ...$definitions
     );
-
-    $config = new Stdclass();
-
-    $values = get_option( 'bluem_woocommerce_options' );
-    foreach ( $bluem_options as $key => $option ) {
-        $config->$key = $values[ $key ] ?? ( $option['default'] ?? "" );
-    }
-
-    return $config;
 }
 
 function bluem_woocommerce_modules_settings_section() {
