@@ -165,7 +165,8 @@ function bluem_db_create_request($request_object): int
             esc_html__('Request created', 'bluem')
         );
 
-        return $wpdb->insert_id;
+        // Link and log inserts also change wpdb::insert_id.
+        return $request_id;
     }
 
     return -1;

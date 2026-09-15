@@ -952,8 +952,8 @@ function bluem_update_request_by_id( $request_id ) {
                         );
                     }
                 }
-//            } elseif ($statusCode === "Pending") {
-                //
+            } elseif ( in_array( $statusCode, ['New', 'Open', 'Pending'], true ) ) {
+                // Persist the request status above, but leave the order in progress.
             } elseif ( $statusCode === "Cancelled" ) {
                 if ( ! empty ( $order ) ) {
                     $order->update_status( 'cancelled', esc_html__( 'Authorization has been canceled', 'bluem' ) );
@@ -1032,8 +1032,8 @@ function bluem_update_request_by_id( $request_id ) {
                     $order->update_status( 'processing', esc_html__( 'Payment has been received', 'bluem' ) );
                     $order->add_order_note( esc_html__( "Payment process completed", 'bluem' ) );
                 }
-//            } elseif ($statusCode === "Pending") {
-                //
+            } elseif ( in_array( $statusCode, ['New', 'Open', 'Pending'], true ) ) {
+                // Persist the request status above, but leave the order in progress.
             } elseif ( $statusCode === "Cancelled" ) {
                 if ( ! empty ( $order ) ) {
                     $order->update_status( 'cancelled', esc_html__( 'Payment has been canceled', 'bluem' ) );

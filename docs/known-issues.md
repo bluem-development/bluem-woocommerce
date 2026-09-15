@@ -7,7 +7,9 @@ must not normalize or hide incorrect plugin behavior.
 
 ## Admin status refresh can fail in-progress payment states
 
-Status: confirmed by code review; needs a focused regression test and fix.
+Status: fixed. Admin refresh now persists `New`, `Open`, and `Pending` without
+updating the order. Isolated handler tests cover all five payment methods and
+mandates, including terminal statuses, through the real Bluem response parser.
 
 Evidence:
 
@@ -19,7 +21,7 @@ Evidence:
 - This conflicts with the documented Bluem lifecycle: `New`, `Open`, and
   `Pending` are in-progress states and must not be treated as failures.
 
-Follow-up:
+Original follow-up (in-progress handling and regression coverage completed):
 
 - Add an HTTP/admin regression case with mocked `Pending`, `Open`, and `New`
   status responses.
@@ -29,6 +31,13 @@ Follow-up:
   `Refunded` before changing their order behavior.
 
 Relevant code: `bluem.php`, `bluem_update_request_by_id()`.
+
+## Request creation returned the last log insert ID
+
+Status: fixed. `bluem_db_create_request()` now returns the saved request ID,
+instead of reading `$wpdb->insert_id` after link/log inserts have overwritten it.
+Regression tests use different request, link, and log IDs, cover requests with
+and without an order, and include a failed log insert and failed request insert.
 
 ## iDIN shortcode callback URL relies on canonical slash redirect
 
