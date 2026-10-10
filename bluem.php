@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce
- * Version: 1.6.5
+ * Version: 1.6.6
  * Plugin URI: https://bluem.nl/en/
  * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and much, much more
  * Author: Bluem Payment Services
@@ -67,12 +67,20 @@ use Bluem\Wordpress\Support\BluemSupportReportTrace;
  *
  * @param object $config Bluem configuration object.
  */
-function bluem_woocommerce_create_client(object $config): Bluem {
+function bluem_woocommerce_create_client(object $config, ?\Bluem\Wordpress\Support\BluemMandateDiagnostics $diagnostics = null): Bluem {
     $transport = apply_filters('bluem_woocommerce_http_transport', null, $config);
 
     $mockEndpoint = getenv('BLUEM_ACCEPTANCE_MOCK_URL');
     if ($transport === null && is_string($mockEndpoint) && $mockEndpoint !== '') {
         $transport = new \Bluem\Wordpress\Testing\BluemAcceptanceHttpTransport($mockEndpoint);
+    }
+
+    if ($diagnostics !== null) {
+        $transport = $diagnostics->wrap(
+            $transport instanceof \Bluem\BluemPHP\Transport\HttpTransportInterface
+                ? $transport
+                : new \Bluem\BluemPHP\Transport\CurlHttpTransport()
+        );
     }
 
     if ($transport instanceof \Bluem\BluemPHP\Transport\HttpTransportInterface) {
@@ -1817,7 +1825,7 @@ function bluem_transaction_notification_email(
 
     $pl = json_decode( $data->payload );
 
-    if ( isset( $pl->sent_notification ) && $pl->sent_notification === "true" ) {
+    if ( isset( $pl->sent_notification ) && in_array( $pl->sent_notification, [true, "true"], true ) ) {
         return false;
     }
 
