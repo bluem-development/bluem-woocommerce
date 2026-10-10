@@ -384,3 +384,8 @@ define('BLUEM_SENTRY_ENABLED', false);
 ```
 
 The integration does not send request URLs, query strings, bodies, cookies, headers, user context, order identifiers, payment identifiers, raw Bluem responses, or access tokens.
+
+## Dependency security
+
+See [dependency security](docs/dependency-security.md) for audits, update policy,
+triage ownership, notifications and required administrator settings.
