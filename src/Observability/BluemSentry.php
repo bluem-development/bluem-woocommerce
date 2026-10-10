@@ -407,7 +407,7 @@ final class BluemSentry
         }
 
         $bluemPhpVersion = (new BluemComposerDependencyVersion(
-            dirname(__DIR__, 2) . '/composer.lock'
+            dirname(__DIR__, 2) . '/vendor/composer/installed.php'
         ))->getVersion('bluem-development/bluem-php');
         if ($bluemPhpVersion !== null) {
             $tags['bluem_php_version'] = $bluemPhpVersion;
