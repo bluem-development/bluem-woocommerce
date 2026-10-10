@@ -8,6 +8,7 @@ use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Bluem\BluemPHP\Helpers\BluemIdentityCategoryList;
 use Bluem\Wordpress\Identity\BluemAgeCalculator;
+use Bluem\Wordpress\Settings\BluemIdentitySettings;
 
 /**
  * Check if WooCommerce is activated
@@ -23,12 +24,7 @@ if (!function_exists('bluem_is_woocommerce_activated')) {
 
 function bluem_woocommerce_get_idin_option($key)
 {
-    $options = bluem_woocommerce_get_idin_options();
-    if (array_key_exists($key, $options)) {
-        return $options[$key];
-    }
-
-    return false;
+    return (new BluemIdentitySettings(bluem_woocommerce_get_idin_options()))->get($key);
 }
 
 function bluem_woocommerce_get_idin_options(): array
