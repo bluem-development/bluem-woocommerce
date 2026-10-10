@@ -41,6 +41,43 @@ if (!$request) {
     WP_CLI::error('Mandate request was not persisted in the Bluem request table.');
 }
 
+// Keep this callback assertion deterministic even when the preceding browser
+// settings flow has persisted optional mandate-limit fields. The callback
+// should exercise the unlimited-mandate path in this fixture.
+$options = get_option('bluem_woocommerce_options', []);
+$options['localInstrumentCode'] = 'CORE';
+$options['maxAmountEnabled'] = '0';
+$options['maxAmountFactor'] = '1';
+update_option('bluem_woocommerce_options', $options, false);
+
+// Mirror the reported production failure: another customer's pending mandate
+// order is created after this one. A callback for the first mandate must never
+// promote this newer order merely because it is the most recent order.
+$interfering_order_id = (int)get_option('bluem_acceptance_mandate_interferer_order_id', 0);
+$interfering_order = $interfering_order_id > 0 ? wc_get_order($interfering_order_id) : null;
+if (!$interfering_order) {
+    $interfering_order = wc_create_order(['customer_id' => $admin->ID]);
+    $interfering_order->set_created_via('bluem-mandate-correlation-acceptance');
+    $interfering_order->set_billing_first_name('Other');
+    $interfering_order->set_billing_last_name('Customer');
+    $interfering_order->set_billing_email('other-customer@example.com');
+    $interfering_order->set_billing_country('NL');
+    $interfering_order->set_payment_method('bluem_mandates');
+    $interfering_order->set_payment_method_title('Bluem eMandate Acceptance');
+    $interfering_order->update_meta_data('bluem_mandateid', 'ACCEPTANCE-UNRELATED-MANDATE');
+    $interfering_order->update_meta_data('bluem_entrancecode', 'ACCEPTANCE-UNRELATED-ENTRANCE');
+    $interfering_order->update_status('pending', 'Newer unrelated mandate order');
+    $interfering_order->save();
+    update_option('bluem_acceptance_mandate_interferer_order_id', $interfering_order->get_id(), false);
+}
+
+if ($interfering_order->get_id() <= $order->get_id()) {
+    WP_CLI::error('The unrelated mandate fixture must be newer than the callback target order.');
+}
+
+$interfering_order->update_status('pending', 'Reset by Bluem mandate correlation acceptance test');
+$interfering_order->save();
+
 $callback_url = home_url('wc-api/bluem_mandates_callback/?mandateID=' . rawurlencode($mandate_id));
 $callback_url = str_replace('http://localhost:8000', 'http://wordpress', $callback_url);
 $callback_response = wp_remote_get($callback_url, [
@@ -52,14 +89,25 @@ if (is_wp_error($callback_response)) {
     WP_CLI::error('Mocked mandate callback request failed: ' . $callback_response->get_error_message());
 }
 
+// The callback is served by a separate WordPress HTTP request. Evict the
+// current WP-CLI process' object-cache entries before verifying its writes;
+// otherwise wc_get_order() can return the pre-callback objects from this
+// process even though the database was correctly updated by the callback.
+foreach ([$order_id, $interfering_order->get_id()] as $refresh_order_id) {
+    clean_post_cache($refresh_order_id);
+    wp_cache_delete($refresh_order_id, 'orders');
+}
+
 $order = wc_get_order($order_id);
+$interfering_order = wc_get_order($interfering_order->get_id());
 $request = bluem_db_get_request_by_id((string)$request->id);
-if ($order->get_status() !== 'processing' || !$request || $request->status !== 'Success') {
+if ($order->get_status() !== 'processing' || !$request || $request->status !== 'Success' || !$interfering_order || $interfering_order->get_status() !== 'pending') {
     WP_CLI::error(sprintf(
-        'Mandate callback did not complete: order=%s request=%s.',
+        'Mandate callback correlation failed: target=%s unrelated=%s request=%s.',
         $order->get_status(),
+        $interfering_order ? $interfering_order->get_status() : 'missing',
         $request->status ?? 'missing'
     ));
 }
 
-WP_CLI::success(sprintf('Bluem mandate flow passed: mandate %s, order %d, final status processing.', $mandate_id, $order_id));
+WP_CLI::success(sprintf('Bluem mandate flow passed: mandate %s updated order %d while newer order %d remained pending.', $mandate_id, $order_id, $interfering_order->get_id()));

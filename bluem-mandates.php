@@ -4,6 +4,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use Bluem\Wordpress\Settings\BluemMandateSettings;
+
 /*
  * This action hook registers our PHP class as a WooCommerce payment gateway
  */
@@ -18,14 +20,11 @@ function bluem_add_gateway_class_mandates($gateways)
 
 function bluem_woocommerce_get_mandates_option($key)
 {
-    if (function_exists('bluem_woocommerce_get_mandates_options')) {
-        $options = bluem_woocommerce_get_mandates_options();
-        if (array_key_exists($key, $options)) {
-            return $options[$key];
-        }
+    if (!function_exists('bluem_woocommerce_get_mandates_options')) {
+        return false;
     }
 
-    return false;
+    return (new BluemMandateSettings(bluem_woocommerce_get_mandates_options()))->get($key);
 }
 
 function bluem_woocommerce_get_mandates_options()

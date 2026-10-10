@@ -1,0 +1,90 @@
+{
+    "environment": {
+        "key": "environment",
+        "title": "bluem_environment",
+        "name": "translated: Choose the active mode",
+        "description": "translated: Enter which mode you want to use: prod, test or acc for the production (live), test or acceptance environment.",
+        "type": "select",
+        "default": "test",
+        "options": {
+            "test": "Test",
+            "prod": "Production (live)"
+        }
+    },
+    "senderID": {
+        "key": "senderID",
+        "title": "bluem_senderID",
+        "name": "translated: Bluem Sender ID",
+        "description": "translated: The Sender ID issued by Bluem. Starts with an S, followed by a number.",
+        "default": ""
+    },
+    "test_accessToken": {
+        "key": "test_accessToken",
+        "title": "bluem_test_accessToken",
+        "type": "password",
+        "name": "translated: Access Token for Testing",
+        "description": "translated: The access token used to communicate with Bluem for the test environment.",
+        "default": ""
+    },
+    "production_accessToken": {
+        "key": "production_accessToken",
+        "title": "bluem_production_accessToken",
+        "type": "password",
+        "name": "translated: Access Token for Production",
+        "description": "translated: The access token used to communicate with Bluem for the production environment.",
+        "default": ""
+    },
+    "expectedReturnStatus": {
+        "key": "expectedReturnStatus",
+        "title": "bluem_expectedReturnStatus",
+        "name": "translated: Test mode return status",
+        "description": "translated: Which status do you want to receive for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending",
+        "default": "success",
+        "type": "select",
+        "options": {
+            "success": "success",
+            "cancelled": "cancelled",
+            "expired": "expired",
+            "failure": "failure",
+            "open": "open",
+            "pending": "pending",
+            "none": "none"
+        }
+    },
+    "suppress_woo": {
+        "key": "suppress_woo",
+        "title": "bluem_suppress_woo",
+        "name": "translated: Use WooCommerce?",
+        "description": "translated: Set this to &quot;Do not use WooCommerce&quot; if you want to use this plugin on this site without WooCommerce functionality.",
+        "type": "select",
+        "default": "0",
+        "options": [
+            "Use WooCommerce",
+            "Do NOT use WooCommerce"
+        ]
+    },
+    "error_reporting_email": {
+        "key": "error_reporting_email",
+        "title": "bluem_error_reporting_email",
+        "name": "translated: Report errors to the developers",
+        "description": "translated: Help us resolve issues quickly and minimize downtime by forwarding non-personal technical notifications.",
+        "type": "select",
+        "default": "1",
+        "options": {
+            "1": "translated: Yes, forward errors to the developers",
+            "0": "translated: No error reporting by email"
+        }
+    },
+    "transaction_notification_email": {
+        "key": "transaction_notification_email",
+        "title": "bluem_transaction_notification_email",
+        "name": "translated: Email notification for the website owner for each new transaction?",
+        "description": "Specify here whether you, as the website owner, want to automatically receive a notification email with transaction details",
+        "type": "select",
+        "default": "0",
+        "options": [
+            "translated: No email notification (default)",
+            "translated: Send a notification for each transaction to owner+&lt;test&gt;@example.invalid"
+        ]
+    }
+}

@@ -25,4 +25,14 @@ final class BluemPluginStatusTest extends TestCase
         self::assertFalse($status->hasPermalinks(''));
         self::assertFalse($status->hasPermalinks(null));
     }
+    public function testLegacyAndFilteredPluginComparisonsRemainDistinct(): void
+    {
+        $status = new BluemPluginStatus();
+        self::assertTrue($status->isWooCommerceActive([true], false));
+        self::assertFalse($status->isWooCommerceActive([true]));
+        self::assertTrue($status->isContactForm7Active([true]));
+        self::assertFalse($status->isGravityFormsActive([true]));
+        self::assertFalse($status->hasPermalinks(false));
+        self::assertFalse($status->hasPermalinks('0'));
+    }
 }

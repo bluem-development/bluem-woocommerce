@@ -130,6 +130,52 @@ function bluem_display_woocommerce_logs(): string
                 <?php } ?>
             </ul>
 
+            <?php if (bluem_module_enabled('idin')) {
+                $bluem_options = get_option('bluem_woocommerce_options');
+                $bluem_options = is_array($bluem_options) ? $bluem_options : [];
+                $idin_scenario = (int) ($bluem_options['idin_scenario_active'] ?? 0);
+                $idin_environment = (string) ($bluem_options['environment'] ?? 'test');
+                $idin_brand_configured = !empty($bluem_options['IDINBrandID']);
+                ?>
+                <h2><?php esc_html_e('iDIN readiness', 'bluem'); ?></h2>
+                <table class="widefat striped">
+                    <tbody>
+                    <tr>
+                        <th scope="row"><?php esc_html_e('Module', 'bluem'); ?></th>
+                        <td><?php esc_html_e('Enabled', 'bluem'); ?></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php esc_html_e('Environment', 'bluem'); ?></th>
+                        <td>
+                            <?php echo esc_html($idin_environment === 'prod' ? __('Production', 'bluem') : __('Test', 'bluem')); ?>
+                            <?php if ($idin_environment !== 'prod') { ?>
+                                <span class="dashicons dashicons-warning" style="color: #dba617;" aria-hidden="true"></span>
+                                <?php esc_html_e('Live customers will use test iDIN credentials.', 'bluem'); ?>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php esc_html_e('iDIN Brand ID', 'bluem'); ?></th>
+                        <td><?php echo esc_html($idin_brand_configured ? __('Configured', 'bluem') : __('Missing', 'bluem')); ?></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php esc_html_e('Checkout verification', 'bluem'); ?></th>
+                        <td>
+                            <?php if ($idin_scenario > 0) {
+                                esc_html_e('Enabled for the classic WooCommerce checkout.', 'bluem');
+                            } else {
+                                esc_html_e('Disabled. Select an iDIN Scenario in Settings to enable it.', 'bluem');
+                            } ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php esc_html_e('Custom checkout forms', 'bluem'); ?></th>
+                        <td><?php esc_html_e('Not detected automatically. Render [bluem_identificatieformulier] or integrate the iDIN flow in the custom template.', 'bluem'); ?></td>
+                    </tr>
+                    </tbody>
+                </table>
+            <?php } ?>
+
             <div class="wrap">
                 <h2><?php esc_html_e('Refresh rewrite rules', 'bluem'); ?></h2>
                 <p><?php esc_html_e('Are there problems displaying plugin pages on your site? Click below to re-register the Bluem pages. This generally allows the website to serve the modern form of pages.', 'bluem'); ?></p>
