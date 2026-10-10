@@ -29,12 +29,18 @@ functions as compatibility adapters during the migration.
 1. [x] Core settings schema and configuration assembly: extract `BluemCoreOptions`
    and the shared `BluemConfigurationBuilder`, preserving existing wrappers,
    defaults, translation extraction, and feature merge order. Module status is
-   already covered by open PR #68 and is excluded from this batch.
+   covered separately by merged PR #68.
 2. [x] Request lookup repository: move reads/filtering/order selection behind an
    injectable database dependency. Leave writes, logging, and cookie storage
    for separate work.
 3. [ ] Payment transition services: move the existing gateway decisions and order
    update orchestration into reusable services, retaining gateway adapters.
+   PR #89 has extracted the status decision table; order-transition
+   orchestration remains pending.
+
+PRs #87, #89, #67 and #68 merged on 10 October 2026 after fresh CI and combined
+validation. See [the next three-unit draft](refactor-next-three.md) for the
+proposed follow-up scope and acceptance criteria.
 
 Batch two starts from #86, rebased onto master including #85, as requested.
 It extracts only request reads from `bluem-db.php`. Each batch owns separate
