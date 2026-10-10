@@ -57,6 +57,7 @@ use Bluem\Wordpress\Presentation\BluemRequestGrouper;
 use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
 use Bluem\Wordpress\Support\BluemSupportReportEnvironment;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
+use Bluem\Wordpress\Support\BluemModuleStatus;
 use Bluem\Wordpress\Settings\BluemOptionLookup;
 use Bluem\Wordpress\Settings\BluemCoreOptions;
 use Bluem\Wordpress\Settings\BluemConfigurationBuilder;
@@ -1967,19 +1968,8 @@ function bluem_woocommerce_modules_render_generic_activation( $module ) {
 }
 
 function bluem_module_enabled( $module ): bool {
-    $bluem_options = get_option( 'bluem_woocommerce_options' );
-
-    if ( $bluem_options === false ) {
-        return false;
-    }
-    if ( ( $bluem_options !== false
-           && ! isset( $bluem_options["{$module}_enabled"] ) )
-         || $bluem_options["{$module}_enabled"] == "1"
-    ) {
-        return true;
-    }
-
-    return false;
+    return (new BluemModuleStatus(get_option('bluem_woocommerce_options')))
+        ->isEnabled((string) $module);
 }
 
 /**
