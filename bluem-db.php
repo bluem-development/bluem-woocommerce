@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 use Bluem\Wordpress\Requests\BluemRequestValidator;
+use Bluem\Wordpress\Requests\BluemRequestRepository;
 register_activation_hook(__FILE__, 'bluem_db_create_requests_table');
 // no need for a deactivation hook yet.
 
@@ -471,14 +472,9 @@ function bluem_db_get_request_fields(): array
  */
 function bluem_db_get_request_by_id(string $request_id)
 {
-    // @todo change to only accept int for $request_id
+    global $wpdb;
 
-    $res = bluem_db_get_requests_by_keyvalue(
-        'id',
-        $request_id
-    );
-
-    return $res[0] ?? false;
+    return (new BluemRequestRepository($wpdb))->findById($request_id);
 }
 
 function bluem_db_delete_request_by_id($request_id)
@@ -498,46 +494,30 @@ function bluem_db_delete_request_by_id($request_id)
 
 function bluem_db_get_request_by_debtor_reference($debtor_reference)
 {
-    $res = bluem_db_get_requests_by_keyvalue(
-        'debtor_reference',
-        $debtor_reference
-    );
+    global $wpdb;
 
-    return $res !== false && count($res) > 0 ? $res[0] : false;
+    return (new BluemRequestRepository($wpdb))->findByDebtorReference($debtor_reference);
 }
 
 function bluem_db_get_request_by_transaction_id($transaction_id)
 {
-    $res = bluem_db_get_requests_by_keyvalue(
-        'transaction_id',
-        $transaction_id
-    );
+    global $wpdb;
 
-    return $res !== false && count($res) > 0 ? $res[0] : false;
+    return (new BluemRequestRepository($wpdb))->findByTransactionId($transaction_id);
 }
 
 function bluem_db_get_request_by_transaction_id_and_type($transaction_id, $type)
 {
-    $res = bluem_db_get_requests_by_keyvalues(
-        [
-            'transaction_id' => $transaction_id,
-            'type' => $type,
-        ]
-    );
+    global $wpdb;
 
-    return $res !== false && count($res) > 0 ? $res[0] : false;
+    return (new BluemRequestRepository($wpdb))->findByTransactionIdAndType($transaction_id, $type);
 }
 
 function bluem_db_get_request_by_transaction_id_and_entrance_code($transaction_id, $entrance_code)
 {
-    $res = bluem_db_get_requests_by_keyvalues(
-        [
-            'transaction_id' => $transaction_id,
-            'entrance_code' => $entrance_code,
-        ]
-    );
+    global $wpdb;
 
-    return $res !== false && count($res) > 0 ? $res[0] : false;
+    return (new BluemRequestRepository($wpdb))->findByTransactionIdAndEntranceCode($transaction_id, $entrance_code);
 }
 
 function bluem_db_get_requests_by_keyvalue(
@@ -547,12 +527,9 @@ function bluem_db_get_requests_by_keyvalue(
     $sort_dir = 'ASC',
     $limit = 0
 ) {
-    return bluem_db_get_requests_by_keyvalues(
-        [$key => $value],
-        $sort_key,
-        $sort_dir,
-        $limit
-    );
+    global $wpdb;
+
+    return (new BluemRequestRepository($wpdb))->findByField($key, $value, $sort_key, $sort_dir, $limit);
 }
 
 function bluem_db_get_requests_by_keyvalues(
@@ -563,126 +540,40 @@ function bluem_db_get_requests_by_keyvalues(
 ) {
     global $wpdb;
 
-    $wpdb->show_errors(); // Show or display errors
-
-    // Start building the query
-    $query = 'SELECT * FROM `' . $wpdb->prefix . 'bluem_requests`';
-    $where_clauses = [];
-    $query_values = [];
-
-    // Add conditions if key-value pairs are provided
-    if (count($keyvalues) > 0) {
-        foreach ($keyvalues as $key => $value) {
-            if (!empty($key) && $value !== '') {
-                $where_clauses[] = "`{$key}` = %s";
-                $query_values[] = $value;
-            }
-        }
-
-        if (!empty($where_clauses)) {
-            $query .= ' WHERE ' . implode(' AND ', $where_clauses);
-        }
-    }
-
-    // Add sorting if sort_key is provided
-    if (!is_null($sort_key) && $sort_key !== '' && in_array(strtoupper($sort_dir), ['ASC', 'DESC'])) {
-        $query .= " ORDER BY `{$sort_key}` " . strtoupper($sort_dir);
-    }
-
-    // Add limit if provided
-    if (is_numeric($limit) && $limit > 0) {
-        $query .= ' LIMIT %d';
-        $query_values[] = $limit;
-    }
-
-    // Prepare the query with the provided values
-    if (!empty($query_values)) {
-        $query = $wpdb->prepare($query, ...$query_values);
-    }
-
-    try {
-        return $wpdb->get_results($query);
-    } catch (Throwable $th) {
-        return false;
-    }
+    return (new BluemRequestRepository($wpdb))->findBy($keyvalues, $sort_key, $sort_dir, $limit);
 }
 
 function bluem_db_get_requests_by_user_id($user_id = null)
 {
-    global $current_user;
+    global $wpdb, $current_user;
 
     if (is_null($user_id)) {
         $user_id = $current_user->ID;
     }
 
-    $res = bluem_db_get_requests_by_keyvalue(
-        'user_id',
-        $user_id
-    );
-
-    return $res !== false && count($res) > 0 ? $res : [];
+    return (new BluemRequestRepository($wpdb))->findForUser($user_id);
 }
 
 function bluem_db_get_requests_by_user_id_and_type($user_id = null, $type = '')
 {
-    global $current_user;
+    global $wpdb, $current_user;
 
     if (is_null($user_id)) {
         $user_id = $current_user->ID;
     }
 
-    // @todo Throw an error when type is not given, or default to wildcard
-
-    $res = bluem_db_get_requests_by_keyvalues(
-        [
-            'user_id' => $user_id,
-            'type' => $type,
-        ],
-        'timestamp',
-        'DESC'
-    );
-
-    return $res !== false && count($res) > 0 ? $res : [];
+    return (new BluemRequestRepository($wpdb))->findForUserAndType($user_id, $type);
 }
 
 function bluem_db_get_most_recent_request($user_id = null, $type = 'mandates')
 {
-    global $current_user, $wpdb;
+    global $wpdb, $current_user;
 
-    // Use current user's ID if no user ID is provided
     if (is_null($user_id)) {
         $user_id = $current_user->ID;
     }
 
-    // Validate the type against allowed values
-    if (!in_array($type, ['mandates', 'payments', 'identity'])) {
-        return false;
-    }
-
-    $wpdb->show_errors(); // Enable error display
-
-    try {
-        $results = $wpdb->get_results(
-            $wpdb->prepare(
-                'SELECT *
-                FROM `' . $wpdb->prefix . 'bluem_requests`
-                WHERE `user_id` = %d
-                    AND `type` = %s
-                ORDER BY `timestamp` DESC
-                LIMIT 1',
-                $user_id,
-                $type
-            )
-        );
-
-        if (count($results) > 0) {
-            return $results[0];
-        }
-
-        return false;
-    } catch (Throwable $th) {
-        return false;
-    }
+    return (new BluemRequestRepository($wpdb))->findMostRecent($user_id, $type);
 }
 
 function bluem_db_put_request_payload($request_id, $data)

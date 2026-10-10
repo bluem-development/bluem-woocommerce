@@ -30,13 +30,15 @@ functions as compatibility adapters during the migration.
    and the shared `BluemConfigurationBuilder`, preserving existing wrappers,
    defaults, translation extraction, and feature merge order. Module status is
    already covered by open PR #68 and is excluded from this batch.
-2. [ ] Request lookup repository: move reads/filtering/order selection behind an
+2. [x] Request lookup repository: move reads/filtering/order selection behind an
    injectable database dependency. Leave writes, logging, and cookie storage
    for separate work.
 3. [ ] Payment transition services: move the existing gateway decisions and order
    update orchestration into reusable services, retaining gateway adapters.
 
-Each batch branches from master and owns separate methods/files. If future work
+Batch two starts from #86, rebased onto master including #85, as requested.
+It extracts only request reads from `bluem-db.php`. Each batch owns separate
+methods/files. If future work
 requires an unmerged batch, explicitly label it as a dependent sub-batch.
 
 ### Shared service boundaries
@@ -46,8 +48,14 @@ dependency on a gateway, WordPress, or a fixed module list. WordPress adapters
 collect translated labels, options, and available providers. Definition lookup
 and saved-value resolution remain separate contracts.
 
-Follow the same approach for request lookup: share the repository across admin,
-payment, identity, and mandate workflows through composition and injected
-dependencies. Keep workflow-specific decisions out of the repository. Add
+`BluemRequestRepository` shares request lookups across admin, payment, identity,
+and mandate workflows. It accepts the database connection, while procedural
+wrappers resolve the current user and active WordPress connection on each call.
+Consumers can use it through composition; workflow decisions stay outside it. Add
 interfaces where consumers need substitutable implementations, rather than
 introducing a generic base class or duplicating shared logic per feature.
+
+The extraction preserves existing return shapes, SQL parameter types, ordering,
+limits, error handling, and the most-recent request type allowlist. Field and
+sort names remain trusted application inputs. Writes, logs, link storage,
+cookies, and WooCommerce order correlation are outside this batch.

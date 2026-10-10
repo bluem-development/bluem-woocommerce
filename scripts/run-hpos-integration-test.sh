@@ -76,6 +76,7 @@ for hpos_mode in enabled disabled; do
 
     echo "Running order-storage integration test with HPOS ${hpos_mode}..."
     wp eval-file /var/www/html/wp-content/plugins/bluem-woocommerce/tests/Integration/order-storage-test.php
+    wp eval-file /var/www/html/wp-content/plugins/bluem-woocommerce/tests/Integration/request-lookup-test.php
     compose down --volumes --remove-orphans
 done
 
