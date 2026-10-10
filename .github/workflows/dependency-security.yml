@@ -1,0 +1,56 @@
+name: Dependency security
+
+on:
+    pull_request:
+    push:
+        branches: [master]
+    schedule:
+        - cron: '17 7 * * 1'
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    composer-audit:
+        name: Composer audit
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - uses: actions/checkout@v7
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  tools: composer:v2
+                  coverage: none
+            - run: composer validate --no-check-publish
+            # Audit the full lock before executing dependency plugins/scripts.
+            # No --no-dev, severity filtering, ignored advisories or swallowed status.
+            - run: composer audit --locked --format=table --no-interaction
+
+    npm-audit:
+        name: npm audit
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - uses: actions/checkout@v7
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: '22'
+            - run: npm ci --ignore-scripts --include=dev --no-audit --no-fund
+            - run: npm audit --include=dev --audit-level=low
+
+    production-package:
+        name: Production dependency isolation
+        needs: composer-audit
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - uses: actions/checkout@v7
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  tools: composer:v2
+                  coverage: none
+            - run: make pre-deployment
+            - run: php scripts/check-production-dependencies.php build

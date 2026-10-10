@@ -688,16 +688,11 @@ function bluem_db_get_most_recent_request($user_id = null, $type = 'mandates')
 function bluem_db_put_request_payload($request_id, $data)
 {
     $request = bluem_db_get_request_by_id($request_id);
-
-    if ($request->payload !== '') {
-        try {
-            $newPayload = json_decode($request->payload);
-        } catch (Throwable $th) {
-            $newPayload = new Stdclass();
-        }
-    } else {
-        $newPayload = new Stdclass();
+    if ($request === false) {
+        return;
     }
+    $newPayload = json_decode((string) $request->payload);
+    $newPayload = $newPayload instanceof stdClass ? $newPayload : new stdClass();
     foreach ($data as $k => $v) {
         $newPayload->$k = $v;
     }
