@@ -561,7 +561,7 @@ add_action( 'admin_menu', 'bluem_register_menu', 9 );
  */
 function bluem_get_composer_dependency_version( $dependency_name ) {
     $version = (new BluemComposerDependencyVersion(
-        plugin_dir_path( __FILE__ ) . 'composer.lock'
+        plugin_dir_path( __FILE__ ) . 'vendor/composer/installed.php'
     ))->getVersion((string) $dependency_name);
 
     return $version ?? false;
