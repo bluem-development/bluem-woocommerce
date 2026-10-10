@@ -16,6 +16,6 @@ final class BluemModuleStatus
 
         $key = $module . '_enabled';
 
-        return ! isset($this->options[$key]) || $this->options[$key] === '1';
+        return ! isset($this->options[$key]) || $this->options[$key] == '1';
     }
 }

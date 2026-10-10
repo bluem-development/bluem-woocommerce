@@ -52,6 +52,17 @@ namespace Unit {
             ));
         }
 
+        public function testDiagnosticTagsIncludeRuntimeAndDependencyVersions(): void
+        {
+            $method = new \ReflectionMethod(BluemSentry::class, 'getDiagnosticTags');
+            $tags = $method->invoke(null);
+
+            self::assertSame(PHP_VERSION, $tags['php_version']);
+            self::assertSame(PHP_SAPI, $tags['php_sapi']);
+            self::assertArrayHasKey('plugin_version', $tags);
+            self::assertArrayHasKey('bluem_php_version', $tags);
+        }
+
         public function testMessageRedactsPersonalAndCredentialLikeValues(): void
         {
             $message = BluemSentry::redactMessage(

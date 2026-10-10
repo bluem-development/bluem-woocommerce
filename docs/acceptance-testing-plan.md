@@ -17,6 +17,7 @@ Implemented on the acceptance branch and wired into pull-request CI:
 - A separate `settings` acceptance group that saves and reloads harmless Bluem settings.
 - A separate WooCommerce-backed `checkout` acceptance group that verifies all five gateway links appear in WooCommerce payment settings without calling Bluem.
 - A Chromium Playwright job that verifies the JavaScript-capable Bluem settings page renders after administrator login.
+- An eMandate callback-correlation regression: an older matching order and a newer unrelated order are both present, and the callback updates only the matching order.
 
 The broad local flow now covers the first HTTP payment creation/callback path,
 deterministic order/request fixtures, and the main Playwright admin
@@ -59,6 +60,12 @@ gateway, calls the mocked `SRX` status callback, and verifies the request row
 and order transition. It renders the `[bluem_identificatieformulier]` shortcode,
 creates an iDIN request through the shortcode entry point, calls the mocked
 `ISX` callback, and verifies the identity request reaches `Success`.
+
+The eMandate callback fixture deliberately creates a newer unrelated pending
+order after the intended mandate order. It asserts that callback resolution is
+based on stored mandate metadata, not order recency, and that the unrelated
+order remains unchanged. Keep this assertion in both the legacy post-based and
+HPOS order-storage test modes whenever callback lookup behavior changes.
 
 The browser lifecycle test also completes the local Bluem activation form
 after reactivation because the plugin intentionally resets its setup guard on

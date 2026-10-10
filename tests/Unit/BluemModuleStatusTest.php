@@ -14,4 +14,12 @@ final class BluemModuleStatusTest extends TestCase
         self::assertFalse((new BluemModuleStatus(['payments_enabled' => '0']))->isEnabled('payments'));
         self::assertFalse((new BluemModuleStatus(false))->isEnabled('payments'));
     }
+    public function testPreservesLegacyOptionValueComparison(): void
+    {
+        foreach ([1, true, '01', 1.0] as $value) {
+            self::assertTrue((new BluemModuleStatus(['payments_enabled' => $value]))->isEnabled('payments'));
+        }
+        self::assertTrue((new BluemModuleStatus(['payments_enabled' => null]))->isEnabled('payments'));
+        self::assertFalse((new BluemModuleStatus(['payments_enabled' => false]))->isEnabled('payments'));
+    }
 }

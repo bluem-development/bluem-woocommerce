@@ -57,6 +57,19 @@ Known status handling in the plugin:
 
 `bluem-php` schemas also mention statuses such as `SuccessManual`, `BankSelected`, and `Refunded`. Do not invent order behavior for these without confirming the intended business semantics.
 
+### eMandate callback correlation
+
+An eMandate callback must identify the WooCommerce order by its persisted
+mandate metadata, never by incidental ordering such as the newest pending
+order. Query through the active WooCommerce data store: use the classic
+post-meta query shape for legacy storage and `meta_query` for HPOS. Process the
+callback only when **exactly one** order matches; zero or multiple matches are a
+safe no-op that should be reported with non-secret diagnostic context.
+
+Regression coverage for a callback lookup must create both the intended older
+order and a newer unrelated order, then assert that only the intended order is
+updated. Run that scenario in both legacy and HPOS storage modes.
+
 ## Release Version Checklist
 
 For a plugin release, update these files consistently:
@@ -76,6 +89,21 @@ composer show bluem-development/bluem-php --locked
 
 Composer may need network access for Packagist/GitHub. If sandboxed DNS fails, rerun the same narrow command with approval rather than changing the dependency manually.
 
+### Release identity and publication
+
+Each published version has three immutable counterparts: the merged source
+commit, one GitHub release/tag, and one WordPress.org SVN tag. Use the same
+version in all three. Before staging, check that neither remote tag exists. Do
+not overwrite, delete, or repurpose an existing GitHub or SVN tag—even if the
+WordPress directory has not yet selected it as the stable version. Publish a
+new patch version instead.
+
+Create the GitHub release from the merged release commit and publish the SVN
+tag and trunk from the corresponding reviewed production package. Verify both
+remote artifacts afterwards (version markers, dependency version, and package
+contents). The GitHub release and SVN publication may be created close
+together, but neither may describe a different source/package version.
+
 ## WordPress.org SVN Release Flow
 
 The repository has a local SVN working copy at `svn-directory/`, which is ignored by Git. The generated production package is written to `build/`, also ignored by Git.
@@ -90,6 +118,13 @@ svn add --force svn-directory/tags/1.4.1 svn-directory/trunk
 svn status svn-directory | awk '/^!/ {print $2}' | xargs svn delete --force
 svn status svn-directory
 ```
+
+Use a clean, up-to-date SVN working copy for each release attempt. Do not
+reuse a dirty, incomplete, or checksum-corrupt checkout; create a fresh sparse
+checkout instead. Commit the new tag and trunk together in a single SVN commit
+so they cannot be published as separate releases. If the client reports a
+failed or interrupted commit, first inspect the remote tag and trunk before
+retrying: the server may already have accepted the commit.
 
 Only commit SVN after reviewing the status:
 
@@ -112,7 +147,7 @@ The Makefile cleanup should prevent these from entering `build/`, `svn-directory
 - `vendor/bluem-development/bluem-php/examples`;
 - `vendor/bluem-development/bluem-php/tests`;
 - local build/repo files such as `README.md`, `Makefile`, `Dockerfile`, `docker-compose.yml`, `codeception.yml`, `phpunit.xml`, `psalm.xml`, `loadenv.sh`, and `build.env`.
-- vendor development metadata such as the Bluem PHP package's `AGENTS.md`, `Makefile`, `README.md`, `changelog.md`, `composer.json`, `composer.lock`, `phpcs.xml`, `phpcs.xml.dist`, `phpunit.xml`, and `rector.php`, plus xmlseclibs' README, Composer, changelog, and PHPUnit files.
+- vendor development metadata such as the Bluem PHP package's `AGENTS.md`, `Makefile`, `README.md`, `RELEASING.md`, `v2-api-plan.md`, `changelog.md`, `composer.json`, `composer.lock`, `phpcs.xml`, `phpcs.xml.dist`, `phpunit.xml`, and `rector.php`, plus xmlseclibs' README, Composer, changelog, and PHPUnit files.
 
 Keep the top-level `composer.json` and `composer.lock` in the production package: the plugin reads `composer.lock` at runtime when enriching support reports, and both files document the shipped dependency contract. Only development metadata inside `vendor/` is removed.
 
@@ -121,7 +156,7 @@ Before committing to SVN, verify:
 ```bash
 find build svn-directory/tags/1.4.1 svn-directory/trunk -name '.*' -print
 find build svn-directory/tags/1.4.1 svn-directory/trunk -path '*/.github*' -print
-find build svn-directory/tags/1.4.1 svn-directory/trunk \( -name 'AGENTS.md' -o -name 'error-report.md' -o -path '*/docs' -o -name 'README.md' -o -name 'Makefile' -o -name 'phpunit.xml' -o -name 'phpcs.xml' -o -name 'phpcs.xml.dist' -o -name 'rector.php' -o -name 'changelog.md' \) -print
+find build svn-directory/tags/1.4.1 svn-directory/trunk \( -name 'AGENTS.md' -o -name 'error-report.md' -o -path '*/docs' -o -name 'README.md' -o -name 'RELEASING.md' -o -name 'v2-api-plan.md' -o -name 'Makefile' -o -name 'phpunit.xml' -o -name 'phpcs.xml' -o -name 'phpcs.xml.dist' -o -name 'rector.php' -o -name 'changelog.md' \) -print
 svn status svn-directory | rg '^\?|^!' || true
 rg -n "Version: 1\.4\.1|Stable tag: 1\.4\.1|\"bluem-development/bluem-php\": \"\^2\.6\.1\"" svn-directory/tags/1.4.1 svn-directory/trunk -S --glob '!vendor/**'
 ```

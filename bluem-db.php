@@ -3,6 +3,8 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
+use Bluem\Wordpress\Requests\BluemRequestValidator;
 register_activation_hook(__FILE__, 'bluem_db_create_requests_table');
 // no need for a deactivation hook yet.
 
@@ -163,7 +165,8 @@ function bluem_db_create_request($request_object): int
             esc_html__('Request created', 'bluem')
         );
 
-        return $wpdb->insert_id;
+        // Link and log inserts also change wpdb::insert_id.
+        return $request_id;
     }
 
     return -1;
@@ -422,8 +425,7 @@ function bluem_db_update_request($request_id, $request_object): bool
  */
 function bluem_db_validated_request_well_formed($request): bool
 {
-    // @todo: check all available fields on their format
-    return true;
+    return (new BluemRequestValidator())->isWellFormed($request);
 }
 
 /**
@@ -435,26 +437,7 @@ function bluem_db_validated_request_well_formed($request): bool
  */
 function bluem_db_validated_request($request): bool
 {
-    // check if present
-    // entrance_code
-    // transaction_id
-    // transaction_url
-    // user_id
-    // timestamp
-    // description
-    // type
-
-    // optional fields
-    // debtor_reference
-    // order_id
-    // payload
-
-    // and well-formed
-    if (!bluem_db_validated_request_well_formed($request)) {
-        return false;
-    }
-
-    return true;
+    return (new BluemRequestValidator())->isValid($request);
 }
 
 /**
@@ -705,16 +688,11 @@ function bluem_db_get_most_recent_request($user_id = null, $type = 'mandates')
 function bluem_db_put_request_payload($request_id, $data)
 {
     $request = bluem_db_get_request_by_id($request_id);
-
-    if ($request->payload !== '') {
-        try {
-            $newPayload = json_decode($request->payload);
-        } catch (Throwable $th) {
-            $newPayload = new Stdclass();
-        }
-    } else {
-        $newPayload = new Stdclass();
+    if ($request === false) {
+        return;
     }
+    $newPayload = json_decode((string) $request->payload);
+    $newPayload = $newPayload instanceof stdClass ? $newPayload : new stdClass();
     foreach ($data as $k => $v) {
         $newPayload->$k = $v;
     }

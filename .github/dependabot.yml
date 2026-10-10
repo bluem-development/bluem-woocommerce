@@ -1,11 +1,42 @@
 version: 2
 updates:
-  - package-ecosystem: "composer"
-    directory: "/"
+  - package-ecosystem: composer
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      composer-runtime:
+        dependency-type: production
+        update-types: [minor, patch]
+      composer-development:
+        dependency-type: development
+        update-types: [minor, patch]
+      # Keep runtime security fixes individually reviewable.
+      coding-standards-security:
+        applies-to: security-updates
+        patterns:
+          - wp-coding-standards/wpcs
+          - squizlabs/php_codesniffer
+          - phpcsstandards/*
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: npm
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      browser-tooling:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      actions:
+        update-types: [minor, patch]

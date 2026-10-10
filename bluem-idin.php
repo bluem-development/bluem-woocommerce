@@ -371,10 +371,31 @@ The method used here is safe, fast and easy, just like iDEAL. It takes at most t
 
 function bluem_woocommerce_idin_settings_section(): void
 {
-    $options = function_exists('get_option') ? get_option('bluem_woocommerce_options') : []; ?>
+    $options = function_exists('get_option') ? get_option('bluem_woocommerce_options') : [];
+    $options = is_array($options) ? $options : [];
+    $scenario = (int) ($options['idin_scenario_active'] ?? 0);
+    $environment = (string) ($options['environment'] ?? 'test'); ?>
     <p><a id="tab_idin"></a>
         <?php esc_html_e('Here you can configure all important details for iDIN (Identification).', 'bluem'); ?>
     </p>
+    <?php if ($scenario === 0) { ?>
+        <div class="notice notice-warning inline" style="padding:10px;">
+            <p>
+                <span class="dashicons dashicons-warning"></span>
+                <strong><?php esc_html_e('iDIN checkout verification is disabled.', 'bluem'); ?></strong>
+                <?php esc_html_e('The iDIN module is active, but no iDIN prompt or checkout validation is added until you select an iDIN Scenario other than “Do not perform an identity check during checkout”.', 'bluem'); ?>
+            </p>
+        </div>
+    <?php } ?>
+    <?php if ($environment !== 'prod') { ?>
+        <div class="notice notice-info inline" style="padding:10px;">
+            <p>
+                <span class="dashicons dashicons-info"></span>
+                <strong><?php esc_html_e('Test environment active.', 'bluem'); ?></strong>
+                <?php esc_html_e('iDIN requests use your test credentials. Change the environment to Production before enabling iDIN for live customers.', 'bluem'); ?>
+            </p>
+        </div>
+    <?php } ?>
     <h3>
         <span class="dashicons dashicons-saved"></span>
         <?php esc_html_e('Automatic check:', 'bluem'); ?>
@@ -382,7 +403,7 @@ function bluem_woocommerce_idin_settings_section(): void
     <p>
         <strong>
             <?php
-            switch ($options['idin_scenario_active']) {
+            switch ($scenario) {
 
                 case 0:
                     {
@@ -415,7 +436,7 @@ function bluem_woocommerce_idin_settings_section(): void
     </p>
 
     <?php
-    if ($options['idin_scenario_active'] >= 1) {
+    if ($scenario >= 1) {
         ?>
         <p>
             <?php esc_html_e('These details are currently requested during the full identity check before checkout:', 'bluem'); ?>
@@ -443,6 +464,12 @@ function bluem_woocommerce_idin_settings_section(): void
     <p>
         <?php esc_html_e('Once you have placed it, a block becomes visible on this page showing the status of the identification procedure. If no identification has been performed, a button will appear to start it.', 'bluem'); ?>
     </p>
+    <div class="notice notice-info inline" style="padding:10px;">
+        <p>
+            <strong><?php esc_html_e('Using a custom checkout or request form?', 'bluem'); ?></strong>
+            <?php esc_html_e('Automatic iDIN checkout prompts are added only to the classic WooCommerce checkout. Custom forms and checkout templates must render the shortcode above, or integrate the iDIN flow in custom code.', 'bluem'); ?>
+        </p>
+    </div>
     <p>
         <?php
         esc_html_e(
