@@ -39,6 +39,114 @@ final class BluemSentry
 
     private static bool $initialized = false;
 
+    public static function sendTestEvent(): string
+    {
+        self::initialize();
+        try {
+            \Sentry\withScope(static function (Scope $scope): void {
+                $scope->setTag('bluem_test', 'true');
+                \Sentry\captureMessage('Bluem Sentry diagnostic event', Severity::info());
+            });
+            return 'Test event queued for Sentry.';
+        } catch (Throwable $exception) {
+            return 'Test event failed: ' . $exception->getMessage();
+        }
+    }
+
+    public static function verifyDsnAndLogs(): string
+    {
+        self::initialize();
+        try {
+            if ( function_exists( 'Sentry\\logger' ) && is_object( \Sentry\logger() ) && method_exists( \Sentry\logger(), 'flush' ) ) {
+                \Sentry\logger()->info( 'Bluem Sentry diagnostic log', [ 'bluem_test' => 'true' ] );
+                \Sentry\logger()->flush();
+            }
+            \Sentry\withScope(static function (Scope $scope): void {
+                $scope->setTag('bluem_test', 'true');
+                \Sentry\captureMessage('Bluem Sentry DSN diagnostic event', Severity::info());
+            });
+            $client = \Sentry\SentrySdk::getCurrentHub()->getClient();
+            $result = $client ? $client->flush( 5 ) : null;
+            $flushed = $result && (string) $result->getStatus() === 'SUCCESS';
+            return $flushed ? 'Sentry accepted the diagnostic event/log and flushed both transports.' : 'The diagnostic event/log was queued, but the event transport did not flush successfully.';
+        } catch (Throwable $exception) {
+            return 'Sentry DSN/log test failed: ' . $exception->getMessage();
+        }
+    }
+
+    public static function sendTestMetric(): string
+    {
+        self::initialize();
+
+        try {
+            if ( ! function_exists( 'Sentry\\traceMetrics' ) ) {
+                return 'Metric failed: the installed Sentry SDK does not support trace metrics.';
+            }
+
+            \Sentry\withScope( static function ( Scope $scope ): void {
+                $scope->setTag( 'bluem_test', 'true' );
+                $attributes = [ 'my-attribute' => 'foo' ];
+
+                self::captureMetric( 'counter', 'test-counter', 10, $attributes );
+                self::captureMetric( 'gauge', 'test-gauge', 50.0, $attributes, \Sentry\Unit::millisecond() );
+                self::captureMetric( 'distribution', 'test-distribution', 20.0, $attributes, \Sentry\Unit::kilobyte() );
+                \Sentry\traceMetrics()->flush();
+            } );
+
+            $client = \Sentry\SentrySdk::getCurrentHub()->getClient();
+            $result = $client ? $client->flush( 5 ) : null;
+            $flushed = $result && (string) $result->getStatus() === 'SUCCESS';
+
+            return $flushed
+                ? 'Sentry accepted the test counter, gauge, and distribution metrics.'
+                : 'Test metrics were queued, but the Sentry transport did not flush successfully.';
+        } catch ( Throwable $exception ) {
+            return 'Metric failed: ' . $exception->getMessage();
+        }
+    }
+
+    /**
+     * Queue a production metric using Sentry's trace metrics API.
+     *
+     * Metrics remain buffered until the SDK flushes the current runtime
+     * context, or until traceMetrics()->flush() is called explicitly.
+     * Sentry failures must never affect plugin execution.
+     *
+     * @param 'counter'|'gauge'|'distribution' $type
+     * @param int|float                         $value
+     * @param array<string, int|float|string|bool> $attributes
+     */
+    public static function captureMetric(
+        string $type,
+        string $name,
+        int|float $value,
+        array $attributes = [],
+        ?\Sentry\Unit $unit = null
+    ): void {
+        self::initialize();
+
+        try {
+            if ( ! function_exists( 'Sentry\\traceMetrics' ) ) {
+                return;
+            }
+
+            $metrics = \Sentry\traceMetrics();
+            switch ( $type ) {
+                case 'counter':
+                    $metrics->count( $name, $value, $attributes, $unit );
+                    break;
+                case 'gauge':
+                    $metrics->gauge( $name, $value, $attributes, $unit );
+                    break;
+                case 'distribution':
+                    $metrics->distribution( $name, $value, $attributes, $unit );
+                    break;
+            }
+        } catch ( Throwable ) {
+            // Observability must remain non-blocking for checkout and callbacks.
+        }
+    }
+
     /**
      * Initialize Sentry once, with only error-related integrations enabled.
      */
@@ -53,6 +161,7 @@ final class BluemSentry
         try {
             \Sentry\init([
                 'dsn' => self::getDsn(),
+                'enable_logs' => true,
                 'release' => 'bluem@' . self::getPluginVersion(),
                 'environment' => self::getEnvironment(),
                 'server_name' => 'bluem-plugin',
