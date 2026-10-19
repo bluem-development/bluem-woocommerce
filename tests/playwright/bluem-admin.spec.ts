@@ -49,6 +49,19 @@ test('administrator can deactivate and reactivate Bluem', async ({ page }) => {
   await expect(page.locator('body')).toContainText('The plugin has been activated');
 });
 
+test('transaction list handles missing and malformed request filters', async ({ page }) => {
+  await login(page);
+  for (const query of ['', '&request_type%5B%5D=ideal', '&request_type=unknown,bogus']) {
+    await page.goto(`/wp-admin/admin.php?page=bluem-transactions${query}`);
+    await expect(page.locator('h1')).toContainText('Transactions');
+    await expect(page.locator('.payment-methods .nav-tab.active')).toHaveCount(1);
+    await expect(page.locator('body')).not.toContainText('Undefined array key');
+  }
+
+  await page.goto('/wp-admin/admin.php?page=bluem-transactions&request_type=unknown,ideal');
+  await expect(page.locator('.payment-methods .nav-tab.active')).toHaveAttribute('href', /request_type=ideal$/);
+});
+
 test('administrator can open WooCommerce payment settings', async ({ page }) => {
   await login(page);
   await page.goto('/wp-admin/admin.php?page=wc-settings&tab=checkout');

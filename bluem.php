@@ -742,7 +742,7 @@ function bluem_requests_view(): void
         $current_category = $enabled_modules[0];
     } else {
         $current_category = '';
-        }
+    }
 
     bluem_requests_view_with_filter( $filters, $current_category ?? '' );
 }
