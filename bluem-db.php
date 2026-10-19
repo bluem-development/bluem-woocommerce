@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 use Bluem\Wordpress\Requests\BluemRequestValidator;
+use Bluem\Wordpress\Requests\BluemRequestWriter;
 use Bluem\Wordpress\Requests\BluemRequestRepository;
 use Bluem\Wordpress\Requests\BluemRequestLogRepository;
 use Bluem\Wordpress\Requests\BluemRequestLinkRepository;
@@ -131,48 +132,33 @@ function bluem_db_check(): void
 
 add_action('plugins_loaded', 'bluem_db_check');
 
-// request specific functions
-function bluem_db_create_request($request_object): int
+/** Build a writer with the active connection and existing WordPress adapters. */
+function bluem_db_request_writer(): BluemRequestWriter
 {
     global $wpdb;
 
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
+    return new BluemRequestWriter(
+        $wpdb,
+        new BluemRequestValidator(),
+        static fn($id, $orderId) => bluem_db_create_link($id, $orderId, 'order'),
+        static function ($id, string $operation, $data) {
+            $description = $operation === 'created'
+                ? esc_html__('Request created', 'bluem')
+                : wp_kses_post(sprintf(
+                    /* translators: %s: data object in JSON, don't translate it. */
+                    esc_html__('Transaction updated. New data: %s', 'bluem'),
+                    esc_js(wp_json_encode($data))
+                ));
 
-    if (!bluem_db_validated_request($request_object)) {
-        return -1;
-    }
-
-    $insert_result = $wpdb->insert(
-        $wpdb->prefix . 'bluem_requests',
-        $request_object
-    );
-
-    if ($insert_result) {
-        $request_id = $wpdb->insert_id;
-
-        $request_object = (object) $request_object;
-
-        if (isset($request_object->order_id)
-            && !is_null($request_object->order_id)
-            && $request_object->order_id != ''
-        ) {
-            bluem_db_create_link(
-                $request_id,
-                $request_object->order_id,
-                'order'
-            );
+            return bluem_db_request_log($id, $description);
         }
-        bluem_db_request_log(
-            $request_id,
-            esc_html__('Request created', 'bluem')
-        );
+    );
+}
 
-        // Link and log inserts also change wpdb::insert_id.
-        return $request_id;
-    }
-
-    return -1;
+// request specific functions
+function bluem_db_create_request($request_object): int
+{
+    return bluem_db_request_writer()->create($request_object);
 }
 
 function bluem_db_request_log($request_id, $description, $log_data = [])
@@ -377,38 +363,7 @@ function bluem_db_update_storage($id, $object): bool
  */
 function bluem_db_update_request($request_id, $request_object): bool
 {
-    global $wpdb;
-
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
-
-    if (!bluem_db_validated_request_well_formed($request_object)) {
-        return false;
-    }
-    $update_result = $wpdb->update(
-        $wpdb->prefix . 'bluem_requests',
-        $request_object,
-        [
-            'id' => $request_id,
-        ]
-    );
-
-    if ($update_result) {
-        bluem_db_request_log(
-            $request_id,
-            wp_kses_post(
-                sprintf(
-                    /* translators: %s: data object in JSON, don't translate it. */
-                    esc_html__('Transaction updated. New data: %s', 'bluem'),
-                    esc_js(wp_json_encode($request_object))
-                )
-            )
-        );
-
-        return true;
-    }
-
-    return false;
+    return bluem_db_request_writer()->update($request_id, $request_object);
 }
 
 /**
