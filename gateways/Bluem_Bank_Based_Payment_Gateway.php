@@ -8,6 +8,7 @@ include_once __DIR__ . '/Bluem_Payment_Gateway.php';
 
 use Bluem\Wordpress\Payments\BluemPaymentStatus;
 use Bluem\Wordpress\Payments\BluemPaymentTransition;
+use Bluem\Wordpress\Payments\BluemPaymentWebhook;
 
 // possible status constants: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled'
 const BLUEM_WC_STATUS_PENDING = 'pending';
@@ -127,7 +128,12 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      */
     public static function applyPaymentStatusTransition($order, string $paymentStatus, string $context = 'callback'): ?string
     {
-        return (new BluemPaymentTransition(static function (string $status, string $context): string {
+        return self::paymentTransition()->apply($order, $paymentStatus, $context);
+    }
+
+    private static function paymentTransition(): BluemPaymentTransition
+    {
+        return new BluemPaymentTransition(static function (string $status, string $context): string {
             return match ($context . ':' . $status) {
                 'callback:Success' => esc_html__('Payment has been received (callback)', 'bluem'),
                 'callback:Failure' => esc_html__('Payment has expired', 'bluem'),
@@ -140,7 +146,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                     ? esc_html__('Payment failed: error or unknown status via webhook', 'bluem')
                     : esc_html__('Payment failed: error or unknown status', 'bluem'),
             };
-        }))->apply($order, $paymentStatus, $context);
+        });
     }
 
     /**
@@ -402,27 +408,18 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
                     exit;
                 }
                 $order_status = $order->get_status();
-                $targetOrderStatus = self::resolvePaymentStatusTransition($webhook_status, $order_status);
                 $user_id = $order->get_user_id();
 
                 $user_meta = get_user_meta($user_id);
 
-                if ($webhook_status === "Success") {
-                    if ($order_status === BLUEM_WC_STATUS_PROCESSING) {
-                        // order is already marked as processing, nothing more is necessary
-                        $order->add_order_note(
-                            sprintf(
-                                /* translators: %s: order status */
-                                esc_html__("Received payment completed webhook notification, but status not updated - it was already %s", 'bluem'),
-                                $order_status
-                            )
-                        );
-                    } elseif ($targetOrderStatus === BLUEM_WC_STATUS_PROCESSING) {
-                        self::applyPaymentStatusTransition($order, $webhook_status, 'webhook');
-                    }
-                } elseif ($targetOrderStatus !== null) {
-                    self::applyPaymentStatusTransition($order, $webhook_status, 'webhook');
-                }
+                (new BluemPaymentWebhook(
+                    self::paymentTransition(),
+                    static fn(string $status): string => sprintf(
+                        /* translators: %s: order status */
+                        esc_html__("Received payment completed webhook notification, but status not updated - it was already %s", 'bluem'),
+                        $status
+                    )
+                ))->apply($order, $webhook_status, $order_status);
                 http_response_code(200);
                 echo 'OK';
                 exit;
