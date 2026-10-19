@@ -55,6 +55,17 @@ try {
     $assert(count(bluem_db_get_logs_for_request($requestId)) === 4, 'Unchanged update must not append a log.');
     $assert(bluem_db_get_links_for_request(-1) === [], 'Missing links must remain an empty list.');
     $assert(bluem_db_get_logs_for_request(-1) === [], 'Missing logs must remain an empty list.');
+    bluem_db_put_request_payload($requestId, ['notification_sent' => true, 'keep' => 1]);
+    bluem_db_put_request_payload($requestId, ['keep' => null]);
+    $payload = json_decode(bluem_db_get_request_by_id((string) $requestId)->payload, true);
+    $assert($payload === ['notification_sent' => true, 'keep' => null], 'Payload updates must preserve unrelated fields and explicit null values.');
+    bluem_db_update_request($requestId, ['payload' => '[1,2]']);
+    bluem_db_put_request_payload($requestId, ['repaired' => true]);
+    $payload = json_decode(bluem_db_get_request_by_id((string) $requestId)->payload, true);
+    $assert($payload === ['repaired' => true], 'Legacy non-object payload normalization changed.');
+    $logCount = count(bluem_db_get_logs_for_request($requestId));
+    bluem_db_put_request_payload(-1, ['ignored' => true]);
+    $assert(count(bluem_db_get_logs_for_request($requestId)) === $logCount, 'A missing payload request must not append logs.');
 } finally {
     // The token also permits cleanup if an incorrect returned insert ID is detected.
     $ids = $wpdb->get_col($wpdb->prepare('SELECT id FROM `' . $wpdb->prefix . 'bluem_requests` WHERE transaction_id = %s', $token));
