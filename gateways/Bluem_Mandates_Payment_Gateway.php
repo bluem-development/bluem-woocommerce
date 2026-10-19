@@ -653,12 +653,14 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
      */
     private function getOrder(string $mandateID)
     {
-        $orders = wc_get_orders([
+        $orders = wc_get_orders(array_merge([
             'orderby' => 'date',
             'order' => 'DESC',
-            'bluem_mandateid' => $mandateID,
-        ]);
-        if (count($orders) == 0) {
+            'limit' => 2,
+        ], BluemOrderQuery::metadataEquals('bluem_mandateid', $mandateID)));
+        // A callback must have exactly one correlated order. In particular,
+        // do not fall back to the most recent order when no match exists.
+        if (count($orders) !== 1) {
             return null;
         }
 
@@ -775,7 +777,12 @@ class Bluem_Mandates_Payment_Gateway extends Bluem_Payment_Gateway
         $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
 
         // $request_from_db = bluem_db_get_request_by_transaction_id($mandateID);
-        if ($request_from_db && $statusCode !== $request_from_db->status) {
+        if ($request_from_db) {
+            // The response is authoritative. Persist it unconditionally so
+            // callback handling cannot leave an otherwise completed mandate
+            // request marked as "created" because of a stale request object.
+            // wpdb treats an unchanged value as a no-op, so repeat callbacks
+            // remain idempotent.
             bluem_db_update_request(
                 $request_from_db->id,
                 [

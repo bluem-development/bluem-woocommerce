@@ -6,6 +6,8 @@ if (! defined('ABSPATH')) {
 
 include_once __DIR__ . '/Bluem_Payment_Gateway.php';
 
+use Bluem\Wordpress\Payments\BluemPaymentStatus;
+
 // possible status constants: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled'
 const BLUEM_WC_STATUS_PENDING = 'pending';
 const BLUEM_WC_STATUS_PROCESSING = 'processing';
@@ -101,18 +103,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      */
     public static function resolvePaymentStatusTransition(string $paymentStatus, string $currentOrderStatus): ?string
     {
-        return match ($paymentStatus) {
-            self::PAYMENT_STATUS_SUCCESS => $currentOrderStatus === BLUEM_WC_STATUS_PENDING
-                ? BLUEM_WC_STATUS_PROCESSING
-                : null,
-            self::PAYMENT_STATUS_FAILURE => $currentOrderStatus === BLUEM_WC_STATUS_PENDING
-                ? BLUEM_WC_STATUS_FAILED
-                : null,
-            'Cancelled' => BLUEM_WC_STATUS_CANCELLED,
-            self::PAYMENT_STATUS_NEW, 'Open', 'Pending' => null,
-            'Expired' => BLUEM_WC_STATUS_FAILED,
-            default => BLUEM_WC_STATUS_FAILED,
-        };
+        return BluemPaymentStatus::resolveOrderTransition($paymentStatus, $currentOrderStatus);
     }
 
     /**
@@ -669,7 +660,7 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
             bluem_dialogs_render_prompt(esc_html__("You canceled the payment", 'bluem'));
             // terug naar order pagina om het opnieuw te proberen?
             exit;
-        } elseif (in_array($statusCode, [ self::PAYMENT_STATUS_NEW, "Open", "Pending" ], true)) {
+        } elseif (BluemPaymentStatus::isInProgress($statusCode)) {
             if ($request_from_db) {
                 bluem_transaction_notification_email($request_from_db->id);
             }

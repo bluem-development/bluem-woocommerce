@@ -189,3 +189,30 @@ Suggested follow-up:
 - Add `make doctor`.
 - Add `make quick-check` for syntax, Composer validation, unit tests, and diff whitespace.
 - Document when acceptance tests require Docker/WordPress state.
+
+## Mandate Shortcode Stability Audit (October 2026)
+
+The shortcode now extracts errors through the Bluem response interface. Bluem PHP
+2.7.3 uses `Bluem\BluemPHP\Responses\ErrorBluemResponse`; exact comparisons against
+the old namespace hid API and transport errors as “General error”. Support emails
+now include HTTP status when transport was reached, response class/size/element
+names, phase and mandate ID. Request bodies, raw response XML, entrance codes and
+bank details are excluded. Transport not reached (for example, schema validation)
+is distinguished from an attempted request with no HTTP response.
+
+The patch also guards invalid input, missing transaction/status fields and
+configuration exceptions; repairs non-object JSON payloads; renders numeric email
+fields; and preserves the boolean notification marker after success callbacks.
+Request persistence must succeed before redirecting to the bank. The accepted
+response mandate ID is the database correlation key.
+
+Follow-up work requiring a broader persistence/design change:
+
+- Reserve mandate counters atomically across shortcode, gateway and integration
+  flows. The current read/increment/write options sequence can allocate the same
+  ID to simultaneous submissions; the corrected fallback does not resolve this.
+- Replace the guest form's `visitor-<seconds>` reference with a durable unique
+  reference. Forms rendered in the same second can share a debtor reference.
+- Audit the other mandate modules for old response namespace checks, payload
+  handling and failure diagnostics; this patch targets the shortcode flow and
+  the shared email/payload helpers it invokes.

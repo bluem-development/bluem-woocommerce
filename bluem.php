@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name: Bluem ePayments, eMandates & iDIN for WordPress & WooCommerce
- * Version: 1.6.1
+ * Version: 1.6.6
  * Plugin URI: https://bluem.nl/en/
  * Description: Bluem integration for WordPress and WooCommerce for Payments, eMandates, iDIN identity verification and much, much more
  * Author: Bluem Payment Services
@@ -43,17 +43,24 @@ global $bluem_db_version;
 $bluem_db_version = 1.5;
 
 const BLUEM_WOOCOMMERCE_MANUAL_URL    = "https://codexology.notion.site/Bluem-voor-WordPress-en-WooCommerce-Handleiding-9e2df5c5254a4b8f9cbd272fae641f5e";
-const BLUEM_PLUGIN_VERSION = '1.6.0';
+const BLUEM_PLUGIN_VERSION = '1.6.5';
 
 require __DIR__ . '/vendor/autoload.php';
 
 use Bluem\BluemPHP\Bluem;
 use Bluem\Wordpress\Observability\BluemActivationNotifier;
 use Bluem\Wordpress\Observability\BluemSentry;
+use Bluem\Wordpress\Support\BluemPluginStatus;
+use Bluem\Wordpress\Presentation\BluemAdminTabResolver;
+use Bluem\Wordpress\Users\BluemUserIndexer;
 use Bluem\Wordpress\Presentation\BluemRequestGrouper;
 use Bluem\Wordpress\Requests\BluemEnabledRequestTypeFilter;
 use Bluem\Wordpress\Support\BluemSupportReportEnvironment;
 use Bluem\Wordpress\Support\BluemComposerDependencyVersion;
+use Bluem\Wordpress\Support\BluemModuleStatus;
+use Bluem\Wordpress\Settings\BluemOptionLookup;
+use Bluem\Wordpress\Settings\BluemCoreOptions;
+use Bluem\Wordpress\Settings\BluemConfigurationBuilder;
 use Bluem\Wordpress\Support\BluemSupportReportTrace;
 
 /**
@@ -62,12 +69,20 @@ use Bluem\Wordpress\Support\BluemSupportReportTrace;
  *
  * @param object $config Bluem configuration object.
  */
-function bluem_woocommerce_create_client(object $config): Bluem {
+function bluem_woocommerce_create_client(object $config, ?\Bluem\Wordpress\Support\BluemMandateDiagnostics $diagnostics = null): Bluem {
     $transport = apply_filters('bluem_woocommerce_http_transport', null, $config);
 
     $mockEndpoint = getenv('BLUEM_ACCEPTANCE_MOCK_URL');
     if ($transport === null && is_string($mockEndpoint) && $mockEndpoint !== '') {
         $transport = new \Bluem\Wordpress\Testing\BluemAcceptanceHttpTransport($mockEndpoint);
+    }
+
+    if ($diagnostics !== null) {
+        $transport = $diagnostics->wrap(
+            $transport instanceof \Bluem\BluemPHP\Transport\HttpTransportInterface
+                ? $transport
+                : new \Bluem\BluemPHP\Transport\CurlHttpTransport()
+        );
     }
 
     if ($transport instanceof \Bluem\BluemPHP\Transport\HttpTransportInterface) {
@@ -188,13 +203,7 @@ const BLUEM_TRANSACTION_REQUEST_TYPES = [
  */
 if ( ! function_exists( 'bluem_is_woocommerce_activated' ) ) {
     function bluem_is_woocommerce_activated(): bool {
-        $active_plugins = get_option( 'active_plugins' );
-
-        if ( in_array( 'woocommerce/woocommerce.php', $active_plugins ) ) {
-            return true;
-        }
-
-        return false;
+        return (new BluemPluginStatus())->isWooCommerceActive(get_option('active_plugins'), false);
     }
 }
 
@@ -203,13 +212,7 @@ if ( ! function_exists( 'bluem_is_woocommerce_activated' ) ) {
  */
 if ( ! function_exists( 'bluem_is_contactform7_activated' ) ) {
     function bluem_is_contactform7_activated(): bool {
-        $active_plugins = get_option( 'active_plugins' );
-
-        if ( in_array( 'contact-form-7/wp-contact-form-7.php', $active_plugins ) ) {
-            return true;
-        }
-
-        return false;
+        return (new BluemPluginStatus())->isContactForm7Active(get_option('active_plugins'));
     }
 }
 
@@ -224,10 +227,7 @@ if ( function_exists( 'bluem_is_contactform7_activated' ) ) {
  */
 if ( ! function_exists( 'bluem_is_gravityforms_activated' ) ) {
     function bluem_is_gravityforms_activated(): bool {
-        $active_plugins = get_option( 'active_plugins' );
-
-        return in_array( 'gravityforms', $active_plugins, true )
-               || in_array( 'gravityforms/gravityforms.php', $active_plugins, true );
+        return (new BluemPluginStatus())->isGravityFormsActive(get_option('active_plugins'));
     }
 }
 
@@ -236,13 +236,7 @@ if ( ! function_exists( 'bluem_is_gravityforms_activated' ) ) {
  */
 if ( ! function_exists( 'bluem_is_permalinks_enabled' ) ) {
     function bluem_is_permalinks_enabled(): bool {
-        $structure = get_option( 'permalink_structure' );
-
-        if ( ! empty( $structure ) ) {
-            return true;
-        }
-
-        return false;
+        return (new BluemPluginStatus())->hasPermalinks(get_option('permalink_structure'));
     }
 }
 
@@ -548,7 +542,7 @@ add_action( 'admin_menu', 'bluem_register_menu', 9 );
  */
 function bluem_get_composer_dependency_version( $dependency_name ) {
     $version = (new BluemComposerDependencyVersion(
-        plugin_dir_path( __FILE__ ) . 'composer.lock'
+        plugin_dir_path( __FILE__ ) . 'vendor/composer/installed.php'
     ))->getVersion((string) $dependency_name);
 
     return $version ?? false;
@@ -946,8 +940,8 @@ function bluem_update_request_by_id( $request_id ) {
                         );
                     }
                 }
-//            } elseif ($statusCode === "Pending") {
-                //
+            } elseif ( in_array( $statusCode, ['New', 'Open', 'Pending'], true ) ) {
+                // Persist the request status above, but leave the order in progress.
             } elseif ( $statusCode === "Cancelled" ) {
                 if ( ! empty ( $order ) ) {
                     $order->update_status( 'cancelled', esc_html__( 'Authorization has been canceled', 'bluem' ) );
@@ -1026,8 +1020,8 @@ function bluem_update_request_by_id( $request_id ) {
                     $order->update_status( 'processing', esc_html__( 'Payment has been received', 'bluem' ) );
                     $order->add_order_note( esc_html__( "Payment process completed", 'bluem' ) );
                 }
-//            } elseif ($statusCode === "Pending") {
-                //
+            } elseif ( in_array( $statusCode, ['New', 'Open', 'Pending'], true ) ) {
+                // Persist the request status above, but leave the order in progress.
             } elseif ( $statusCode === "Cancelled" ) {
                 if ( ! empty ( $order ) ) {
                     $order->update_status( 'cancelled', esc_html__( 'Payment has been canceled', 'bluem' ) );
@@ -1129,15 +1123,7 @@ function bluem_requests_view_with_filter( $filters = [], string $current_categor
  * @return void
  */
 function bluem_get_users_by_id(): array {
-    $users_by_id = [];
-
-    $users = get_users();
-
-    foreach ( $users as $user ) {
-        $users_by_id[ $user->ID ] = $user;
-    }
-
-    return $users_by_id;
+    return (new BluemUserIndexer())->index(get_users());
 }
 
 function bluem_get_requests_per_type( $filters = [] ): array {
@@ -1189,7 +1175,9 @@ function bluem_sort_requests_per_type( $_requests ): array {
 
 // @todo Deprecate this
 function bluem_woocommerce_tab( $default_tab = null ) {
-    return isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : $default_tab;
+    $tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : null;
+
+    return (new BluemAdminTabResolver())->resolve($tab, $default_tab);
 }
 
 /**
@@ -1469,13 +1457,7 @@ function bluem_woocommerce_show_general_profile_fields() {
 
 // Settings functions
 function bluem_woocommerce_get_option( $key ) {
-    $options = bluem_woocommerce_get_core_options();
-
-    if ( array_key_exists( $key, $options ) ) {
-        return $options[ $key ];
-    }
-
-    return false;
+    return (new BluemOptionLookup(bluem_woocommerce_get_core_options()))->get($key);
 }
 
 function bluem_woocommerce_settings_render_environment() {
@@ -1617,99 +1599,28 @@ function bluem_woocommerce_settings_render_input( $field ) {
  * @return array
  */
 function bluem_woocommerce_get_core_options(): array {
-    return [
-            'environment'                    => [
-                    'key'         => 'environment',
-                    'title'       => 'bluem_environment',
-                    'name'        => esc_html__( 'Choose the active mode', 'bluem' ),
-                    'description' => esc_html__( 'Enter which mode you want to use: prod, test or acc for the production (live), test or acceptance environment.', 'bluem' ),
-                    'type'        => 'select',
-                    'default'     => 'test',
-                    'options'     =>
-                            [
-                                    'test' => 'Test',
-                                    'prod' => "Production (live)",
-                            ]
-                // acceptance can be added later
-            ],
-            'senderID'                       => [
-                    'key'         => 'senderID',
-                    'title'       => 'bluem_senderID',
-                    'name'        => esc_html__( 'Bluem Sender ID', 'bluem' ),
-                    'description' => esc_html__( 'The Sender ID issued by Bluem. Starts with an S, followed by a number.', 'bluem' ),
-                    'default'     => ""
-            ],
-            'test_accessToken'               => [
-                    'key'         => 'test_accessToken',
-                    'title'       => 'bluem_test_accessToken',
-                    'type'        => 'password',
-                    'name'        => esc_html__( 'Access Token for Testing', 'bluem' ),
-                    'description' => esc_html__( 'The access token used to communicate with Bluem for the test environment.', 'bluem' ),
-                    'default'     => ''
-            ],
-            'production_accessToken'         => [
-                    'key'         => 'production_accessToken',
-                    'title'       => 'bluem_production_accessToken',
-                    'type'        => 'password',
-                    'name'        => esc_html__( 'Access Token for Production', 'bluem' ),
-                    'description' => esc_html__( 'The access token used to communicate with Bluem for the production environment.', 'bluem' ),
-                    'default'     => ''
-            ],
-            'expectedReturnStatus'           => [
-                    'key'         => 'expectedReturnStatus',
-                    'title'       => 'bluem_expectedReturnStatus',
-                    'name'        => esc_html__( 'Test mode return status', 'bluem' ),
-                    'description' => esc_html__( 'Which status do you want to receive for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending', 'bluem' ),
-                    'default'     => 'success',
-                    'type'        => 'select',
-                    'options'     => [
-                            'success'   => 'success',
-                            'cancelled' => 'cancelled',
-                            'expired'   => 'expired',
-                            'failure'   => 'failure',
-                            'open'      => 'open',
-                            'pending'   => 'pending',
-                            'none'      => 'none'
-                    ]
-            ],
-            'suppress_woo'                   => [
-                    'key'         => 'suppress_woo',
-                    'title'       => 'bluem_suppress_woo',
-                    'name'        => esc_html__( 'Use WooCommerce?', 'bluem' ),
-                    'description' => esc_html__( 'Set this to "Do not use WooCommerce" if you want to use this plugin on this site without WooCommerce functionality.', 'bluem' ),
-                    'type'        => 'select',
-                    'default'     => '0',
-                    'options'     =>
-                            [
-                                    '0' => "Use WooCommerce",
-                                    '1' => 'Do NOT use WooCommerce'
-                            ]
-            ],
-            'error_reporting_email'          => [
-                    'key'         => 'error_reporting_email',
-                    'title'       => 'bluem_error_reporting_email',
-                    'name'        => esc_html__( 'Report errors to the developers', 'bluem' ),
-                    'description' => esc_html__( "Help us resolve issues quickly and minimize downtime by forwarding non-personal technical notifications.", 'bluem' ),
-                    'type'        => 'select',
-                    'default'     => '1',
-                    'options'     => [
-                            '1' => esc_html__( 'Yes, forward errors to the developers', 'bluem' ),
-                            '0' => esc_html__( 'No error reporting by email', 'bluem' ),
-                    ],
-            ],
-            'transaction_notification_email' => [
-                    'key'         => 'transaction_notification_email',
-                    'title'       => 'bluem_transaction_notification_email',
-                    'name'        => esc_html__( 'Email notification for the website owner for each new transaction?', 'bluem' ),
-                    'description' => "Specify here whether you, as the website owner, want to automatically receive a notification email with transaction details",
-                    'type'        => 'select',
-                    'default'     => '0',
-                    'options'     => [
-                            '0' => esc_html__( 'No email notification (default)', 'bluem' ),
-                            '1' => esc_html__( 'Send a notification for each transaction to ', 'bluem' ) . esc_attr( get_option( 'admin_email' ) )
-                    ],
-            ],
-    ];
+    // Keep literal gettext calls in the WP adapter so catalog extraction stays intact.
+    return (new BluemCoreOptions([
+        'environment_name' => esc_html__( 'Choose the active mode', 'bluem' ),
+        'environment_description' => esc_html__( 'Enter which mode you want to use: prod, test or acc for the production (live), test or acceptance environment.', 'bluem' ),
+        'senderID_name' => esc_html__( 'Bluem Sender ID', 'bluem' ),
+        'senderID_description' => esc_html__( 'The Sender ID issued by Bluem. Starts with an S, followed by a number.', 'bluem' ),
+        'test_accessToken_name' => esc_html__( 'Access Token for Testing', 'bluem' ),
+        'test_accessToken_description' => esc_html__( 'The access token used to communicate with Bluem for the test environment.', 'bluem' ),
+        'production_accessToken_name' => esc_html__( 'Access Token for Production', 'bluem' ),
+        'production_accessToken_description' => esc_html__( 'The access token used to communicate with Bluem for the production environment.', 'bluem' ),
+        'expectedReturnStatus_name' => esc_html__( 'Test mode return status', 'bluem' ),
+        'expectedReturnStatus_description' => esc_html__( 'Which status do you want to receive for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending', 'bluem' ),
+        'suppress_woo_name' => esc_html__( 'Use WooCommerce?', 'bluem' ),
+        'suppress_woo_description' => esc_html__( 'Set this to "Do not use WooCommerce" if you want to use this plugin on this site without WooCommerce functionality.', 'bluem' ),
+        'error_reporting_email_name' => esc_html__( 'Report errors to the developers', 'bluem' ),
+        'error_reporting_email_description' => esc_html__( "Help us resolve issues quickly and minimize downtime by forwarding non-personal technical notifications.", 'bluem' ),
+        'error_reporting_email_1' => esc_html__( 'Yes, forward errors to the developers', 'bluem' ),
+        'error_reporting_email_0' => esc_html__( 'No error reporting by email', 'bluem' ),
+        'transaction_notification_email_name' => esc_html__( 'Email notification for the website owner for each new transaction?', 'bluem' ),
+        'transaction_notification_email_0' => esc_html__( 'No email notification (default)', 'bluem' ),
+        'transaction_notification_email_1' => esc_html__( 'Send a notification for each transaction to ', 'bluem' ) . esc_attr( get_option( 'admin_email' ) ),
+    ]))->get();
 }
 
 /**
@@ -1892,7 +1803,7 @@ function bluem_transaction_notification_email(
 
     $pl = json_decode( $data->payload );
 
-    if ( isset( $pl->sent_notification ) && $pl->sent_notification === "true" ) {
+    if ( isset( $pl->sent_notification ) && in_array( $pl->sent_notification, [true, "true"], true ) ) {
         return false;
     }
 
@@ -1976,40 +1887,23 @@ function bluem_transaction_notification_email(
 }
 
 function bluem_woocommerce_get_config(): Stdclass {
-    $bluem_options = bluem_woocommerce_get_core_options();
+    $definitions = [bluem_woocommerce_get_core_options()];
 
-    if ( function_exists( 'bluem_woocommerce_get_mandates_options' ) ) {
-        $bluem_options = array_merge(
-                $bluem_options,
-                bluem_woocommerce_get_mandates_options()
-        );
+    foreach ([
+        'bluem_woocommerce_get_mandates_options',
+        'bluem_woocommerce_get_idin_options',
+        'bluem_woocommerce_get_payments_options',
+    ] as $provider) {
+        if (function_exists($provider)) {
+            $definitions[] = $provider();
+        }
     }
-    if ( function_exists( 'bluem_woocommerce_get_idin_options' ) ) {
-        $bluem_options = array_merge(
-                $bluem_options,
-                bluem_woocommerce_get_idin_options()
-        );
-    }
-    if ( function_exists( 'bluem_woocommerce_get_payments_options' ) ) {
-        $bluem_options = array_merge(
-                $bluem_options,
-                bluem_woocommerce_get_payments_options()
-        );
-    }
+    $definitions[] = bluem_woocommerce_get_integrations_options();
 
-    $bluem_options = array_merge(
-            $bluem_options,
-            bluem_woocommerce_get_integrations_options()
+    return (new BluemConfigurationBuilder())->build(
+        get_option('bluem_woocommerce_options'),
+        ...$definitions
     );
-
-    $config = new Stdclass();
-
-    $values = get_option( 'bluem_woocommerce_options' );
-    foreach ( $bluem_options as $key => $option ) {
-        $config->$key = $values[ $key ] ?? ( $option['default'] ?? "" );
-    }
-
-    return $config;
 }
 
 function bluem_woocommerce_modules_settings_section() {
@@ -2071,19 +1965,8 @@ function bluem_woocommerce_modules_render_generic_activation( $module ) {
 }
 
 function bluem_module_enabled( $module ): bool {
-    $bluem_options = get_option( 'bluem_woocommerce_options' );
-
-    if ( $bluem_options === false ) {
-        return false;
-    }
-    if ( ( $bluem_options !== false
-           && ! isset( $bluem_options["{$module}_enabled"] ) )
-         || $bluem_options["{$module}_enabled"] == "1"
-    ) {
-        return true;
-    }
-
-    return false;
+    return (new BluemModuleStatus(get_option('bluem_woocommerce_options')))
+        ->isEnabled((string) $module);
 }
 
 /**
@@ -2443,7 +2326,9 @@ function bluem_admin_status() {
 }
 
 function bluem_woocommerce_is_woocommerce_active(): bool {
-    return in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
+    return (new BluemPluginStatus())->isWooCommerceActive(
+        apply_filters('active_plugins', get_option('active_plugins'))
+    );
 }
 
 

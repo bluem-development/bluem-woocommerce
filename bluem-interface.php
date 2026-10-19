@@ -470,6 +470,8 @@ function bluem_render_obj_row_recursive($key, $value, $level = 0): void
 
             bluem_render_obj_row_recursive($valuekey, $valuevalue, $level + 1);
         }
+    } elseif (is_int($value) || is_float($value)) {
+        echo esc_html((string) $value);
     } elseif (is_bool($value)) {
         echo ' ' . ($value ? esc_html__('Yes', 'bluem') : esc_html__('No', 'bluem'));
     }

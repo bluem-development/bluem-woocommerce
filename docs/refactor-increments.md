@@ -10,17 +10,58 @@ functions as compatibility adapters during the migration.
 4. [x] Extract request grouping into `BluemRequestGrouper`.
 5. [x] Extract enabled request-type filtering into `BluemEnabledRequestTypeFilter`.
 6. [x] Extract Composer dependency version lookup into a testable support service.
-7. [ ] Extract support-report environment collection behind injectable WordPress and WooCommerce readers.
+7. [x] Extract support-report environment collection behind injectable WordPress and WooCommerce readers.
 8. [x] Extract support-report trace normalization into a pure trace formatter.
-9. [ ] Extract core plugin option lookup into a small settings accessor.
-10. [ ] Extract core plugin option definitions into a settings schema object.
-11. [ ] Extract payment, mandate, and iDIN settings access behind feature-specific settings objects.
-12. [ ] Extract Bluem request persistence from `bluem-db.php` into a request repository.
-13. [ ] Extract request logging and link persistence from `bluem-db.php` into focused repositories.
-14. [ ] Extract payment callback status resolution and order-transition orchestration.
-15. [ ] Extract iDIN validation and result handling into an identity workflow service.
-16. [ ] Extract mandate request and callback orchestration into a mandate workflow service.
-17. [ ] Extract Contact Form 7 and Gravity Forms flows into integration adapters.
-18. [ ] Move admin request rendering and navigation behind presentation services.
+9. [x] Extract core plugin option lookup into a settings object.
+10. [x] Extract payment option lookup into a feature-specific settings object.
+11. [x] Extract mandate option lookup into a feature-specific settings object.
+12. [ ] Extract iDIN settings access into a feature-specific settings object.
+13. [ ] Extract Bluem request persistence from `bluem-db.php` into a request repository.
+14. [ ] Extract request logging and link persistence from `bluem-db.php` into focused repositories.
+15. [ ] Extract payment callback status resolution and order-transition orchestration.
+16. [ ] Extract iDIN validation and result handling into an identity workflow service.
+17. [ ] Extract mandate request and callback orchestration into a mandate workflow service.
+18. [ ] Extract Contact Form 7 and Gravity Forms flows into integration adapters.
+19. [ ] Move admin request rendering and navigation behind presentation services.
 
-The next increment is core plugin option lookup.
+## Current three-batch plan
+
+1. [x] Core settings schema and configuration assembly: extract `BluemCoreOptions`
+   and the shared `BluemConfigurationBuilder`, preserving existing wrappers,
+   defaults, translation extraction, and feature merge order. Module status is
+   covered separately by merged PR #68.
+2. [x] Request lookup repository: move reads/filtering/order selection behind an
+   injectable database dependency. Leave writes, logging, and cookie storage
+   for separate work.
+3. [ ] Payment transition services: move the existing gateway decisions and order
+   update orchestration into reusable services, retaining gateway adapters.
+   PR #89 has extracted the status decision table; order-transition
+   orchestration remains pending.
+
+PRs #87, #89, #67 and #68 merged on 10 October 2026 after fresh CI and combined
+validation. See [the next three-unit draft](refactor-next-three.md) for the
+proposed follow-up scope and acceptance criteria.
+
+Batch two starts from #86, rebased onto master including #85, as requested.
+It extracts only request reads from `bluem-db.php`. Each batch owns separate
+methods/files. If future work
+requires an unmerged batch, explicitly label it as a dependent sub-batch.
+
+### Shared service boundaries
+
+`BluemConfigurationBuilder` accepts any ordered feature definitions; it has no
+dependency on a gateway, WordPress, or a fixed module list. WordPress adapters
+collect translated labels, options, and available providers. Definition lookup
+and saved-value resolution remain separate contracts.
+
+`BluemRequestRepository` shares request lookups across admin, payment, identity,
+and mandate workflows. It accepts the database connection, while procedural
+wrappers resolve the current user and active WordPress connection on each call.
+Consumers can use it through composition; workflow decisions stay outside it. Add
+interfaces where consumers need substitutable implementations, rather than
+introducing a generic base class or duplicating shared logic per feature.
+
+The extraction preserves existing return shapes, SQL parameter types, ordering,
+limits, error handling, and the most-recent request type allowlist. Field and
+sort names remain trusted application inputs. Writes, logs, link storage,
+cookies, and WooCommerce order correlation are outside this batch.
