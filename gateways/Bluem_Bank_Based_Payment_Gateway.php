@@ -7,6 +7,7 @@ if (! defined('ABSPATH')) {
 include_once __DIR__ . '/Bluem_Payment_Gateway.php';
 
 use Bluem\Wordpress\Payments\BluemPaymentStatus;
+use Bluem\Wordpress\Payments\BluemPaymentTransition;
 
 // possible status constants: 'pending', 'processing', 'on-hold', 'completed', 'refunded, 'failed', 'cancelled'
 const BLUEM_WC_STATUS_PENDING = 'pending';
@@ -126,27 +127,20 @@ abstract class Bluem_Bank_Based_Payment_Gateway extends Bluem_Payment_Gateway
      */
     public static function applyPaymentStatusTransition($order, string $paymentStatus, string $context = 'callback'): ?string
     {
-        $targetOrderStatus = self::resolvePaymentStatusTransition($paymentStatus, $order->get_status());
-        if ($targetOrderStatus === null) {
-            return null;
-        }
-
-        $message = match ($context . ':' . $paymentStatus) {
-            'callback:Success' => esc_html__('Payment has been received (callback)', 'bluem'),
-            'callback:Failure' => esc_html__('Payment has expired', 'bluem'),
-            'callback:Cancelled' => esc_html__('Payment has been canceled', 'bluem'),
-            'callback:Expired' => esc_html__('Payment has expired', 'bluem'),
-            'webhook:Success' => esc_html__('Payment succeeded and was approved via webhook', 'bluem'),
-            'webhook:Cancelled' => esc_html__('Payment was canceled via webhook', 'bluem'),
-            'webhook:Expired' => esc_html__('Payment expired via webhook', 'bluem'),
-            default => $context === 'webhook'
-                ? esc_html__('Payment failed: error or unknown status via webhook', 'bluem')
-                : esc_html__('Payment failed: error or unknown status', 'bluem'),
-        };
-
-        $order->update_status($targetOrderStatus, $message);
-
-        return $targetOrderStatus;
+        return (new BluemPaymentTransition(static function (string $status, string $context): string {
+            return match ($context . ':' . $status) {
+                'callback:Success' => esc_html__('Payment has been received (callback)', 'bluem'),
+                'callback:Failure' => esc_html__('Payment has expired', 'bluem'),
+                'callback:Cancelled' => esc_html__('Payment has been canceled', 'bluem'),
+                'callback:Expired' => esc_html__('Payment has expired', 'bluem'),
+                'webhook:Success' => esc_html__('Payment succeeded and was approved via webhook', 'bluem'),
+                'webhook:Cancelled' => esc_html__('Payment was canceled via webhook', 'bluem'),
+                'webhook:Expired' => esc_html__('Payment expired via webhook', 'bluem'),
+                default => $context === 'webhook'
+                    ? esc_html__('Payment failed: error or unknown status via webhook', 'bluem')
+                    : esc_html__('Payment failed: error or unknown status', 'bluem'),
+            };
+        }))->apply($order, $paymentStatus, $context);
     }
 
     /**
