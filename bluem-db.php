@@ -6,6 +6,8 @@ if (!defined('ABSPATH')) {
 
 use Bluem\Wordpress\Requests\BluemRequestValidator;
 use Bluem\Wordpress\Requests\BluemRequestRepository;
+use Bluem\Wordpress\Requests\BluemRequestLogRepository;
+use Bluem\Wordpress\Requests\BluemRequestLinkRepository;
 register_activation_hook(__FILE__, 'bluem_db_create_requests_table');
 // no need for a deactivation hook yet.
 
@@ -177,19 +179,11 @@ function bluem_db_request_log($request_id, $description, $log_data = [])
 {
     global $wpdb, $current_user;
 
-    // date_default_timezone_set('Europe/Amsterdam');
-    // $wpdb->time_zone = 'Europe/Amsterdam';
-
-    return $wpdb->insert(
-        $wpdb->prefix . 'bluem_requests_log',
-        [
-            'request_id' => $request_id,
-            'description' => $description,
-            'timestamp' => gmdate(
-                'Y-m-d H:i:s',
-            ),
-            'user_id' => $current_user->ID,
-        ]
+    return (new BluemRequestLogRepository($wpdb))->append(
+        $request_id,
+        $description,
+        gmdate('Y-m-d H:i:s'),
+        $current_user->ID
     );
 }
 
@@ -601,36 +595,21 @@ function bluem_db_get_logs_for_request($id)
 {
     global $wpdb;
 
-    return $wpdb->get_results(
-        $wpdb->prepare(
-            'SELECT * FROM `' . $wpdb->prefix . 'bluem_requests_log` WHERE `request_id` = %d ORDER BY `timestamp` DESC',
-            $id
-        )
-    );
+    return (new BluemRequestLogRepository($wpdb))->findForRequest($id);
 }
 
 function bluem_db_get_links_for_order($id)
 {
     global $wpdb;
 
-    return $wpdb->get_results(
-        $wpdb->prepare(
-            'SELECT * FROM `' . $wpdb->prefix . "bluem_requests_links` WHERE `item_id` = %d AND `item_type` = 'order' ORDER BY `timestamp` DESC",
-            $id
-        )
-    );
+    return (new BluemRequestLinkRepository($wpdb))->findForOrder($id);
 }
 
 function bluem_db_get_links_for_request($id)
 {
     global $wpdb;
 
-    return $wpdb->get_results(
-        $wpdb->prepare(
-            'SELECT * FROM `' . $wpdb->prefix . 'bluem_requests_links` WHERE `request_id` = %d ORDER BY `timestamp` DESC',
-            $id
-        )
-    );
+    return (new BluemRequestLinkRepository($wpdb))->findForRequest($id);
 }
 
 function bluem_db_create_link($request_id, $item_id, $item_type = 'order'): int
@@ -642,18 +621,5 @@ function bluem_db_create_link($request_id, $item_id, $item_type = 'order'): int
         return -1;
     }
 
-    $insert_result = $wpdb->insert(
-        $wpdb->prefix . 'bluem_requests_links',
-        [
-            'request_id' => $request_id,
-            'item_id' => $item_id,
-            'item_type' => $item_type,
-        ]
-    );
-
-    if ($insert_result) {
-        return $wpdb->insert_id;
-    }
-
-    return -1;
+    return (new BluemRequestLinkRepository($wpdb))->create($request_id, $item_id, $item_type);
 }
