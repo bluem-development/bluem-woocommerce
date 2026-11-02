@@ -305,6 +305,10 @@ If you have any questions, please email [pluginsupport@bluem.nl](mailto:pluginsu
 
 # Release plan
 
+Agents should follow the reusable
+[WordPress SVN release skill](.agents/skills/bluem-wordpress-svn-release/SKILL.md),
+including its publication authorization, package inspection and recovery steps.
+
 Each release version maps to one immutable merged source commit, GitHub
 release/tag, and WordPress.org SVN tag. Before starting, confirm that the
 chosen version does not already exist remotely in GitHub or SVN. Never reuse or
