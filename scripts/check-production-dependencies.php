@@ -18,7 +18,7 @@ foreach ($lock['packages-dev'] as $package) {
         exit(1);
     }
 }
-foreach (['node_modules', 'tools', 'package.json', 'package-lock.json', '.github', 'docs'] as $path) {
+foreach (['node_modules', 'tools', 'package.json', 'package-lock.json', '.github', '.agents', 'docs'] as $path) {
     if (file_exists($directory . '/' . $path)) {
         fwrite(STDERR, 'Development artifact shipped: ' . $path . "\n");
         exit(1);

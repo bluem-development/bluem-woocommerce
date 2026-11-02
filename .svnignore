@@ -2,6 +2,7 @@
 .env.sample
 .git/
 .github/
+.agents/
 .idea/
 build/
 scripts/
