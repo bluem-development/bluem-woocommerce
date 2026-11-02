@@ -72,6 +72,10 @@ updated. Run that scenario in both legacy and HPOS storage modes.
 
 ## Release Version Checklist
 
+For release assessment, preparation, SVN publication and recovery, use
+[the Bluem WordPress SVN release skill](.agents/skills/bluem-wordpress-svn-release/SKILL.md).
+It supplements the rules below and is excluded from the production package.
+
 For a plugin release, update these files consistently:
 
 - `bluem.php`: plugin header `Version`.
