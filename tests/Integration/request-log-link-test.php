@@ -18,12 +18,24 @@ $assert = static function (bool $condition, string $message): void {
 
 try {
     wp_set_current_user(0);
-    $requestId = bluem_db_create_request([
+    $fixture = [
         'user_id' => 0, 'type' => 'mandates', 'transaction_id' => $token,
         'entrance_code' => 'fixture', 'transaction_url' => '',
         'description' => 'Log/link integration fixture', 'debtor_reference' => $token,
         'payload' => '', 'order_id' => 987654,
-    ]);
+    ];
+    // Offset both side-effect sequences so returning their insert_id cannot pass
+    // accidentally when all three tables start with the same AUTO_INCREMENT.
+    $assert((bool) $wpdb->insert($wpdb->prefix . 'bluem_requests', $fixture), 'Could not seed a request.');
+    $seedRequestId = (int) $wpdb->insert_id;
+    foreach (['bluem_requests_log', 'bluem_requests_links'] as $table) {
+        $seedId = max($seedRequestId, (int) $wpdb->get_var('SELECT MAX(id) FROM `' . $wpdb->prefix . $table . '`')) + 10;
+        $seed = $table === 'bluem_requests_log'
+            ? ['description' => 'Sequence offset fixture', 'user_id' => 0]
+            : ['item_id' => 0, 'item_type' => 'custom'];
+        $assert((bool) $wpdb->insert($wpdb->prefix . $table, ['id' => $seedId, 'request_id' => $seedRequestId] + $seed), 'Could not offset ' . $table);
+    }
+    $requestId = bluem_db_create_request($fixture);
     $assert($requestId > 0, 'Request creation failed: ' . $wpdb->last_error);
     $request = bluem_db_get_request_by_id((string) $requestId);
     $assert($request !== false && $request->transaction_id === $token, 'Creation returned a link/log ID instead of the request ID.');
@@ -31,6 +43,7 @@ try {
     $assert(count($logs) === 1 && (int) $logs[0]->user_id === 0, 'Creation log or guest identity changed.');
     $links = bluem_db_get_links_for_request($requestId);
     $assert(count($links) === 1 && (int) $links[0]->item_id === 987654, 'Creation did not preserve the order association.');
+    $assert((int) $logs[0]->id !== $requestId && (int) $links[0]->id !== $requestId, 'Fixture must use distinct request, log and link IDs.');
     $linkId = bluem_db_create_link($requestId, 987654, 'custom');
     $assert($linkId > 0, 'Custom association failed.');
     $wpdb->update($wpdb->prefix . 'bluem_requests_links', ['timestamp' => '2000-01-01 00:00:00'], ['id' => $links[0]->id]);
