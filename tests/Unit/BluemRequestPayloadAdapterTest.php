@@ -34,10 +34,12 @@ final class BluemRequestPayloadAdapterTest extends TestCase
     {
         return [
             'object preserves unrelated fields' => ['{"keep":1,"overwrite":"old"}', ['overwrite' => false, 'added' => null], '{"keep":1,"overwrite":false,"added":null}'],
+            'nested fields replaced shallowly' => ['{"nested":{"keep":1,"replace":2},"other":3}', ['nested' => (object) ['replace' => 4]], '{"nested":{"replace":4},"other":3}'],
             'array repaired' => ['[1,2]', ['flag' => true], '{"flag":true}'],
             'invalid repaired' => ['{broken', ['flag' => true], '{"flag":true}'],
             'empty repaired' => ['', [], '{}'],
             'null repaired' => ['null', [], '{}'],
+            'boolean repaired' => ['false', [], '{}'],
             'scalar repaired' => ['42', [], '{}'],
             'string repaired' => ['"text"', [], '{}'],
             'object changes accepted' => ['{}', (object) ['nested' => ['one' => 1]], '{"nested":{"one":1}}'],
