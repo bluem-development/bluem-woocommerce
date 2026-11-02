@@ -47,12 +47,13 @@ final class BluemPaymentTransitionAdapterTest extends TestCase
         ];
         foreach (['callback', 'webhook', 'custom'] as $context) {
             foreach (['pending', 'processing'] as $current) {
-                foreach (['Success', 'Failure', 'Cancelled', 'Expired', 'New', 'Open', 'Pending', 'Unexpected'] as $status) {
+                // Schema-only statuses retain the existing unsupported fallback.
+                foreach (['Success', 'Failure', 'Cancelled', 'Expired', 'New', 'Open', 'Pending', 'Unexpected', 'SuccessManual', 'BankSelected', 'Refunded'] as $status) {
                     $target = match ($status) {
                         'Success' => $current === 'pending' ? 'processing' : null,
                         'Failure' => $current === 'pending' ? 'failed' : null,
                         'Cancelled' => 'cancelled',
-                        'Expired', 'Unexpected' => 'failed',
+                        'Expired', 'Unexpected', 'SuccessManual', 'BankSelected', 'Refunded' => 'failed',
                         default => null,
                     };
                     $notes = $context === 'callback' ? $callback : ($context === 'webhook' ? $webhook : []);
