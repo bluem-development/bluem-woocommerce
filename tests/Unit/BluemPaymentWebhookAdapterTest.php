@@ -7,9 +7,9 @@ use PHPUnit\Framework\TestCase;
 
 final class BluemPaymentWebhookAdapterTest extends TestCase
 {
-    private function probe(string $status, string $current, string $entrance = 'entrance'): array
+    private function probe(string $status, string $current, string $entrance = 'entrance', string $afterMetadata = ''): array
     {
-        $process = proc_open([PHP_BINARY, dirname(__DIR__) . '/Support/payment-webhook-probe.php', $status, $current, $entrance],
+        $process = proc_open([PHP_BINARY, dirname(__DIR__) . '/Support/payment-webhook-probe.php', $status, $current, $entrance, $afterMetadata],
             [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
         self::assertIsResource($process);
         fclose($pipes[0]);
@@ -43,12 +43,12 @@ final class BluemPaymentWebhookAdapterTest extends TestCase
     public static function statuses(): iterable
     {
         foreach (['pending', 'processing', 'completed', 'failed'] as $current) {
-            foreach (['Success', 'Failure', 'Cancelled', 'Expired', 'New', 'Open', 'Pending', 'Unexpected'] as $status) {
+            foreach (['Success', 'Failure', 'Cancelled', 'Expired', 'New', 'Open', 'Pending', 'Unexpected', 'SuccessManual', 'BankSelected', 'Refunded'] as $status) {
                 $target = match ($status) {
                     'Success' => $current === 'pending' ? 'processing' : null,
                     'Failure' => $current === 'pending' ? 'failed' : null,
                     'Cancelled' => 'cancelled',
-                    'Expired', 'Unexpected' => 'failed',
+                    'Expired', 'Unexpected', 'SuccessManual', 'BankSelected', 'Refunded' => 'failed',
                     default => null,
                 };
                 $note = match ($status) {
@@ -69,5 +69,27 @@ final class BluemPaymentWebhookAdapterTest extends TestCase
         self::assertSame('Error: Missing payment correlation data', $result['body']);
         self::assertNull($result['query']);
         self::assertSame([], $result['events']);
+    }
+
+    #[DataProvider('statusChanges')]
+    public function testMetadataStatusChangeRetainsSnapshotAndTransitionReread(string $payment, string $snapshot, string $afterMetadata, array $effects): void
+    {
+        $result = $this->probe($payment, $snapshot, 'entrance', $afterMetadata);
+        self::assertSame(200, $result['http']);
+        self::assertSame('OK', $result['body']);
+        self::assertSame([['get_status'], ['get_user_id'], ['get_user_meta', 7], ...$effects], $result['events']);
+        self::assertSame($afterMetadata, $result['status']);
+    }
+
+    public static function statusChanges(): array
+    {
+        return [
+            'success re-reads pending snapshot' => ['Success', 'pending', 'processing', [['get_status']]],
+            'failure re-reads pending snapshot' => ['Failure', 'pending', 'completed', [['get_status']]],
+            'success note uses processing snapshot' => ['Success', 'processing', 'completed', [
+                ['add_order_note', 'Received payment completed webhook notification, but status not updated - it was already processing'],
+            ]],
+            'non-pending failure remains a no-op' => ['Failure', 'processing', 'pending', []],
+        ];
     }
 }

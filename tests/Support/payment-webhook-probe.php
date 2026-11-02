@@ -10,6 +10,9 @@ function wc_get_orders($query) {
 }
 function get_user_meta($id) {
     $GLOBALS['probe_order']->events[] = ['get_user_meta', $id];
+    if (($GLOBALS['argv'][4] ?? '') !== '') {
+        $GLOBALS['probe_order']->status = $GLOBALS['argv'][4];
+    }
     return [];
 }
 
