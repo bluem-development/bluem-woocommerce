@@ -54,6 +54,23 @@ Activated if Mandates is activated as a module from the Settings > Bluem page.
 Using this shortcode, it is possible to allow users to create a mandate separate from a WooCommerce context or usage. This can be used on the account information page to encourage people to already arrange this before proceeding on your site.
 Shortcode: `[bluem_machtigingsformulier]`
 
+The notice and submit button use the site's language by default. Set `notice` and `button_label` to override either label for a single embed. Each omitted attribute uses its translated default. Write the override in the language you want visitors to see. Both attributes accept plain text.
+
+`[bluem_machtigingsformulier notice="Please authorize direct debit." button_label="Authorize direct debit"]`
+
+Add CSS to your site's Additional CSS or child theme stylesheet. The form container uses `.bluem-mandate-form` and its submit button uses `.bluem-woocommerce-button-mandates`.
+
+```
+form.bluem-mandate-form {
+    background: #f0f6fb;
+}
+
+.bluem-mandate-form input.bluem-woocommerce-button-mandates {
+    background: #174a70;
+    color: #fff;
+}
+```
+
 It is possible to programmatically block display and functionality on your site based on the presence of a mandate for a user. Please contact us if you are interested in developing this in your site.
 
 === Payments ===

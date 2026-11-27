@@ -1057,7 +1057,7 @@ msgstr "Dank u voor uw mandaat met mandaat-ID:"
 
 #: bluem-mandates-shortcode.php:599
 msgid "You still need to issue a direct debit mandate."
-msgstr "U moet nog een incassomachtiging afgeven."
+msgstr "Je moet nog een incassomachtiging afgeven."
 
 #: bluem-mandates-shortcode.php:602
 msgid "required"
@@ -1065,7 +1065,7 @@ msgstr "verplicht"
 
 #: bluem-mandates-shortcode.php:609
 msgid "Start mandate process"
-msgstr "Mandaatproces starten"
+msgstr "Machtiging afgeven"
 
 #: bluem-payments.php:220
 msgid "ePayments transacties"

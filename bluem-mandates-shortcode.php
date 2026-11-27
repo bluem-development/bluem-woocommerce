@@ -539,9 +539,10 @@ add_shortcode('bluem_machtigingsformulier', 'bluem_mandateform');
  * Rendering the static form
  * Shortcode: `[bluem_machtigingsformulier]`
  *
+ * @param array|string $atts Shortcode attributes, or an empty string from WordPress.
  * @return string
  */
-function bluem_mandateform(): string
+function bluem_mandateform($atts = []): string
 {
     global $current_user;
 
@@ -645,12 +646,20 @@ function bluem_mandateform(): string
     if ($validated !== false) {
         return '<p>' . esc_html__('Thank you for your mandate with mandate ID:', 'bluem') . " <span class='bluem-mandate-id'>" . esc_attr($mandateID) . '</span></p>';
     } else {
+        $labels = shortcode_atts(
+            [
+                'notice' => __('You still need to issue a direct debit mandate.', 'bluem'),
+                'button_label' => __('Start mandate process', 'bluem'),
+            ],
+            $atts
+        );
+
         $nonce = wp_create_nonce('bluem-nonce');
-        $html = '<form action="' . esc_url( bluem_woocommerce_route_url(
+        $html = '<form class="bluem-mandate-form" action="' . esc_url( bluem_woocommerce_route_url(
             'bluem-woocommerce/mandate_shortcode_execute',
             ['_wpnonce' => $nonce]
         ) ) . '" method="post">';
-        $html .= '<p>' . esc_html__('You still need to issue a direct debit mandate.', 'bluem') . '</p>';
+        $html .= '<p>' . esc_html($labels['notice']) . '</p>';
 
         if (!empty($bluem_config->debtorReferenceFieldName)) {
             $html .= '<p>' . esc_html($bluem_config->debtorReferenceFieldName) . ' (' . esc_html__('required', 'bluem') . ')<br/>';
@@ -659,8 +668,8 @@ function bluem_mandateform(): string
             $html .= '<input type="hidden" name="bluem_debtorReference" value="' . (!empty($current_user->ID) ? $current_user->ID : 'visitor-' . time()) . '"  />';
         }
 
-        $html .= '<p><input type="submit" name="bluem-submitted" class="bluem-woocommerce-button bluem-woocommerce-button-mandates" 
-            value="' . esc_html__('Start mandate process', 'bluem') . '.."></p>';
+        $html .= '<p><input type="submit" name="bluem-submitted" class="bluem-woocommerce-button bluem-woocommerce-button-mandates"
+            value="' . esc_attr($labels['button_label']) . '"></p>';
         $html .= '</form>';
 
         return $html;
