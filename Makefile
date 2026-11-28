@@ -249,6 +249,8 @@ pre-deployment:
 	@rm -f $(BUILD_DIR)/vendor/robrichards/xmlseclibs/CHANGELOG.txt $(BUILD_DIR)/vendor/robrichards/xmlseclibs/README.md $(BUILD_DIR)/vendor/robrichards/xmlseclibs/composer.json $(BUILD_DIR)/vendor/robrichards/xmlseclibs/phpunit.xml
 	@rm -rf $(BUILD_DIR)/vendor/robrichards/xmlseclibs/.github
 	@rm -rf $(BUILD_DIR)/vendor/selective/xmldsig/.github
+	@rm -rf "$(BUILD_DIR)/vendor/sentry/sentry/scripts"
+	@rm -f "$(BUILD_DIR)/vendor/sentry/sentry/CONTRIBUTING.md" "$(BUILD_DIR)/vendor/sentry/sentry/analysis-baseline.toml" "$(BUILD_DIR)/vendor/sentry/sentry/mago.toml"
 	@find $(BUILD_DIR)/vendor -depth \( -type d \( -name .github -o -name docs -o -name examples -o -name tests \) -o -type f \( -name '.*' -o -name AGENTS.md -o -name README.md -o -name RELEASING.md -o -name v2-api-plan.md -o -name Makefile -o -name changelog.md -o -name composer.json -o -name composer.lock -o -name phpcs.xml -o -name phpcs.xml.dist -o -name phpunit.xml -o -name rector.php \) \) -exec rm -rf {} +
 
 add-tag:
