@@ -209,6 +209,8 @@ Set the return URI within the Bluem plug-in settings.
 
 It is possible to include our eMandate-meganism in a page, by using the `[bluem_machtigingsformulier]` shortcode.
 
+See [Mandates shortcode in the plugin readme](readme.txt) for the `notice` and `button_label` attributes and a CSS example.
+
 # Integrations
 
 Besides of the integration with WooCommerce, we also have integrations with the popular ContactForm 7 and Gravity Forms. Below you'll find the instructions to activate and use the integration.
