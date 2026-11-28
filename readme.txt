@@ -4,7 +4,7 @@ Tags: Bluem,Payments,iDIN,iDEAL,eMandates
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.4
-Stable tag: 1.6.6
+Stable tag: 1.6.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -98,6 +98,7 @@ Shortcode: `[bluem_identificatieformulier]`
 It is possible to programmatically block display and functionality on your site based on the verification status. Please contact us if you are interested in developing this in your site.
 
 == Changelog ==
+- 1.6.7: Localized the direct debit mandate shortcode and added optional notice and button labels and documented CSS selectors. Fixed the admin transaction list when the request type filter is missing or invalid. Aligned the version in diagnostics with the plugin version and updated development dependencies.
 - 1.6.6: Improved mandate shortcode error reports and recovery from invalid input, API responses, configuration errors, and failed request persistence. Fixed duplicate mandate notifications and missing line numbers in support emails. Reduced memory used by dependency-version reporting. Updated development dependencies and automated dependency security checks.
 - 1.6.5: Fixed admin status refresh so in-progress Bluem payment and mandate statuses keep WooCommerce orders in progress, and fixed request creation to return the correct request ID. Internal settings definitions and configuration assembly are now testable classes, with no change to their public behavior.
 - 1.6.4: Reliably correlate eMandate callbacks with their matching WooCommerce order in both classic and HPOS storage, preventing a callback from updating a newer unrelated order. Added regression coverage for this callback sequence and updated Bluem PHP to support the new itsme BIC for iDIN identity requests.
